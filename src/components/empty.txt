@@ -1,1 +1,0 @@
-This is an empty file created to prevent Git from ignoring the directory upon creation.
