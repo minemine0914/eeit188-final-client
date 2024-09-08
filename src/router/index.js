@@ -4,10 +4,10 @@ const routes = [
     {
         path: "/",
         name: "User",
-        component: () => import("@/views/User.vue"),
+        component: () => import("@/views/UserView.vue"),
         children: [
             {
-                path: "",
+                path: "", // Default
                 name: "Explore",
                 component: () => import("@/components/user/Explore.vue"),
             },
@@ -16,10 +16,10 @@ const routes = [
     {
         path: "/host",
         name: "Host",
-        component: () => import("@/views/Host.vue"),
+        component: () => import("@/views/HostView.vue"),
         children: [
             {
-                path: "",
+                path: "", // Default
                 name: "Manage",
                 component: () => import("@/components/host/Manage.vue"),
             },
@@ -28,16 +28,15 @@ const routes = [
     {
         path: "/system",
         name: "System",
-        component: () => import("@/views/System.vue"),
+        component: () => import("@/views/SystemView.vue"),
         children: [
             {
-                path: "",
+                path: "", // Default
                 name: "Dashboard",
                 component: () => import("@/components/system/Dashboard.vue"),
             },
         ],
     },
-    { path: "/test", name: "Test", component: () => import("@/views/Test.vue") },
     { path: "/:pathMatch(.*)*", name: "NotFound", component: () => import("@/views/NotFound.vue") },
 ];
 
