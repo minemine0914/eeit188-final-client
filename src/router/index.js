@@ -8,8 +8,13 @@ const routes = [
         children: [
             {
                 path: "", // Default
-                name: "Explore",
+                name: "UserExplore",
                 component: () => import("@/components/user/Explore.vue"),
+            },
+            {
+                path: "search",
+                name: "UserSearch",
+                component: () => import("@/components/user/Search.vue"),
             },
         ],
     },
