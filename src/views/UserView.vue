@@ -1,12 +1,10 @@
 <template>
     <v-app>
         <v-app-bar :elevation="2">
-            <v-app-bar-title>User</v-app-bar-title>
+            <v-app-bar-title>Nomad</v-app-bar-title>
         </v-app-bar>
         <v-main>
-            <v-container fluid>
-                <router-view></router-view>
-            </v-container>
+            <router-view></router-view>
         </v-main>
     </v-app>
 </template>
