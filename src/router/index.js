@@ -1,5 +1,10 @@
 import { createWebHistory, createRouter } from "vue-router";
 
+// Import your router 
+import minemineRouter from "./minemine";
+
+const DEFAULT_TITLE = "Nomad";
+
 const routes = [
     {
         path: "/",
@@ -10,11 +15,13 @@ const routes = [
                 path: "", // Default
                 name: "UserExplore",
                 component: () => import("@/components/user/Explore.vue"),
+                meta: { title: "Nomad 探索", requiresAuth: false },
             },
             {
                 path: "search",
                 name: "UserSearch",
                 component: () => import("@/components/user/Search.vue"),
+                meta: { title: "Nomad 搜尋", requiresAuth: false },
             },
         ],
     },
@@ -27,6 +34,7 @@ const routes = [
                 path: "", // Default
                 name: "Manage",
                 component: () => import("@/components/host/Manage.vue"),
+                meta: { title: "Nomad 分享你的房源", requiresAuth: false },
             },
         ],
     },
@@ -39,15 +47,22 @@ const routes = [
                 path: "", // Default
                 name: "Dashboard",
                 component: () => import("@/components/system/Dashboard.vue"),
+                meta: { title: "Nomad 系統管理", requiresAuth: false },
             },
         ],
     },
     { path: "/:pathMatch(.*)*", name: "NotFound", component: () => import("@/views/NotFound.vue") },
+    minemineRouter,
 ];
 
 const router = createRouter({
     history: createWebHistory(),
     routes,
+});
+
+router.afterEach((to, from) => {
+    document.title = to.meta.title || DEFAULT_TITLE;
+
 });
 
 export default router;

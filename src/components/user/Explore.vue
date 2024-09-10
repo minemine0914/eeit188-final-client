@@ -7,7 +7,7 @@
     </v-parallax>
     <v-row class="position-relative mx-5" justify="center" align="center" style="top: -30px">
         <v-col cols="12" xs="12" sm="9" md="6">
-            <v-card elevation="1">
+            <v-card elevation="1" class="">
                 <v-card-item>
                     <v-text-field
                         label="想去哪裡?"
