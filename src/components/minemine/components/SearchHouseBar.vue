@@ -125,7 +125,7 @@ const cities = computed(() => cityResult.value);
 // Methods
 function onClickOutside(value) {
     isFocusSearchBar.value = false;
-    console.log("Click outside!!!!");
+    // console.log("Click outside!!!!");
 }
 
 function onClickCityChip(name) {

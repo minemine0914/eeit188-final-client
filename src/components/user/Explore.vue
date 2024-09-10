@@ -2,11 +2,11 @@
     <div class="position-relative overflow-y-visible mb-5" style="height: 360px">
         <v-parallax :src="primaryBannerImg" height="100%" width="100%">
             <div class="d-flex flex-column fill-height justify-center align-center text-white">
-                <h1 class="text-h3 font-weight-bold mb-4">Nomad</h1>
+                <h1 class="text-h3 font-weight-black mb-4 opacity-80">Nomad</h1>
                 <h4 class="subheading font-weight-regular">住宿 旅遊 重新定義居住自由</h4>
             </div>
         </v-parallax>
-        <SearchHouseBar style="top: 325px;" />
+        <SearchHouseBar style="top: 260px;" />
     </div>
 
     <v-container fluid class="pa-0 my-5">
@@ -24,9 +24,9 @@
 
     <v-parallax :src="secondaryBannerImg" height="320">
         <div class="d-flex flex-column fill-height justify-center align-center text-white">
-            <h1 class="text-h4 font-weight-bold mb-4">分享您的空間</h1>
+            <h1 class="text-h4 font-weight-black mb-4 opacity-80">分享您的空間</h1>
             <h4 class="subheading font-weight-regular">為大家提供舒適的住宿體驗</h4>
-            <v-btn variant="outlined" class="mt-3">立即加入</v-btn>
+            <v-btn variant="outlined" class="mt-5">立即加入</v-btn>
         </div>
     </v-parallax>
 
