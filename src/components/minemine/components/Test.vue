@@ -11,7 +11,7 @@
 import Fuse from "fuse.js";
 import { ref } from "vue";
 import taiwanCityData from "@/assets/CityCountyData.json";
-const fuse = new (taiwanCityData, {
+const fuse = new Fuse(taiwanCityData, {
     keys: ["CityName", "CityEngName"],
 });
 

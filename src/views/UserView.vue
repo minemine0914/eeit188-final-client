@@ -3,7 +3,26 @@
         <v-app-bar :elevation="2">
             <v-app-bar-title>Nomad</v-app-bar-title>
             <template v-slot:append>
-                <v-avatar :image="avaterImg" class="mr-3"></v-avatar>
+                <v-hover>
+                    <template v-slot:default="{ isHovering, props }">
+                        <v-layout
+                            v-ripple
+                            v-bind="props"
+                            :elevation="isHovering ? 3 : 2"
+                            :class="[
+                                'd-flex',
+                                'pa-1',
+                                'align-center',
+                                'cursor-pointer',
+                                'rounded-pill',
+                                isHovering ? 'elevation-3' : 'elevation-1',
+                            ]"
+                        >
+                            <v-avatar color="surface-variant" :image="avaterImg"></v-avatar>
+                            <div class="mx-3">asd</div>
+                        </v-layout>
+                    </template>
+                </v-hover>
             </template>
         </v-app-bar>
         <v-main>
