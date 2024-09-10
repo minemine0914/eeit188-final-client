@@ -1,5 +1,7 @@
 <template>
-    <div>This is minemine</div>
+    <v-card width="500" height="500">
+
+    </v-card>
 </template>
 
 <script setup></script>
