@@ -1,13 +1,21 @@
 import { defineStore } from "pinia";
-import { computed, ref } from "vue";
+import api from "../plugins/axios";
 
 export const useUserViewStore = defineStore("userView", () => {
-    const count = ref(0);
-    const name = ref("Eduardo");
-    const doubleCount = computed(() => count.value * 2);
-    function increment() {
-        count.value++;
+  async function register(userData) {
+    try {
+      const response = await api({
+        method: "post",
+        url: "/user/",
+        data: userData,
+      });
+      console.log("Registration successful:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Registration failed:", error);
+      throw error;
     }
+  }
 
-    return { count, name, doubleCount, increment };
+  return { register };
 });
