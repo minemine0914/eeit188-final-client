@@ -11,6 +11,7 @@
   "dependencies": {
     "@vueuse/core": "^11.0.3",
     "axios": "^1.7.7",
+    "fuse.js": "^7.0.0",
     "ol": "^10.1.0",
     "ol-contextmenu": "^5.5.0",
     "ol-ext": "^4.0.23",

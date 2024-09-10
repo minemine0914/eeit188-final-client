@@ -1,23 +1,27 @@
 <template>
-    <v-parallax :src="primaryBannerImg" height="380" width="100%">
-        <div class="d-flex flex-column fill-height justify-center align-center text-white">
-            <h1 class="text-h3 font-weight-bold mb-4">Nomad</h1>
-            <h4 class="subheading font-weight-regular">住宿 旅遊 重新定義居住自由</h4>
+    <div class="position-relative overflow-y-visible mb-5" style="height: 380px;">
+        <v-parallax :src="primaryBannerImg" height="100%" width="100%">
+            <div class="d-flex flex-column fill-height justify-center align-center text-white">
+                <h1 class="text-h3 font-weight-bold mb-4">Nomad</h1>
+                <h4 class="subheading font-weight-regular">住宿 旅遊 重新定義居住自由</h4>
+            </div>
+        </v-parallax>
+        <div class="position-absolute w-100" style="bottom:-30px">
+            <v-row class="mx-5" justify="center" align="center">
+                <v-col cols="12" xs="12" sm="9" md="6">
+                    <v-card elevation="1" rounded="pill" class="px-3">
+                        <v-toolbar dense color="rgba(0,0,0,0)">
+                            <v-autocomplete label="城市" variant="solo" hide-details flat></v-autocomplete>
+                            <v-autocomplete label="區域" variant="solo" hide-details flat></v-autocomplete>
+                            <v-autocomplete label="設施" variant="solo" hide-details flat></v-autocomplete>
+                            <v-btn icon="mdi-magnify" variant="tonal" color="brown"></v-btn>
+                        </v-toolbar>
+                    </v-card>
+                </v-col>
+            </v-row>
         </div>
-    </v-parallax>
-    <v-row class="position-relative mx-5" justify="center" align="center" style="top: -30px">
-        <v-col cols="12" xs="12" sm="9" md="6">
-            <v-card elevation="1" class="">
-                <v-card-item>
-                    <v-text-field
-                        label="想去哪裡?"
-                        variant="underlined"
-                        hide-details
-                    ></v-text-field>
-                </v-card-item>
-            </v-card>
-        </v-col>
-    </v-row>
+    </div>
+    
     <v-container fluid class="pa-0 my-5">
         <v-sheet class="mb-3">
             <div class="text-h5 font-weight-medium mx-15">熱門推薦</div>
@@ -75,11 +79,5 @@
 import primaryBannerImg from "@/assets/banner05.webp";
 import secondaryBannerImg from "@/assets/banner06.webp";
 import { ref } from "vue";
-import { useTheme } from "vuetify";
-const model = ref(null);
-const theme = useTheme();
-function toggleTheme() {
-    theme.global.name.value = theme.global.current.value.dark ? "light" : "dark";
-}
 </script>
 <style scoped></style>
