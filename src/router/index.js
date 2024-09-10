@@ -2,6 +2,7 @@ import { createWebHistory, createRouter } from "vue-router";
 
 // Import your router 
 import minemineRouter from "./minemine";
+import wuRouter from "./wu";
 
 const DEFAULT_TITLE = "Nomad";
 
@@ -53,6 +54,7 @@ const routes = [
     },
     { path: "/:pathMatch(.*)*", name: "NotFound", component: () => import("@/views/NotFound.vue") },
     minemineRouter,
+    wuRouter,
 ];
 
 const router = createRouter({
