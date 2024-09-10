@@ -4,9 +4,9 @@ const router = {
     component: () => import("@/components/minemine/Home.vue"),
     children: [
         {
-            path: "", // Default
+            path: "test", // Default
             name: "MineMineHome",
-            component: () => import("@/components/minemine/components/EmptyTemplate.vue"),
+            component: () => import("@/components/minemine/components/Test.vue"),
             meta: { title: "Minemine Testing", requiresAuth: false },
         },
     ],

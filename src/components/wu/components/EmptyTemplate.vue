@@ -1,5 +1,5 @@
 <template>
-    <div>This is minemine</div>
+    <div>This is wu</div>
 </template>
 
 <script setup></script>

@@ -2,7 +2,8 @@ import { createWebHistory, createRouter } from "vue-router";
 
 // Import your router
 import minemineRouter from "./minemine";
-import leonRouter from "./leon";
+import wuRouter from "./wu";
+import kenjoRouter from "./kenjo";
 
 const DEFAULT_TITLE = "Nomad";
 
@@ -58,7 +59,8 @@ const routes = [
     component: () => import("@/views/NotFound.vue"),
   },
   minemineRouter,
-  leonRouter,
+  wuRouter,
+  kenjoRouter,
 ];
 
 const router = createRouter({
