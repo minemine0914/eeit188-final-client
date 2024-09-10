@@ -83,50 +83,44 @@
 
 
 
-<div id="chart">
-        <apexchart type="pie" width="380" :options="chartOptions" :series="series">
-        </apexchart>
-</div>
-    
 
+<div style="width:300px;">
+    <!-- <Bar :data="chartData" /> -->
+    <Pie :data="chartData" />
+    <input type="text" v-model.number="chartData.datasets[0].data[0]">
+    <input type="text" v-model.number="chartData.datasets[0].data[1]">
+    <input type="text" v-model.number="chartData.datasets[0].data[2]">
+  </div>
 
 </template>
 
 <script setup>
-//  new Vue({
-//         el: '#app',
-//         components: {
-//           apexchart: VueApexCharts,
-//         },
-//         data: {
-          
-//           series: [44, 55, 13, 43, 22],
-//           chartOptions: {
-//             chart: {
-//               width: 380,
-//               type: 'pie',
-//             },
-//             labels: ['Team A', 'Team B', 'Team C', 'Team D', 'Team E'],
-//             responsive: [{
-//               breakpoint: 480,
-//               options: {
-//                 chart: {
-//                   width: 200
-//                 },
-//                 legend: {
-//                   position: 'bottom'
-//                 }
-//               }
-//             }]
-//           },
-          
-          
-//         },
-        
-//       })
-          
-          
-        
+import { reactive } from 'vue'
+// import { Bar } from 'vue-chartjs'
+// import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js'
+// ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
+
+import { Pie } from 'vue-chartjs'
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
+ChartJS.register(ArcElement, Tooltip, Legend)
+
+
+let n1=10
+let n2=20
+let n3=30
+
+
+// Reactive chart data
+const chartData = reactive({
+  labels: ['男', '女', '未知'],
+  datasets: [
+    {
+      label: '',
+      backgroundColor: ['#f87979','#d5cc4a','#83d6ba'],
+      data: [n1/(n1+n2+n3)*100, n2/(n1+n2+n3)*100, n3/(n1+n2+n3)*100]
+    }
+  ]
+})
 
 </script>
 
