@@ -54,8 +54,8 @@ const router = {
         {
             path: "test", // Default
             name: "test",
-            component: () => import("@/components/kenjo/components/test.vue"),
-            meta: { title: "test", requiresAuth: false },
+            component: () => import("@/components/kenjo/components/Test.vue"),
+            meta: { title: "Test", requiresAuth: false },
         },
     ],
 }

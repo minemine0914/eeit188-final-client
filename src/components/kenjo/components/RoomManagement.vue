@@ -3,6 +3,7 @@
 	房間設施:管理房間內的各種設施和設備，如Wi-Fi、空調等。
 -->
 <template>
+    <div class="text-center">
     <v-data-table
       v-model:expanded="expanded"
       :headers="dessertHeaders"
@@ -24,7 +25,7 @@
       </v-chip>
     </template>
 
-      <template v-slot:expanded-row="{ columns, item }">
+      <template v-slot:expanded-row="{ columns, item }" >
         <tr>
           <td :colspan="columns.length">           
            所在國家： {{ item.country }},<br>
@@ -50,6 +51,7 @@
         </tr>
       </template>
     </v-data-table>
+</div>
   </template>
 
 <script>
