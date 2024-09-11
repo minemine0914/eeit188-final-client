@@ -6,9 +6,10 @@
     <div>
         <p>選擇房源</p>
         <p>全部/ooo/xxx/...</p>
-        <select name="" id="">
-            <option value=""></option>
-        </select>
+        <div class="col-4">
+            <ProductSelect v-model="max" :total="total" :options="[2, 3, 4, 5, 7, 10]" @max-change="callFind">
+            </ProductSelect>
+        </div>
     </div>
 
     <p>顯示模式：文字/圖形</p>
@@ -26,6 +27,8 @@
     入住率
 </template>
 
-<script setup></script>
+<script setup>
+import ProductSelect from '@/components/ProductSelect.vue';
+</script>
 
 <style scoped></style>
