@@ -1,10 +1,10 @@
 const router = {
     path: "/wu",
     name: "Wu",
-    component: () => import("@/components/wu/Home.vue"),
+    component: () => import("@/components/wu/test.vue"),
     children: [
         {
-            path: "", // Default
+            path: "/aaa", // Default
             name: "WuHome",
             component: () => import("@/components/wu/components/EmptyTemplate.vue"),
             meta: { title: "Wu Testing", requiresAuth: false },

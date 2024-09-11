@@ -5,6 +5,12 @@ import * as directives from "vuetify/directives";
 import "vuetify/styles";
 import "@mdi/font/css/materialdesignicons.css";
 
+// Translations provided by Vuetify
+import { zhHant } from 'vuetify/locale'
+
+// Labs components
+import { VDateInput } from "vuetify/labs/VDateInput";
+
 const nomadTheme = {
     dark: false,
     colors: {
@@ -44,7 +50,10 @@ const nomadTheme = {
 };
 
 const vuetify = createVuetify({
-    components,
+    components: {
+        ...components,
+        VDateInput,
+    },
     directives,
     theme: {
         defaultTheme: "nomadTheme",
@@ -53,6 +62,10 @@ const vuetify = createVuetify({
     icons: {
         defaultSet: "mdi",
     },
+    locale: {
+        locale: "zhHant",
+        messages: { zhHant },
+    }
 });
 
 export default vuetify;

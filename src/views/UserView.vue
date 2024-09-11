@@ -3,7 +3,50 @@
         <v-app-bar :elevation="2">
             <v-app-bar-title>Nomad</v-app-bar-title>
             <template v-slot:append>
-                <v-avatar :image="avaterImg" class="mr-3"></v-avatar>
+                <v-menu v-model="memberMenu" offset="15">
+                    <template v-slot:activator="{ props }">
+                        <!-- <v-hover v-bind="props">
+                            <template v-slot:default="{ isHovering, props }">
+                                <v-layout
+                                    @click="memberMenu = !memberMenu"
+                                    v-ripple
+                                    v-bind="props"
+                                    :elevation="isHovering ? 3 : 2"
+                                    :class="[
+                                        'd-flex',
+                                        'pa-1',
+                                        'mr-3',
+                                        'align-center',
+                                        'cursor-pointer',
+                                        'rounded-pill',
+                                        isHovering ? 'elevation-3' : 'elevation-1',
+                                        'position-relative',
+                                    ]"
+                                >
+                                    <v-avatar color="surface-variant" :image="avaterImg"></v-avatar>
+                                    <div class="mx-3">asd</div>
+                                </v-layout>
+                            </template>
+                        </v-hover> -->
+                        <v-btn v-bind="props" rounded="pill" size="large" class="pa-1 elevation-1 px-3 mr-3" >
+                            <template v-slot:prepend>
+                                <v-avatar color="surface-variant" :image="avaterImg" size="small" ></v-avatar>
+                            </template>
+                            <div class="text-body-1">nickname</div>
+                        </v-btn>
+                    </template>
+                    <v-list density="compact">
+                        <v-list-item to="/">
+                            <v-list-item-title>會員中心</v-list-item-title>
+                        </v-list-item>
+                        <v-list-item to="/">
+                            <v-list-item-title>查詢</v-list-item-title>
+                        </v-list-item>
+                        <v-list-item to="/">
+                            <v-list-item-title>登出</v-list-item-title>
+                        </v-list-item>
+                    </v-list>
+                </v-menu>
             </template>
         </v-app-bar>
         <v-main>
@@ -27,5 +70,6 @@
 import avaterImg from "@/assets/banner01.webp";
 import { ref } from "vue";
 const isOpenDialog = ref(false);
+const memberMenu = ref(true);
 </script>
 <style scoped></style>
