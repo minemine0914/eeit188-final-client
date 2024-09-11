@@ -23,7 +23,7 @@ const userViewStore = useUserViewStore();
 const { jwtToken, decodeToken } = userViewStore;
 
 const userInfo = ref(null);
-const collectionHouses = ref(null);
+const collectionHouses = ref([]);
 const collections = ref([]);
 
 onMounted(async () => {
@@ -43,7 +43,7 @@ onMounted(async () => {
       try {
         const houseResponse = await api({
           method: "get",
-          url: "/house/" + house.id,
+          url: `/house/${house.id}`,
         });
         collections.value.push(houseResponse.data);
       } catch (error) {
