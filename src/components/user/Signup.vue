@@ -195,10 +195,9 @@ const userViewStore = useUserViewStore();
 const { register } = userViewStore;
 
 const submit = async () => {
-  const isValid = await v$.$validate;
+  const isValid = await v$.value.$validate();
 
   if (!isValid) {
-    alert("請確認所有必填欄位皆已填寫，以及符合正確格式");
     return;
   }
   try {
