@@ -195,7 +195,10 @@ const userViewStore = useUserViewStore();
 const { register } = userViewStore;
 
 const submit = async () => {
-  if (v$.$invalid) {
+  const isValid = await v$.$validate;
+
+  if (!isValid) {
+    alert("請確認所有必填欄位皆已填寫，以及符合正確格式");
     return;
   }
   try {
@@ -211,7 +214,7 @@ const submit = async () => {
       address: state.address,
       about: state.about,
     });
-    console.log("ok");
+    alert("註冊成功！");
   } catch (error) {
     console.error("Registration failed:", error);
   }
