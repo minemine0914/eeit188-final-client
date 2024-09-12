@@ -2,13 +2,13 @@
     <v-app>
         <!-- 導航欄 -->
         <v-app-bar app color="black" elevate-on-scroll>
-            <v-toolbar-title class="ml-3" @click="resetToPropertyManagement">房東管理系統</v-toolbar-title>
+            <v-toolbar-title class="ml-3" @click="resetToPropertyManagement">NOMAD'S Host</v-toolbar-title>
 
             <v-spacer></v-spacer>
 
             <!-- 其他導航按鈕 -->
             <v-btn text to="/">回首頁</v-btn>
-            <v-btn text to="/about">聯繫我們</v-btn>
+            <v-btn text to="">聯繫我們</v-btn>
         </v-app-bar>
 
         <!-- 內容區域 -->
@@ -50,6 +50,9 @@ import Reviews from './Reviews.vue';
 import PropertyManagement from './PropertyManagement.vue';
 
 export default {
+
+    name: 'HostHome',
+
     data() {
         return {
             currentTab: 'reservation', // 預設選中的 tab

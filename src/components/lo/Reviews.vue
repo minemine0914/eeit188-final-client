@@ -9,7 +9,7 @@
             </v-col>
 
             <v-col cols="3">
-                <v-select v-model="sortBy" :items="['日期 (最新)', '日期 (最舊)', '評分 (最高)', '評分 (最低)']" label="排序"></v-select>
+                <v-select v-model="sortBy" :items="['時間 (最新)', '時間 (最舊)', '評分 (最高)', '評分 (最低)']" label="排序"></v-select>
             </v-col>
         </v-row>
 
@@ -43,7 +43,7 @@ export default {
     data() {
         return {
             search: '',
-            sortBy: '日期 (最新)',
+            sortBy: '時間 (最新)',
             reviews: [
                 {
                     id: 1,
@@ -75,9 +75,9 @@ export default {
             );
 
             // 根據排序條件排序
-            if (this.sortBy === '日期 (最新)') {
+            if (this.sortBy === '時間 (最新)') {
                 filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
-            } else if (this.sortBy === '日期 (最舊)') {
+            } else if (this.sortBy === '時間 (最舊)') {
                 filtered.sort((a, b) => new Date(a.date) - new Date(b.date));
             } else if (this.sortBy === '評分 (最高)') {
                 filtered.sort((a, b) => b.rating - a.rating);
