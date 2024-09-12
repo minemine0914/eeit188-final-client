@@ -10,6 +10,17 @@
             </select>
             <div style="width:300px;">
                 <Pie v-if="showPieChart" :data="genderData" />
+                <div>
+                    <p>男：{{ maleCount }}人，佔{{ (maleCount / totalUsers * 100).toFixed(2)
+                        }}%</p>
+                    <p>女：{{ femaleCount }}人，佔{{
+                        (femaleCount / totalUsers * 100).toFixed(2) }}%</p>
+                    <p>其他：{{ otherCount }}人，佔{{
+                        (otherCount / totalUsers * 100).toFixed(2) }}%</p>
+                </div>
+            </div>
+            <div>
+                <HouseIncome :incomeRecords="incomeRecords"></HouseIncome>
             </div>
             <table>
                 <thead>
@@ -18,6 +29,7 @@
                         <th>UserID</th>
                         <th>Gender</th>
                         <th>Birth year</th>
+                        <th>cash flow</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -26,10 +38,13 @@
                         <td>{{ record.user.id }}</td>
                         <td>{{ record.userGender }}</td>
                         <td>{{ record.user.birthday.substring(0, 4) }}</td>
+                        <td>{{ record.cashFlow }}/{{ totalCashFlow }}</td>
                     </tr>
                 </tbody>
             </table>
+
         </div>
+
         <p v-else>No users found.</p>
 
     </div>
@@ -39,6 +54,8 @@
 import { computed, defineProps, ref } from 'vue';
 import { Pie } from 'vue-chartjs';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import HouseIncome from '@/components/wu/components/HouseIncome.vue';
+
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const props = defineProps({
@@ -46,12 +63,23 @@ const props = defineProps({
 });
 const showPieChart = ref(true);
 
+// const incomeRecords = ref([100, 200, 300]);
+const incomeRecords = computed(() => {
+    // Transform props.records into an array of cash flow values
+    return props.records.map(record => record.cashFlow || 0);
+});
+
 const maleCount = computed(() => props.records.filter(record => record.userGender === 'male').length);
 const femaleCount = computed(() => props.records.filter(record => record.userGender === 'female').length);
 const otherCount = computed(() => props.records.filter(record => record.userGender === 'other').length);
+const totalUsers = computed(() => maleCount.value + femaleCount.value + otherCount.value);
+
+const totalCashFlow = computed(() => {
+    return props.records.reduce((total, record) => total + (record.cashFlow || 0), 0);
+});
 
 const genderData = computed(() => {
-    const total = maleCount.value + femaleCount.value + otherCount.value;
+    const total = totalUsers.value;
     return {
         labels: ['Male', 'Female', 'Other'],
         datasets: [
@@ -73,6 +101,6 @@ const genderData = computed(() => {
 table,
 th,
 td {
-    border: 1px, solid black;
+    border: 1px solid black;
 }
 </style>

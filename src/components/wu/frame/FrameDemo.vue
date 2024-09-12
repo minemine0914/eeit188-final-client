@@ -14,16 +14,18 @@
 
     <p>顯示模式：文字/圖形</p>
     <select name="" id=""></select>
+    <table>資料</table>
+
 
     <p>時間區段</p>
-    <p>年度：</p>
-    <p>季度：</p>
-    <p>月份：</p>
-
+    <p>年度：</p>20XX(今年)/20XX/20XX
+    <p>季度：</p>Q1/Q1/Q3(本季)/Q4
+    <p>月份：</p>1/2/3/.../9(本月)/...12
+    <p>週次???</p>1~52
     <select name="" id=""></select>
 
     客戶分析 pie
-    房源收入 v-sparkline
+    房源收入(財務報表??) v-sparkline
     入住率
 </template>
 
