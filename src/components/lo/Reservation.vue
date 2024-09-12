@@ -31,7 +31,7 @@
                             <v-card-subtitle>日期: {{ reservation.date }} | 訂單狀態: {{ reservation.paymentStatus
                                 }}</v-card-subtitle>
                             <v-card-actions>
-                                <v-btn color="primary" @click="viewDetails(reservation.id)">查看詳情</v-btn>
+                                <v-btn color="primary" @click="openDetails(reservation.id)">查看詳情</v-btn>
                             </v-card-actions>
                         </v-col>
                     </v-row>
@@ -44,7 +44,7 @@
                                 }}</v-list-item-subtitle>
                         </v-list-item-content>
                         <v-list-item-action>
-                            <v-btn color="primary" @click="viewDetails(reservation.id)">查看詳情</v-btn>
+                            <v-btn color="primary" @click="openDetails(reservation.id)">查看詳情</v-btn>
                         </v-list-item-action>
                     </v-list-item>
                 </v-card>
@@ -55,10 +55,24 @@
         <v-row justify="center">
             <v-pagination v-model="page" :length="totalPages"></v-pagination>
         </v-row>
+
+        <!-- 彈出視窗 -->
+        <v-dialog v-model="showDialog" max-width="600px">
+            <v-card>
+                <v-card-text>
+                    <ReservationDetail :id="selectedReservationId" />
+                </v-card-text>
+                <v-card-actions>
+                    <v-btn color="primary" @click="closeDialog">關閉</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </v-container>
 </template>
 
 <script>
+import ReservationDetail from './ReservationDetail.vue';
+
 export default {
     data() {
         return {
@@ -73,13 +87,14 @@ export default {
                 { id: 8, name: '預約 8', date: '2024-09-18', paymentStatus: '已付款', image: 'image8.jpg' },
                 { id: 9, name: '預約 9', date: '2024-09-19', paymentStatus: '未付款', image: 'image9.jpg' },
                 { id: 10, name: '預約 10', date: '2024-09-20', paymentStatus: '已付款', image: 'image10.jpg' },
-
             ],
             sortBy: '最新',
             filterByPaymentStatus: '全部',
             showThumbnails: true, // 控制縮圖顯示的變量
             page: 1, // 當前頁碼
             itemsPerPage: 5, // 每頁顯示筆數
+            showDialog: false, // 控制彈窗顯示
+            selectedReservationId: null, // 選中的訂單 ID
         };
     },
     computed: {
@@ -110,20 +125,24 @@ export default {
         toggleThumbnailView() {
             this.showThumbnails = !this.showThumbnails; // 切換顯示與隱藏縮圖
         },
-
-        viewDetails(reservationId) {
-            this.$router.push({ name: 'OrderDetail', params: { id: reservationId } });
+        openDetails(reservationId) {
+            this.selectedReservationId = reservationId; // 設置選中的訂單 ID
+            this.showDialog = true; // 打開彈窗
+        },
+        closeDialog() {
+            this.showDialog = false; // 關閉彈窗
+        },
+        sortReservations() {
+            // 手動觸發排序
+            this.sortedAndFilteredReservations;
+        },
+        filterReservations() {
+            // 手動觸發篩選
+            this.sortedAndFilteredReservations;
         },
     },
-
-    sortReservations() {
-        // 手動觸發排序
-        this.sortedAndFilteredReservations;
+    components: {
+        ReservationDetail,
     },
-    filterReservations() {
-        // 手動觸發篩選
-        this.sortedAndFilteredReservations;
-    }
-
 };
 </script>

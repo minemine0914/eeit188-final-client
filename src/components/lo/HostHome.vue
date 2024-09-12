@@ -1,6 +1,5 @@
 <template>
     <v-app>
-        <!-- 導航欄 -->
         <v-app-bar app color="black" elevate-on-scroll>
             <v-toolbar-title class="ml-3" @click="resetToPropertyManagement">NOMAD'S Host</v-toolbar-title>
 
@@ -10,7 +9,6 @@
             <v-btn text to="/">回首頁</v-btn>
             <v-btn text to="">聯繫我們</v-btn>
         </v-app-bar>
-
         <!-- 內容區域 -->
         <v-main>
             <v-container>
@@ -23,6 +21,9 @@
                     <v-btn @click="changeTab('reservation')" :class="{ 'active-tab': currentTab === 'reservation' }">
                         預約管理
                     </v-btn>
+                    <v-btn @click="changeTab('orderRecord')" :class="{ 'active-tab': currentTab === 'orderRecord' }">
+                        歷史訂單
+                    </v-btn>
                     <v-btn @click="changeTab('reviews')" :class="{ 'active-tab': currentTab === 'reviews' }">
                         住客評價
                     </v-btn>
@@ -32,12 +33,10 @@
                     </v-btn>
                 </v-row>
 
-                <!-- 根據選擇的 tab 動態顯示對應內容 -->
                 <v-row>
                     <component :is="currentTabComponent"></component>
                 </v-row>
 
-                <!-- router-view 可以保留用於其他功能 -->
                 <router-view></router-view>
             </v-container>
         </v-main>
@@ -48,7 +47,7 @@
 import Reservation from './Reservation.vue';
 import Reviews from './Reviews.vue';
 import PropertyManagement from './PropertyManagement.vue';
-
+import OrderRecord from './OrderRecord.vue';
 export default {
 
     name: 'HostHome',
@@ -64,6 +63,7 @@ export default {
                 reservation: Reservation,
                 reviews: Reviews,
                 propertyManagement: PropertyManagement,
+                orderRecord: OrderRecord,
             }[this.currentTab];
         },
     },

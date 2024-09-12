@@ -8,36 +8,32 @@
                         <v-list dense>
                             <v-list-item>
                                 <v-list-item-content>
-                                    <v-list-item-title>名稱: {{ orderRecord.name }}</v-list-item-title>
-                                    <v-list-item-subtitle>日期: {{ orderRecord.date }}</v-list-item-subtitle>
+                                    <v-list-item-title>預約名稱: {{ reservation.name }}</v-list-item-title>
+                                    <v-list-item-subtitle>日期: {{ reservation.date }}</v-list-item-subtitle>
                                 </v-list-item-content>
                             </v-list-item>
 
                             <v-list-item>
                                 <v-list-item-content>
-                                    <v-list-item-title>訂單狀態: {{ orderRecord.paymentStatus }}</v-list-item-title>
+                                    <v-list-item-title>訂單狀態: {{ reservation.paymentStatus }}</v-list-item-title>
                                 </v-list-item-content>
                             </v-list-item>
 
                             <v-list-item>
                                 <v-list-item-content>
-                                    <v-list-item-title>總金額: {{ orderRecord.totalAmount }} 元</v-list-item-title>
+                                    <v-list-item-title>總金額: {{ reservation.totalAmount }} 元</v-list-item-title>
                                 </v-list-item-content>
                             </v-list-item>
 
                             <v-list-item>
                                 <v-list-item-content>
-                                    <v-list-item-title>房客名稱: {{ orderRecord.customerName }}</v-list-item-title>
-                                </v-list-item-content>
-                            </v-list-item>
-
-                            <v-list-item v-if="orderRecord.roomDetails">
-                                <v-list-item-content>
-                                    <v-list-item-title>房間詳情: {{ orderRecord.roomDetails }}</v-list-item-title>
+                                    <v-list-item-title>房客名稱: {{ reservation.customerName }}</v-list-item-title>
                                 </v-list-item-content>
                             </v-list-item>
                         </v-list>
                     </v-card-text>
+
+                   
                 </v-card>
             </v-col>
         </v-row>
@@ -48,14 +44,13 @@
 export default {
     data() {
         return {
-            orderRecord: {
+            reservation: {
                 id: '',
-                name: '測試訂單',
-                date: '2024-09-20',
+                name: '測試預約',
+                date: '2024-09-15',
                 paymentStatus: '已付款',
                 totalAmount: '1500',
                 customerName: '張三',
-                roomDetails: '豪華房型，含早餐',
             },
         };
     },
@@ -67,17 +62,16 @@ export default {
     },
 
     methods: {
-        getOrderRecordDetail() {
-            // 未來實現：根據ID連接資料庫取得訂單詳細資料
-            // 假設根據ID從後端獲取資料
-            console.log("Fetching order details for ID:", this.id);
-            // 此處可以添加API調用來獲取訂單的詳細信息
-            // 假設API返回後我們更新 orderRecord
+        getReservationDetail() {
+            // 連接資料庫來取得訂單的詳細資訊
+            // 現在只是使用測試資料
+            console.log("Reservation ID: ", this.reservationId);
         },
     },
     mounted() {
-        // 當組件加載時，調用 getOrderRecordDetail 方法
-        this.getOrderRecordDetail();
+        // 將來這裡會連接資料庫來取得訂單的詳細資訊
+        // 現在只是使用測試資料
+        console.log("Reservation ID: ", this.reservationId);
     },
 };
 </script>
