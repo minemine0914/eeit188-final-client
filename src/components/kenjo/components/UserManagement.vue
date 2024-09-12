@@ -52,49 +52,51 @@
                   <v-col cols="12" md="4" sm="6">
                     <v-text-field
                       v-model="editedUser.name"
-                      label="name"
+                      label="名字"
                     ></v-text-field>
                   </v-col>
                   <v-col cols="12" md="4" sm="6">
                     <v-text-field
                       v-model="editedUser.gender"
-                      label="gender"
+                      label="性別"
                     ></v-text-field>
                   </v-col>
                   <v-col cols="12" md="4" sm="6">
                     <v-text-field
                       v-model="editedUser.mobilePhone"
-                      label="mobilePhone"
+                      label="手機電話"
                     ></v-text-field>
                   </v-col>
-                  <v-col cols="12" md="4" sm="6">
-                    <v-text-field
-                      v-model="editedUser.email"
-                      label="email"
-                    ></v-text-field>
-                  </v-col>
+                  
                   <v-col cols="12" md="4" sm="6">
                     <v-text-field
                       v-model="editedUser.birthday"
-                      label="birthday"
-                    ></v-text-field>
-                  </v-col>
-                  <v-col cols="12" md="4" sm="6">
-                    <v-text-field
-                      v-model="editedUser.address"
-                      label="address"
-                    ></v-text-field>
-                  </v-col>
-                  <v-col cols="12" md="4" sm="6">
-                    <v-text-field
-                      v-model="editedUser.createdAt"
-                      label="createdAt"
+                      label="生日"
                     ></v-text-field>
                   </v-col>
                   <v-col cols="12" md="4" sm="6">
                     <v-text-field
                       v-model="editedUser.role"
-                      label="role"
+                      label="身分"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="12" md="8" sm="2">
+                    <v-text-field
+                      v-model="editedUser.email"
+                      label="信箱"
+                    ></v-text-field>
+                  </v-col>
+                 
+                  <v-col cols="12" md="4" sm="6">
+                    <v-text-field
+                      v-model="editedUser.createdAt"
+                      label="建立時間"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="12" md="12" sm="6">
+                    <v-text-field
+                      v-model="editedUser.address"
+                      label="地址"
                     ></v-text-field>
                   </v-col>
                 </v-row>

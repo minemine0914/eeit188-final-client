@@ -26,7 +26,7 @@
           flat
           hide-details
           single-line
-          :style="{ width: '200px' }"
+          :style="{ width: '100px' }"
         ></v-text-field>
       </v-card-title>
   
@@ -188,11 +188,11 @@ import { getDatasetAtEvent } from 'vue-chartjs';
     getStatusText(check) {
       switch (check) {
         case 1:
-          return '審核完成';
+          return '審核完成';//show = 1
         case null:
-          return '待審核';
+          return '待審核';//show = null
         case 0:
-          return '審核拒絕';
+          return '審核拒絕';//show = 0
         default:
           return '未知狀態';
       }

@@ -5,9 +5,22 @@
     <template>
     <v-toolbar flat>
           <v-toolbar-title>房間管理</v-toolbar-title>
+          <v-text-field
+          v-model="search"
+          density="compact"
+          label="查詢"
+          prepend-inner-icon="mdi-magnify"
+          variant="solo-filled"
+          flat
+          hide-details
+          single-line
+          :style="{ width: '100px' }"
+        ></v-text-field>
     </v-toolbar>
+    
     <div >
     <v-data-table
+    v-model:search="search" 
     
       v-model:expanded="expanded"
       :headers="dessertHeaders"
@@ -61,6 +74,7 @@
   export default {
     data () {
       return {
+        search:"",
         expanded: [],
         dessertHeaders: [
             //標題
