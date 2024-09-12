@@ -29,7 +29,13 @@ const routes = [
       {
         path: "house",
         name: "House",
-        component: () => import("@/components/user/House.vue"),
+        component: () => import("@/components/user/HouseDetail.vue"),
+        meta: { title: "Nomad 房源", requiresAuth: false },
+      },
+      {
+        path: "house/:houseId",
+        name: "HouseWithId",
+        component: () => import("@/components/user/HouseDetail.vue"),
         meta: { title: "Nomad 房源", requiresAuth: false },
       },
     ],
