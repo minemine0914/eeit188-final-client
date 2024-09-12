@@ -15,21 +15,33 @@
                         />
                         <v-divider class="border-opacity-50 my-3" vertical />
                         <v-date-input
+                            v-model="inputDateRange"
                             label="入住 / 退房日期"
                             multiple="range"
+                            prepend-icon=""
                             variant="solo"
                             hide-details
                             flat
-                            @update:focused="onFocusSearchRegion"
                             readonly
+                            @update:focused="onFocusSearchDateRange"
                         />
                         <v-divider class="border-opacity-50 my-3" vertical />
                         <v-text-field
+                            v-model="inputPostulateName"
                             label="設施"
                             variant="solo"
                             hide-details
                             flat
                             @update:focused="onFocusSearchPostulate"
+                        />
+                        <v-divider class="border-opacity-50 my-3" vertical />
+                        <v-text-field
+                            v-model="inputPostulateName"
+                            label="人數"
+                            variant="solo"
+                            hide-details
+                            flat
+                            @update:focused="onFocusSearchPeople"
                         />
                         <v-btn
                             icon="mdi-magnify"
@@ -39,63 +51,70 @@
                         />
                     </v-toolbar>
                 </v-card>
-                <v-card
-                    v-show="isFocusSearchBar"
-                    elevation="3"
-                    rounded="xl"
-                    min-height="50px"
-                    ref="searchBarInfoRef"
-                    style="z-index: 100"
-                >
-                    <v-tabs-window v-model="searchBarTab">
-                        <v-tabs-window-item value="one">
-                            <v-card-item>
-                                <div>熱門城市</div>
-                                <v-chip-group column>
-                                    <v-chip
-                                        v-for="city in cities"
-                                        :key="city.CityName"
-                                        class="my-1"
-                                        @click="onClickCityChip(city.CityName)"
+                <v-slide-y-transition>
+                    <v-card
+                        v-show="isFocusSearchBar"
+                        class="pa-3"
+                        elevation="3"
+                        rounded="xl"
+                        ref="searchBarInfoRef"
+                        style="z-index: 100"
+                    >
+                        <v-tabs-window v-model="searchBarTab">
+                            <v-tabs-window-item value="city">
+                                <v-card-item>
+                                    <div>選擇城市</div>
+                                    <v-chip-group column>
+                                        <v-chip
+                                            v-for="city in cities"
+                                            :key="city.CityName"
+                                            class="my-1"
+                                            @click="onClickCityChip(city.CityName)"
+                                        >
+                                            {{ city.CityName }}
+                                        </v-chip>
+                                    </v-chip-group>
+                                </v-card-item>
+                            </v-tabs-window-item>
+                            <v-tabs-window-item value="daterange">
+                                <v-card-item>
+                                    <div>選擇日期</div>
+                                    <v-date-picker
+                                        v-model="inputDateRange"
+                                        multiple="range"
+                                    ></v-date-picker>
+                                </v-card-item>
+                            </v-tabs-window-item>
+                            <v-tabs-window-item value="postulate">
+                                <v-card-item>
+                                    <div>選擇設施</div>
+                                    <v-chip-group column>
+                                        <v-chip
+                                            v-for="postulate in postulateList"
+                                            :key="postulate.id"
+                                            class="my-1"
+                                            @click="onClickPostulateChip(postulate)"
+                                        >
+                                            {{ postulate.name }}
+                                        </v-chip></v-chip-group
                                     >
-                                        {{ city.CityName }}
-                                    </v-chip></v-chip-group
-                                >
-                                <div>選擇城市</div>
-                                <v-chip-group column>
-                                    <v-chip
-                                        v-for="city in cities"
-                                        :key="city.CityName"
-                                        class="my-1"
-                                        @click="onClickCityChip(city.CityName)"
-                                    >
-                                        {{ city.CityName }}
-                                    </v-chip></v-chip-group
-                                >
-                            </v-card-item>
-                        </v-tabs-window-item>
-                        <v-tabs-window-item value="two">
-                            <v-card-item>
-                                <div>選擇區域</div>
-                                <v-date-picker multiple="range"></v-date-picker>
-                            </v-card-item>
-                        </v-tabs-window-item>
-                        <v-tabs-window-item value="three">
-                            <v-card-item>
-                                <div>選擇城市</div>
-                                <v-chip-group column>
-                                    <v-chip
-                                        v-for="city in cities"
-                                        :key="city.CityName"
-                                        class="my-1"
-                                    >
-                                        {{ city.CityName }}
-                                    </v-chip></v-chip-group
-                                >
-                            </v-card-item>
-                        </v-tabs-window-item>
-                    </v-tabs-window>
-                </v-card>
+                                </v-card-item>
+                            </v-tabs-window-item>
+                            <v-tabs-window-item value="people">
+                                <v-card-item>
+                                    <div>選擇人數</div>
+                                    <!-- <n-date-picker type="daterange" panel /> -->
+                                    <!-- <v-date-input
+                                    v-model="model"
+                                    label="Select range"
+                                    max-width="368"
+                                    multiple="range"
+                                ></v-date-input> -->
+                                </v-card-item>
+                            </v-tabs-window-item>
+                        </v-tabs-window>
+                    </v-card>
+                </v-slide-y-transition>
             </v-col>
         </v-row>
     </div>
@@ -104,12 +123,18 @@
 <script setup>
 import taiwanCityData from "@/assets/CityCountyData.json";
 import Fuse from "fuse.js";
-import { computed, ref } from "vue";
-
+import { computed, onMounted, ref } from "vue";
+import { useHouseSearchStore } from "../../../stores/searchHouseStore";
+import { storeToRefs } from "pinia";
+const houseSearchStore = useHouseSearchStore();
+const { postulateList } = storeToRefs(houseSearchStore);
+// import { NDatePicker } from "naive-ui";
 // State
 const inputCityName = ref("");
+const inputDateRange = ref(null);
+const inputPostulateName = ref("");
 const searchBarInfoRef = ref(null);
-const searchBarTab = ref("one");
+const searchBarTab = ref("city");
 const isFocusSearchBar = ref(false);
 
 // Fuse.js configuration for fuzzy search
@@ -129,9 +154,13 @@ function onClickOutside(value) {
 }
 
 function onClickCityChip(name) {
-    console.log("click chip: ", name);
     inputCityName.value = name;
-    searchBarTab.value = "two";
+    searchBarTab.value = "daterange";
+}
+
+function onClickPostulateChip(postulate) {
+    inputPostulateName.value = postulate.name;
+    // searchBarTab.value = "two";
 }
 
 function onUpdateCity(value) {
@@ -141,18 +170,26 @@ function onUpdateCity(value) {
 
 function onFocusSearchCity(value) {
     isFocusSearchBar.value = true;
-    searchBarTab.value = "one";
+    searchBarTab.value = "city";
 }
 
-function onFocusSearchRegion(value) {
+function onFocusSearchDateRange(value) {
     isFocusSearchBar.value = true;
-    searchBarTab.value = "two";
+    searchBarTab.value = "daterange";
 }
 
 function onFocusSearchPostulate(value) {
     isFocusSearchBar.value = true;
-    searchBarTab.value = "three";
+    searchBarTab.value = "postulate";
 }
+function onFocusSearchPeople(value) {
+    isFocusSearchBar.value = true;
+    searchBarTab.value = "people";
+}
+
+onMounted(() => {
+    houseSearchStore.getPostulateList();
+});
 </script>
 
 <style scoped></style>
