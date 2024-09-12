@@ -20,10 +20,9 @@ import { useUserViewStore } from "@/stores/userViewStore";
 import api from "@/plugins/axios";
 
 const userViewStore = useUserViewStore();
-const { jwtToken, decodeToken } = userViewStore;
+const { decodeToken } = userViewStore;
 
 const userInfo = ref(null);
-const collectionHouses = ref([]);
 const collections = ref([]);
 
 onMounted(() => {
@@ -40,20 +39,7 @@ async function getUserCollectionHouse() {
       url: "/user-collection/from-user/" + userInfo.value.id,
     });
 
-    collectionHouses.value = response.data.userCollections;
-
-    // Fetch house details
-    for (const house of collectionHouses.value) {
-      try {
-        const houseResponse = await api({
-          method: "get",
-          url: `/house/${house.id}`,
-        });
-        collections.value.push(houseResponse.data);
-      } catch (error) {
-        console.error("Failed to fetch house data:", error);
-      }
-    }
+    collections.value = response.data.userCollections;
   } catch (error) {
     console.error("Failed to fetch user collections:", error);
   }

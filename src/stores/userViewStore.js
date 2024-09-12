@@ -66,6 +66,20 @@ export const useUserViewStore = defineStore(
       }
     }
 
+    async function uploadAvater(request) {
+      try {
+        const userId = decodeToken(jwtToken).id;
+        await api({
+          method: "post",
+          url: `/upload-avatar/${userId}`,
+          data: request,
+        });
+        console.log("ok");
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
     function decodeToken() {
       if (typeof jwtToken.value === "string" && jwtToken.value.trim() !== "") {
         try {
@@ -87,6 +101,7 @@ export const useUserViewStore = defineStore(
       decodeToken,
       findUserById,
       updateUser,
+      uploadAvater,
     };
   },
   {

@@ -32,6 +32,11 @@ const router = {
       name: "userDetail",
       component: () => import("@/components/user/UserDetail.vue"),
     },
+    {
+      path: "avatar",
+      name: "avatar",
+      component: () => import("@/components/user/Avatar.vue"),
+    },
   ],
 };
 
