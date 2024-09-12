@@ -26,14 +26,18 @@ const userInfo = ref(null);
 const collectionHouses = ref([]);
 const collections = ref([]);
 
-onMounted(async () => {
+onMounted(() => {
+  getUserCollectionHouse();
+});
+
+async function getUserCollectionHouse() {
   try {
     userInfo.value = decodeToken();
 
     // Fetch user collections
     const response = await api({
       method: "get",
-      url: "/user-collection/from-user/" + userInfo.value.sub,
+      url: "/user-collection/from-user/" + userInfo.value.id,
     });
 
     collectionHouses.value = response.data.userCollections;
@@ -53,7 +57,7 @@ onMounted(async () => {
   } catch (error) {
     console.error("Failed to fetch user collections:", error);
   }
-});
+}
 </script>
 
 <style scoped></style>

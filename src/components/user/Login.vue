@@ -33,7 +33,6 @@ import {
   helpers,
   sameAs,
 } from "@vuelidate/validators";
-import { VDateInput } from "vuetify/labs/VDateInput";
 
 const initialState = {
   email: null,
@@ -76,14 +75,6 @@ const submit = async () => {
     console.error("Login failed:", error);
   }
 };
-
-function clear() {
-  v$.value.$reset();
-
-  for (const [key, value] of Object.entries(initialState)) {
-    state[key] = value;
-  }
-}
 </script>
 
 <style scoped></style>

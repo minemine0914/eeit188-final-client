@@ -39,6 +39,33 @@ export const useUserViewStore = defineStore(
       }
     }
 
+    async function findUserById() {
+      try {
+        const userId = decodeToken(jwtToken).id;
+        const response = await api({
+          method: "get",
+          url: `/user/${userId}`,
+        });
+        return response.data;
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    async function updateUser(request) {
+      try {
+        const userId = decodeToken(jwtToken).id;
+        await api({
+          method: "put",
+          url: `/user/${userId}`,
+          data: request,
+        });
+        console.log("ok");
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
     function decodeToken() {
       if (typeof jwtToken.value === "string" && jwtToken.value.trim() !== "") {
         try {
@@ -53,7 +80,14 @@ export const useUserViewStore = defineStore(
       }
     }
 
-    return { jwtToken, register, loginAuth, decodeToken };
+    return {
+      jwtToken,
+      register,
+      loginAuth,
+      decodeToken,
+      findUserById,
+      updateUser,
+    };
   },
   {
     persist: true,

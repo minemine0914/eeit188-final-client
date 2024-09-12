@@ -1,24 +1,30 @@
 <template>
-  <h3>房源收入</h3>
-  <table>
+<h3>房源收入</h3>
+<table>
     <thead>
-      <tr>
+    <tr>
         <th>時間區段</th>
         <th>收入</th>
-      </tr>
+    </tr>
     </thead>
     <tbody>
-      <tr>
-        <td></td>
-      </tr>
+        <tr>
+            <td></td>
+        </tr>
     </tbody>
-  </table>
+</table>
 
-  <v-card class="mx-auto text-center" color="green" max-width="600" dark>
+<v-card class="mx-auto text-center" color="green" max-width="600" dark>
     <v-card-text>
       <v-sheet color="rgba(0, 0, 0, .12)">
-        <v-sparkline :model-value="incomeRecords" color="rgba(255, 255, 255, .7)" height="100" padding="24"
-          stroke-linecap="round" smooth>
+        <v-sparkline
+          :model-value="value"
+          color="rgba(255, 255, 255, .7)"
+          height="100"
+          padding="24"
+          stroke-linecap="round"
+          smooth
+        >
           <template v-slot:label="item"> ${{ item.value }} </template>
         </v-sparkline>
       </v-sheet>
@@ -38,23 +44,17 @@
 </template>
 
 <script setup>
-import { defineProps } from 'vue';
-
-const props = defineProps({
-  incomeRecords: Array
-});
-
-const value = props.incomeRecords
-// const value = [
-//     423,
-//     446,
-//     675,
-//     510,
-//     590,
-//     610,
-//     760,
-//   ]
-
+    const value = [
+        423,
+        446,
+        675,
+        510,
+        590,
+        610,
+        760,
+      ]
+  
 </script>
 
-<style scoped></style>
+<style scoped>
+</style>
