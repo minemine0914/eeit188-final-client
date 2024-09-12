@@ -30,6 +30,10 @@ const userInfo = ref(null);
 const discusses = ref([]);
 const houses = ref([]);
 
+onMounted(() => {
+  fetchDiscusses();
+});
+
 const fetchDiscusses = async () => {
   try {
     userInfo.value = decodeToken();
@@ -37,7 +41,7 @@ const fetchDiscusses = async () => {
     // Fetch user discuss
     const response = await api({
       method: "get",
-      url: "/discuss/user/" + userInfo.value.sub,
+      url: "/discuss/user/" + userInfo.value.id,
     });
 
     discusses.value = response.data.content;
@@ -74,10 +78,6 @@ const retractDiscuss = async (discussId) => {
     console.error("Failed to retract discuss:", error);
   }
 };
-
-onMounted(() => {
-  fetchDiscusses();
-});
 </script>
 
 <style scoped></style>
