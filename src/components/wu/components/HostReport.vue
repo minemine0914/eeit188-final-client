@@ -1,35 +1,58 @@
+<!-- src/views/HostReport.vue -->
 <template>
-    <h2>房東報表首頁</h2>
-    <h4>時間區隔</h4>
-    <h3>客戶分析</h3>
-    <h3>房源收入</h3>
-
     <div>
-        <Navigationbar></Navigationbar>
+        <h1>Host Report</h1>
+        <Selector :houses="houses" @update:selectedHouse="fetchUsers" />
+        <DataTable :records="records" />
     </div>
-    <div class="col-4">
-        <ProductSelect v-model="max" :total="total" :options="[2, 3, 4, 5, 7, 10]" @max-change="callFind">
-        </ProductSelect>
-    </div>
-    <RouterView></RouterView>
-
-
-
-
-
-
-
-    <!-- <UserAnalysis></UserAnalysis>
-
-    <HouseIncome></HouseIncome> -->
-
 </template>
 
 <script setup>
-import UserAnalysis from './UserAnalysis.vue';
-import HouseIncome from './HouseIncome.vue';
-import Navigationbar from '@/components/wu/components/Navigationbar.vue';
+import { ref, onMounted } from 'vue';
+import api from '@/plugins/axios';
+import Selector from '@/components/wu/components/Selector.vue';
+import DataTable from '@/components/wu/components/DataTable.vue';
 
+const houses = ref([]);
+const records = ref([]);
+const selectedHouse = ref(null);
+
+const fetchHouses = async () => {
+    try {
+        const response = await api.post('/house/search', {
+            // "name": "G",
+            // "category": "飯店",
+            // "show": false,
+            // "minPrice": 200,
+            // "maxPrice": 4000,
+            // "postulateIds": ["9c3fffbc-84f4-4f8b-be85-2c1a649d321b", "ea779ec8-e192-46b2-bf62-c4f166caa0fd"],
+            // "matchAllPostulates": true,
+            "userId": "e61abdb4-d054-4188-9e41-c2691792cf73",
+            "page": 0,
+            "limit": 10
+        });
+        console.log(response.data)
+        houses.value = response.data.content;
+        console.log(houses.value)
+    } catch (error) {
+        console.error('Error fetching houses:', error);
+    }
+};
+
+const fetchUsers = async (houseId) => {
+    try {
+        if (houseId) {
+            const response = await api.post(`/transcation_record/search`, { "houseId": houseId });
+            records.value = response.data.content;
+            console.log(records.value)
+
+        }
+    } catch (error) {
+        console.error('Error fetching users:', error);
+    }
+};
+
+onMounted(() => {
+    fetchHouses();
+});
 </script>
-
-<style scoped></style>
