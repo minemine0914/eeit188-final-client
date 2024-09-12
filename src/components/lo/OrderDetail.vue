@@ -3,13 +3,14 @@
         <v-row>
             <v-col cols="12">
                 <v-card>
+                    <v-card-title>訂單詳情</v-card-title>
                     <v-card-subtitle>訂單編號: {{ id }}</v-card-subtitle>
                     <v-card-text>
                         <v-list dense>
                             <v-list-item>
                                 <v-list-item-content>
-                                    <v-list-item-title>名稱: {{ orderRecord.name }}</v-list-item-title>
-                                    <v-list-item-subtitle>日期: {{ orderRecord.date }}</v-list-item-subtitle>
+                                    <v-list-item-title>房客名稱: {{ orderRecord.customerName }}</v-list-item-title>
+                                    <v-list-item-subtitle>入住日期: {{ orderRecord.stayDate }}</v-list-item-subtitle>
                                 </v-list-item-content>
                             </v-list-item>
 
@@ -27,13 +28,7 @@
 
                             <v-list-item>
                                 <v-list-item-content>
-                                    <v-list-item-title>房客名稱: {{ orderRecord.customerName }}</v-list-item-title>
-                                </v-list-item-content>
-                            </v-list-item>
-
-                            <v-list-item v-if="orderRecord.roomDetails">
-                                <v-list-item-content>
-                                    <v-list-item-title>房間詳情: {{ orderRecord.roomDetails }}</v-list-item-title>
+                                    <v-list-item-title>房間名稱: {{ orderRecord.roomName }}</v-list-item-title>
                                 </v-list-item-content>
                             </v-list-item>
                         </v-list>
@@ -50,12 +45,11 @@ export default {
         return {
             orderRecord: {
                 id: '',
-                name: '測試訂單',
-                date: '2024-09-20',
+                customerName: '李四',
+                stayDate: '2024-09-22',
                 paymentStatus: '已付款',
-                totalAmount: '1500',
-                customerName: '張三',
-                roomDetails: '豪華房型，含早餐',
+                totalAmount: '2000',
+                roomName: '標準房型',
             },
         };
     },
@@ -65,19 +59,15 @@ export default {
             required: true,
         },
     },
-
     methods: {
-        getOrderRecordDetail() {
-            // 未來實現：根據ID連接資料庫取得訂單詳細資料
-            // 假設根據ID從後端獲取資料
+        getOrderDetail() {
+            // 模擬連接資料庫來獲取詳細資訊
             console.log("Fetching order details for ID:", this.id);
-            // 此處可以添加API調用來獲取訂單的詳細信息
-            // 假設API返回後我們更新 orderRecord
+            // 實際上可以在此處調用 API 獲取數據，並更新 orderRecord
         },
     },
     mounted() {
-        // 當組件加載時，調用 getOrderRecordDetail 方法
-        this.getOrderRecordDetail();
+        this.getOrderDetail();
     },
 };
 </script>
