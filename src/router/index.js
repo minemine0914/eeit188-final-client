@@ -5,7 +5,7 @@ import minemineRouter from "./minemine";
 import wuRouter from "./wu";
 import kenjoRouter from "./kenjo";
 import leonRouter from "./leon";
-
+import loRouter from "./lo";
 const DEFAULT_TITLE = "Nomad";
 
 const routes = [
@@ -16,15 +16,21 @@ const routes = [
     children: [
       {
         path: "", // Default
-        name: "UserExplore",
+        name: "Explore",
         component: () => import("@/components/user/Explore.vue"),
         meta: { title: "Nomad 探索", requiresAuth: false },
       },
       {
         path: "search",
-        name: "UserSearch",
+        name: "Search",
         component: () => import("@/components/user/Search.vue"),
         meta: { title: "Nomad 搜尋", requiresAuth: false },
+      },
+      {
+        path: "house",
+        name: "House",
+        component: () => import("@/components/user/House.vue"),
+        meta: { title: "Nomad 房源", requiresAuth: false },
       },
     ],
   },
@@ -63,6 +69,7 @@ const routes = [
   wuRouter,
   kenjoRouter,
   leonRouter,
+  loRouter,
 ];
 
 const router = createRouter({

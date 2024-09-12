@@ -5,46 +5,40 @@
             <template v-slot:append>
                 <v-menu v-model="memberMenu" offset="15">
                     <template v-slot:activator="{ props }">
-                        <!-- <v-hover v-bind="props">
-                            <template v-slot:default="{ isHovering, props }">
-                                <v-layout
-                                    @click="memberMenu = !memberMenu"
-                                    v-ripple
-                                    v-bind="props"
-                                    :elevation="isHovering ? 3 : 2"
+                        <v-hover>
+                            <template v-slot:default="{ isHovering, hoverProps }">
+                                <v-btn
+                                    v-bind="{ ...props, ...hoverProps }"
+                                    rounded="pill"
+                                    size="large"
                                     :class="[
-                                        'd-flex',
                                         'pa-1',
+                                        isHovering ? 'elevation-1' : 'elevation-5',
+                                        'px-3',
                                         'mr-3',
-                                        'align-center',
-                                        'cursor-pointer',
-                                        'rounded-pill',
-                                        isHovering ? 'elevation-3' : 'elevation-1',
-                                        'position-relative',
                                     ]"
+                                    color="brown-darken-1"
                                 >
-                                    <v-avatar color="surface-variant" :image="avaterImg"></v-avatar>
-                                    <div class="mx-3">asd</div>
-                                </v-layout>
+                                    <template v-slot:prepend>
+                                        <v-avatar
+                                            color="surface-variant"
+                                            :image="avaterImg"
+                                            size="small"
+                                        ></v-avatar>
+                                    </template>
+                                    <div class="text-body-1">nickname</div>
+                                </v-btn>
                             </template>
-                        </v-hover> -->
-                        <v-btn v-bind="props" rounded="pill" size="large" class="pa-1 elevation-1 px-3 mr-3" >
-                            <template v-slot:prepend>
-                                <v-avatar color="surface-variant" :image="avaterImg" size="small" ></v-avatar>
-                            </template>
-                            <div class="text-body-1">nickname</div>
-                        </v-btn>
+                        </v-hover>
                     </template>
-                    <v-list density="compact">
-                        <v-list-item to="/">
-                            <v-list-item-title>會員中心</v-list-item-title>
-                        </v-list-item>
-                        <v-list-item to="/">
-                            <v-list-item-title>查詢</v-list-item-title>
-                        </v-list-item>
-                        <v-list-item to="/">
-                            <v-list-item-title>登出</v-list-item-title>
-                        </v-list-item>
+                    <v-list density="compact" width="200" rounded="lg">
+                        <v-list-item to="/member" prepend-icon="mdi-account" slim
+                            >會員中心</v-list-item
+                        >
+                        <v-list-item to="/host" prepend-icon="mdi-home-group-plus" slim
+                            >成為房東</v-list-item
+                        >
+                        <v-list-item to="/logout" prepend-icon="mdi-logout" slim>登出</v-list-item>
                     </v-list>
                 </v-menu>
             </template>
@@ -70,6 +64,6 @@
 import avaterImg from "@/assets/banner01.webp";
 import { ref } from "vue";
 const isOpenDialog = ref(false);
-const memberMenu = ref(true);
+const memberMenu = ref(false);
 </script>
 <style scoped></style>
