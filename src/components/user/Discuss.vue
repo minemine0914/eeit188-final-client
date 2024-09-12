@@ -1,14 +1,14 @@
 <template>
   <div>
     <v-card
-      v-for="(discuss, index) in discusses"
+      v-for="discuss in discusses"
       :key="discuss.id"
       class="mx-auto mb-5"
       subtitle="您的留言"
       width="400"
     >
-      <v-card-text v-if="houses[index]" class="bg-surface-light pt-4">
-        房源 : {{ houses[index].name }}
+      <v-card-text class="bg-surface-light pt-4">
+        房源 : {{ discuss.house }}
       </v-card-text>
       <v-card-text class="bg-surface-light pt-4">
         {{ discuss.discuss }}
@@ -24,11 +24,10 @@ import { useUserViewStore } from "@/stores/userViewStore";
 import api from "@/plugins/axios";
 
 const userViewStore = useUserViewStore();
-const { jwtToken, decodeToken } = userViewStore;
+const { decodeToken } = userViewStore;
 
 const userInfo = ref(null);
 const discusses = ref([]);
-const houses = ref([]);
 
 onMounted(() => {
   fetchDiscusses();
@@ -44,21 +43,7 @@ const fetchDiscusses = async () => {
       url: "/discuss/user/" + userInfo.value.id,
     });
 
-    discusses.value = response.data.content;
-    houses.value = []; // Clear houses before refetching
-
-    // Fetch house details
-    for (const discuss of discusses.value) {
-      try {
-        const houseResponse = await api({
-          method: "get",
-          url: "/house/" + discuss.house,
-        });
-        houses.value.push(houseResponse.data);
-      } catch (error) {
-        console.error("Failed to fetch house data:", error);
-      }
-    }
+    discusses.value = response.data.discusses;
   } catch (error) {
     console.error("Failed to fetch user discusses:", error);
   }
@@ -70,8 +55,6 @@ const retractDiscuss = async (discussId) => {
       method: "put",
       url: `/discuss/retract/${discussId}`,
     });
-
-    console.log(response);
 
     await fetchDiscusses();
   } catch (error) {

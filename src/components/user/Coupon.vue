@@ -35,7 +35,7 @@ import { useUserViewStore } from "@/stores/userViewStore";
 import api from "@/plugins/axios";
 
 const userViewStore = useUserViewStore();
-const { jwtToken, decodeToken } = userViewStore;
+const { decodeToken } = userViewStore;
 
 const userInfo = ref(null);
 const coupons = ref([]);
