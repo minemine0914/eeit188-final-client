@@ -16,6 +16,12 @@ const router = {
             meta: { title: "UserManagement", requiresAuth: false },
         },
         {
+            path: "UserManagementTest", // Default
+            name: "UserManagementTest",
+            component: () => import("@/components/kenjo/components/UserManagementTest.vue"),
+            meta: { title: "UserManagementTest", requiresAuth: false },
+        },
+        {
             path: "RoomManagement", // Default
             name: "RoomManagement",
             component: () => import("@/components/kenjo/components/RoomManagement.vue"),

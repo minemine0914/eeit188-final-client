@@ -2,12 +2,16 @@
 <!--/*房源審核	
 	待審核房源:顯示所有待審核的房源申請。
 	房源審核:處理房源審核請求，批准或拒絕房源發布。
+  //check 判斷欄位 >>需要新增
+
+
+
 */ -->
 <template>
     <br>
     <v-toolbar flat>
           <v-toolbar-title>審核頁面</v-toolbar-title>
-        </v-toolbar>
+    </v-toolbar>
     <div class="text-center">
     <v-card flat>
       <v-card-title class="d-flex align-center pe-2">

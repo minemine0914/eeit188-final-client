@@ -52,49 +52,50 @@
                   <v-col cols="12" md="4" sm="6">
                     <v-text-field
                       v-model="editedUser.name"
-                      label="name"
+                      label="姓名"
                     ></v-text-field>
                   </v-col>
                   <v-col cols="12" md="4" sm="6">
                     <v-text-field
                       v-model="editedUser.gender"
-                      label="gender"
+                      label="性別"
                     ></v-text-field>
                   </v-col>
                   <v-col cols="12" md="4" sm="6">
                     <v-text-field
                       v-model="editedUser.mobilePhone"
-                      label="mobilePhone"
+                      label="電話"
                     ></v-text-field>
                   </v-col>
                   <v-col cols="12" md="4" sm="6">
                     <v-text-field
                       v-model="editedUser.email"
-                      label="email"
+                      label="信箱"
                     ></v-text-field>
                   </v-col>
                   <v-col cols="12" md="4" sm="6">
                     <v-text-field
                       v-model="editedUser.birthday"
-                      label="birthday"
+                      label="生日"
                     ></v-text-field>
                   </v-col>
                   <v-col cols="12" md="4" sm="6">
                     <v-text-field
                       v-model="editedUser.address"
-                      label="address"
+                      label="地址"
                     ></v-text-field>
                   </v-col>
                   <v-col cols="12" md="4" sm="6">
                     <v-text-field
                       v-model="editedUser.createdAt"
-                      label="createdAt"
+                      label="創建時間"
+                      readonly
                     ></v-text-field>
                   </v-col>
                   <v-col cols="12" md="4" sm="6">
                     <v-text-field
                       v-model="editedUser.role"
-                      label="role"
+                      label="權限"
                     ></v-text-field>
                   </v-col>
                 </v-row>
@@ -126,11 +127,11 @@
       </v-toolbar>
     </template>
     
-    <template v-slot:item.actions="{ item }">
-      <v-icon class="me-2" size="small" @click="editUser(item)">
+    <template v-slot:item.actions="{ user }">
+      <v-icon class="me-2" size="small" @click="editUser(user)">
         mdi-pencil
       </v-icon>
-      <v-icon size="small" @click="deleteUser(item)">
+      <v-icon size="small" @click="deleteUser(user)">
         mdi-delete
       </v-icon>
     </template>
@@ -254,13 +255,13 @@ export default {
       this.closeDelete()
     },
 
-    close () {
-      this.dialog = false
-      this.$nextTick(() => {
-        this.editedUser = Object.assign({}, this.defaultUser)
-        this.editedIndex = -1
-      })
-    },
+    close() {
+    this.dialog = false;
+    this.$nextTick(() => {
+      this.editedUser = Object.assign({}, this.defaultUser);
+      this.editedIndex = -1;
+    });
+  },
 
     closeDelete () {
       this.dialogDelete = false
@@ -271,20 +272,30 @@ export default {
     },
 
     save () {
-      if (!this.editedUser.name || !this.editedUser.mobilePhone || !this.editedUser.address) {
-        alert('姓名、手機號碼和地址為必填項')
-        return
-      }
-      if (this.editedIndex > -1) {
-          Object.assign(this.desserts[this.editedIndex], this.editedUser)
-        } else {
-          this.desserts.push(this.editedUser)
-        }
-     
-      this.close()
-    },
+      // 檢查手機號碼是否已存在
+    const phoneExists = this.desserts.some(user => user.mobilePhone === this.editedUser.mobilePhone && user !== this.editedUser);
+    if (phoneExists) {
+      alert('手機號碼已存在');
+      return;
+    }
+
+    const now = new Date().toISOString().slice(0, 10).replace('T', ' ');
+
+    if (this.editedIndex > -1) {
+      // 編輯模式
+      console.log('Updating existing user...');
+      Object.assign(this.desserts[this.editedIndex], this.editedUser);
+    } else {
+      // 新增模式
+      console.log('Adding new user...');
+      this.editedUser.createdAt = now;
+      const newId = this.desserts.length > 0 ? Math.max(this.desserts.map(user => user.id)) + 1 : 1;
+      this.editedUser.id = newId;
+      this.desserts.push(this.editedUser);
+    }
+    this.close();
   },
-}
+}}
 </script>
 
 <style scoped>
