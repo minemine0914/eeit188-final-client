@@ -195,7 +195,9 @@ const userViewStore = useUserViewStore();
 const { register } = userViewStore;
 
 const submit = async () => {
-  if (v$.$invalid) {
+  const isValid = await v$.value.$validate();
+
+  if (!isValid) {
     return;
   }
   try {
@@ -211,7 +213,7 @@ const submit = async () => {
       address: state.address,
       about: state.about,
     });
-    console.log("ok");
+    alert("註冊成功！");
   } catch (error) {
     console.error("Registration failed:", error);
   }

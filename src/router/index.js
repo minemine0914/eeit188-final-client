@@ -5,7 +5,7 @@ import minemineRouter from "./minemine";
 import wuRouter from "./wu";
 import kenjoRouter from "./kenjo";
 import leonRouter from "./leon";
-
+import loRouter from "./lo";
 const DEFAULT_TITLE = "Nomad";
 
 const routes = [
@@ -63,6 +63,7 @@ const routes = [
   wuRouter,
   kenjoRouter,
   leonRouter,
+  loRouter,
 ];
 
 const router = createRouter({
