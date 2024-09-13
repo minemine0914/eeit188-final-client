@@ -73,7 +73,7 @@
 </template>
 
 <script setup>
-import { computed, defineProps, ref } from 'vue';
+import { computed, ref } from 'vue';
 import { Pie } from 'vue-chartjs';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import HouseIncome from '@/components/wu/components/HouseIncome.vue';

@@ -11,7 +11,6 @@
 </template>
 
 <script setup>
-import { ref, defineProps, defineEmits } from 'vue';
 import { useHostReportStore } from '@/stores/hostReportStore';
 const props = defineProps({
     houses: Array
