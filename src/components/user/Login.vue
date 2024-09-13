@@ -50,7 +50,7 @@ const rules = {
 const v$ = useVuelidate(rules, state);
 import { useUserStore } from "@/stores/userStore";
 const userStore = useUserStore();
-const { jwtToken, loginAuth } = userStore;
+const { loginAuth } = userStore;
 
 const submit = async () => {
   if (v$.$invalid) {

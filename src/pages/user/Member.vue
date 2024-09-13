@@ -2,16 +2,16 @@
   <BackgroundImage />
   <div class="content-container">
     <div class="conetnt">
-      <UserDetail
-        v-show="selectedBtn === 1"
-        @userDetailChanged="reloadAvatar"
-      />
+      <UserDetail v-show="selectedBtn === 1" @userDetailChanged="reload" />
       <Coupon v-show="selectedBtn === 2" />
       <UserCollection v-show="selectedBtn === 3" />
       <Discuss v-show="selectedBtn === 4" />
     </div>
     <div class="avatar-container">
-      <Avatar :key="avatarKey" />
+      <Avatar :key="avatarKey" @userAvatarChange="reload" />
+      <div class="about">
+        <About :key="aboutKey" />
+      </div>
       <v-btn
         :color="selectedBtn === 1 ? 'blue-grey-lighten-2' : ''"
         class="btn"
@@ -19,7 +19,6 @@
       >
         用戶資料及修改
       </v-btn>
-
       <v-btn
         :color="selectedBtn === 2 ? 'blue-grey-lighten-2' : ''"
         class="btn"
@@ -55,9 +54,11 @@ import UserDetail from "@/components/user/UserDetail.vue";
 import Coupon from "@/components/user/Coupon.vue";
 import UserCollection from "@/components/user/UserCollection.vue";
 import Discuss from "@/components/user/Discuss.vue";
+import About from "@/components/user/About.vue";
 
 const selectedBtn = ref(1);
 const avatarKey = ref(0);
+const aboutKey = ref(0);
 
 function handleClick(index) {
   if (selectedBtn.value !== index) {
@@ -65,9 +66,9 @@ function handleClick(index) {
   }
 }
 
-// Function to reload Avatar when user detail changes
-function reloadAvatar() {
-  avatarKey.value++; // Change the key to force a re-render of Avatar
+function reload() {
+  avatarKey.value++;
+  aboutKey.value++;
 }
 </script>
 
@@ -83,6 +84,7 @@ function reloadAvatar() {
   position: absolute;
   left: 30px;
   margin-top: -80px;
+  width: 250px;
 }
 
 .conetnt {
@@ -90,7 +92,12 @@ function reloadAvatar() {
   margin: 50px;
 }
 
+.about {
+  margin-top: 10px;
+  margin-bottom: 30px;
+}
+
 .btn {
-  margin-top: 30px;
+  margin-top: 10px;
 }
 </style>
