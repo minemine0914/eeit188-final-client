@@ -2,7 +2,7 @@
   <div class="background-image">
     <v-img
       class="bg-grey-lighten-2"
-      max-height="300"
+      max-height="400"
       :src="backgroundImageUrl"
       cover
     ></v-img>
@@ -31,7 +31,8 @@ const defaultBackgroundImage =
   "https://www.wordforest.org/wp-content/uploads/2016/12/forest-4-e1483856441969.jpg";
 
 const userViewStore = useUserViewStore();
-const { decodeToken, uploadBackgroundImage } = userViewStore;
+const { decodeToken, uploadBackgroundImage, downloadBackgroundImage } =
+  userViewStore;
 
 const userInfo = ref(null);
 const fileInput = ref(null);
@@ -49,8 +50,19 @@ const rules = [
   },
 ];
 
-onMounted(() => {
+onMounted(async () => {
   userInfo.value = decodeToken();
+  if (userInfo.value) {
+    try {
+      const response = await userViewStore.downloadBackgroundImage(
+        userInfo.value.id
+      );
+      const url = window.URL.createObjectURL(response);
+      backgroundImageUrl.value = url;
+    } catch (error) {
+      console.error("Error fetching background image:", error);
+    }
+  }
 });
 
 const uploadImage = () => {
@@ -65,6 +77,11 @@ const handleFileChange = async (event) => {
 
     try {
       await uploadBackgroundImage(file);
+
+      // Reload background image
+      const response = await downloadBackgroundImage(userInfo.value.id);
+      const url = window.URL.createObjectURL(response);
+      backgroundImageUrl.value = url;
     } catch (error) {
       console.error("Error uploading background image:", error);
     }
