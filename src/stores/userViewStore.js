@@ -60,9 +60,43 @@ export const useUserViewStore = defineStore(
           url: `/user/${userId}`,
           data: request,
         });
-        console.log("ok");
       } catch (error) {
         console.log(error);
+      }
+    }
+
+    async function uploadAvater(request) {
+      try {
+        const userId = decodeToken(jwtToken).id;
+        await api({
+          method: "post",
+          url: `/user/upload-avatar/${userId}`,
+          data: request,
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    async function uploadBackgroundImage(file) {
+      const userId = decodeToken(jwtToken).id;
+      if (file) {
+        const formData = new FormData();
+        formData.append("file", file);
+
+        try {
+          const response = await api.post(
+            `/user/upload-background-image/${userId}`,
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          );
+        } catch (error) {
+          console.error("Error uploading file:", error);
+        }
       }
     }
 
@@ -87,6 +121,8 @@ export const useUserViewStore = defineStore(
       decodeToken,
       findUserById,
       updateUser,
+      uploadAvater,
+      uploadBackgroundImage,
     };
   },
   {
