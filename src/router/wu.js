@@ -4,9 +4,9 @@ const router = {
     component: () => import("@/components/wu/Test.vue"),
     children: [
         {
-            path: "/", // Default
+            path: "/wu", // Default
             name: "WuHome",
-            component: () => import("@/components/wu/components/EmptyTemplate.vue"),
+            component: () => import("@/components/wu/components/HostReport.vue"),
             meta: { title: "Wu Testing", requiresAuth: false },
         },
         // {

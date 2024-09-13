@@ -1,8 +1,7 @@
-<!-- src/components/Selector.vue -->
 <template>
     <div>
         <label for="house-select">Select a House:</label>
-        <select id="house-select" v-model="store.selectedHouse" @change="emitSelection">
+        <select id="house-select" v-model="selectedHouse" @change="emitSelection">
             <option v-for="house in houses" :key="house.id" :value="house.id">
                 {{ house.name }}
             </option>
@@ -12,20 +11,17 @@
 
 <script setup>
 import { ref, defineProps, defineEmits } from 'vue';
-import { useHostReportStore } from '@/stores/hostReportStore';
+
 const props = defineProps({
     houses: Array
 });
-const store = useHostReportStore()
 
 const emit = defineEmits(['update:selectedHouse']);
+const selectedHouse = ref('');
 
-// const selectedHouse = ref(store.selectedHouse);
-const emitSelection = () => {
-    store.selectedYear = 2020
-    emit('update:selectedHouse', store.selectedHouse.value);
-};
-
+function emitSelection() {
+    emit('update:selectedHouse', selectedHouse.value);
+}
 </script>
 
 <style scoped>

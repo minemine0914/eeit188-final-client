@@ -1,6 +1,7 @@
 <!-- src/components/DataTable.vue -->
 <template>
     <div>
+        <p>{{ records.length }}</p>
 
         <h2>Users in Selected House</h2>
         <div style="width:80vw;" v-if="records.length">
@@ -9,62 +10,43 @@
                 <option :value="false">文字</option>
                 <option :value="true">圖形</option>
             </select>
-            <label for="yearRange">年份：</label>
-            <select id="yearRange" v-model="store.selectedYear" @change="store.fetchTransactionRecords">
-                <option v-for="year in years" :key="i" :value="year">{{ year }}</option>
-            </select>
-            <radio name="monthOrQuarter"></radio>
-
-
-            <label for="monthRange">月份：</label>
-            <select id="monthRange" v-model="store.selectedMonth">
-                <option v-for="month in 12" :key="i" :value="month">{{ month }}</option>
-            </select>
-            <label for="quarterRange">季度：</label>
-            <select id="quarterRange" v-model="store.selectedQuarter">
-                <option v-for="quarter in 4" :key="i" :value="quarter">{{ quarter }}</option>
-            </select>
-            <div v-if="showPieChart">
-                <div style="width:300px;">
-                    <Pie :data="genderData" />
-                    <div>
-                        <p>男：{{ maleCount }}人，佔{{ (maleCount / totalUsers * 100).toFixed(2)
-                            }}%</p>
-                        <p>女：{{ femaleCount }}人，佔{{
-                            (femaleCount / totalUsers * 100).toFixed(2) }}%</p>
-                        <p>其他：{{ otherCount }}人，佔{{
-                            (otherCount / totalUsers * 100).toFixed(2) }}%</p>
-                    </div>
-                </div>
+            <div style="width:300px;">
+                <Pie v-if="showPieChart" :data="genderData" />
                 <div>
-                    <HouseIncome :incomeRecords="incomeRecords"></HouseIncome>
+                    <p>男：{{ maleCount }}人，佔{{ (maleCount / totalUsers * 100).toFixed(2)
+                        }}%</p>
+                    <p>女：{{ femaleCount }}人，佔{{
+                        (femaleCount / totalUsers * 100).toFixed(2) }}%</p>
+                    <p>其他：{{ otherCount }}人，佔{{
+                        (otherCount / totalUsers * 100).toFixed(2) }}%</p>
                 </div>
+            </div>
+            <div>
+                <HouseIncome :incomeRecords="incomeRecords"></HouseIncome>
+            </div>
+            <p>{{ records.length }}</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>DATA</th>
+                        <th>UserID</th>
+                        <th>Gender</th>
+                        <th>Birth year</th>
+                        <th>cash flow</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="record in records" :key="record.id">
+                        <td style="font-size: xx-small;">{{ record }}</td>
+                        <td>{{ record.user.id }}</td>
+                        <td>{{ record.userGender }}</td>
+                        <td>{{ record.user.birthday.substring(0, 4) }}</td>
+                        <td>{{ record.cashFlow }}/{{ totalCashFlow }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>{{ records }}</p>
 
-            </div>
-            <div v-else>
-                <table>
-                    <thead>
-                        <tr>
-                            <!-- <th>DATA</th> -->
-                            <th>UserID</th>
-                            <th>Gender</th>
-                            <th>Birth year</th>
-                            <th>cash flow</th>
-                            <th>createdAt</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="record in records" :key="record.id">
-                            <!-- <td style="font-size: xx-small;">{{ record }}</td> -->
-                            <td>{{ record.user.id }}</td>
-                            <td>{{ record.userGender }}</td>
-                            <td>{{ record.user.birthday.substring(0, 4) }}</td>
-                            <td>{{ record.cashFlow }}/{{ totalCashFlow }}</td>
-                            <td>{{ record.createdAt }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
         </div>
 
         <p v-else>No users found.</p>
@@ -77,21 +59,13 @@ import { computed, defineProps, ref } from 'vue';
 import { Pie } from 'vue-chartjs';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import HouseIncome from '@/components/wu/components/HouseIncome.vue';
-import { useHostReportStore } from '@/stores/hostReportStore';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-const store = useHostReportStore()
 const props = defineProps({
     records: Array,
 });
-
 const showPieChart = ref(true);
-store.selectedYear = '2020'
-store.selectedMonth = '1'
-store.selectedQuarter = '1'
-const years = ['2020', '2021', '2022', '2023', '2024', '2025']
-// '2024-09-13T06:15:24.140+00:00'
 
 // const incomeRecords = ref([100, 200, 300]);
 const incomeRecords = computed(() => {
@@ -169,11 +143,6 @@ const genderData = computed(() => {
 table,
 th,
 td {
-    border: 1px solid black;
-}
-
-select {
-    padding: 5px 10px;
     border: 1px solid black;
 }
 </style>
