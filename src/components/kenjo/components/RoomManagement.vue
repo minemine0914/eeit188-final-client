@@ -2,21 +2,37 @@
 	房間類型管理:管理不同類型的房間，包括設施、價格、描述等。
 	房間設施:管理房間內的各種設施和設備，如Wi-Fi、空調等。
 -->
-<template>
-    <div class="text-center">
+    <template>
+    <v-toolbar flat>
+          <v-toolbar-title>房間管理</v-toolbar-title>
+          <v-text-field
+          v-model="search"
+          density="compact"
+          label="查詢"
+          prepend-inner-icon="mdi-magnify"
+          variant="solo-filled"
+          flat
+          hide-details
+          single-line
+          :style="{ width: '100px' }"
+        ></v-text-field>
+    </v-toolbar>
+    
+    <div >
     <v-data-table
+    v-model:search="search" 
+    
       v-model:expanded="expanded"
       :headers="dessertHeaders"
       :items="desserts"
       item-value="name"
       show-expand
     >
-      <template v-slot:top>
-        <v-toolbar flat>
-          <v-toolbar-title>房間管理</v-toolbar-title>
-        </v-toolbar>
+    
+    <template v-slot:top>
+        
       </template>
-      <template v-slot:item.show="{ item }">
+      <template v-slot:item.show="{ item }">    <!--狀態欄位-->
       <v-chip 
         :color="getStatusColor(item.show)"
         size="small"
@@ -51,13 +67,14 @@
         </tr>
       </template>
     </v-data-table>
-</div>
+    </div>
   </template>
 
 <script>
   export default {
     data () {
       return {
+        search:"",
         expanded: [],
         dessertHeaders: [
             //標題
@@ -172,6 +189,11 @@
 </script>
 
 <style scoped>
+.title-center {
+  display: flex;
+  justify-content: center;
+  flex-grow: 1;
+}
 </style>
 
 

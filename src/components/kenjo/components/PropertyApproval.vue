@@ -2,12 +2,16 @@
 <!--/*房源審核	
 	待審核房源:顯示所有待審核的房源申請。
 	房源審核:處理房源審核請求，批准或拒絕房源發布。
+  //check 判斷欄位 >>需要新增
+
+
+
 */ -->
 <template>
     <br>
     <v-toolbar flat>
           <v-toolbar-title>審核頁面</v-toolbar-title>
-        </v-toolbar>
+    </v-toolbar>
     <div class="text-center">
     <v-card flat>
       <v-card-title class="d-flex align-center pe-2">
@@ -22,7 +26,7 @@
           flat
           hide-details
           single-line
-          :style="{ width: '200px' }"
+          :style="{ width: '100px' }"
         ></v-text-field>
       </v-card-title>
   
@@ -184,11 +188,11 @@ import { getDatasetAtEvent } from 'vue-chartjs';
     getStatusText(check) {
       switch (check) {
         case 1:
-          return '審核完成';
+          return '審核完成';//show = 1
         case null:
-          return '待審核';
+          return '待審核';//show = null
         case 0:
-          return '審核拒絕';
+          return '審核拒絕';//show = 0
         default:
           return '未知狀態';
       }

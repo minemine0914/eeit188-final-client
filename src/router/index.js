@@ -16,17 +16,23 @@ const routes = [
         children: [
             {
                 path: "", // Default
-                name: "UserExplore",
+                name: "Explore",
                 component: () => import("@/components/user/Explore.vue"),
                 meta: { title: "Nomad 探索", requiresAuth: false },
             },
             {
                 path: "search",
-                name: "UserSearch",
+                name: "Search",
                 component: () => import("@/components/user/Search.vue"),
                 meta: { title: "Nomad 搜尋", requiresAuth: false },
             },
-        ],
+          {
+        path: "house",
+        name: "House",
+        component: () => import("@/components/user/House.vue"),
+        meta: { title: "Nomad 房源", requiresAuth: false },
+      },
+    ],
     },
     {
         path: "/host",
