@@ -24,15 +24,7 @@
 <script setup>
 import { reactive, computed } from "vue";
 import { useVuelidate } from "@vuelidate/core";
-import {
-  email,
-  required,
-  integer,
-  minLength,
-  maxLength,
-  helpers,
-  sameAs,
-} from "@vuelidate/validators";
+import { required, helpers } from "@vuelidate/validators";
 
 const initialState = {
   email: null,
@@ -56,9 +48,9 @@ const rules = {
 };
 
 const v$ = useVuelidate(rules, state);
-import { useUserViewStore } from "@/stores/userViewStore";
-const userViewStore = useUserViewStore();
-const { jwtToken, loginAuth } = userViewStore;
+import { useUserStore } from "@/stores/userStore";
+const userStore = useUserStore();
+const { jwtToken, loginAuth } = userStore;
 
 const submit = async () => {
   if (v$.$invalid) {

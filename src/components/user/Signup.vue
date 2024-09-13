@@ -190,9 +190,9 @@ const rules = {
 };
 
 const v$ = useVuelidate(rules, state);
-import { useUserViewStore } from "@/stores/userViewStore";
-const userViewStore = useUserViewStore();
-const { register } = userViewStore;
+import { useUserStore } from "@/stores/userStore";
+const userStore = useUserStore();
+const { register } = userStore;
 
 const submit = async () => {
   const isValid = await v$.value.$validate();
