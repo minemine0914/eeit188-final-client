@@ -1,6 +1,6 @@
 <template>
-    <v-app>
-        <v-app-bar :elevation="2">
+    <v-app v-resize="onResize">
+        <v-app-bar :elevation="2" ref="appbarRef">
             <v-app-bar-title>
                 <span class="pa-3 cursor-pointer" @click="$router.push('/')">Nomad</span>
             </v-app-bar-title>
@@ -64,8 +64,33 @@
 </template>
 <script setup>
 import avaterImg from "@/assets/banner01.webp";
+import { useElementSize } from "@vueuse/core";
 import { ref } from "vue";
+import { useUserViewStore } from "../stores/userViewStore";
+import { storeToRefs } from "pinia";
+// const userViewStore = useUserViewSt ore();
+// storeToRefs()
 const isOpenDialog = ref(false);
 const memberMenu = ref(false);
+const appbarRef = ref(null);
+const windowSize = ref({
+    x: 0,
+    y: 0,
+});
+const containerHeight = ref(1);
+const { height: appbarHeight } = useElementSize(appbarRef);
+let timeoutId = null; // 儲存定時器 ID
+function onResize() {
+    if (timeoutId) {
+        clearTimeout(timeoutId); // 如果有之前的定時器，先清除它
+    }
+    // 設置延遲更新高度
+    timeoutId = setTimeout(() => {
+        // console.log("Resizing...");
+        windowSize.value = { x: window.innerWidth, y: window.innerHeight };
+        containerHeight.value = window.innerHeight - appbarHeight.value;
+        // console.log(containerHeight.value);
+    }, 100); // 300 毫秒的延遲
+}
 </script>
 <style scoped></style>

@@ -6,6 +6,8 @@ import * as jwtDecode from "jwt-decode";
 export const useUserViewStore = defineStore(
   "userView",
   () => {
+    const containerHeight = ref(1);
+
     // Data
     const jwtToken = ref(null);
 

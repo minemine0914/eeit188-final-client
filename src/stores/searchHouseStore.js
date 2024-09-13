@@ -15,9 +15,11 @@ export const useHouseSearchStore = defineStore("HouseSearch", () => {
         child: 0,
         pet: false,
     });
+    const filterHouseList = reactive({});
     const postulateList = reactive([{ name: "Wifi" }]);
-    function getPostulateList() {
-        api.get("/postulate/findAll", { params: { page: 0, limit: 20 } })
+    async function getPostulateList() {
+        await api
+            .get("/postulate/findAll", { params: { page: 0, limit: 20 } })
             .then((res) => {
                 // console.log(res);
                 postulateList.splice(0, postulateList.length);
@@ -27,5 +29,26 @@ export const useHouseSearchStore = defineStore("HouseSearch", () => {
                 console.log("讀取設施失敗!");
             });
     }
-    return { inputValues, searchParams, postulateList, getPostulateList };
+    async function getFilterHouses(data) {
+        let resData = null;
+        await api
+            .post("/house/search", data)
+            .then((res) => {
+                console.log(res);
+                Object.assign(filterHouseList, res.data);
+                resData = res.data;
+            })
+            .catch((err) => {
+                console.log("取得房員失敗");
+            });
+        return resData;
+    }
+    return {
+        inputValues,
+        searchParams,
+        postulateList,
+        filterHouseList,
+        getPostulateList,
+        getFilterHouses,
+    };
 });
