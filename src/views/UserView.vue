@@ -68,17 +68,12 @@ import { useElementSize } from "@vueuse/core";
 import { ref } from "vue";
 import { useUserViewStore } from "../stores/userViewStore";
 import { storeToRefs } from "pinia";
-// const userViewStore = useUserViewSt ore();
-// storeToRefs()
-const isOpenDialog = ref(false);
-const memberMenu = ref(false);
-const appbarRef = ref(null);
-const windowSize = ref({
-    x: 0,
-    y: 0,
-});
-const containerHeight = ref(1);
+const userViewStore = useUserViewStore();
+const { windowSize, containerHeight, isOpenDialog, memberMenu, appbarRef } = storeToRefs(userViewStore);
+
+
 const { height: appbarHeight } = useElementSize(appbarRef);
+
 let timeoutId = null; // 儲存定時器 ID
 function onResize() {
     if (timeoutId) {

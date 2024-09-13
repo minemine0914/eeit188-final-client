@@ -7,7 +7,7 @@
         </v-navigation-drawer> -->
         <v-main ref="searchMainRef">
             <SearchHouseBar class="mt-0" />
-            <v-container fluid class="fill-height" ref="searchContainerRef">
+            <v-container fluid ref="searchContainerRef" :style="[`height: ${containerHeight}px`]">
                 <v-infinite-scroll
                     :height="searchContainerResizeObserve.height"
                     :items="houseList"
@@ -60,15 +60,19 @@
 import SearchHouseBar from "@/components/minemine/components/SearchHouseBar.vue";
 import { computed, onBeforeUnmount, onMounted, reactive, ref } from "vue";
 import { useHouseSearchStore } from "../../stores/searchHouseStore";
+import { useUserViewStore } from "../../stores/userViewStore";
 import { storeToRefs } from "pinia";
-import { useElementSize, useResizeObserver } from "@vueuse/core";
+import { useResizeObserver } from "@vueuse/core";
 const searchContainerRef = ref(null);
 const searchMainRef = ref(null);
 const houseSearchStore = useHouseSearchStore();
+const userViewStore = useUserViewStore();
 const { filterHouseList } = storeToRefs(houseSearchStore);
+const { containerHeight } = storeToRefs(userViewStore);
 const searchContainerResizeObserve = reactive({ width: 0, height: 0 });
 const houseList = reactive([]);
 const currentPage = ref(0);
+
 // ResizeObserver on searchContainer
 let timeoutId = null;
 useResizeObserver(searchContainerRef, (entries) => {
@@ -78,7 +82,7 @@ useResizeObserver(searchContainerRef, (entries) => {
         const { width, height } = entry.contentRect;
         console.log(`width: ${width}, height: ${height}`);
         searchContainerResizeObserve.height = height;
-    }, 500); // 設定 500 毫秒的延遲
+    }, 100); // 設定 500 毫秒的延遲
 });
 
 async function load({ done }) {
@@ -86,7 +90,7 @@ async function load({ done }) {
     // const res = await api();
     // await houseSearchStore.getFilterHouses({ page: 0, limit: 20 });
     // items.value.push(...res);
-    let data = await houseSearchStore.getFilterHouses({ page: currentPage.value, limit: 20 });
+    let data = await houseSearchStore.getFilterHouses({ page: currentPage.value, limit: 10 });
     console.log("Infinity scroll get data...");
     if (data != null) {
         if (!data.empty) {
