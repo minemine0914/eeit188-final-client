@@ -76,14 +76,14 @@
 
 <script setup>
 import { onMounted, watch } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { useHouseDetailStore } from "../../stores/houseDetailStore";
 import { storeToRefs } from "pinia";
 import testImg from "@/assets/banner05.webp";
 
 const houseDetailStore = useHouseDetailStore();
 const { houseInfo, isErrorGetHouseInfo } = storeToRefs(houseDetailStore);
-
+const router = useRouter();
 const route = useRoute();
 function loadHouseInfo(id) {
     houseDetailStore.getHouseInfo(id);
@@ -101,10 +101,16 @@ watch(
 onMounted(() => {
     if (route.params.houseId) {
         console.log(route.params.houseId);
-        loadHouseInfo(route.params.houseId);
+        loadHouseInfo(route.params.houseId)
+        if (isErrorGetHouseInfo.value) {
+            router.push("/");
+        }
     } else {
         console.log("HouseId not set");
         isErrorGetHouseInfo.value = true;
+        if (isErrorGetHouseInfo.value) {
+            router.push("/");
+        }
     }
 });
 </script>

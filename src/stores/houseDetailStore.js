@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { computed, reactive, ref } from "vue";
 import api from "../plugins/axios";
+import { useRouter } from "vue-router";
 export const useHouseDetailStore = defineStore("HouseDetail", () => {
     const initialHouseInfo = {
         id: null,
@@ -43,17 +44,19 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
         Object.assign(houseInfo, initialHouseInfo);
     }
 
-    function getHouseInfo(id) {
-        api.get(`/house/${id}`)
+    async function getHouseInfo(id) {
+        await api.get(`/house/${id}`)
             .then((res) => {
-                // console.log(res.data);
                 Object.assign(houseInfo, res.data);
                 isErrorGetHouseInfo.value = false;
+                console.log("House get info success");
+                return true;
             })
             .catch((err) => {
                 Object.assign(houseInfo, initialHouseInfo);
                 isErrorGetHouseInfo.value = true;
                 console.log("House not found!");
+                return false;
             });
     }
 
