@@ -79,11 +79,11 @@
       @input="v$.about.$touch"
     ></v-textarea>
 
-    <v-btn class="me-4" @click="submit"> 修改 </v-btn>
+    <v-btn id="submit" class="me-4" @click="submit"> 修改 </v-btn>
   </form>
 </template>
 <script setup>
-import { reactive, computed, onMounted, ref } from "vue";
+import { reactive, onMounted, ref } from "vue";
 import { useVuelidate } from "@vuelidate/core";
 import {
   email,
@@ -92,27 +92,29 @@ import {
   minLength,
   maxLength,
   helpers,
-  sameAs,
 } from "@vuelidate/validators";
 import { VDateInput } from "vuetify/labs/VDateInput";
-import { useUserViewStore } from "@/stores/userViewStore";
+import { useUserStore } from "@/stores/userStore";
+const emit = defineEmits(["userDetailChanged"]);
 
-const userViewStore = useUserViewStore();
-const { updateUser, findUserById } = userViewStore;
+const userStore = useUserStore();
+const { updateUser, findUserById } = userStore;
+
+const user = ref(null);
 
 onMounted(async () => {
-  const user = await findUserById();
+  user.value = await findUserById();
 
-  if (user) {
+  if (user.value) {
     Object.assign(state, {
-      name: user.name,
-      email: user.email,
-      birthday: user.birthday,
-      gender: user.gender,
-      phone: user.phone,
-      mobilePhone: user.mobilePhone,
-      address: user.address,
-      about: user.about,
+      name: user.value.name,
+      email: user.value.email,
+      birthday: user.value.birthday,
+      gender: user.value.gender,
+      phone: user.value.phone,
+      mobilePhone: user.value.mobilePhone,
+      address: user.value.address,
+      about: user.value.about,
     });
   }
 });
@@ -136,9 +138,6 @@ const initialState = {
 const state = reactive({
   ...initialState,
 });
-
-// Create a computed property for the password
-const password = computed(() => state.password);
 
 const items = ["暫不提供", "男性", "女性", "其他"];
 
@@ -195,6 +194,8 @@ const submit = async () => {
       address: state.address,
       about: state.about,
     });
+    user.value = await findUserById();
+    emit("userDetailChanged");
     alert("修改成功！");
   } catch (error) {
     console.error("Registration failed:", error);

@@ -31,11 +31,11 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { useUserViewStore } from "@/stores/userViewStore";
+import { useUserStore } from "@/stores/userStore";
 import api from "@/plugins/axios";
 
-const userViewStore = useUserViewStore();
-const { decodeToken } = userViewStore;
+const userStore = useUserStore();
+const { decodeToken } = userStore;
 
 const userInfo = ref(null);
 const coupons = ref([]);

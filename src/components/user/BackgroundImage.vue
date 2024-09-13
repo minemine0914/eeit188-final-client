@@ -2,7 +2,7 @@
   <div class="background-image">
     <v-img
       class="bg-grey-lighten-2"
-      max-height="400"
+      max-height="300"
       :src="backgroundImageUrl"
       cover
     ></v-img>
@@ -24,15 +24,15 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { useUserViewStore } from "@/stores/userViewStore";
+import { useUserStore } from "@/stores/userStore";
 
 // Default avatar image if no image is uploaded
 const defaultBackgroundImage =
   "https://www.wordforest.org/wp-content/uploads/2016/12/forest-4-e1483856441969.jpg";
 
-const userViewStore = useUserViewStore();
+const userStore = useUserStore();
 const { decodeToken, uploadBackgroundImage, downloadBackgroundImage } =
-  userViewStore;
+  userStore;
 
 const userInfo = ref(null);
 const fileInput = ref(null);
@@ -54,7 +54,7 @@ onMounted(async () => {
   userInfo.value = decodeToken();
   if (userInfo.value) {
     try {
-      const response = await userViewStore.downloadBackgroundImage(
+      const response = await userStore.downloadBackgroundImage(
         userInfo.value.id
       );
       const url = window.URL.createObjectURL(response);
