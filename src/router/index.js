@@ -17,20 +17,35 @@ const routes = [
       {
         path: "", // Default
         name: "Explore",
-        component: () => import("@/components/user/Explore.vue"),
+        component: () => import("@/pages/home/Explore.vue"),
         meta: { title: "Nomad 探索", requiresAuth: false },
       },
       {
         path: "search",
         name: "Search",
-        component: () => import("@/components/user/Search.vue"),
+        component: () => import("@/pages/home/Search.vue"),
         meta: { title: "Nomad 搜尋", requiresAuth: false },
       },
       {
         path: "house",
         name: "House",
-        component: () => import("@/components/user/House.vue"),
+        component: () => import("@/pages/home/HouseDetail.vue"),
         meta: { title: "Nomad 房源", requiresAuth: false },
+      },
+      {
+        path: "house/:houseId",
+        name: "HouseWithId",
+        component: () => import("@/pages/home/HouseDetail.vue"),
+        meta: { title: "Nomad 房源", requiresAuth: false },
+      },
+      {
+        path: "member",
+        name: "Member",
+        component: () => import("@/pages/user/Member.vue"),
+        meta: { title: "Nomad 房源", requiresAuth: false },
+        children: [
+
+        ],
       },
     ],
   },
@@ -42,7 +57,7 @@ const routes = [
       {
         path: "", // Default
         name: "Manage",
-        component: () => import("@/components/host/Manage.vue"),
+        component: () => import("@/pages/host/Manage.vue"),
         meta: { title: "Nomad 分享你的房源", requiresAuth: false },
       },
     ],
@@ -55,7 +70,7 @@ const routes = [
       {
         path: "", // Default
         name: "Dashboard",
-        component: () => import("@/components/system/Dashboard.vue"),
+        component: () => import("@/pages/system/Dashboard.vue"),
         meta: { title: "Nomad 系統管理", requiresAuth: false },
       },
     ],
@@ -73,12 +88,12 @@ const routes = [
 ];
 
 const router = createRouter({
-  history: createWebHistory(),
-  routes,
+    history: createWebHistory(),
+    routes,
 });
 
 router.afterEach((to, from) => {
-  document.title = to.meta.title || DEFAULT_TITLE;
+    document.title = to.meta.title || DEFAULT_TITLE;
 });
 
 export default router;
