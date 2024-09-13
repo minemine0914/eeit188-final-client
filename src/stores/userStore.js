@@ -34,6 +34,7 @@ export const useUserStore = defineStore(
           data: loginData,
         });
         jwtToken.value = response.data.token;
+        user.value = await findUserById(jwtToken.id);
       } catch (error) {
         console.error("Login failed:", error);
         throw error;
@@ -47,7 +48,7 @@ export const useUserStore = defineStore(
           method: "get",
           url: `/user/${userId}`,
         });
-        return response.data;
+        user.value = response.data;
       } catch (error) {
         console.log(error);
       }
@@ -115,6 +116,33 @@ export const useUserStore = defineStore(
       }
     }
 
+    async function getChatRecord(userId) {
+      try {
+        const response = await api({
+          method: "get",
+          url: `/chat-record/${userId}`,
+        });
+        return response.data;
+      } catch (error) {
+        console.error("Error downloading background image:", error);
+        throw error;
+      }
+    }
+
+    async function addChatRecord(request) {
+      try {
+        const response = await api({
+          method: "post",
+          url: `/chat-record/`,
+          data: request,
+        });
+        console.log("ok");
+      } catch (error) {
+        console.error("Error downloading background image:", error);
+        throw error;
+      }
+    }
+
     function decodeToken() {
       if (typeof jwtToken.value === "string" && jwtToken.value.trim() !== "") {
         try {
@@ -140,6 +168,8 @@ export const useUserStore = defineStore(
       uploadAvater,
       uploadBackgroundImage,
       downloadBackgroundImage,
+      getChatRecord,
+      addChatRecord,
     };
   },
   {

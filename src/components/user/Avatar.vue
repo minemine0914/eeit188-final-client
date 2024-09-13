@@ -16,21 +16,15 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref } from "vue";
 import { useUserStore } from "@/stores/userStore";
 import api from "@/plugins/axios";
 
 const userStore = useUserStore();
-const { decodeToken, findUserById } = userStore;
+const { findUserById, user } = userStore;
+const emit = defineEmits(["userAvatarChange"]);
 
-const userInfo = ref(null);
 const fileInput = ref(null);
-const user = ref(null);
-
-onMounted(async () => {
-  userInfo.value = decodeToken();
-  user.value = await findUserById();
-});
 
 // Function to handle file input change and convert image to Base64
 const handleFileChange = (event) => {
@@ -57,14 +51,11 @@ const sendImageToServer = async (base64Image) => {
   };
 
   try {
-    const response = await api.put(
-      `/user/upload-avatar/${userInfo.value.id}`,
-      payload
-    );
+    const response = await api.put(`/user/upload-avatar/${user.id}`, payload);
     console.log("Image uploaded successfully:", response.data);
     // Update the avatar with the new image (Base64)
-    user.value = await findUserById();
     await findUserById();
+    emit("userAvatarChange");
   } catch (error) {
     console.error("Error uploading image:", error);
   }
@@ -79,6 +70,6 @@ const sendImageToServer = async (base64Image) => {
 }
 
 #updateAvatar {
-  margin-top: 15px;
+  margin-top: 10px;
 }
 </style>

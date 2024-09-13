@@ -35,17 +35,14 @@ import { useUserStore } from "@/stores/userStore";
 import api from "@/plugins/axios";
 
 const userStore = useUserStore();
-const { decodeToken } = userStore;
+const { user } = userStore;
 
-const userInfo = ref(null);
 const coupons = ref([]);
 const expireDates = ref([]);
 
 onMounted(async () => {
-  userInfo.value = decodeToken();
-
   const request = {
-    userId: userInfo.value.id,
+    userId: user.id,
     page: 0,
     limit: 10,
   };

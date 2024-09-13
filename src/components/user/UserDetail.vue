@@ -83,7 +83,7 @@
   </form>
 </template>
 <script setup>
-import { reactive, onMounted, ref } from "vue";
+import { reactive, onMounted } from "vue";
 import { useVuelidate } from "@vuelidate/core";
 import {
   email,
@@ -98,23 +98,19 @@ import { useUserStore } from "@/stores/userStore";
 const emit = defineEmits(["userDetailChanged"]);
 
 const userStore = useUserStore();
-const { updateUser, findUserById } = userStore;
-
-const user = ref(null);
+const { findUserById, updateUser, user } = userStore;
 
 onMounted(async () => {
-  user.value = await findUserById();
-
-  if (user.value) {
+  if (user) {
     Object.assign(state, {
-      name: user.value.name,
-      email: user.value.email,
-      birthday: user.value.birthday,
-      gender: user.value.gender,
-      phone: user.value.phone,
-      mobilePhone: user.value.mobilePhone,
-      address: user.value.address,
-      about: user.value.about,
+      name: user.name,
+      email: user.email,
+      birthday: user.birthday,
+      gender: user.gender,
+      phone: user.phone,
+      mobilePhone: user.mobilePhone,
+      address: user.address,
+      about: user.about,
     });
   }
 });
@@ -194,7 +190,7 @@ const submit = async () => {
       address: state.address,
       about: state.about,
     });
-    user.value = await findUserById();
+    await findUserById();
     emit("userDetailChanged");
     alert("修改成功！");
   } catch (error) {
