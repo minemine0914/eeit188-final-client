@@ -100,6 +100,20 @@ export const useUserViewStore = defineStore(
       }
     }
 
+    async function downloadBackgroundImage(userId) {
+      try {
+        const response = await api({
+          method: "get",
+          url: `/user/download-background-image/${userId}`,
+          responseType: "blob",
+        });
+        return response.data;
+      } catch (error) {
+        console.error("Error downloading background image:", error);
+        throw error;
+      }
+    }
+
     function decodeToken() {
       if (typeof jwtToken.value === "string" && jwtToken.value.trim() !== "") {
         try {
@@ -123,6 +137,7 @@ export const useUserViewStore = defineStore(
       updateUser,
       uploadAvater,
       uploadBackgroundImage,
+      downloadBackgroundImage,
     };
   },
   {
