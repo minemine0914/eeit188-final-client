@@ -1,5 +1,5 @@
 <template>
-    <div>House details</div>
+    <router-view></router-view>
 </template>
 
 <script setup></script>

@@ -24,7 +24,7 @@ export const useHouseSearchStore = defineStore("HouseSearch", () => {
                 postulateList.push(...res.data.content);
             })
             .catch((err) => {
-                console.log("讀取設施失敗!", err);
+                console.log("讀取設施失敗!");
             });
     }
     return { inputValues, searchParams, postulateList, getPostulateList };

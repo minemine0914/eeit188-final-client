@@ -9,68 +9,82 @@ import loRouter from "./lo";
 const DEFAULT_TITLE = "Nomad";
 
 const routes = [
-    {
-        path: "/",
-        name: "User",
-        component: () => import("@/views/UserView.vue"),
-        children: [
-            {
-                path: "", // Default
-                name: "Explore",
-                component: () => import("@/components/user/Explore.vue"),
-                meta: { title: "Nomad 探索", requiresAuth: false },
-            },
-            {
-                path: "search",
-                name: "Search",
-                component: () => import("@/components/user/Search.vue"),
-                meta: { title: "Nomad 搜尋", requiresAuth: false },
-            },
-          {
+  {
+    path: "/",
+    name: "User",
+    component: () => import("@/views/UserView.vue"),
+    children: [
+      {
+        path: "", // Default
+        name: "Explore",
+        component: () => import("@/pages/home/Explore.vue"),
+        meta: { title: "Nomad 探索", requiresAuth: false },
+      },
+      {
+        path: "search",
+        name: "Search",
+        component: () => import("@/pages/home/Search.vue"),
+        meta: { title: "Nomad 搜尋", requiresAuth: false },
+      },
+      {
         path: "house",
         name: "House",
-        component: () => import("@/components/user/House.vue"),
+        component: () => import("@/pages/home/HouseDetail.vue"),
         meta: { title: "Nomad 房源", requiresAuth: false },
       },
+      {
+        path: "house/:houseId",
+        name: "HouseWithId",
+        component: () => import("@/pages/home/HouseDetail.vue"),
+        meta: { title: "Nomad 房源", requiresAuth: false },
+      },
+      {
+        path: "member",
+        name: "Member",
+        component: () => import("@/pages/user/Member.vue"),
+        meta: { title: "Nomad 房源", requiresAuth: false },
+        children: [
+
+        ],
+      },
     ],
-    },
-    {
-        path: "/host",
-        name: "Host",
-        component: () => import("@/views/HostView.vue"),
-        children: [
-            {
-                path: "", // Default
-                name: "Manage",
-                component: () => import("@/components/lo/HostHome.vue"),
-                meta: { title: "Nomad 分享你的房源", requiresAuth: false },
-            },
-        ],
-        
-    },
-    {
-        path: "/system",
-        name: "System",
-        component: () => import("@/views/SystemView.vue"),
-        children: [
-            {
-                path: "", // Default
-                name: "Dashboard",
-                component: () => import("@/components/system/Dashboard.vue"),
-                meta: { title: "Nomad 系統管理", requiresAuth: false },
-            },
-        ],
-    },
-    {
-        path: "/:pathMatch(.*)*",
-        name: "NotFound",
-        component: () => import("@/views/NotFound.vue"),
-    },
-    minemineRouter,
-    wuRouter,
-    kenjoRouter,
-    leonRouter,
-    loRouter,
+  },
+  {
+    path: "/host",
+    name: "Host",
+    component: () => import("@/views/HostView.vue"),
+    children: [
+      {
+        path: "", // Default
+        name: "Manage",
+        component: () => import("@/pages/host/Manage.vue"),
+        meta: { title: "Nomad 分享你的房源", requiresAuth: false },
+      },
+    ],
+  },
+  {
+    path: "/system",
+    name: "System",
+    component: () => import("@/views/SystemView.vue"),
+    children: [
+      {
+        path: "", // Default
+        name: "Dashboard",
+        component: () => import("@/pages/system/Dashboard.vue"),
+        meta: { title: "Nomad 系統管理", requiresAuth: false },
+      },
+    ],
+  },
+  {
+    path: "/:pathMatch(.*)*",
+    name: "NotFound",
+    component: () => import("@/views/NotFound.vue"),
+  },
+  minemineRouter,
+  wuRouter,
+  kenjoRouter,
+  leonRouter,
+  loRouter,
 ];
 
 const router = createRouter({
