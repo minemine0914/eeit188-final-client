@@ -3,13 +3,14 @@ import api from "@/plugins/axios";
 import { ref } from "vue";
 import * as jwtDecode from "jwt-decode";
 
-export const useUserViewStore = defineStore(
+export const useUserStore = defineStore(
   "userView",
   () => {
     const containerHeight = ref(1);
 
     // Data
     const jwtToken = ref(null);
+    const user = ref(null);
 
     // Methods
     async function register(userData) {
@@ -131,6 +132,7 @@ export const useUserViewStore = defineStore(
     }
 
     return {
+      user,
       jwtToken,
       register,
       loginAuth,

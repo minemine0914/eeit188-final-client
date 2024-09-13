@@ -42,10 +42,7 @@ const routes = [
         path: "member",
         name: "Member",
         component: () => import("@/pages/user/Member.vue"),
-        meta: { title: "Nomad 房源", requiresAuth: false },
-        children: [
-
-        ],
+        meta: { title: "Nomad 會員中心", requiresAuth: false },
       },
     ],
   },
@@ -88,12 +85,12 @@ const routes = [
 ];
 
 const router = createRouter({
-    history: createWebHistory(),
-    routes,
+  history: createWebHistory(),
+  routes,
 });
 
 router.afterEach((to, from) => {
-    document.title = to.meta.title || DEFAULT_TITLE;
+  document.title = to.meta.title || DEFAULT_TITLE;
 });
 
 export default router;

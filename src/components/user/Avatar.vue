@@ -3,6 +3,7 @@
     <v-avatar color="surface-variant" size="150">
       <v-img :src="user?.avatarBase64" cover></v-img>
     </v-avatar>
+    <h2>{{ user?.name }}</h2>
     <v-btn id="updateAvatar" width="50" @click="uploadImage">上傳照片</v-btn>
     <input
       type="file"
@@ -16,11 +17,11 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { useUserViewStore } from "@/stores/userViewStore";
+import { useUserStore } from "@/stores/userStore";
 import api from "@/plugins/axios";
 
-const userViewStore = useUserViewStore();
-const { decodeToken, findUserById } = userViewStore;
+const userStore = useUserStore();
+const { decodeToken, findUserById } = userStore;
 
 const userInfo = ref(null);
 const fileInput = ref(null);
