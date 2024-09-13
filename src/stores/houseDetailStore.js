@@ -39,26 +39,28 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
     };
     const houseInfo = reactive({ ...initialHouseInfo });
     const isErrorGetHouseInfo = ref(false);
+    const isLoading = ref(true);
 
     function resetHouseInfo() {
         Object.assign(houseInfo, initialHouseInfo);
     }
 
     async function getHouseInfo(id) {
+        isLoading.value = true;
         await api.get(`/house/${id}`)
             .then((res) => {
                 Object.assign(houseInfo, res.data);
                 isErrorGetHouseInfo.value = false;
-                console.log("House get info success");
-                return true;
+                isLoading.value = false;
+                console.log("Get houseInfo from database sucessed!");
             })
             .catch((err) => {
                 Object.assign(houseInfo, initialHouseInfo);
                 isErrorGetHouseInfo.value = true;
-                console.log("House not found!");
-                return false;
+                isLoading.value = false;
+                console.log("Get houseInfo from database failed! Take you to home page!");
             });
     }
 
-    return { houseInfo, isErrorGetHouseInfo, resetHouseInfo, getHouseInfo };
+    return { houseInfo, isErrorGetHouseInfo, isLoading, resetHouseInfo, getHouseInfo };
 });

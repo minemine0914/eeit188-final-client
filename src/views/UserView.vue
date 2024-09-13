@@ -1,7 +1,9 @@
 <template>
     <v-app>
         <v-app-bar :elevation="2">
-            <v-app-bar-title>Nomad</v-app-bar-title>
+            <v-app-bar-title>
+                <span class="pa-3 cursor-pointer" @click="$router.push('/')">Nomad</span>
+            </v-app-bar-title>
             <template v-slot:append>
                 <v-menu v-model="memberMenu" offset="15">
                     <template v-slot:activator="{ props }">
@@ -13,9 +15,9 @@
                                     size="large"
                                     :class="[
                                         'pa-1',
-                                        isHovering ? 'elevation-1' : 'elevation-5',
+                                        isHovering ? 'elevation-1' : 'elevation-3',
                                         'px-3',
-                                        'mr-3',
+                                        'mr-5',
                                     ]"
                                     color="brown-darken-1"
                                 >
