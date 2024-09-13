@@ -5,11 +5,14 @@ import api from '@/plugins/axios';
 
 export const useHostReportStore = defineStore('hostReport', {
     state: () => ({
-        loginUser: 'e61abdb4-d054-4188-9e41-c2691792cf73',
+        // loginUser: 'e61abdb4-d054-4188-9e41-c2691792cf73',
+        loginUser: 'f27a7b80-4d60-44cf-aa1c-9b44dd375698',
         selectedYear: '',
         selectedMonth: '',
         selectedQuarter: '',
         selectedHouse: '',
+        selectedUser: '',
+        users:[{"id":''}],
         houses: [],
         records: [],
         selectedHouse: null,
@@ -18,9 +21,19 @@ export const useHostReportStore = defineStore('hostReport', {
         minCreatedAt: '',
         maxCreatedAt: "2024-09-13T06:15:24.850+00:00"
     }),
+    getters: {
+        currentUser: (state) => state.users.find(user => user.id === state.selectedUser?.id) || null,
+    },
     actions: {
-        async fetchHouses() {
+        setSelectedUser(userId) {
+            this.selectedUser = this.users.find(user => user.id === userId) || null;
+        },
+        async fetchHouses(userId) {
             try {
+                console.log(userId)
+                if(userId){
+                    this.loginUser=userId
+                }
                 const response = await api.post('/house/search', {
                     userId: this.loginUser,
                     page: 0,
@@ -33,11 +46,14 @@ export const useHostReportStore = defineStore('hostReport', {
         },
 
         async fetchTransactionRecords() {
+            console.log(this.selectedHouse)
             if (!this.selectedHouse) return;
 
             try {
-                const minCreatedAt = new Date(this.selectedYear, 8, 13, 14, 0, 0)
-                const maxCreatedAt = new Date(2024, 8, 13, 16, 0, 0)
+                // const minCreatedAt = new Date(1900, 8, 13, 14, 0, 0)
+                const minCreatedAt = new Date(0)
+                // const maxCreatedAt = new Date(2028, 8, 13, 16, 0, 0)
+                const maxCreatedAt = new Date()
                 const houseId = this.selectedHouse
                 const response = await api.post(`/transcation_record/search`, {
                     houseId,
@@ -47,7 +63,7 @@ export const useHostReportStore = defineStore('hostReport', {
                     "order": "createdAt",
                     "dir": true
                 });
-                console.log(response.data.content)
+                console.log(response.data)
                 const transformedRecords = await this.searchUserAgainByRecordId(response.data.content);
                 console.log(transformedRecords)
                 this.records = transformedRecords;
@@ -56,10 +72,20 @@ export const useHostReportStore = defineStore('hostReport', {
             }
         },
 
-        async findAllUser() {
+        async findAllUserString() {
             try {
                 const response = await api.get(`/user/`);
                 this.usersResult = response.data.users.map(user => user.id || 0);
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        },
+
+        async findAllUserArray() {
+            try {
+                const response = await api.get(`/user/`);
+                this.users = response.data.users;
+                console.log('this.users',this.users)
             } catch (error) {
                 console.error('Error fetching users:', error);
             }

@@ -2,7 +2,7 @@
     <div>
         <textarea style="width: 25rem;height:500px;border:1px solid black;font-family: monospace;"
             v-model="store.usersResult"></textarea>
-        <button @click="findAllUser">findAllUser</button>
+        <button @click="findAllUserString">findAllUser</button>
         <textarea style="width: 25rem;height:500px;border:1px solid black;font-family: monospace;"
             v-model="store.housesResult"></textarea>
         <button @click="findAllHouse">findAllHouse</button>
@@ -15,8 +15,8 @@ import { useHostReportStore } from '@/stores/hostReportStore';
 
 const store = useHostReportStore();
 
-const findAllUser = () => {
-    store.findAllUser();
+const findAllUserString = () => {
+    store.findAllUserString();
 };
 
 const findAllHouse = () => {
@@ -30,4 +30,8 @@ const crossInsertTransactionRecord = () => {
 
 </script>
 
-<style scoped></style>
+<style scoped>
+button {
+    border: 1px solid black;
+}
+</style>

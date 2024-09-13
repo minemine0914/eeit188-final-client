@@ -11,18 +11,21 @@
             </select>
             <label for="yearRange">年份：</label>
             <select id="yearRange" v-model="store.selectedYear" @change="store.fetchTransactionRecords">
-                <option v-for="year in years" :key="i" :value="year">{{ year }}</option>
+                <option v-for="year, key in years" :key="key" :value="year">{{ year }}</option>
             </select>
-            <radio name="monthOrQuarter"></radio>
+            <input type="radio" name="monthOrQuarter" id="monthOrQuarter_month"><label
+                for="monthOrQuarter_month">M</label>
+            <input type="radio" name="monthOrQuarter" id="monthOrQuarter_quarter"><label
+                for="monthOrQuarter_quarter">Q</label>
 
 
             <label for="monthRange">月份：</label>
             <select id="monthRange" v-model="store.selectedMonth">
-                <option v-for="month in 12" :key="i" :value="month">{{ month }}</option>
+                <option v-for="month, key in 12" :key="key" :value="month">{{ month }}</option>
             </select>
             <label for="quarterRange">季度：</label>
             <select id="quarterRange" v-model="store.selectedQuarter">
-                <option v-for="quarter in 4" :key="i" :value="quarter">{{ quarter }}</option>
+                <option v-for="quarter, key in 4" :key="key" :value="quarter">{{ quarter }}</option>
             </select>
             <div v-if="showPieChart">
                 <div style="width:300px;">
