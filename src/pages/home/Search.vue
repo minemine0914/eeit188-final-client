@@ -1,51 +1,100 @@
 <template>
-    <v-layout style="z-index: 99" height="100%" class="position-relative">
-        <!-- <v-navigation-drawer border="0">
-            <v-list>
-                <v-list-item title="分類"></v-list-item>
-            </v-list>
-        </v-navigation-drawer> -->
+    <v-layout style="z-index: 99" height="100%">
         <v-main ref="searchMainRef">
-            <SearchHouseBar class="mt-0" />
-            <v-container fluid ref="searchContainerRef" :style="[`height: ${containerHeight}px`]">
+            <SearchHouseBar class="my-3" />
+            <v-container ref="searchContainerRef" :style="[`height: ${containerHeight}px`]">
                 <v-infinite-scroll
+                    v-if="renderInfinityScrollComponent"
                     :height="searchContainerResizeObserve.height"
-                    :items="houseList"
-                    :onLoad="load"
-                    class="pt-8 w-100"
+                    :items="filterHouseList"
+                    @load="loadFilterHouses"
+                    class="pt-15"
                 >
-                    <template v-for="(item, index) in houseList" :key="index">
-                        <v-card min-height="300px" elevation="3" border="1" class="ma-1">
-                            <v-card-item class="h-100">
-                                <v-row
-                                    class="flex-nowrap fill-height"
-                                    no-gutters
+                    <template v-for="(item, index) in filterHouseList" :key="index">
+                        <v-sheet
+                            class="d-flex align-center justify-center border mb-5 elevation-2 rounded-lg"
+                        >
+                            <v-row class="fill-height" no-gutters>
+                                <v-col cols="12" sm="4" md="4" lg="3" class="pa-5">
+                                    <v-card>
+                                        <v-img
+                                            class="bg-grey-lighten-2"
+                                            :aspect-ratio="1"
+                                            :height="200"
+                                            :src="testImg"
+                                            cover
+                                        ></v-img>
+                                    </v-card>
+                                </v-col>
+                                <v-col
+                                    cols="12"
+                                    sm="8"
+                                    md="8"
+                                    lg="9"
+                                    class="pa-5 d-flex justify-start align-start"
                                 >
-                                    <v-col class="flex-grow-0 flex-shrink-0" cols="2">
-                                        <v-sheet class="ma-2 pa-2"> I'm 2 column wide </v-sheet>
-                                    </v-col>
-                                    <v-col
-                                        class="flex-grow-1 flex-shrink-0"
-                                        cols="1"
-                                        style="min-width: 100px; max-width: 100%"
-                                    >
-                                        <v-sheet class="ma-2 pa-2">
-                                            I'm 1 column wide and I grow to take all the space
+                                    <div class="d-flex flex-row mb-6 w-100 h-100">
+                                        <v-sheet class="flex-grow-1">
+                                            <div
+                                                class="text-h5 font-weight-medium text-brown-darken-4 pt-1 mb-1"
+                                            >
+                                                {{ item.name }}
+                                            </div>
+                                            <div class="text-grey-darken-1">
+                                                <span class="mdi mdi-map-marker mr-1"></span>
+                                                <span class="mr-2">{{ `位於 ${item.city}` }}</span>
+                                            </div>
+                                            <div class="text-grey-darken-1">
+                                                <span class="mdi mdi-bed mr-2"></span>
+                                                <span class="mr-1" v-if="item.livingDiningRoom > 0">
+                                                    {{ `${item.livingDiningRoom} 廳` }}
+                                                </span>
+                                                <span class="mr-1" v-if="item.bedroom > 0">
+                                                    {{ `${item.bedroom} 房` }}
+                                                </span>
+                                                <span class="mr-1" v-if="item.bathroom > 0">
+                                                    {{ `${item.bathroom} 淋浴` }}
+                                                </span>
+                                                <span class="mr-1" v-if="item.restroom > 0">
+                                                    {{ `${item.restroom} 衛生` }}
+                                                </span>
+                                            </div>
+                                            <div class="text-grey-darken-1">
+                                                <span class="mr-2" v-if="!item.pet">
+                                                    <span class="mdi mdi-paw-off mr-1"></span>
+                                                    <span>禁止寵物</span>
+                                                </span>
+
+                                                <span class="mr-2" v-if="!item.smoke">
+                                                    <span class="mdi mdi-smoking-off mr-1"></span>
+                                                    <span>禁止吸菸</span>
+                                                </span>
+                                            </div>
                                         </v-sheet>
-                                    </v-col>
-                                    <v-col
-                                        class="flex-grow-0 flex-shrink-1"
-                                        cols="5"
-                                        style="min-width: 100px"
-                                    >
-                                        <v-sheet class="ma-2 pa-2">
-                                            I'm 5 column wide and I shrink if there's not enough
-                                            space
+                                        <v-sheet
+                                            class="d-flex flex-column flex-grow-1 justify-end align-end"
+                                        >
+                                            <v-sheet>
+                                                <div
+                                                    class="text-h5 font-weight-medium text-brown-darken-4 mb-2 mr-1"
+                                                >
+                                                    NT ${{ item.price }}
+                                                </div>
+                                            </v-sheet>
+                                            <v-sheet>
+                                                <v-btn
+                                                    color="brown-lighten-1"
+                                                    min-width="130"
+                                                    size="large"
+                                                    :to="`/house/${item.id}`"
+                                                    >詳細資訊</v-btn
+                                                >
+                                            </v-sheet>
                                         </v-sheet>
-                                    </v-col>
-                                </v-row>
-                            </v-card-item>
-                        </v-card>
+                                    </div>
+                                </v-col>
+                            </v-row>
+                        </v-sheet>
                     </template>
                     <template v-slot:empty>
                         <v-alert type="warning">已無房源可供讀取!</v-alert>
@@ -57,8 +106,9 @@
 </template>
 
 <script setup>
+import testImg from "@/assets/banner06.webp";
 import SearchHouseBar from "@/components/minemine/components/SearchHouseBar.vue";
-import { computed, onBeforeUnmount, onMounted, reactive, ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, reactive, ref, nextTick } from "vue";
 import { useHouseSearchStore } from "../../stores/searchHouseStore";
 import { useUserViewStore } from "../../stores/userViewStore";
 import { storeToRefs } from "pinia";
@@ -67,11 +117,15 @@ const searchContainerRef = ref(null);
 const searchMainRef = ref(null);
 const houseSearchStore = useHouseSearchStore();
 const userViewStore = useUserViewStore();
-const { filterHouseList } = storeToRefs(houseSearchStore);
+const {
+    renderInfinityScrollComponent,
+    currentPage,
+    filterHouseList
+} = storeToRefs(houseSearchStore);
 const { containerHeight } = storeToRefs(userViewStore);
 const searchContainerResizeObserve = reactive({ width: 0, height: 0 });
-const houseList = reactive([]);
-const currentPage = ref(0);
+const viewMode = ref("list"); // list or grid
+const isShowInfoCard = ref(false);
 
 // ResizeObserver on searchContainer
 let timeoutId = null;
@@ -85,16 +139,12 @@ useResizeObserver(searchContainerRef, (entries) => {
     }, 100); // 設定 500 毫秒的延遲
 });
 
-async function load({ done }) {
-    // Perform API call
-    // const res = await api();
-    // await houseSearchStore.getFilterHouses({ page: 0, limit: 20 });
-    // items.value.push(...res);
+async function loadFilterHouses({ done }) {
     let data = await houseSearchStore.getFilterHouses({ page: currentPage.value, limit: 10 });
     console.log("Infinity scroll get data...");
     if (data != null) {
         if (!data.empty) {
-            houseList.push(...data.content);
+            filterHouseList.value.push(...data.content);
             currentPage.value++;
             console.log(`Read house list ok! Page: ${currentPage.value}`);
             done("ok");

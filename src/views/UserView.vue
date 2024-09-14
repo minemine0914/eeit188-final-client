@@ -7,33 +7,32 @@
             <template v-slot:append>
                 <v-menu v-model="memberMenu" offset="15">
                     <template v-slot:activator="{ props }">
-                        <v-hover>
-                            <template v-slot:default="{ isHovering, hoverProps }">
-                                <v-btn
-                                    v-bind="{ ...props, ...hoverProps }"
-                                    rounded="pill"
-                                    size="large"
-                                    :class="[
-                                        'pa-1',
-                                        isHovering ? 'elevation-1' : 'elevation-3',
-                                        'px-3',
-                                        'mr-5',
-                                    ]"
-                                    color="brown-darken-1"
-                                >
-                                    <template v-slot:prepend>
-                                        <v-avatar
-                                            color="surface-variant"
-                                            :image="avaterImg"
-                                            size="small"
-                                        ></v-avatar>
-                                    </template>
-                                    <div class="text-body-1">nickname</div>
-                                </v-btn>
+                        <v-btn
+                            v-bind="props"
+                            variant="text"
+                            elevation="3"
+                            border="sm"
+                            rounded="pill"
+                            size="large"
+                            :class="['pa-1', 'px-3', 'mr-5']"
+                            color="brown-lighten-1"
+                        >
+                            <template v-slot:prepend>
+                                <v-avatar
+                                    color="surface-variant"
+                                    :image="avaterImg"
+                                    size="small"
+                                ></v-avatar>
                             </template>
-                        </v-hover>
+                            <div class="text-body-1">nickname</div>
+                        </v-btn>
                     </template>
-                    <v-list density="compact" width="200" rounded="lg">
+                    <v-list
+                        density="compact"
+                        width="200"
+                        rounded="lg"
+                        active-color="brown-lighten-1"
+                    >
                         <v-list-item to="/member" prepend-icon="mdi-account" slim
                             >會員中心</v-list-item
                         >
@@ -69,8 +68,8 @@ import { ref } from "vue";
 import { useUserViewStore } from "../stores/userViewStore";
 import { storeToRefs } from "pinia";
 const userViewStore = useUserViewStore();
-const { windowSize, containerHeight, isOpenDialog, memberMenu, appbarRef } = storeToRefs(userViewStore);
-
+const { windowSize, containerHeight, isOpenDialog, memberMenu, appbarRef } =
+    storeToRefs(userViewStore);
 
 const { height: appbarHeight } = useElementSize(appbarRef);
 
