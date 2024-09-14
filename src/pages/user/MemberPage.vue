@@ -3,9 +3,9 @@
   <div class="content-container">
     <div class="conetnt">
       <UserDetail v-show="selectedBtn === 1" @userDetailChanged="reload" />
-      <Coupon v-show="selectedBtn === 2" />
-      <UserCollection v-show="selectedBtn === 3" />
-      <Discuss v-show="selectedBtn === 4" />
+      <Coupon v-show="selectedBtn === 3" />
+      <UserCollection v-show="selectedBtn === 4" />
+      <Discuss v-show="selectedBtn === 5" />
     </div>
     <div class="avatar-container">
       <Avatar :key="avatarKey" @userAvatarChange="reload" />
@@ -24,15 +24,14 @@
         class="btn"
         @click="handleClick(2)"
       >
-        優惠券
+        房東功能
       </v-btn>
-
       <v-btn
         :color="selectedBtn === 3 ? 'blue-grey-lighten-2' : ''"
         class="btn"
         @click="handleClick(3)"
       >
-        房源收藏
+        優惠券
       </v-btn>
 
       <v-btn
@@ -40,7 +39,15 @@
         class="btn"
         @click="handleClick(4)"
       >
-        您的留言
+        房源收藏
+      </v-btn>
+
+      <v-btn
+        :color="selectedBtn === 5 ? 'blue-grey-lighten-2' : ''"
+        class="btn"
+        @click="handleClick(5)"
+      >
+        您的評論
       </v-btn>
     </div>
   </div>
@@ -56,6 +63,8 @@ import UserCollection from "@/components/user/UserCollection.vue";
 import Discuss from "@/components/user/Discuss.vue";
 import About from "@/components/user/About.vue";
 
+const emit = defineEmits(["userChange"]);
+
 const selectedBtn = ref(1);
 const avatarKey = ref(0);
 const aboutKey = ref(0);
@@ -69,6 +78,7 @@ function handleClick(index) {
 function reload() {
   avatarKey.value++;
   aboutKey.value++;
+  emit("userChange");
 }
 </script>
 

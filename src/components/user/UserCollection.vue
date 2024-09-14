@@ -16,7 +16,7 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { useUserStore } from "@/stores/userStore";
+import { useUserStore } from "../../stores/userStore";
 import api from "@/plugins/axios";
 
 const userStore = useUserStore();

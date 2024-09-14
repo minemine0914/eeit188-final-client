@@ -17,7 +17,7 @@
 
 <script setup>
 import { ref } from "vue";
-import { useUserStore } from "@/stores/userStore";
+import { useUserStore } from "../../stores/userStore";
 import api from "@/plugins/axios";
 
 const userStore = useUserStore();
@@ -51,9 +51,7 @@ const sendImageToServer = async (base64Image) => {
   };
 
   try {
-    const response = await api.put(`/user/upload-avatar/${user.id}`, payload);
-    console.log("Image uploaded successfully:", response.data);
-    // Update the avatar with the new image (Base64)
+    await api.put(`/user/upload-avatar/${user.id}`, payload);
     await findUserById();
     emit("userAvatarChange");
   } catch (error) {

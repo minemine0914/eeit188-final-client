@@ -194,7 +194,7 @@ const rules = {
 
 const v$ = useVuelidate(rules, state);
 
-import { useUserStore } from "@/stores/userStore";
+import { useUserStore } from "../../stores/userStore";
 const userStore = useUserStore();
 const { register } = userStore;
 

@@ -58,7 +58,7 @@
 
 <script setup>
 import { ref, onMounted, reactive } from "vue";
-import { useUserStore } from "@/stores/userStore";
+import { useUserStore } from "../../stores/userStore";
 import api from "@/plugins/axios";
 import { useVuelidate } from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";

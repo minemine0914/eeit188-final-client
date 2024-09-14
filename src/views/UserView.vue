@@ -28,11 +28,14 @@
                   <template v-slot:prepend>
                     <v-avatar
                       color="surface-variant"
-                      :image="avaterImg"
                       size="small"
+                      :key="avatarKey"
+                      ><v-img :src="user?.avatarBase64"></v-img
                     ></v-avatar>
                   </template>
-                  <div class="text-body-1">nickname</div>
+                  <div class="text-body-1" :key="nameKey">
+                    {{ user?.name }}
+                  </div>
                 </v-btn>
               </template>
             </v-hover>
@@ -53,7 +56,7 @@
       <v-btn v-if="jwtToken" @click="handleLogout">登出</v-btn>
     </v-app-bar>
     <v-main>
-      <router-view></router-view>
+      <router-view @userChange="reload"></router-view>
     </v-main>
     <v-dialog v-model="isOpenDialog" width="auto">
       <v-card
@@ -83,7 +86,7 @@ const { windowSize, containerHeight, isOpenDialog, memberMenu, appbarRef } =
 const { height: appbarHeight } = useElementSize(appbarRef);
 
 const userStore = useUserStore();
-const { jwtToken, logout } = userStore;
+const { user, jwtToken, logout } = userStore;
 
 let timeoutId = null; // 儲存定時器 ID
 function onResize() {
@@ -106,6 +109,15 @@ function handleLogout() {
   if (confirmLogout) {
     logout();
   }
+}
+
+// 同步更新大頭貼及名稱
+const avatarKey = ref(0);
+const nameKey = ref(0);
+
+function reload() {
+  avatarKey.value++;
+  nameKey.value++;
 }
 </script>
 <style scoped></style>

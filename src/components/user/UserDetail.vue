@@ -94,7 +94,7 @@ import {
   helpers,
 } from "@vuelidate/validators";
 import { VDateInput } from "vuetify/labs/VDateInput";
-import { useUserStore } from "@/stores/userStore";
+import { useUserStore } from "../../stores/userStore";
 const emit = defineEmits(["userDetailChanged"]);
 
 const userStore = useUserStore();

@@ -25,7 +25,7 @@
 import { reactive, computed } from "vue";
 import { useVuelidate } from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
-import { useUserStore } from "@/stores/userStore";
+import { useUserStore } from "../../stores/userStore";
 import { useRouter } from "vue-router";
 
 const initialState = {
