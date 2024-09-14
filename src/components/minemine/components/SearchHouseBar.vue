@@ -1,7 +1,7 @@
 <template>
     <div class="position-absolute w-100">
         <v-row justify="center" align="center" no-gutters>
-            <v-col cols="12" xs="12" sm="9" md="6" v-click-outside="onClickOutside">
+            <v-col cols="12" xs="12" sm="9" md="8" lg="6" v-click-outside="onClickOutside">
                 <v-card elevation="3" rounded="pill" class="px-3 mb-3" border style="z-index: 100">
                     <v-toolbar dense color="rgba(0,0,0,0)">
                         <v-text-field
@@ -129,7 +129,7 @@
                                 <v-card-item>
                                     <div class="text-h6 font-weight-black">選擇人數</div>
                                     <v-list lines="two">
-                                        <v-list-item title="成人" subtitle="年滿">
+                                        <v-list-item title="成人" subtitle="年滿18歲(含)以上">
                                             <template v-slot:append>
                                                 <v-container
                                                     class="pa-2 d-flex justify-center align-center ga-5"
@@ -158,7 +158,7 @@
                                                 </v-container>
                                             </template>
                                         </v-list-item>
-                                        <v-list-item title="孩童" subtitle="年滿">
+                                        <v-list-item title="孩童" subtitle="未滿18歲">
                                             <template v-slot:append>
                                                 <v-container
                                                     class="pa-2 d-flex justify-center align-center ga-5"

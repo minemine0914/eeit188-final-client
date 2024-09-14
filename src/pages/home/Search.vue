@@ -17,12 +17,12 @@
                 >
                     <template v-for="(item, index) in filterHouseList" :key="index">
                         <v-sheet
-                            class="d-flex align-center justify-center border mb-5 elevation-3 mx-3"
+                            class="d-flex align-center justify-center border mb-5 elevation-0"
                             color="brown-lighten-5"
                             rounded="xl"
                         >
                             <v-row class="fill-height" no-gutters>
-                                <v-col class="pa-5" cols="12" sm="4" md="4" xl="2" lg="3">
+                                <v-col class="pa-5" cols="12" sm="5" md="4" lg="3" xl="3">
                                     <v-sheet color="transparent" rounded="lg" class="overflow-hidden">
                                         <v-img
                                             :aspect-ratio="1"
@@ -35,10 +35,10 @@
                                 <v-col
                                     class="pa-5 d-flex justify-start align-start"
                                     cols="12"
-                                    sm="8"
+                                    sm="7"
                                     md="8"
                                     lg="9"
-                                    xl="10"
+                                    xl="9"
                                 >
                                     <div class="d-flex flex-row mb-6 w-100 h-100">
                                         <v-sheet class="flex-grow-1" color="transparent">
@@ -105,11 +105,9 @@
                         </v-sheet>
                     </template>
                     <template v-slot:empty>
-                        <v-row justify="center" align="center" class="text-center">
-                            <v-col cols="12">
-                                <v-alert variant="">房源搜尋完畢! 共找到 {{ filterHouseList.length }} 個相符房源</v-alert>
-                            </v-col>
-                        </v-row>
+                        <v-sheet>
+                            <v-alert variant="plain">房源搜尋完畢! 共找到 {{ filterHouseList.length }} 個相符房源</v-alert>
+                        </v-sheet>
                     </template>
                 </v-infinite-scroll>
             </v-container>
