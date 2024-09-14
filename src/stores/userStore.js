@@ -2,13 +2,15 @@ import { defineStore } from "pinia";
 import api from "@/plugins/axios";
 import { ref } from "vue";
 import * as jwtDecode from "jwt-decode";
+import { useRouter } from "vue-router";
 
 export const useUserStore = defineStore(
-  "userView",
+  "user",
   () => {
     // Data
     const jwtToken = ref(null);
     const user = ref(null);
+    const router = useRouter();
 
     // Methods
     async function register(userData) {
@@ -34,11 +36,19 @@ export const useUserStore = defineStore(
           data: loginData,
         });
         jwtToken.value = response.data.token;
-        user.value = await findUserById(jwtToken.id);
+        await findUserById();
       } catch (error) {
         console.error("Login failed:", error);
         throw error;
       }
+    }
+
+    function logout() {
+      localStorage.removeItem("jwtToken");
+      localStorage.removeItem("user");
+      router.push("/").then(() => {
+        window.location.reload();
+      });
     }
 
     async function findUserById() {
@@ -162,6 +172,7 @@ export const useUserStore = defineStore(
       jwtToken,
       register,
       loginAuth,
+      logout,
       decodeToken,
       findUserById,
       updateUser,
