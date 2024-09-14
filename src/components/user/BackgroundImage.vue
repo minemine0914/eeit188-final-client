@@ -24,17 +24,15 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { useUserStore } from "@/stores/userStore";
+import { useUserStore } from "../../stores/userStore";
 
 // Default avatar image if no image is uploaded
 const defaultBackgroundImage =
   "https://www.wordforest.org/wp-content/uploads/2016/12/forest-4-e1483856441969.jpg";
 
 const userStore = useUserStore();
-const { decodeToken, uploadBackgroundImage, downloadBackgroundImage } =
-  userStore;
+const { user, uploadBackgroundImage, downloadBackgroundImage } = userStore;
 
-const userInfo = ref(null);
 const fileInput = ref(null);
 const backgroundImageUrl = ref(defaultBackgroundImage);
 const selectedFile = ref(null);
@@ -51,12 +49,9 @@ const rules = [
 ];
 
 onMounted(async () => {
-  userInfo.value = decodeToken();
-  if (userInfo.value) {
+  if (user) {
     try {
-      const response = await userStore.downloadBackgroundImage(
-        userInfo.value.id
-      );
+      const response = await userStore.downloadBackgroundImage(user.id);
       const url = window.URL.createObjectURL(response);
       backgroundImageUrl.value = url;
     } catch (error) {
@@ -79,7 +74,7 @@ const handleFileChange = async (event) => {
       await uploadBackgroundImage(file);
 
       // Reload background image
-      const response = await downloadBackgroundImage(userInfo.value.id);
+      const response = await downloadBackgroundImage(user.id);
       const url = window.URL.createObjectURL(response);
       backgroundImageUrl.value = url;
     } catch (error) {

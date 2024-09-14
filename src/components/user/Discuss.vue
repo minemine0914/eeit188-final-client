@@ -20,13 +20,12 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { useUserStore } from "@/stores/userStore";
+import { useUserStore } from "../../stores/userStore";
 import api from "@/plugins/axios";
 
 const userStore = useUserStore();
-const { decodeToken } = userStore;
+const { user } = userStore;
 
-const userInfo = ref(null);
 const discusses = ref([]);
 
 onMounted(() => {
@@ -35,12 +34,10 @@ onMounted(() => {
 
 const fetchDiscusses = async () => {
   try {
-    userInfo.value = decodeToken();
-
     // Fetch user discuss
     const response = await api({
       method: "get",
-      url: "/discuss/user/" + userInfo.value.id,
+      url: `/discuss/user/${user.id}`,
     });
 
     discusses.value = response.data.discusses;
@@ -51,7 +48,7 @@ const fetchDiscusses = async () => {
 
 const retractDiscuss = async (discussId) => {
   try {
-    const response = await api({
+    await api({
       method: "put",
       url: `/discuss/retract/${discussId}`,
     });

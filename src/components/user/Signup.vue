@@ -116,6 +116,9 @@ import {
   sameAs,
 } from "@vuelidate/validators";
 import { VDateInput } from "vuetify/labs/VDateInput";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 
 // Custom password validation
 const passwordComplexity = helpers.regex(
@@ -190,7 +193,8 @@ const rules = {
 };
 
 const v$ = useVuelidate(rules, state);
-import { useUserStore } from "@/stores/userStore";
+
+import { useUserStore } from "../../stores/userStore";
 const userStore = useUserStore();
 const { register } = userStore;
 
@@ -213,7 +217,8 @@ const submit = async () => {
       address: state.address,
       about: state.about,
     });
-    alert("註冊成功！");
+    alert("註冊成功！ 請登入");
+    router.push("/login");
   } catch (error) {
     console.error("Registration failed:", error);
   }

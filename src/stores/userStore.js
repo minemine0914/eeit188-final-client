@@ -2,13 +2,15 @@ import { defineStore } from "pinia";
 import api from "@/plugins/axios";
 import { ref } from "vue";
 import * as jwtDecode from "jwt-decode";
+import { useRouter } from "vue-router";
 
 export const useUserStore = defineStore(
-  "userView",
+  "user",
   () => {
     // Data
     const jwtToken = ref(null);
     const user = ref(null);
+    const router = useRouter();
 
     // Methods
     async function register(userData) {
@@ -34,10 +36,19 @@ export const useUserStore = defineStore(
           data: loginData,
         });
         jwtToken.value = response.data.token;
+        await findUserById();
       } catch (error) {
         console.error("Login failed:", error);
         throw error;
       }
+    }
+
+    function logout() {
+      localStorage.removeItem("jwtToken");
+      localStorage.removeItem("user");
+      router.push("/").then(() => {
+        window.location.reload();
+      });
     }
 
     async function findUserById() {
@@ -47,7 +58,7 @@ export const useUserStore = defineStore(
           method: "get",
           url: `/user/${userId}`,
         });
-        return response.data;
+        user.value = response.data;
       } catch (error) {
         console.log(error);
       }
@@ -115,6 +126,33 @@ export const useUserStore = defineStore(
       }
     }
 
+    async function getChatRecord(userId) {
+      try {
+        const response = await api({
+          method: "get",
+          url: `/chat-record/${userId}`,
+        });
+        return response.data;
+      } catch (error) {
+        console.error("Error downloading background image:", error);
+        throw error;
+      }
+    }
+
+    async function addChatRecord(request) {
+      try {
+        const response = await api({
+          method: "post",
+          url: `/chat-record/`,
+          data: request,
+        });
+        console.log("ok");
+      } catch (error) {
+        console.error("Error downloading background image:", error);
+        throw error;
+      }
+    }
+
     function decodeToken() {
       if (typeof jwtToken.value === "string" && jwtToken.value.trim() !== "") {
         try {
@@ -134,12 +172,15 @@ export const useUserStore = defineStore(
       jwtToken,
       register,
       loginAuth,
+      logout,
       decodeToken,
       findUserById,
       updateUser,
       uploadAvater,
       uploadBackgroundImage,
       downloadBackgroundImage,
+      getChatRecord,
+      addChatRecord,
     };
   },
   {

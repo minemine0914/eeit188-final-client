@@ -42,6 +42,11 @@ const router = {
       name: "backgroundImage",
       component: () => import("@/components/user/BackgroundImage.vue"),
     },
+    {
+      path: "chat",
+      name: "chat",
+      component: () => import("@/components/user/Chat.vue"),
+    },
   ],
 };
 
