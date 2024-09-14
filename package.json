@@ -27,7 +27,8 @@
     "vue-router": "^4.4.3",
     "vue3-apexcharts": "^1.6.0",
     "vue3-openlayers": "^11.1.0",
-    "vuetify": "^3.7.1"
+    "vuetify": "^3.7.1",
+    "ws": "^8.18.0"
   },
   "devDependencies": {
     "@mdi/font": "^7.4.47",
