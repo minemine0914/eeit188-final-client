@@ -7,13 +7,13 @@ export const useUserViewStore = defineStore("userView", () => {
         y: 0,
     });
     const containerHeight = ref(1);
-    const isOpenDialog = ref(false);
+    const isOpenLoginDialog = ref(false);
     const memberMenu = ref(false);
     const appbarRef = ref(null);
     return {
         windowSize,
         containerHeight,
-        isOpenDialog,
+        isOpenLoginDialog,
         memberMenu,
         appbarRef,
     };
