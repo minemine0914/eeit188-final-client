@@ -23,7 +23,7 @@ export const useUserStore = defineStore(
         console.log("Registration successful:", response.data);
         return response.data;
       } catch (error) {
-        console.error("Registration failed:", error);
+        console.error(error);
         throw error;
       }
     }
@@ -38,7 +38,7 @@ export const useUserStore = defineStore(
         jwtToken.value = response.data.token;
         await findUserById();
       } catch (error) {
-        console.error("Login failed:", error);
+        console.error(error);
         throw error;
       }
     }
@@ -107,7 +107,7 @@ export const useUserStore = defineStore(
             }
           );
         } catch (error) {
-          console.error("Error uploading file:", error);
+          console.error(error);
         }
       }
     }
@@ -121,7 +121,7 @@ export const useUserStore = defineStore(
         });
         return response.data;
       } catch (error) {
-        console.error("Error downloading background image:", error);
+        console.error(error);
         throw error;
       }
     }
@@ -134,21 +134,21 @@ export const useUserStore = defineStore(
         });
         return response.data;
       } catch (error) {
-        console.error("Error downloading background image:", error);
+        console.error(error);
         throw error;
       }
     }
 
     async function addChatRecord(request) {
       try {
-        const response = await api({
+        await api({
           method: "post",
           url: `/chat-record/`,
           data: request,
         });
         console.log("ok");
       } catch (error) {
-        console.error("Error downloading background image:", error);
+        console.error(error);
         throw error;
       }
     }
