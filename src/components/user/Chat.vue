@@ -10,22 +10,31 @@
         ></v-card>
         <v-list class="chat-recored">
           <v-list-item
-            v-for="item in items"
-            :key="item.index"
+            v-for="item in itemSet?.items"
+            :key="item.id"
             @click="handleClick(item)"
           >
             <div class="chat-recored-part">
               <div class="chat-recored-title">
                 <v-list-item-avatar>
-                  <v-img :src="item.avatar" width="50px" alt=""></v-img>
+                  <v-img :src="item?.avatar" width="50px" alt=""></v-img>
                 </v-list-item-avatar>
                 <v-list-item-content>
-                  <v-list-item-title>{{ item.title }}</v-list-item-title>
+                  <v-list-item-title>{{ item?.title }}</v-list-item-title>
                 </v-list-item-content>
               </div>
-              <v-list-item-content class="chat-recored-content">
-                <v-list-item-subtitle>{{ item.subtitle }}</v-list-item-subtitle>
-              </v-list-item-content>
+              <div class="chat-recored-text">
+                <v-list-item-content class="chat-recored-content">
+                  <v-list-item-content id="item-subtitle-1">{{
+                    item?.subtitle
+                  }}</v-list-item-content>
+                </v-list-item-content>
+                <v-list-item-content class="chat-recored-content">
+                  <v-list-item-content id="item-subtitle-2">{{
+                    item?.createdAt
+                  }}</v-list-item-content>
+                </v-list-item-content>
+              </div>
             </div>
             <v-divider :thickness="5"></v-divider>
           </v-list-item>
@@ -53,17 +62,23 @@
           <v-card
             v-if="chat?.senderId === me?.id && chat?.receiverId === other?.id"
             class="chat"
+            color="surface-variant"
             id="me"
           >
-            <v-card-text class="bg-surface-light pt-4" width="300">
-              {{ chat?.chat }}
-            </v-card-text>
+            <div class="chat-content-1">
+              <v-card-text id="text" width="300">
+                {{ chat?.chat }}
+              </v-card-text>
+              <v-card-text width="300">
+                {{ chat?.createdAt }}
+              </v-card-text>
+            </div>
             <div class="member">
-              <v-avatar class="avatar" color="surface-variant" size="50">
+              <v-avatar class="avatar" size="50">
                 <v-img :src="me?.avatarBase64" cover></v-img>
               </v-avatar>
               {{ me?.name }}
-              <v-btn color="red-darken-4">收回</v-btn>
+              <!-- <v-btn color="red-darken-4">收回</v-btn> -->
             </div>
           </v-card>
           <v-card
@@ -72,15 +87,20 @@
             id="other"
           >
             <div class="member">
-              <v-avatar class="avatar" color="surface-variant" size="50">
+              <v-avatar class="avatar" color="surface-light" size="50">
                 <v-img :src="other?.avatarBase64" cover></v-img>
               </v-avatar>
               {{ other?.name }}
-              <v-btn color="red-darken-4">收回</v-btn>
+              <!-- <v-btn color="red-darken-4">收回</v-btn> -->
             </div>
-            <v-card-text class="bg-surface-light pt-4" width="300">
-              {{ chat?.chat }}
-            </v-card-text>
+            <div class="chat-content-2">
+              <v-card-text id="text" width="300">
+                {{ chat?.chat }}
+              </v-card-text>
+              <v-card-text width="300">
+                {{ chat?.createdAt }}
+              </v-card-text>
+            </div>
           </v-card>
         </div>
       </v-card>
@@ -103,18 +123,24 @@ import { ref, onMounted, reactive } from "vue";
 import { useUserStore } from "../../stores/userStore";
 import api from "@/plugins/axios";
 import { useVuelidate } from "@vuelidate/core";
-import { required, helpers } from "@vuelidate/validators";
+import { required } from "@vuelidate/validators";
 
 const userStore = useUserStore();
 const { user, getChatRecord, addChatRecord } = userStore;
 
-const me = ref(null);
-const other = ref(null);
-const chatRecord = ref([]);
+const me = reactive({});
+const other = reactive({});
 const index = ref(0);
-const items = ref([]);
 const itemsMap = ref(new Map());
 const page = ref(0);
+
+const chatRecord = reactive({
+  chatRecords: [],
+});
+
+const itemSet = reactive({
+  items: [],
+});
 
 const initialState = {
   message: null,
@@ -126,16 +152,16 @@ const state = reactive({
 
 const rules = {
   message: {
-    required: helpers.withMessage("", required),
+    required: required,
   },
 };
 
-let socket = ref(null);
+const socket = ref(null);
 
 onMounted(async () => {
-  chatRecord.value = await getChatRecord(user.id);
-  me.value = user;
-  other.value = await getOther();
+  chatRecord.chatRecords = await getChatRecord(user.id);
+  Object.assign(me, user);
+  Object.assign(other, await getOther());
   getChatList();
 
   // Connect to WebSocket
@@ -147,8 +173,6 @@ onMounted(async () => {
       try {
         const parsedData = JSON.parse(textData);
         handleIncomingMessage(parsedData);
-        console.log(parsedData);
-        // Now handle parsedData as usual
       } catch (error) {
         console.error("Error parsing JSON:", error);
       }
@@ -157,7 +181,6 @@ onMounted(async () => {
         const parsedData = JSON.parse(event.data);
         handleIncomingMessage(parsedData);
         console.log(parsedData);
-        // Handle parsedData as usual
       } catch (error) {
         console.error("Error parsing JSON:", error);
       }
@@ -178,14 +201,15 @@ onMounted(async () => {
 });
 
 function handleIncomingMessage(message) {
-  console.log("message comming!");
-  chatRecord.value.chatRecords.push(message);
-  getChatList();
+  if (message.chat != "" && message.chat != null) {
+    chatRecord.chatRecords.unshift(message);
+    getChatList();
+  }
 }
 
 async function getOther() {
   try {
-    const otherId = checkOther();
+    const otherId = checkOther(index.value);
     const response = await api({
       method: "get",
       url: `/user/${otherId}`,
@@ -196,12 +220,12 @@ async function getOther() {
   }
 }
 
-function checkOther() {
-  if (chatRecord.value.chatRecords[index.value].senderId === me.value.id) {
-    return chatRecord.value.chatRecords[index.value].receiverId;
+function checkOther(index) {
+  if (chatRecord.chatRecords[index].senderId === me.id) {
+    return chatRecord.chatRecords[index].receiverId;
   }
 
-  return chatRecord.value.chatRecords[index.value].senderId;
+  return chatRecord.chatRecords[index].senderId;
 }
 
 const v$ = useVuelidate(rules, state);
@@ -213,47 +237,59 @@ const submit = async () => {
 
   const messageData = {
     chat: state.message,
-    senderId: me.value.id,
-    receiverId: other.value.id,
+    senderId: me.id,
+    receiverId: other.id,
+    senderAvatar: me.avatarBase64,
+    createdAt: new Date(),
   };
 
   // Send message through WebSocket
   socket.value.send(JSON.stringify(messageData));
 
-  chatRecord.value.chatRecords.push(messageData);
+  handleIncomingMessage(messageData);
 
-  await addChatRecord(messageData);
+  const persistData = {
+    chat: state.message,
+    senderId: me.id,
+    receiverId: other.id,
+  };
+
+  await addChatRecord(persistData);
 
   state.message = null; // Clear input after sending
 };
 
 function getChatList() {
-  let count = 0;
+  itemSet.items = [];
+  itemsMap.value.clear();
 
-  chatRecord.value.chatRecords.forEach((chat) => {
-    const key = chat.senderId !== me.value.id ? chat.senderId : chat.receiverId;
+  let chat;
 
-    if (!itemsMap.value.has(key)) {
-      itemsMap.value.set(key, {
-        index: count,
-        avatar:
-          chat.senderId !== me.value.id
-            ? chat.senderAvatar
-            : chat.receiverAvatar,
-        title: chat.senderId !== me.value.id ? chat.sender : chat.receiver,
+  for (let i = chatRecord.chatRecords.length - 1; i >= 0; i--) {
+    chat = chatRecord.chatRecords[i];
+    if (chat.receiverId === me.id) {
+      const newItem = {
+        id: chat.id,
+        avatar: chat.senderAvatar,
+        title: chat.sender,
         subtitle: chat.chat,
-      });
+        createdAt: chat.createdAt,
+      };
 
-      items.value.push(itemsMap.value.get(key));
+      itemsMap.value.set(chat.senderId, newItem);
     }
+  }
 
-    count++;
-  });
+  itemSet.items = Array.from(itemsMap.value.values());
 }
 
 const handleClick = async (item) => {
-  index.value = item.index;
-  other.value = await getOther();
+  index.value = findIndexById(chatRecord.chatRecords, item.id);
+  Object.assign(other, await getOther());
+};
+
+const findIndexById = (array, id) => {
+  return array.findIndex((item) => item.id === id);
 };
 
 // function handleScroll(event) {
@@ -287,6 +323,11 @@ const handleClick = async (item) => {
   overflow: auto;
 }
 
+.chat-recored-text {
+  display: flex;
+  flex-direction: column;
+}
+
 .chat-recored-part {
   display: flex;
   align-items: center;
@@ -294,6 +335,31 @@ const handleClick = async (item) => {
 
 .chat-recored-title {
   margin-right: 50px;
+}
+
+#item-subtitle-1 {
+  font-size: 25px;
+}
+
+#item-subtitle-2 {
+  font-size: 10px;
+}
+
+.chat-content-1 {
+  display: flex;
+  align-items: flex-end;
+  flex-direction: column;
+  width: 100%;
+}
+
+.chat-content-2 {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+#text {
+  font-size: 25px;
 }
 
 .chat-container {
@@ -324,7 +390,7 @@ const handleClick = async (item) => {
 .chat {
   width: 70%;
   display: flex;
-  margin: 30px;
+  margin: 10px;
 }
 
 .member {

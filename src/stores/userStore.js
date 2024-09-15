@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import api from "@/plugins/axios";
-import { ref } from "vue";
+import { ref, reactive } from "vue";
 import * as jwtDecode from "jwt-decode";
 import { useRouter } from "vue-router";
 
@@ -9,7 +9,7 @@ export const useUserStore = defineStore(
   () => {
     // Data
     const jwtToken = ref(null);
-    const user = ref(null);
+    const user = reactive({});
     const router = useRouter();
 
     // Methods
@@ -58,7 +58,7 @@ export const useUserStore = defineStore(
           method: "get",
           url: `/user/${userId}`,
         });
-        user.value = response.data;
+        Object.assign(user, response.data);
       } catch (error) {
         console.log(error);
       }
@@ -132,7 +132,7 @@ export const useUserStore = defineStore(
           method: "get",
           url: `/chat-record/${userId}`,
         });
-        return response.data;
+        return response.data.chatRecords;
       } catch (error) {
         console.error(error);
         throw error;
@@ -146,7 +146,6 @@ export const useUserStore = defineStore(
           url: `/chat-record/`,
           data: request,
         });
-        console.log("ok");
       } catch (error) {
         console.error(error);
         throw error;
