@@ -40,6 +40,7 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
     const houseInfo = reactive({ ...initialHouseInfo });
     const isErrorGetHouseInfo = ref(false);
     const isLoading = ref(true);
+    const isCollected = ref(false);
 
     function resetHouseInfo() {
         Object.assign(houseInfo, initialHouseInfo);
@@ -47,7 +48,8 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
 
     async function getHouseInfo(id) {
         isLoading.value = true;
-        await api.get(`/house/${id}`)
+        await api
+            .get(`/house/${id}`)
             .then((res) => {
                 Object.assign(houseInfo, res.data);
                 isErrorGetHouseInfo.value = false;
@@ -62,5 +64,12 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
             });
     }
 
-    return { houseInfo, isErrorGetHouseInfo, isLoading, resetHouseInfo, getHouseInfo };
+    return {
+        houseInfo,
+        isErrorGetHouseInfo,
+        isLoading,
+        isCollected,
+        resetHouseInfo,
+        getHouseInfo
+    };
 });

@@ -52,7 +52,8 @@
             <v-btn v-if="jwtToken" @click="handleLogout">登出</v-btn>
         </v-app-bar>
         <v-main>
-            <router-view @userChange="reload"></router-view>
+            <!-- <router-view @userChange="reload"></router-view> -->
+            <router-view></router-view>
         </v-main>
         <v-dialog v-model="isOpenLoginDialog" width="auto">
             <v-card

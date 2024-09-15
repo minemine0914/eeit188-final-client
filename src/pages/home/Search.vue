@@ -23,7 +23,12 @@
                         >
                             <v-row class="fill-height" no-gutters>
                                 <v-col class="pa-5" cols="12" sm="5" md="4" lg="3" xl="3">
-                                    <v-sheet color="transparent" rounded="lg" class="overflow-hidden">
+                                    <!-- 圖片 -->
+                                    <v-sheet
+                                        color="transparent"
+                                        rounded="lg"
+                                        class="overflow-hidden"
+                                    >
                                         <v-img
                                             :aspect-ratio="1"
                                             :height="200"
@@ -33,7 +38,7 @@
                                     </v-sheet>
                                 </v-col>
                                 <v-col
-                                    class="pa-5 d-flex justify-start align-start"
+                                    class="d-flex justify-start align-start pa-5"
                                     cols="12"
                                     sm="7"
                                     md="8"
@@ -41,6 +46,7 @@
                                     xl="9"
                                 >
                                     <div class="d-flex flex-row mb-6 w-100 h-100">
+                                        <!-- 房源名稱與資訊 -->
                                         <v-sheet class="flex-grow-1" color="transparent">
                                             <div
                                                 class="text-h5 font-weight-medium text-brown-darken-4 pt-1 mb-1"
@@ -48,11 +54,11 @@
                                                 {{ item.name }}
                                             </div>
                                             <div class="text-grey-darken-1">
-                                                <span class="mdi mdi-map-marker mr-1"></span>
-                                                <span class="mr-2">{{ `位於 ${item.city}` }}</span>
+                                                <span class="mdi mdi-map-marker mr-2"></span>
+                                                <span class="mr-2">{{ `位於 ${item.city} ${item.region}` }}</span>
                                             </div>
                                             <div class="text-grey-darken-1">
-                                                <span class="mdi mdi-bed mr-2"></span>
+                                                <span class="mdi mdi-sofa mr-2"></span>
                                                 <span class="mr-1" v-if="item.livingDiningRoom > 0">
                                                     {{ `${item.livingDiningRoom} 廳` }}
                                                 </span>
@@ -67,6 +73,10 @@
                                                 </span>
                                             </div>
                                             <div class="text-grey-darken-1">
+                                                <span class="mdi mdi-bed mr-2"></span>
+                                                <span>可住</span>
+                                            </div>
+                                            <div class="text-grey-darken-1">
                                                 <span class="mr-2" v-if="!item.pet">
                                                     <span class="mdi mdi-paw-off mr-1"></span>
                                                     <span>禁止寵物</span>
@@ -78,6 +88,7 @@
                                                 </span>
                                             </div>
                                         </v-sheet>
+                                        <!-- 價錢與詳細按鈕 -->
                                         <v-sheet
                                             class="d-flex flex-column flex-grow-1 justify-end align-end"
                                             color="transparent"
@@ -106,7 +117,10 @@
                     </template>
                     <template v-slot:empty>
                         <v-sheet>
-                            <v-alert variant="plain">房源搜尋完畢! 共找到 {{ filterHouseList.length }} 個相符房源</v-alert>
+                            <v-alert variant="plain"
+                                >房源搜尋完畢! 共找到
+                                {{ filterHouseList.length }} 個相符房源</v-alert
+                            >
                         </v-sheet>
                     </template>
                 </v-infinite-scroll>
