@@ -10,22 +10,31 @@
         ></v-card>
         <v-list class="chat-recored">
           <v-list-item
-            v-for="item in itemSet.items"
+            v-for="item in itemSet?.items"
             :key="item.id"
             @click="handleClick(item)"
           >
             <div class="chat-recored-part">
               <div class="chat-recored-title">
                 <v-list-item-avatar>
-                  <v-img :src="item.avatar" width="50px" alt=""></v-img>
+                  <v-img :src="item?.avatar" width="50px" alt=""></v-img>
                 </v-list-item-avatar>
                 <v-list-item-content>
-                  <v-list-item-title>{{ item.title }}</v-list-item-title>
+                  <v-list-item-title>{{ item?.title }}</v-list-item-title>
                 </v-list-item-content>
               </div>
-              <v-list-item-content class="chat-recored-content">
-                <v-list-item-subtitle>{{ item.subtitle }}</v-list-item-subtitle>
-              </v-list-item-content>
+              <div class="chat-recored-text">
+                <v-list-item-content class="chat-recored-content">
+                  <v-list-item-content id="item-subtitle-1">{{
+                    item?.subtitle
+                  }}</v-list-item-content>
+                </v-list-item-content>
+                <v-list-item-content class="chat-recored-content">
+                  <v-list-item-content id="item-subtitle-2">{{
+                    item?.createdAt
+                  }}</v-list-item-content>
+                </v-list-item-content>
+              </div>
             </div>
             <v-divider :thickness="5"></v-divider>
           </v-list-item>
@@ -53,18 +62,19 @@
           <v-card
             v-if="chat?.senderId === me?.id && chat?.receiverId === other?.id"
             class="chat"
+            color="surface-variant"
             id="me"
           >
-            <div class="chat-content">
-              <v-card-text class="bg-surface-light pt-4" id="text" width="300">
+            <div class="chat-content-1">
+              <v-card-text id="text" width="300">
                 {{ chat?.chat }}
               </v-card-text>
-              <v-card-text class="bg-surface-light pt-4" width="300">
+              <v-card-text width="300">
                 {{ chat?.createdAt }}
               </v-card-text>
             </div>
             <div class="member">
-              <v-avatar class="avatar" color="surface-variant" size="50">
+              <v-avatar class="avatar" size="50">
                 <v-img :src="me?.avatarBase64" cover></v-img>
               </v-avatar>
               {{ me?.name }}
@@ -77,17 +87,17 @@
             id="other"
           >
             <div class="member">
-              <v-avatar class="avatar" color="surface-variant" size="50">
+              <v-avatar class="avatar" color="surface-light" size="50">
                 <v-img :src="other?.avatarBase64" cover></v-img>
               </v-avatar>
               {{ other?.name }}
               <!-- <v-btn color="red-darken-4">收回</v-btn> -->
             </div>
-            <div class="chat-content">
-              <v-card-text class="bg-surface-light pt-4" id="text" width="300">
+            <div class="chat-content-2">
+              <v-card-text id="text" width="300">
                 {{ chat?.chat }}
               </v-card-text>
-              <v-card-text class="bg-surface-light pt-4" width="300">
+              <v-card-text width="300">
                 {{ chat?.createdAt }}
               </v-card-text>
             </div>
@@ -118,8 +128,8 @@ import { required } from "@vuelidate/validators";
 const userStore = useUserStore();
 const { user, getChatRecord, addChatRecord } = userStore;
 
-const me = ref(null);
-const other = ref(null);
+const me = reactive({});
+const other = reactive({});
 const index = ref(0);
 const itemsMap = ref(new Map());
 const page = ref(0);
@@ -150,8 +160,8 @@ const socket = ref(null);
 
 onMounted(async () => {
   chatRecord.chatRecords = await getChatRecord(user.id);
-  me.value = user;
-  other.value = await getOther();
+  Object.assign(me, user);
+  Object.assign(other, await getOther());
   getChatList();
 
   // Connect to WebSocket
@@ -211,7 +221,7 @@ async function getOther() {
 }
 
 function checkOther(index) {
-  if (chatRecord.chatRecords[index].senderId === me.value.id) {
+  if (chatRecord.chatRecords[index].senderId === me.id) {
     return chatRecord.chatRecords[index].receiverId;
   }
 
@@ -227,8 +237,10 @@ const submit = async () => {
 
   const messageData = {
     chat: state.message,
-    senderId: me.value.id,
-    receiverId: other.value.id,
+    senderId: me.id,
+    receiverId: other.id,
+    senderAvatar: me.avatarBase64,
+    createdAt: new Date(),
   };
 
   // Send message through WebSocket
@@ -236,7 +248,13 @@ const submit = async () => {
 
   handleIncomingMessage(messageData);
 
-  await addChatRecord(messageData);
+  const persistData = {
+    chat: state.message,
+    senderId: me.id,
+    receiverId: other.id,
+  };
+
+  await addChatRecord(persistData);
 
   state.message = null; // Clear input after sending
 };
@@ -245,9 +263,11 @@ function getChatList() {
   itemSet.items = [];
   itemsMap.value.clear();
 
+  let chat;
+
   for (let i = chatRecord.chatRecords.length - 1; i >= 0; i--) {
-    const chat = chatRecord.chatRecords[i];
-    if (chat.senderId !== me.value.id) {
+    chat = chatRecord.chatRecords[i];
+    if (chat.receiverId === me.id) {
       const newItem = {
         id: chat.id,
         avatar: chat.senderAvatar,
@@ -265,7 +285,7 @@ function getChatList() {
 
 const handleClick = async (item) => {
   index.value = findIndexById(chatRecord.chatRecords, item.id);
-  other.value = await getOther();
+  Object.assign(other, await getOther());
 };
 
 const findIndexById = (array, id) => {
@@ -303,6 +323,11 @@ const findIndexById = (array, id) => {
   overflow: auto;
 }
 
+.chat-recored-text {
+  display: flex;
+  flex-direction: column;
+}
+
 .chat-recored-part {
   display: flex;
   align-items: center;
@@ -312,7 +337,22 @@ const findIndexById = (array, id) => {
   margin-right: 50px;
 }
 
-.chat-content {
+#item-subtitle-1 {
+  font-size: 25px;
+}
+
+#item-subtitle-2 {
+  font-size: 10px;
+}
+
+.chat-content-1 {
+  display: flex;
+  align-items: flex-end;
+  flex-direction: column;
+  width: 100%;
+}
+
+.chat-content-2 {
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -350,7 +390,7 @@ const findIndexById = (array, id) => {
 .chat {
   width: 70%;
   display: flex;
-  margin: 30px;
+  margin: 10px;
 }
 
 .member {
