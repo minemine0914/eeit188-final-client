@@ -20,6 +20,7 @@
                             color="transparent"
                         >
                             <v-btn
+                                :disabled="isCollecting"
                                 variant="text"
                                 rounded="pill"
                                 size="large"
@@ -31,6 +32,7 @@
                                     openOnClick: true,
                                     openOnHover: false,
                                 }"
+                                @click.stop="onClickCollect"
                             >
                                 <template v-slot:prepend>
                                     <v-icon
@@ -309,7 +311,18 @@ const route = useRoute();
 
 // Use pinia store
 const houseDetailStore = useHouseDetailStore();
-const { houseInfo, isErrorGetHouseInfo, isLoading, isCollected } = storeToRefs(houseDetailStore);
+const { houseInfo, isErrorGetHouseInfo, isLoading, isCollecting, isCollected } =
+    storeToRefs(houseDetailStore);
+
+// Functions
+
+function onClickCollect() {
+    if (isCollected.value) {
+        houseDetailStore.removeHouseToCollection(houseInfo.value.id);
+    } else {
+        houseDetailStore.addHouseToCollection(houseInfo.value.id);
+    }
+}
 
 watch(
     // Watch Route params houseId change
