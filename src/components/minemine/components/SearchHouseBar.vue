@@ -2,7 +2,7 @@
     <div class="position-absolute w-100">
         <v-row justify="center" align="center" no-gutters>
             <v-col cols="12" xs="12" sm="9" md="6" v-click-outside="onClickOutside">
-                <v-card elevation="1" rounded="pill" class="px-3 mb-3" border style="z-index: 100">
+                <v-card elevation="3" rounded="pill" class="px-3 mb-3" border style="z-index: 100">
                     <v-toolbar dense color="rgba(0,0,0,0)">
                         <v-text-field
                             v-model="inputValues.cityName"
@@ -337,7 +337,7 @@ function onFocusSearchOther(value) {
 
 function onClickSearchBtn() {
     const searchPaths = ['/search', '/advanced-search']; // 搜尋頁面的路由
-
+    isFocusSearchBar.value = false;
     if (searchPaths.includes(route.path)) {
         // router.go(0); // 如果當前頁面在 searchPaths 中，重新整理頁面
         houseSearchStore.resetSearchResult();

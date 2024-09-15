@@ -1,40 +1,47 @@
 <template>
     <v-layout style="z-index: 99" height="100%">
+        <SearchHouseBar style="top: 15px" />
+
         <v-main ref="searchMainRef">
-            <SearchHouseBar class="my-3" />
-            <v-container ref="searchContainerRef" :style="[`height: ${containerHeight}px`]">
+            <v-container
+                ref="searchContainerRef"
+                :style="[`height: ${containerHeight}px`]"
+                :fluid="false"
+            >
                 <v-infinite-scroll
                     v-if="renderInfinityScrollComponent"
                     :height="searchContainerResizeObserve.height"
                     :items="filterHouseList"
                     @load="loadFilterHouses"
-                    class="pt-15"
+                    class="pt-16"
                 >
                     <template v-for="(item, index) in filterHouseList" :key="index">
                         <v-sheet
-                            class="d-flex align-center justify-center border mb-5 elevation-2 rounded-lg"
+                            class="d-flex align-center justify-center border mb-5 elevation-3 mx-3"
+                            color="brown-lighten-5"
+                            rounded="xl"
                         >
                             <v-row class="fill-height" no-gutters>
-                                <v-col cols="12" sm="4" md="4" lg="3" class="pa-5">
-                                    <v-card>
+                                <v-col class="pa-5" cols="12" sm="4" md="4" xl="2" lg="3">
+                                    <v-sheet color="transparent" rounded="lg" class="overflow-hidden">
                                         <v-img
-                                            class="bg-grey-lighten-2"
                                             :aspect-ratio="1"
                                             :height="200"
                                             :src="testImg"
                                             cover
                                         ></v-img>
-                                    </v-card>
+                                    </v-sheet>
                                 </v-col>
                                 <v-col
+                                    class="pa-5 d-flex justify-start align-start"
                                     cols="12"
                                     sm="8"
                                     md="8"
                                     lg="9"
-                                    class="pa-5 d-flex justify-start align-start"
+                                    xl="10"
                                 >
                                     <div class="d-flex flex-row mb-6 w-100 h-100">
-                                        <v-sheet class="flex-grow-1">
+                                        <v-sheet class="flex-grow-1" color="transparent">
                                             <div
                                                 class="text-h5 font-weight-medium text-brown-darken-4 pt-1 mb-1"
                                             >
@@ -73,15 +80,16 @@
                                         </v-sheet>
                                         <v-sheet
                                             class="d-flex flex-column flex-grow-1 justify-end align-end"
+                                            color="transparent"
                                         >
-                                            <v-sheet>
+                                            <v-sheet color="transparent">
                                                 <div
                                                     class="text-h5 font-weight-medium text-brown-darken-4 mb-2 mr-1"
                                                 >
                                                     NT ${{ item.price }}
                                                 </div>
                                             </v-sheet>
-                                            <v-sheet>
+                                            <v-sheet color="transparent">
                                                 <v-btn
                                                     color="brown-lighten-1"
                                                     min-width="130"
@@ -97,11 +105,25 @@
                         </v-sheet>
                     </template>
                     <template v-slot:empty>
-                        <v-alert type="warning">已無房源可供讀取!</v-alert>
+                        <v-row justify="center" align="center" class="text-center">
+                            <v-col cols="12">
+                                <v-alert variant="">房源搜尋完畢! 共找到 {{ filterHouseList.length }} 個相符房源</v-alert>
+                            </v-col>
+                        </v-row>
                     </template>
                 </v-infinite-scroll>
             </v-container>
         </v-main>
+        <v-fab
+            :active="true"
+            location="bottom end"
+            icon="mdi-chevron-up"
+            color="success"
+            size="48"
+            absolute
+            app
+            appear
+        ></v-fab>
     </v-layout>
 </template>
 
@@ -117,11 +139,8 @@ const searchContainerRef = ref(null);
 const searchMainRef = ref(null);
 const houseSearchStore = useHouseSearchStore();
 const userViewStore = useUserViewStore();
-const {
-    renderInfinityScrollComponent,
-    currentPage,
-    filterHouseList
-} = storeToRefs(houseSearchStore);
+const { renderInfinityScrollComponent, currentPage, filterHouseList } =
+    storeToRefs(houseSearchStore);
 const { containerHeight } = storeToRefs(userViewStore);
 const searchContainerResizeObserve = reactive({ width: 0, height: 0 });
 const viewMode = ref("list"); // list or grid

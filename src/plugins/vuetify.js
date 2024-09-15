@@ -1,12 +1,13 @@
 // Vuetify
 import { createVuetify } from "vuetify";
-import * as components from "vuetify/components";
-import * as directives from "vuetify/directives";
+// import * as components from "vuetify/components";
+// import * as directives from "vuetify/directives";
 import "vuetify/styles";
+// import '@/styles/main.scss'
 import "@mdi/font/css/materialdesignicons.css";
 
 // Translations provided by Vuetify
-import { zhHant } from 'vuetify/locale'
+import { zhHant } from "vuetify/locale";
 
 // Labs components
 import { VDateInput } from "vuetify/labs/VDateInput";
@@ -51,10 +52,10 @@ const nomadTheme = {
 
 const vuetify = createVuetify({
     components: {
-        ...components,
+        // ...components,
         VDateInput,
     },
-    directives,
+    // directives,
     theme: {
         defaultTheme: "nomadTheme",
         themes: { nomadTheme },
@@ -65,7 +66,7 @@ const vuetify = createVuetify({
     locale: {
         locale: "zhHant",
         messages: { zhHant },
-    }
+    },
 });
 
 export default vuetify;
