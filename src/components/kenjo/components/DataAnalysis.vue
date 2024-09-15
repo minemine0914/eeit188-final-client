@@ -1,10 +1,10 @@
-<!-- 尚未想到
+<!-- 尚未想到 -->
 <template>
-    <div>Data Analysis</div>
+    <!-- <div>Data Analysis</div>
 
     <v-card width="500" height="500">
 
-    </v-card>
+    </v-card> -->
 </template>
 
 <script setup>
@@ -17,4 +17,4 @@
 </script>
 
 <style scoped>
-</style> -->
+</style>
