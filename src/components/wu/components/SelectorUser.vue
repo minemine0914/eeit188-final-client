@@ -11,11 +11,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { onMounted } from 'vue';
 import { useHostReportStore } from '@/stores/hostReportStore';
 
 const store = useHostReportStore()
-const selectedUser = ref(store.users[0] || null);
+const selectedUser = store.loginUser;
 
 const fetchHouses = async (userId) => {
     await store.fetchHouses(userId);

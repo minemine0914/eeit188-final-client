@@ -15,11 +15,10 @@ export const useHostReportStore = defineStore('hostReport', {
         users:[{"id":''}],
         houses: [],
         records: [],
-        selectedHouse: null,
         usersResult: '',
         housesResult: '',
         minCreatedAt: '',
-        maxCreatedAt: "2024-09-13T06:15:24.850+00:00"
+        maxCreatedAt: ''
     }),
     getters: {
         currentUser: (state) => state.users.find(user => user.id === state.selectedUser?.id) || null,
@@ -30,7 +29,9 @@ export const useHostReportStore = defineStore('hostReport', {
         },
         async fetchHouses(userId) {
             try {
-                console.log(userId)
+//log*******************
+                console.log('userId',userId)
+//log*******************
                 if(userId){
                     this.loginUser=userId
                 }
@@ -40,14 +41,30 @@ export const useHostReportStore = defineStore('hostReport', {
                     limit: 100
                 });
                 this.houses = response.data.content;
+//log*******************
+                console.log('houses',this.houses)
+                console.log('selectedHouse',this.selectedHouse)
+//log*******************
+                if(Object.keys(this.houses).length===0){
+                    this.houses=[{id:'',name:'NO HOUSES'}]
+                }
+                this.selectedHouse=this.houses[0].id
+
+                this.fetchTransactionRecords()
+
             } catch (error) {
                 console.error('Error fetching houses:', error);
             }
         },
 
         async fetchTransactionRecords() {
-            console.log(this.selectedHouse)
-            if (!this.selectedHouse) return;
+//log*******************
+            console.log('this.selectedHouse',this.selectedHouse)
+//log*******************
+            if (!this.selectedHouse) {
+                this.records=[]
+                return
+            }
 
             try {
                 // const minCreatedAt = new Date(1900, 8, 13, 14, 0, 0)

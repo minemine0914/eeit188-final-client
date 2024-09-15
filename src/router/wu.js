@@ -28,10 +28,10 @@ const router = {
         //     meta: { title: "Wu Testing", requiresAuth: false },
         // },
         {
-            path: "/wu/host", // Default
-            name: "i",
+            path: "/wu/host-report", // Default
+            name: "host-report",
             component: () => import("@/components/wu/components/HostReport.vue"),
-            meta: { title: "Wu Testing", requiresAuth: false },
+            meta: { title: "歷史紀錄與報表[房東]", requiresAuth: false },
         },
     ],
 }

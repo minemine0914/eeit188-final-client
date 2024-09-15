@@ -6,7 +6,7 @@
         <h2>Hello, {{ store.loginUser }}</h2>
         <Selector />
         <DataTable :records="store.records" />
-        <div style="border:1px solid black;">
+        <div style="border:1px solid black; margin:50px;">
             <CreateTransactionRecord />
         </div>
     </div>

@@ -1,5 +1,5 @@
 <template>
-  <h3>房源收入</h3>
+  <!-- <h3>房源收入</h3>
   <table>
     <thead>
       <tr>
@@ -12,7 +12,7 @@
         <td></td>
       </tr>
     </tbody>
-  </table>
+  </table> -->
 
   <v-card class="mx-auto text-center" color="green" max-width="600" dark>
     <v-card-text>

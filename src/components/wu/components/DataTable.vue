@@ -2,32 +2,34 @@
 <template>
     <div>
 
-        <h2>Users in Selected House</h2>
+        <h2>Reports</h2>
         <div style="width:80vw;" v-if="records.length">
-            <label for="showMethod">顯示方式：</label>
-            <select id="showPieChart" v-model="showPieChart">
-                <option :value="false">文字</option>
-                <option :value="true">圖形</option>
-            </select>
-            <label for="yearRange">年份：</label>
-            <select id="yearRange" v-model="store.selectedYear" @change="store.fetchTransactionRecords">
-                <option v-for="year, key in years" :key="key" :value="year">{{ year }}</option>
-            </select>
-            <input type="radio" name="monthOrQuarter" id="monthOrQuarter_month"><label
-                for="monthOrQuarter_month">M</label>
-            <input type="radio" name="monthOrQuarter" id="monthOrQuarter_quarter"><label
-                for="monthOrQuarter_quarter">Q</label>
+            <div>
+                <label for="showMethod">顯示方式：</label>
+                <select id="showPieChart" v-model="showPieChart">
+                    <option :value="false">文字</option>
+                    <option :value="true">圖形</option>
+                </select>
+                <label for="yearRange">年份：</label>
+                <select id="yearRange" v-model="store.selectedYear" @change="store.fetchTransactionRecords">
+                    <option v-for="year, key in years" :key="key" :value="year">{{ year }}</option>
+                </select>
+                <input type="radio" name="monthOrQuarter" id="monthOrQuarter_month"><label
+                    for="monthOrQuarter_month">M</label>
+                <input type="radio" name="monthOrQuarter" id="monthOrQuarter_quarter"><label
+                    for="monthOrQuarter_quarter">Q</label>
 
 
-            <label for="monthRange">月份：</label>
-            <select id="monthRange" v-model="store.selectedMonth">
-                <option v-for="month, key in 12" :key="key" :value="month">{{ month }}</option>
-            </select>
-            <label for="quarterRange">季度：</label>
-            <select id="quarterRange" v-model="store.selectedQuarter">
-                <option v-for="quarter, key in 4" :key="key" :value="quarter">{{ quarter }}</option>
-            </select>
-            <div v-if="showPieChart">
+                <label for="monthRange">月份：</label>
+                <select id="monthRange" v-model="store.selectedMonth">
+                    <option v-for="month, key in 12" :key="key" :value="month">{{ month }}</option>
+                </select>
+                <label for="quarterRange">季度：</label>
+                <select id="quarterRange" v-model="store.selectedQuarter">
+                    <option v-for="quarter, key in 4" :key="key" :value="quarter">{{ quarter }}</option>
+                </select>
+            </div>
+            <div v-if="showPieChart" class="chartContainer">
                 <div style="width:300px;">
                     <Pie :data="genderData" />
                     <div>
@@ -70,7 +72,7 @@
             </div>
         </div>
 
-        <p v-else>No users found.</p>
+        <p v-else>No transaction records found.</p>
 
     </div>
 </template>
@@ -178,5 +180,12 @@ td {
 select {
     padding: 5px 10px;
     border: 1px solid black;
+}
+
+.chartContainer {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    flex-direction: row;
 }
 </style>
