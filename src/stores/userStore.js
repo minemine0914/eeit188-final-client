@@ -132,7 +132,7 @@ export const useUserStore = defineStore(
           method: "get",
           url: `/chat-record/${userId}`,
         });
-        return response.data;
+        return response.data.chatRecords;
       } catch (error) {
         console.error(error);
         throw error;
@@ -146,7 +146,6 @@ export const useUserStore = defineStore(
           url: `/chat-record/`,
           data: request,
         });
-        console.log("ok");
       } catch (error) {
         console.error(error);
         throw error;
