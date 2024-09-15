@@ -95,7 +95,6 @@ import {
 } from "@vuelidate/validators";
 import { VDateInput } from "vuetify/labs/VDateInput";
 import { useUserStore } from "../../stores/userStore";
-const emit = defineEmits(["userDetailChanged"]);
 
 const userStore = useUserStore();
 const { findUserById, updateUser, user } = userStore;
@@ -191,7 +190,6 @@ const submit = async () => {
       about: state.about,
     });
     await findUserById();
-    emit("userDetailChanged");
     alert("修改成功！");
   } catch (error) {
     console.error("Registration failed:", error);

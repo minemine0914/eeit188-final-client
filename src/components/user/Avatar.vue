@@ -22,7 +22,6 @@ import api from "@/plugins/axios";
 
 const userStore = useUserStore();
 const { findUserById, user } = userStore;
-const emit = defineEmits(["userAvatarChange"]);
 
 const fileInput = ref(null);
 
@@ -53,7 +52,6 @@ const sendImageToServer = async (base64Image) => {
   try {
     await api.put(`/user/upload-avatar/${user.id}`, payload);
     await findUserById();
-    emit("userAvatarChange");
   } catch (error) {
     console.error("Error uploading image:", error);
   }

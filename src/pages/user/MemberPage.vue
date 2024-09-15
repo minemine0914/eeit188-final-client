@@ -2,15 +2,15 @@
   <BackgroundImage />
   <div class="content-container">
     <div class="conetnt">
-      <UserDetail v-show="selectedBtn === 1" @userDetailChanged="reload" />
+      <UserDetail v-show="selectedBtn === 1" />
       <Coupon v-show="selectedBtn === 3" />
       <UserCollection v-show="selectedBtn === 4" />
       <Discuss v-show="selectedBtn === 5" />
     </div>
     <div class="avatar-container">
-      <Avatar :key="avatarKey" @userAvatarChange="reload" />
+      <Avatar />
       <div class="about">
-        <About :key="aboutKey" />
+        <About />
       </div>
       <v-btn
         :color="selectedBtn === 1 ? 'blue-grey-lighten-2' : ''"
@@ -63,22 +63,12 @@ import UserCollection from "@/components/user/UserCollection.vue";
 import Discuss from "@/components/user/Discuss.vue";
 import About from "@/components/user/About.vue";
 
-const emit = defineEmits(["userChange"]);
-
 const selectedBtn = ref(1);
-const avatarKey = ref(0);
-const aboutKey = ref(0);
 
 function handleClick(index) {
   if (selectedBtn.value !== index) {
     selectedBtn.value = index;
   }
-}
-
-function reload() {
-  avatarKey.value++;
-  aboutKey.value++;
-  emit("userChange");
 }
 </script>
 
