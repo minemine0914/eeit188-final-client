@@ -38,7 +38,7 @@
                     rounded="pill"
                     size="large"
                     density="comfortable"
-                    class="ml-2"
+                    class="mr-2"
                 ></v-btn>
                 <v-menu v-if="jwtToken" v-model="memberMenu" offset="15">
                     <template v-slot:activator="{ props }">
