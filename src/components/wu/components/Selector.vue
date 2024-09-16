@@ -2,7 +2,7 @@
 <template>
     <div>
         <label for="house-select">Select a House:</label>
-        <select id="house-select" v-model="store.selectedHouse" @change="fetchTransactionRecords">
+        <select id="house-select" v-model="store.selectedHouse" @change="update">
             <option v-for="house in store.houses" :key="house.id" :value="house.id">
                 [{{ house.name }}][{{ house.id }}]
             </option>
@@ -15,10 +15,10 @@ import { useHostReportStore } from '@/stores/hostReportStore';
 
 const store = useHostReportStore()
 
-const fetchTransactionRecords = () => {
-    store.fetchTransactionRecords(store.selectedHouse.value);
-};
-
+const update = async () => {
+    await store.fetchTransactionRecordsStartingValue()
+    await store.fetchTransactionRecords()
+}
 </script>
 
 <style scoped>

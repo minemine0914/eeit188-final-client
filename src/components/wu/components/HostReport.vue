@@ -5,7 +5,7 @@
         <SelectorUser />
         <h2>Hello, {{ store.loginUser }}</h2>
         <Selector />
-        <DataTable :records="store.records" />
+        <DataTable />
         <div style="border:1px solid black; margin:50px;">
             <CreateTransactionRecord />
         </div>
@@ -23,9 +23,14 @@ import SelectorUser from './SelectorUser.vue';
 const store = useHostReportStore();
 
 onMounted(async () => {
-    store.fetchHouses();
-    if (!store.years.length) {
-        await store.fetchTransactionRecordsStartingValue();
-    }
+    // 標準步驟：
+    // 1.用host(user)找house
+    // 2.列出找到的house，找出有資料的頭尾年分
+    // 3.找出所有交易紀錄(和交易過的user)
+
+    await store.fetchHouses();
+    await store.fetchTransactionRecordsStartingValue()
+    await store.fetchTransactionRecords()
+
 });
 </script>

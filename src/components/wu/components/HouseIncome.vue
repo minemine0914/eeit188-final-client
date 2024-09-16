@@ -5,7 +5,7 @@
 <script setup>
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js'
 import { Line } from 'vue-chartjs'
-import { computed, onMounted } from 'vue';
+import { computed } from 'vue';
 import { useHostReportStore } from '@/stores/hostReportStore';
 
 
@@ -38,6 +38,8 @@ const data = computed(() => {
       index === store.selectedQuarter - 1 ? 'blue' : '#f87979' // Change color of the third point to red, others to black
     )
   }
+
+
 
   return {
     labels: store.labels.values, // Convert months to strings for labels

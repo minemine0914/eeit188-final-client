@@ -3,7 +3,7 @@
     <div>
 
         <h2>Reports</h2>
-        <div style="width:80vw;" v-if="records.length">
+        <div style="width:80vw;" v-if="store.records.length">
             <div>
                 <label for="showPieChart">顯示方式：</label>
                 <select id="showPieChart" v-model="showPieChart">
@@ -32,8 +32,7 @@
                     <!-- Conditionally render content based on selected period -->
                     <div>
                         <label for="yearRange">年份：</label>
-                        <select id="yearRange" v-model="store.selectedYear"
-                            @change="store.fetchTransactionRecords(store.selectedYear)">
+                        <select id="yearRange" v-model="store.selectedYear" @change="updateRecordView('year')">
                             <option v-for="year, key in years" :key="key" :value="year">{{ year }}</option>
                         </select>
                         <div v-if="store.selectedPeriod === 'year'">
@@ -97,7 +96,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="record in records" :key="record.id">
+                        <tr v-for="record in store.records" :key="record.id">
                             <!-- <td style="font-size: xx-small;">{{ record }}</td> -->
                             <td>{{ record.user.id }}</td>
                             <td>{{ record.userGender }}</td>
@@ -125,9 +124,7 @@ import { useHostReportStore } from '@/stores/hostReportStore';
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const store = useHostReportStore()
-const props = defineProps({
-    records: Array,
-});
+
 
 const showPieChart = ref(true);
 const years = computed(() => store.years);
@@ -135,9 +132,15 @@ store.selectedYear
 store.selectedMonth = '1'
 store.selectedQuarter = '1'
 
+const updateRecordView = async (source) => {
+    if (source === 'year') {
+        store.fetchTransactionRecords(store.selectedYear)
+    }
+}
+
 // Ensure that `years` is populated before rendering
 const isDataReady = computed(() => {
-    return store.years.length > 0 && props.records.length > 0;
+    return store.years.length > 0 && store.records.length > 0;
 });
 // '2024-09-13T06:15:24.140+00:00'
 
@@ -146,13 +149,13 @@ const incomeRecords = computed(() => {
     // console.log('props.records=')
     // console.log(props.records)
     // Transform props.records into an array of cash flow values
-    return props.records.map(record => record.cashFlow || 0);
+    return store.records.map(record => record.cashFlow || 0);
 });
 
 
 const maleCount = computed(() => {
     let count = 0
-    props.records.forEach(item => {
+    store.records.forEach(item => {
         if (item.userGender === 'male') {
             count++
         }
@@ -163,7 +166,7 @@ const maleCount = computed(() => {
 
 const femaleCount = computed(() => {
     let count = 0
-    props.records.forEach(item => {
+    store.records.forEach(item => {
         if (item.userGender === 'female') {
             count++
         }
@@ -173,7 +176,7 @@ const femaleCount = computed(() => {
 
 const otherCount = computed(() => {
     let count = 0
-    props.records.forEach(item => {
+    store.records.forEach(item => {
         if (item.userGender === 'other') {
             count++
         }
@@ -191,7 +194,7 @@ const totalUsers = computed(() => {
 // const totalUsers = computed(() => maleCount.value + femaleCount.value + otherCount.value);
 
 const totalCashFlow = computed(() => {
-    return props.records.reduce((total, record) => total + (record.cashFlow || 0), 0);
+    return store.records.reduce((total, record) => total + (record.cashFlow || 0), 0);
 });
 
 const genderData = computed(() => {
@@ -213,11 +216,7 @@ const genderData = computed(() => {
 });
 
 
-onMounted(() => {
-    if (!store.years.length) {
-        store.fetchTransactionRecordsStartingValue();
-    }
-});
+
 </script>
 
 <style lang="css" scoped>
