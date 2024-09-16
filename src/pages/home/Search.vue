@@ -16,6 +16,7 @@
                     class="pt-16"
                 >
                     <template v-for="(item, index) in filterHouseList" :key="index">
+                        <!-- List view -->
                         <v-sheet
                             class="d-flex align-center justify-center border mb-5 elevation-0"
                             color="brown-lighten-5"
