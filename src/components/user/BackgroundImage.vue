@@ -28,7 +28,7 @@ import { useUserStore } from "../../stores/userStore";
 
 // Default avatar image if no image is uploaded
 const defaultBackgroundImage =
-  "https://www.wordforest.org/wp-content/uploads/2016/12/forest-4-e1483856441969.jpg";
+  "https://m.media-amazon.com/images/S/stores-image-uploads-na-prod/b/AmazonStores/ATVPDKIKX0DER/10ed123c3324f0651a87521b62fc4fcc.w3000.h600._CR0%2C0%2C3000%2C600_SX1500_.jpg";
 
 const userStore = useUserStore();
 const { user, uploadBackgroundImage, downloadBackgroundImage } = userStore;
@@ -51,7 +51,7 @@ const rules = [
 onMounted(async () => {
   if (user) {
     try {
-      const response = await userStore.downloadBackgroundImage(user.id);
+      const response = await downloadBackgroundImage();
       const url = window.URL.createObjectURL(response);
       backgroundImageUrl.value = url;
     } catch (error) {

@@ -212,7 +212,7 @@ async function getOther() {
     const otherId = checkOther(index.value);
     const response = await api({
       method: "get",
-      url: `/user/${otherId}`,
+      url: `/user/find/${otherId}`,
     });
     return response.data;
   } catch (error) {
@@ -318,8 +318,8 @@ const findIndexById = (array, id) => {
 }
 
 .chat-recored {
-  height: 400px;
-  max-height: 400px;
+  height: 500px;
+  max-height: 500px;
   overflow: auto;
 }
 
@@ -375,8 +375,8 @@ const findIndexById = (array, id) => {
 #chat-box {
   display: flex;
   flex-direction: column-reverse;
-  height: 400px;
-  max-height: 400px;
+  height: 500px;
+  max-height: 500px;
   overflow-y: auto;
 }
 

@@ -22,7 +22,7 @@
   </form>
 </template>
 <script setup>
-import { reactive, computed } from "vue";
+import { reactive } from "vue";
 import { useVuelidate } from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
 import { useUserStore } from "../../stores/userStore";
@@ -61,7 +61,7 @@ const submit = async () => {
       password: state.password,
     });
     alert("登入成功");
-    router.push("/").then(() => {
+    router.push("/system").then(() => {
       window.location.reload();
     });
   } catch (error) {

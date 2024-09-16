@@ -3,9 +3,6 @@
   <div class="content-container">
     <div class="conetnt">
       <UserDetail v-show="selectedBtn === 1" />
-      <Coupon v-show="selectedBtn === 3" />
-      <UserCollection v-show="selectedBtn === 4" />
-      <Discuss v-show="selectedBtn === 5" />
     </div>
     <div class="avatar-container">
       <Avatar />
@@ -17,21 +14,21 @@
         class="btn"
         @click="handleClick(1)"
       >
-        用戶資料及修改
+        管理者資料及修改
       </v-btn>
       <v-btn
         :color="selectedBtn === 2 ? 'blue-grey-lighten-2' : ''"
         class="btn"
         @click="handleClick(2)"
       >
-        管理房源
+        ******
       </v-btn>
       <v-btn
         :color="selectedBtn === 3 ? 'blue-grey-lighten-2' : ''"
         class="btn"
         @click="handleClick(3)"
       >
-        優惠券
+        ******
       </v-btn>
 
       <v-btn
@@ -39,7 +36,7 @@
         class="btn"
         @click="handleClick(4)"
       >
-        房源收藏
+        ******
       </v-btn>
 
       <v-btn
@@ -47,7 +44,7 @@
         class="btn"
         @click="handleClick(5)"
       >
-        您的評論
+        ******
       </v-btn>
     </div>
   </div>
@@ -58,9 +55,6 @@ import { ref } from "vue";
 import BackgroundImage from "@/components/user/BackgroundImage.vue";
 import Avatar from "@/components/user/Avatar.vue";
 import UserDetail from "@/components/user/UserDetail.vue";
-import Coupon from "@/components/user/Coupon.vue";
-import UserCollection from "@/components/user/UserCollection.vue";
-import Discuss from "@/components/user/Discuss.vue";
 import About from "@/components/user/About.vue";
 
 const selectedBtn = ref(1);

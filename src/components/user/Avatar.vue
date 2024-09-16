@@ -21,7 +21,7 @@ import { useUserStore } from "../../stores/userStore";
 import api from "@/plugins/axios";
 
 const userStore = useUserStore();
-const { findUserById, user } = userStore;
+const { uploadAvater, reloadUser, user } = userStore;
 
 const fileInput = ref(null);
 
@@ -50,8 +50,8 @@ const sendImageToServer = async (base64Image) => {
   };
 
   try {
-    await api.put(`/user/upload-avatar/${user.id}`, payload);
-    await findUserById();
+    await uploadAvater(payload);
+    await reloadUser();
   } catch (error) {
     console.error("Error uploading image:", error);
   }
