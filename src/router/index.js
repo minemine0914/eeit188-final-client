@@ -41,11 +41,20 @@ const routes = [
       {
         path: "member",
         name: "Member",
-        component: () => import("@/pages/user/Member.vue"),
-        meta: { title: "Nomad 房源", requiresAuth: false },
-        children: [
-
-        ],
+        component: () => import("@/pages/user/MemberPage.vue"),
+        meta: { title: "Nomad 會員中心", requiresAuth: false },
+      },
+      {
+        path: "login",
+        name: "Login",
+        component: () => import("@/pages/user/LoginPage.vue"),
+        meta: { title: "Nomad 登入", requiresAuth: false },
+      },
+      {
+        path: "signup",
+        name: "Signup",
+        component: () => import("@/pages/user/SignupPage.vue"),
+        meta: { title: "Nomad 註冊", requiresAuth: false },
       },
     ],
   },
@@ -88,12 +97,12 @@ const routes = [
 ];
 
 const router = createRouter({
-    history: createWebHistory(),
-    routes,
+  history: createWebHistory(),
+  routes,
 });
 
 router.afterEach((to, from) => {
-    document.title = to.meta.title || DEFAULT_TITLE;
+  document.title = to.meta.title || DEFAULT_TITLE;
 });
 
 export default router;

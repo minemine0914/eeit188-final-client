@@ -2,27 +2,23 @@
 <template>
     <div>
         <label for="house-select">Select a House:</label>
-        <select id="house-select" v-model="selectedHouse" @change="emitSelection">
-            <option v-for="house in houses" :key="house.id" :value="house.id">
-                {{ house.name }}
+        <select id="house-select" v-model="store.selectedHouse" @change="fetchTransactionRecords">
+            <option v-for="house in store.houses" :key="house.id" :value="house.id">
+                [{{ house.name }}][{{ house.id }}]
             </option>
         </select>
     </div>
 </template>
 
 <script setup>
-import { ref, defineProps, defineEmits } from 'vue';
+import { useHostReportStore } from '@/stores/hostReportStore';
 
-const props = defineProps({
-    houses: Array
-});
+const store = useHostReportStore()
 
-const emit = defineEmits(['update:selectedHouse']);
-const selectedHouse = ref('');
+const fetchTransactionRecords = () => {
+    store.fetchTransactionRecords(store.selectedHouse.value);
+};
 
-function emitSelection() {
-    emit('update:selectedHouse', selectedHouse.value);
-}
 </script>
 
 <style scoped>

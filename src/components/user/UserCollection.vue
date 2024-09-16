@@ -16,13 +16,12 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { useUserViewStore } from "@/stores/userViewStore";
+import { useUserStore } from "../../stores/userStore";
 import api from "@/plugins/axios";
 
-const userViewStore = useUserViewStore();
-const { decodeToken } = userViewStore;
+const userStore = useUserStore();
+const { user } = userStore;
 
-const userInfo = ref(null);
 const collections = ref([]);
 
 onMounted(() => {
@@ -31,12 +30,10 @@ onMounted(() => {
 
 async function getUserCollectionHouse() {
   try {
-    userInfo.value = decodeToken();
-
     // Fetch user collections
     const response = await api({
       method: "get",
-      url: "/user-collection/from-user/" + userInfo.value.id,
+      url: "/user-collection/from-user/" + user.id,
     });
 
     collections.value = response.data.userCollections;

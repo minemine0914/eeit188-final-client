@@ -79,11 +79,11 @@
       @input="v$.about.$touch"
     ></v-textarea>
 
-    <v-btn class="me-4" @click="submit"> 修改 </v-btn>
+    <v-btn id="submit" class="me-4" @click="submit"> 修改 </v-btn>
   </form>
 </template>
 <script setup>
-import { reactive, computed, onMounted, ref } from "vue";
+import { reactive, onMounted } from "vue";
 import { useVuelidate } from "@vuelidate/core";
 import {
   email,
@@ -92,17 +92,14 @@ import {
   minLength,
   maxLength,
   helpers,
-  sameAs,
 } from "@vuelidate/validators";
 import { VDateInput } from "vuetify/labs/VDateInput";
-import { useUserViewStore } from "@/stores/userViewStore";
+import { useUserStore } from "../../stores/userStore";
 
-const userViewStore = useUserViewStore();
-const { updateUser, findUserById } = userViewStore;
+const userStore = useUserStore();
+const { findUserById, updateUser, user } = userStore;
 
 onMounted(async () => {
-  const user = await findUserById();
-
   if (user) {
     Object.assign(state, {
       name: user.name,
@@ -136,9 +133,6 @@ const initialState = {
 const state = reactive({
   ...initialState,
 });
-
-// Create a computed property for the password
-const password = computed(() => state.password);
 
 const items = ["暫不提供", "男性", "女性", "其他"];
 
@@ -195,6 +189,7 @@ const submit = async () => {
       address: state.address,
       about: state.about,
     });
+    await findUserById();
     alert("修改成功！");
   } catch (error) {
     console.error("Registration failed:", error);

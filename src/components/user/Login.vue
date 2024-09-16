@@ -24,15 +24,9 @@
 <script setup>
 import { reactive, computed } from "vue";
 import { useVuelidate } from "@vuelidate/core";
-import {
-  email,
-  required,
-  integer,
-  minLength,
-  maxLength,
-  helpers,
-  sameAs,
-} from "@vuelidate/validators";
+import { required, helpers } from "@vuelidate/validators";
+import { useUserStore } from "../../stores/userStore";
+import { useRouter } from "vue-router";
 
 const initialState = {
   email: null,
@@ -56,9 +50,9 @@ const rules = {
 };
 
 const v$ = useVuelidate(rules, state);
-import { useUserViewStore } from "@/stores/userViewStore";
-const userViewStore = useUserViewStore();
-const { jwtToken, loginAuth } = userViewStore;
+const userStore = useUserStore();
+const { loginAuth } = userStore;
+const router = useRouter();
 
 const submit = async () => {
   if (v$.$invalid) {
@@ -70,6 +64,9 @@ const submit = async () => {
       password: state.password,
     });
     alert("登入成功");
+    router.push("/").then(() => {
+      window.location.reload();
+    });
   } catch (error) {
     alert("登入失敗，請確認email及密碼");
     console.error("Login failed:", error);
