@@ -1,59 +1,89 @@
 <template>
-  <!-- <h3>房源收入</h3>
-  <table>
-    <thead>
-      <tr>
-        <th>時間區段</th>
-        <th>收入</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td></td>
-      </tr>
-    </tbody>
-  </table> -->
-
-  <v-card class="mx-auto text-center" color="green" max-width="600" dark>
-    <v-card-text>
-      <v-sheet color="rgba(0, 0, 0, .12)">
-        <v-sparkline :model-value="incomeRecords" color="rgba(255, 255, 255, .7)" height="100" padding="24"
-          stroke-linecap="round" smooth>
-          <template v-slot:label="item"> ${{ item.value }} </template>
-        </v-sparkline>
-      </v-sheet>
-    </v-card-text>
-
-    <v-card-text>
-      <div class="text-h4 font-weight-thin">Sales Last 24h</div>
-    </v-card-text>
-
-    <v-divider></v-divider>
-
-    <v-card-actions class="justify-center">
-      <v-btn variant="text" block> Go to Report </v-btn>
-    </v-card-actions>
-  </v-card>
-
+  <Line :data="data" :options="options" />
 </template>
 
 <script setup>
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js'
+import { Line } from 'vue-chartjs'
+import { computed, onMounted } from 'vue';
+import { useHostReportStore } from '@/stores/hostReportStore';
 
-const props = defineProps({
-  incomeRecords: Array
-});
 
-const value = props.incomeRecords
-// const value = [
-//     423,
-//     446,
-//     675,
-//     510,
-//     590,
-//     610,
-//     760,
-//   ]
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
+
+const store = useHostReportStore()
+// Create a computed property for the chart data
+const data = computed(() => {
+  // Define an array of colors for each data point
+  let pointColors = store.records.map((record, index) =>
+    index === store.selectedMonth - 1 ? 'blue' : '#f87979' // Change color of the third point to red, others to black
+  )
+
+  if (store.selectedPeriod === 'year') {
+    store.labels.name = 'YEAR'
+    store.labels.values = store.years
+    pointColors = store.records.map((record, index) =>
+      index === store.selectedYear - store.years[0] ? 'blue' : '#f87979' // Change color of the third point to red, others to black
+    )
+  } else if (store.selectedPeriod === 'month') {
+    store.labels.name = 'MONTH'
+    store.labels.values = store.months
+    pointColors = store.records.map((record, index) =>
+      index === store.selectedMonth - 1 ? 'blue' : '#f87979' // Change color of the third point to red, others to black
+    )
+  } else if (store.selectedPeriod === 'quarter') {
+    store.labels.name = 'QUARTER'
+    store.labels.values = store.quarters
+    pointColors = store.records.map((record, index) =>
+      index === store.selectedQuarter - 1 ? 'blue' : '#f87979' // Change color of the third point to red, others to black
+    )
+  }
+
+  return {
+    labels: store.labels.values, // Convert months to strings for labels
+    datasets: [
+      {
+        label: 'Monthly Data',
+        backgroundColor: '#f87979',
+        borderColor: '#f87979',
+        pointBackgroundColor: pointColors, // Apply point colors here
+
+        data: store.records.map(record => record.cashFlow || 0) // Adjust data mapping as needed
+      }
+    ]
+  }
+})
+
+// Chart options
+const options = computed(() => ({
+  responsive: true,
+  plugins: {
+    legend: {
+      position: 'top',
+    },
+    tooltip: {
+      callbacks: {
+        label: function (tooltipItem) {
+          return `Value: ${tooltipItem.raw}`;
+        }
+      }
+    }
+  },
+  scales: {
+    x: {
+      title: {
+        display: true,
+        text: store.labels.name
+      }
+    },
+    y: {
+      title: {
+        display: true,
+        text: 'Value'
+      },
+      beginAtZero: true
+    }
+  }
+}))
 
 </script>
-
-<style scoped></style>

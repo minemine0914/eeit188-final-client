@@ -22,7 +22,10 @@ import SelectorUser from './SelectorUser.vue';
 
 const store = useHostReportStore();
 
-onMounted(() => {
+onMounted(async () => {
     store.fetchHouses();
+    if (!store.years.length) {
+        await store.fetchTransactionRecordsStartingValue();
+    }
 });
 </script>

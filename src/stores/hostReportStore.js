@@ -1,24 +1,35 @@
 // src/stores/useHostReportStore.js
 
 import { defineStore } from 'pinia';
+import { reactive } from 'vue';
 import api from '@/plugins/axios';
 
 export const useHostReportStore = defineStore('hostReport', {
     state: () => ({
-        // loginUser: 'e61abdb4-d054-4188-9e41-c2691792cf73',
-        loginUser: 'f27a7b80-4d60-44cf-aa1c-9b44dd375698',
+        loginUser: 'e61abdb4-d054-4188-9e41-c2691792cf73',
+        // loginUser: 'f27a7b80-4d60-44cf-aa1c-9b44dd375698',
+        selectedHouse: '',
+        selectedUser: '',
+
+        users: [{ "id": '' }],
+        houses: [],
+        records: [],
+
+        usersResult: '',
+        housesResult: '',
+
+        minCreatedAt: '',
+        maxCreatedAt: '',
+
+        selectedPeriod: 'month',
+        labels: { name: '', values: [] },
+        years: [],
+        months: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+        quarters: ['Q1', 'Q2', 'Q3', 'Q4'],
         selectedYear: '',
         selectedMonth: '',
         selectedQuarter: '',
-        selectedHouse: '',
-        selectedUser: '',
-        users:[{"id":''}],
-        houses: [],
-        records: [],
-        usersResult: '',
-        housesResult: '',
-        minCreatedAt: '',
-        maxCreatedAt: ''
+
     }),
     getters: {
         currentUser: (state) => state.users.find(user => user.id === state.selectedUser?.id) || null,
@@ -29,11 +40,11 @@ export const useHostReportStore = defineStore('hostReport', {
         },
         async fetchHouses(userId) {
             try {
-//log*******************
-                console.log('userId',userId)
-//log*******************
-                if(userId){
-                    this.loginUser=userId
+                //log*******************
+                console.log('userId', userId)
+                //log*******************
+                if (userId) {
+                    this.loginUser = userId
                 }
                 const response = await api.post('/house/search', {
                     userId: this.loginUser,
@@ -41,14 +52,14 @@ export const useHostReportStore = defineStore('hostReport', {
                     limit: 100
                 });
                 this.houses = response.data.content;
-//log*******************
-                console.log('houses',this.houses)
-                console.log('selectedHouse',this.selectedHouse)
-//log*******************
-                if(Object.keys(this.houses).length===0){
-                    this.houses=[{id:'',name:'NO HOUSES'}]
+                //log*******************
+                console.log('houses', this.houses)
+                console.log('selectedHouse', this.selectedHouse)
+                //log*******************
+                if (Object.keys(this.houses).length === 0) {
+                    this.houses = [{ id: '', name: 'NO HOUSES' }]
                 }
-                this.selectedHouse=this.houses[0].id
+                this.selectedHouse = this.houses[0].id
 
                 this.fetchTransactionRecords()
 
@@ -57,29 +68,82 @@ export const useHostReportStore = defineStore('hostReport', {
             }
         },
 
-        async fetchTransactionRecords() {
-//log*******************
-            console.log('this.selectedHouse',this.selectedHouse)
-//log*******************
+        async fetchTransactionRecordsStartingValue(year, month, quarter) {
             if (!this.selectedHouse) {
-                this.records=[]
+                this.records = []
                 return
             }
 
             try {
-                // const minCreatedAt = new Date(1900, 8, 13, 14, 0, 0)
-                const minCreatedAt = new Date(0)
-                // const maxCreatedAt = new Date(2028, 8, 13, 16, 0, 0)
-                const maxCreatedAt = new Date()
+                //default
+                let minCreatedAt = new Date(0)
+                let maxCreatedAt = new Date()
                 const houseId = this.selectedHouse
-                const response = await api.post(`/transcation_record/search`, {
+
+                let body = {
+                    houseId,
+                    limit: 1,
+                    minCreatedAt,
+                    maxCreatedAt,
+                    "order": "createdAt",
+                    "dir": false //asc
+                }
+
+                // body.minCreatedAt = new Date(parseInt(this.selectedYear), 0, 1)
+                // body.maxCreatedAt = new Date(parseInt(this.selectedYear) + 1, 0, 1)
+                // console.log('111111', body.maxCreatedAt)
+                const first = await api.post(`/transcation_record/search`, body);
+                console.log('fetch 1st', new Date(first.data.content[0].createdAt).getFullYear())
+                let startYear = new Date(first.data.content[0].createdAt).getFullYear()
+
+                body.dir = true //desc
+                const last = await api.post(`/transcation_record/search`, body);
+                console.log('fetch last', new Date(last.data.content[0].createdAt).getFullYear())
+                let endYear = new Date(last.data.content[0].createdAt).getFullYear()
+
+                this.years = []
+                for (let i = startYear; i <= endYear; i++) {
+                    this.years.push(i)
+                }
+                // this.selectedYear = this.years[0]
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        },
+
+        async fetchTransactionRecords(year, month, quarter) {
+            //log*******************
+            console.log('this.selectedHouse', this.selectedHouse)
+            //log*******************
+            if (!this.selectedHouse) {
+                this.records = []
+                return
+            }
+
+            try {
+                //default
+                console.log('year', year)
+                let minCreatedAt = year ? new Date(year, 0, 1) : new Date(0)
+                let maxCreatedAt = year ? new Date(parseInt(year) + 1, 0, 1) : new Date()
+                const houseId = this.selectedHouse
+
+                console.log('minCA:', minCreatedAt)
+
+                let body = {
                     houseId,
                     limit: 1000,
                     minCreatedAt,
                     maxCreatedAt,
                     "order": "createdAt",
                     "dir": true
-                });
+                }
+
+                this.fetchTransactionRecordsStartingValue()
+
+                // body.minCreatedAt = new Date(parseInt(this.selectedYear), 0, 1)
+                // body.maxCreatedAt = new Date(parseInt(this.selectedYear) + 1, 0, 1)
+                // console.log('111111', body.maxCreatedAt)
+                const response = await api.post(`/transcation_record/search`, body);
                 console.log(response.data)
                 const transformedRecords = await this.searchUserAgainByRecordId(response.data.content);
                 console.log(transformedRecords)
@@ -89,20 +153,20 @@ export const useHostReportStore = defineStore('hostReport', {
             }
         },
 
-        async findAllUserString() {
+        async findAllUserArray() {
             try {
                 const response = await api.get(`/user/`);
-                this.usersResult = response.data.users.map(user => user.id || 0);
+                this.users = response.data.users;
+                console.log('this.users', this.users)
             } catch (error) {
                 console.error('Error fetching users:', error);
             }
         },
 
-        async findAllUserArray() {
+        async findAllUserString() {
             try {
                 const response = await api.get(`/user/`);
-                this.users = response.data.users;
-                console.log('this.users',this.users)
+                this.usersResult = response.data.users.map(user => user.id || 0);
             } catch (error) {
                 console.error('Error fetching users:', error);
             }
@@ -151,6 +215,7 @@ export const useHostReportStore = defineStore('hostReport', {
                 }
             }));
             return transformedArray.filter(item => item); // Filter out undefined values
-        }
+        },
+
     }
 });

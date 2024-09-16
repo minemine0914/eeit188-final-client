@@ -5,32 +5,70 @@
         <h2>Reports</h2>
         <div style="width:80vw;" v-if="records.length">
             <div>
-                <label for="showMethod">顯示方式：</label>
+                <label for="showPieChart">顯示方式：</label>
                 <select id="showPieChart" v-model="showPieChart">
                     <option :value="false">文字</option>
                     <option :value="true">圖形</option>
                 </select>
-                <label for="yearRange">年份：</label>
-                <select id="yearRange" v-model="store.selectedYear" @change="store.fetchTransactionRecords">
-                    <option v-for="year, key in years" :key="key" :value="year">{{ year }}</option>
-                </select>
-                <input type="radio" name="monthOrQuarter" id="monthOrQuarter_month"><label
-                    for="monthOrQuarter_month">M</label>
-                <input type="radio" name="monthOrQuarter" id="monthOrQuarter_quarter"><label
-                    for="monthOrQuarter_quarter">Q</label>
+
+                <div>
+                    <!-- Radio Buttons for selecting Month or Quarter -->
+                    <div>
+                        <input type="radio" id="monthOrQuarter_year" value="year" v-model="store.selectedPeriod">
+                        <label for="monthOrQuarter_year">Y</label>
+
+                        <input type="radio" id="monthOrQuarter_month" value="month" v-model="store.selectedPeriod">
+                        <label for="monthOrQuarter_month">M</label>
+
+                        <input type="radio" id="monthOrQuarter_quarter" value="quarter" v-model="store.selectedPeriod">
+                        <label for="monthOrQuarter_quarter">Q</label>
+                    </div>
+
+                    <!-- Display the selected period -->
+                    <div>
+                        <p>Selected Period: {{ store.selectedPeriod }}</p>
+                    </div>
+
+                    <!-- Conditionally render content based on selected period -->
+                    <div>
+                        <label for="yearRange">年份：</label>
+                        <select id="yearRange" v-model="store.selectedYear"
+                            @change="store.fetchTransactionRecords(store.selectedYear)">
+                            <option v-for="year, key in years" :key="key" :value="year">{{ year }}</option>
+                        </select>
+                        <div v-if="store.selectedPeriod === 'year'">
+                            <!-- Content for Month -->
+                            <p>Year data goes here.</p>
+                        </div>
+                        <div v-if="store.selectedPeriod === 'month'">
+                            <!-- Content for Month -->
+                            <p>Month data goes here.</p>
 
 
-                <label for="monthRange">月份：</label>
-                <select id="monthRange" v-model="store.selectedMonth">
-                    <option v-for="month, key in 12" :key="key" :value="month">{{ month }}</option>
-                </select>
-                <label for="quarterRange">季度：</label>
-                <select id="quarterRange" v-model="store.selectedQuarter">
-                    <option v-for="quarter, key in 4" :key="key" :value="quarter">{{ quarter }}</option>
-                </select>
+                            <label for="monthRange">月份：</label>
+                            <select id="monthRange" v-model="store.selectedMonth">
+                                <option v-for="month, key in 12" :key="key" :value="month">{{ month }}</option>
+                            </select>
+                        </div>
+                        <div v-if="store.selectedPeriod === 'quarter'">
+                            <!-- Content for Quarter -->
+                            <p>Quarter data goes here.</p>
+
+                            <label for="quarterRange">季度：</label>
+                            <select id="quarterRange" v-model="store.selectedQuarter">
+                                <option v-for="quarter, key in 4" :key="key" :value="quarter">{{ quarter }}</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+
             </div>
             <div v-if="showPieChart" class="chartContainer">
-                <div style="width:300px;">
+                <div>
                     <Pie :data="genderData" />
                     <div>
                         <p>男：{{ maleCount }}人，佔{{ (maleCount / totalUsers * 100).toFixed(2)
@@ -78,7 +116,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 import { Pie } from 'vue-chartjs';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import HouseIncome from '@/components/wu/components/HouseIncome.vue';
@@ -92,10 +130,15 @@ const props = defineProps({
 });
 
 const showPieChart = ref(true);
-store.selectedYear = '2020'
+const years = computed(() => store.years);
+store.selectedYear
 store.selectedMonth = '1'
 store.selectedQuarter = '1'
-const years = ['2020', '2021', '2022', '2023', '2024', '2025']
+
+// Ensure that `years` is populated before rendering
+const isDataReady = computed(() => {
+    return store.years.length > 0 && props.records.length > 0;
+});
 // '2024-09-13T06:15:24.140+00:00'
 
 // const incomeRecords = ref([100, 200, 300]);
@@ -168,6 +211,13 @@ const genderData = computed(() => {
         ]
     }
 });
+
+
+onMounted(() => {
+    if (!store.years.length) {
+        store.fetchTransactionRecordsStartingValue();
+    }
+});
 </script>
 
 <style lang="css" scoped>
@@ -187,5 +237,9 @@ select {
     justify-content: left;
     align-items: center;
     flex-direction: row;
+}
+
+.chartContainer div {
+    width: 500px;
 }
 </style>
