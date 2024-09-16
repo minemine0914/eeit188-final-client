@@ -25,7 +25,7 @@ const fetchHouses = async (userId) => {
 };
 
 onMounted(() => {
-    store.findAllUserArray();
+    store.findAllUser();
     store.selectedUser = store.users[0].id
     //log************
     console.log('store.selectedUser', store.selectedUser)

@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div style="border:1px solid black; margin:50px;">
         <textarea style="width: 25rem;height:500px;border:1px solid black;font-family: monospace;"
             v-model="store.usersResult"></textarea>
         <button @click="findAllUserString">findAllUser</button>
@@ -11,9 +11,9 @@
 </template>
 
 <script setup>
-import { useHostReportStore } from '@/stores/hostReportStore';
+import { useCreateTransactionRecordStore } from '@/stores/createTransactionRecordStore';
 
-const store = useHostReportStore();
+const store = useCreateTransactionRecordStore();
 
 const findAllUserString = () => {
     store.findAllUserString();
@@ -26,7 +26,6 @@ const findAllHouse = () => {
 const crossInsertTransactionRecord = () => {
     store.crossInsertTransactionRecord();
 };
-
 
 </script>
 

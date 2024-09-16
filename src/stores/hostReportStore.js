@@ -1,4 +1,4 @@
-// src/stores/useHostReportStore.js
+// src/stores/hostReportStore.js
 
 import { defineStore } from 'pinia';
 import api from '@/plugins/axios';
@@ -14,9 +14,6 @@ export const useHostReportStore = defineStore('hostReport', {
         houses: [],
         records: [],
 
-        usersResult: '',
-        housesResult: '',
-
         minCreatedAt: '',
         maxCreatedAt: '',
 
@@ -30,13 +27,8 @@ export const useHostReportStore = defineStore('hostReport', {
         selectedQuarter: '',
 
     }),
-    getters: {
-        currentUser: (state) => state.users.find(user => user.id === state.selectedUser?.id) || null,
-    },
+    getters: {},
     actions: {
-        setSelectedUser(userId) {
-            this.selectedUser = this.users.find(user => user.id === userId) || null;
-        },
         async fetchHouses(userId) {
             try {
                 //如果有傳入userId，以傳入值搜尋。否則以登入者loginUser查詢
@@ -146,9 +138,6 @@ export const useHostReportStore = defineStore('hostReport', {
                 const transformedRecords = await this.searchUserAgainByRecordId(response.data.content);
                 console.log('transformedRecords', transformedRecords)
                 this.records = transformedRecords;
-
-
-
 
             } catch (error) {
                 console.error('Error fetching users:', error);
@@ -293,6 +282,7 @@ export const useHostReportStore = defineStore('hostReport', {
             ]
 
 
+
             // Aggregate cashFlow by year and month
             const aggregatedCashFlow = simpleArr.reduce((acc, record) => {
                 const key = `${record.year}-${record.month}`;
@@ -330,51 +320,13 @@ export const useHostReportStore = defineStore('hostReport', {
             this.records = output
         },
 
-        async findAllUserArray() {
+        async findAllUser() {
             try {
                 const response = await api.get(`/user/`);
                 this.users = response.data.users;
                 console.log('this.users', this.users)
             } catch (error) {
                 console.error('Error fetching users:', error);
-            }
-        },
-
-        async findAllUserString() {
-            try {
-                const response = await api.get(`/user/`);
-                this.usersResult = response.data.users.map(user => user.id || 0);
-            } catch (error) {
-                console.error('Error fetching users:', error);
-            }
-        },
-
-        async findAllHouse() {
-            try {
-                const response = await api.get(`/house/all`);
-                this.housesResult = response.data.content.map(house => house.id || 0);
-            } catch (error) {
-                console.error('Error fetching houses:', error);
-            }
-        },
-
-        async crossInsertTransactionRecord() {
-            const dataAmount = 10;
-            for (let i = 0; i < dataAmount; i++) {
-                try {
-                    const houseId = this.housesResult[Math.floor(Math.random() * this.housesResult.length)];
-                    const userId = this.usersResult[Math.floor(Math.random() * this.usersResult.length)];
-
-                    await api.post(`/transcation_record/`, {
-                        houseId,
-                        userId,
-                        cashFlow: Math.pow(10, i),
-                        deal: "haha",
-                        platformIncome: Math.pow(10, i)
-                    });
-                } catch (error) {
-                    console.error('Error inserting transaction record:', error);
-                }
             }
         },
 

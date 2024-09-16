@@ -4,7 +4,7 @@ const router = {
     component: () => import("@/components/wu/Test.vue"),
     children: [
         {
-            path: "/wu", // Default
+            path: "", // Default
             name: "WuHome",
             component: () => import("@/components/wu/components/HostReport.vue"),
             meta: { title: "Wu Testing", requiresAuth: false },
@@ -28,10 +28,16 @@ const router = {
         //     meta: { title: "Wu Testing", requiresAuth: false },
         // },
         {
-            path: "/wu/host-report", // Default
+            path: "host-report", // Default
             name: "host-report",
             component: () => import("@/components/wu/components/HostReport.vue"),
             meta: { title: "歷史紀錄與報表[房東]", requiresAuth: false },
+        },
+        {
+            path: "create", // Default
+            name: "create",
+            component: () => import("@/components/wu/components/CreateTransactionRecord.vue"),
+            meta: { title: "交易紀錄產生器", requiresAuth: false },
         },
     ],
 }

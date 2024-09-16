@@ -6,9 +6,7 @@
         <h2>Hello, {{ store.loginUser }}</h2>
         <Selector />
         <DataTable />
-        <div style="border:1px solid black; margin:50px;">
-            <CreateTransactionRecord />
-        </div>
+
     </div>
 </template>
 
@@ -17,7 +15,6 @@ import { onMounted } from 'vue';
 import { useHostReportStore } from '@/stores/hostReportStore';
 import Selector from '@/components/wu/components/Selector.vue';
 import DataTable from '@/components/wu/components/DataTable.vue';
-import CreateTransactionRecord from './createTransactionRecord.vue';
 import SelectorUser from './SelectorUser.vue';
 
 const store = useHostReportStore();
