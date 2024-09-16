@@ -56,7 +56,9 @@
                                             </div>
                                             <div class="text-grey-darken-1">
                                                 <span class="mdi mdi-map-marker mr-2"></span>
-                                                <span class="mr-2">{{ `位於 ${item.city} ${item.region}` }}</span>
+                                                <span class="mr-2">{{
+                                                    `位於 ${item.city} ${item.region}`
+                                                }}</span>
                                             </div>
                                             <div class="text-grey-darken-1">
                                                 <span class="mdi mdi-sofa mr-2"></span>
@@ -75,7 +77,13 @@
                                             </div>
                                             <div class="text-grey-darken-1">
                                                 <span class="mdi mdi-bed mr-2"></span>
-                                                <span>可住</span>
+                                                <span>可住 </span>
+                                                <span class="mr-1" v-if="item.adult > 0">
+                                                    {{ `${item.adult} 位成人 ` }}
+                                                </span>
+                                                <span class="mr-1" v-if="item.child > 0">
+                                                    {{ `${item.child} 位孩童 ` }}
+                                                </span>
                                             </div>
                                             <div class="text-grey-darken-1">
                                                 <span class="mr-2" v-if="!item.pet">
