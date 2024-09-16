@@ -30,12 +30,43 @@
                                         rounded="lg"
                                         class="overflow-hidden"
                                     >
-                                        <v-img
-                                            :aspect-ratio="1"
-                                            :height="200"
-                                            :src="testImg"
-                                            cover
-                                        ></v-img>
+                                        <v-carousel
+                                            height="200"
+                                            show-arrows="hover"
+                                            hide-delimiter-background
+                                            hide-delimiters
+                                        >
+                                            <template v-slot:prev="{ props }">
+                                                <v-btn
+                                                    :class="props.class"
+                                                    color="rgba(255,255,255,0.5)"
+                                                    size="small"
+                                                    density="compact"
+                                                    icon="mdi-chevron-left"
+                                                    variant="elevated"
+                                                    @click="props.onClick"
+                                                ></v-btn>
+                                            </template>
+                                            <template v-slot:next="{ props }">
+                                                <v-btn
+                                                    :class="props.class"
+                                                    color="rgba(255,255,255,0.5)"
+                                                    size="small"
+                                                    density="compact"
+                                                    icon="mdi-chevron-right"
+                                                    variant="elevated"
+                                                    @click="props.onClick"
+                                                ></v-btn>
+                                            </template>
+                                            <v-carousel-item v-for="imageSrc in houseSearchStore.getImageUrlList(index)">
+                                                <v-img
+                                                    :aspect-ratio="1"
+                                                    :height="200"
+                                                    :src="imageSrc"
+                                                    cover
+                                                ></v-img>
+                                            </v-carousel-item>
+                                        </v-carousel>
                                     </v-sheet>
                                 </v-col>
                                 <v-col

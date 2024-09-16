@@ -84,7 +84,13 @@
                             width="100%"
                             v-if="isLoading"
                         />
-                        <v-img :src="testImg" position="center" class="h-100" cover v-else></v-img>
+                        <v-img
+                            :src="houseDetailStore.getImageUrlList(0)"
+                            position="center"
+                            class="h-100"
+                            cover
+                            v-else
+                        ></v-img>
                     </v-sheet>
                 </v-responsive>
             </v-col>
@@ -99,7 +105,7 @@
                                 v-if="isLoading"
                             />
                             <v-img
-                                :src="testImg"
+                                :src="houseDetailStore.getImageUrlList(1)"
                                 position="center"
                                 class="h-100"
                                 cover
@@ -116,7 +122,7 @@
                                 v-if="isLoading"
                             />
                             <v-img
-                                :src="testImg"
+                                :src="houseDetailStore.getImageUrlList(2)"
                                 position="center"
                                 class="h-100"
                                 cover
@@ -135,7 +141,7 @@
                                 v-if="isLoading"
                             />
                             <v-img
-                                :src="testImg"
+                                :src="houseDetailStore.getImageUrlList(3)"
                                 position="center"
                                 class="h-100"
                                 cover
@@ -153,7 +159,7 @@
                             />
                             <v-img
                                 v-else
-                                :src="testImg"
+                                :src="houseDetailStore.getImageUrlList(4)"
                                 position="center"
                                 class="h-100"
                                 cover
@@ -254,7 +260,11 @@
                                 :icon="postulaue.icon"
                                 color="brown-lighten-1"
                             ></v-icon>
-                            <v-icon v-else icon="mdi-emoticon-excited-outline" color="brown-lighten-1"></v-icon>
+                            <v-icon
+                                v-else
+                                icon="mdi-emoticon-excited-outline"
+                                color="brown-lighten-1"
+                            ></v-icon>
                             <div class="text-brown-lighten-1 text-body-2 pt-2">
                                 {{ postulaue.name }}
                             </div>
@@ -307,11 +317,10 @@
 </template>
 
 <script setup>
-import { onMounted, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useHouseDetailStore } from "../../stores/houseDetailStore";
 import { storeToRefs } from "pinia";
-import testImg from "@/assets/banner05.webp";
 
 // Use route, router
 const router = useRouter();
