@@ -51,7 +51,6 @@ const sendImageToServer = async (base64Image) => {
 
   try {
     await uploadAvater(payload);
-    await reloadUser();
   } catch (error) {
     console.error("Error uploading image:", error);
   }
