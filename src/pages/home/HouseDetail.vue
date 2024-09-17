@@ -24,6 +24,8 @@
                                 variant="text"
                                 rounded="pill"
                                 size="large"
+                                density="compact"
+                                class="mb-1"
                                 @click.stop="onClickCollect"
                             >
                                 <template v-slot:prepend>
@@ -34,14 +36,17 @@
                                 </template>
                                 <span>收藏</span>
                             </v-btn>
-                            <v-btn variant="text" rounded="pill" size="large">
+                            <v-btn
+                                variant="text"
+                                rounded="pill"
+                                size="large"
+                                density="compact"
+                                class="mb-1"
+                                @click.stop="onClickShare"
+                            >
                                 <template v-slot:prepend>
                                     <v-icon
-                                        :icon="
-                                            isCollected
-                                                ? 'mdi-share-variant'
-                                                : 'mdi-share-variant-outline'
-                                        "
+                                        icon="mdi-share-variant"
                                         color="light-green-darken-3"
                                     ></v-icon>
                                 </template>
@@ -175,9 +180,58 @@
                 <v-sheet min-height="180">
                     <div class="text-h6 mb-3">地理位置</div>
                     <v-skeleton-loader type="image" height="250" v-if="isLoading" />
-                    <div v-else>
-                        {{ houseInfo.information }}
-                    </div>
+                    <v-sheet v-else class="overflow-hidden" rounded="lg">
+                        <!-- Map -->
+                        <ol-map
+                            style="height: 250px; width: 100%"
+                            :controls="[]"
+                            @click="handleMapClick"
+                            @pointermove="handleMapPointerMove"
+                        >
+                            <ol-view
+                                :projection="`EPSG:4326`"
+                                :center="[houseInfo.latitudeX, houseInfo.longitudeY]"
+                                :zoom="18"
+                                :rotation="0"
+                            />
+                            <ol-tile-layer :cacheSize="0">
+                                <ol-source-osm  />
+                            </ol-tile-layer>
+                            <ol-vector-layer>
+                                <ol-source-vector>
+                                    <ol-feature :properties="[]">
+                                        <ol-geom-point
+                                            :coordinates="[
+                                                houseInfo.latitudeX,
+                                                houseInfo.longitudeY,
+                                            ]"
+                                        ></ol-geom-point>
+                                    </ol-feature>
+                                    <ol-style>
+                                        <ol-style-icon
+                                            :src="pointIcon"
+                                            :scale="0.2"
+                                        ></ol-style-icon>
+                                    </ol-style>
+                                </ol-source-vector>
+                            </ol-vector-layer>
+                            <!-- <ol-overlay
+                                :position="[houseInfo.latitudeX, houseInfo.longitudeY]"
+                                :autoPan="true"
+                                positioning="top-center"
+                            >
+                                <v-sheet class="pa-3" rounded>hahaha</v-sheet>
+                            </ol-overlay> -->
+                            <ol-zoom-control
+                                className="ol-custom-zoom-control"
+                                zoomInLabel="+"
+                                zoomOutLabel="-"
+                            ></ol-zoom-control>
+                            <ol-attribution-control />
+                            <!-- 使用 Ctrl + 滾輪 縮放 -->
+                            <ol-interaction-mouse-wheel-zoom :condition="platformModifierKeyOnly" />
+                        </ol-map>
+                    </v-sheet>
                 </v-sheet>
                 <v-divider class="border-opacity-25 my-5"></v-divider>
                 <v-sheet min-height="100">
@@ -189,20 +243,63 @@
                 </v-sheet>
                 <v-divider class="border-opacity-25 my-5"></v-divider>
                 <v-sheet min-height="100" flat>
-                    <div class="text-h6 mb-3">評價</div>
+                    <v-sheet class="d-flex flex-row align-top">
+                        <div class="flex-grow-1 text-h6 mb-3">評價</div>
+                        <div class="d-flex flex-grow-1 text-h6 mb-3 justify-end align-top">
+                            <v-btn variant="text" size="default" rounded="pill">
+                                <template v-slot:prepend>
+                                    <v-icon icon="mdi-message-draw" color="brown"></v-icon>
+                                </template>
+                                立即評價
+                            </v-btn>
+                        </div>
+                    </v-sheet>
                     <v-skeleton-loader
                         type="avatar, list-item-three-line, avatar, list-item-three-line"
                         v-if="isLoading"
                     />
                     <v-row v-else>
-                        <!-- <v-col v-for="postulaue in houseInfo.postulates">
-                                    {{ postulaue.name }}
-                        </v-col> -->
+                        <v-col cols="12" md="6" v-for="index in 4">
+                            <v-card>
+                                <template v-slot:prepend>
+                                    <v-avatar>
+                                        <v-img
+                                            alt="John"
+                                            src="https://cdn.vuetifyjs.com/images/john.jpg"
+                                        ></v-img>
+                                    </v-avatar>
+                                </template>
+                                <template v-slot:append>
+                                    <v-rating
+                                        hover
+                                        :length="5"
+                                        :size="23"
+                                        :model-value="4"
+                                        color="warning"
+                                        active-color="warning"
+                                        readonly
+                                    />
+                                </template>
+                                <template v-slot:title>
+                                    <div>HAHAHA</div>
+                                </template>
+                                <template v-slot:subtitle>
+                                    <div>共100則評論</div>
+                                </template>
+                                <v-card-text>
+                                    很棒很棒很棒很棒很棒很棒很棒很棒很棒很棒，很棒很棒很棒很棒很棒，很棒!!!!!
+                                    很棒很棒很棒，很棒!!!!!很棒很棒很棒，很棒!!!!!很棒很棒很棒，很棒!!!!!
+                                    很棒很棒很棒，很棒!!!!!很棒很棒很棒，很棒!!!!!很棒很棒很棒，很棒!!!!!
+                                    很棒很棒很棒，很棒!!!!!很棒很棒很棒，很棒!!!!!很棒很棒很棒，很棒!!!!!
+                                </v-card-text>
+                            </v-card>
+                        </v-col>
                     </v-row>
                 </v-sheet>
             </v-col>
         </v-row>
     </v-container>
+    <ShareDialog />
 </template>
 
 <script setup>
@@ -211,14 +308,23 @@ import { useRoute, useRouter } from "vue-router";
 import { useHouseDetailStore } from "@/stores/houseDetailStore";
 import { storeToRefs } from "pinia";
 import ImageGrid from "@/components/home/ImageGrid.vue";
+import ShareDialog from "@/components/home/ShareDialog.vue";
+import pointIcon from "@/assets/point01.svg";
+import { platformModifierKeyOnly } from "ol/events/condition";
 // Use route, router
 const router = useRouter();
 const route = useRoute();
 
 // Use pinia store
 const houseDetailStore = useHouseDetailStore();
-const { houseInfo, isErrorGetHouseInfo, isLoading, isLoadingCollection, isCollected } =
-    storeToRefs(houseDetailStore);
+const {
+    houseInfo,
+    isErrorGetHouseInfo,
+    isLoading,
+    isLoadingCollection,
+    isCollected,
+    isShareDialogOpen,
+} = storeToRefs(houseDetailStore);
 
 // Functions
 function onClickCollect() {
@@ -227,6 +333,35 @@ function onClickCollect() {
     } else {
         houseDetailStore.addHouseToCollection();
     }
+}
+function onClickShare() {
+    if (!isShareDialogOpen.value) {
+        isShareDialogOpen.value = true;
+    }
+}
+// Map event
+function handleMapClick(e) {
+    let map = e.map;
+    let feature = map.forEachFeatureAtPixel(e.pixel, (feature) => {
+        return feature;
+    });
+    if (feature) {
+        let geometry = feature.getGeometry();
+        console.log(geometry.getCoordinates(), geometry.getType(), feature.getProperties());
+        // popupPosition.value = geometry.getCoordinates();
+        // selectedPointProps.name = feature.get("name");
+        // selectedPointProps.price = feature.get("price");
+        // popoverShow.value = true;
+        // isShowInfoCard.value = true;
+    } else {
+        console.log("No feature found!");
+        // popoverShow.value = false;
+    }
+}
+function handleMapPointerMove(e) {
+    const pixel = e.map.getEventPixel(e.originalEvent);
+    const hit = e.map.hasFeatureAtPixel(pixel);
+    e.map.getTarget().style.cursor = hit ? "pointer" : "";
 }
 
 watch(

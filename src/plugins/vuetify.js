@@ -1,10 +1,19 @@
 // Vuetify
 import { createVuetify } from "vuetify";
+
+// Vuetify components and directives
 // import * as components from "vuetify/components";
 // import * as directives from "vuetify/directives";
+
+// Vuetify styles or scss
 import "vuetify/styles";
 // import '@/styles/main.scss'
+
+// Icons
 import "@mdi/font/css/materialdesignicons.css";
+import "@fortawesome/fontawesome-free/css/all.css"; // Ensure your project is capable
+import { aliases, fa } from "vuetify/iconsets/fa";
+import { mdi } from "vuetify/iconsets/mdi";
 
 // Translations provided by Vuetify
 import { zhHant } from "vuetify/locale";
@@ -62,6 +71,11 @@ const vuetify = createVuetify({
     },
     icons: {
         defaultSet: "mdi",
+        // aliases,
+        sets: {
+            fa,
+            mdi,
+        },
     },
     locale: {
         locale: "zhHant",

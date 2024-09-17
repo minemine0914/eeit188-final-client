@@ -71,8 +71,8 @@
                         ref="searchBarInfoRef"
                         style="z-index: 100"
                     >
-                        <v-tabs-window v-model="searchBarTab">
-                            <v-tabs-window-item value="city">
+                        <v-window v-model="searchBarTab">
+                            <v-window-item value="city">
                                 <v-card-item>
                                     <div class="text-h6 font-weight-black">選擇城市</div>
                                     <v-chip-group column selected-class="text-brown">
@@ -86,8 +86,8 @@
                                         </v-chip>
                                     </v-chip-group>
                                 </v-card-item>
-                            </v-tabs-window-item>
-                            <v-tabs-window-item value="daterange">
+                            </v-window-item>
+                            <v-window-item value="daterange">
                                 <v-card-item>
                                     <div class="text-h6 font-weight-black">選擇日期</div>
                                     <v-container
@@ -104,8 +104,8 @@
                                         ></v-date-picker>
                                     </v-container>
                                 </v-card-item>
-                            </v-tabs-window-item>
-                            <v-tabs-window-item value="postulate">
+                            </v-window-item>
+                            <v-window-item value="postulate">
                                 <v-card-item>
                                     <v-row class="d-flex flex-row justify-center align-center">
                                         <v-col class="flex-grow-1 text-h6 font-weight-black"
@@ -146,8 +146,8 @@
                                         </v-chip>
                                     </v-chip-group>
                                 </v-card-item>
-                            </v-tabs-window-item>
-                            <v-tabs-window-item value="people">
+                            </v-window-item>
+                            <v-window-item value="people">
                                 <v-card-item>
                                     <div class="text-h6 font-weight-black">選擇人數</div>
                                     <v-list lines="two">
@@ -235,8 +235,8 @@
                                         </v-list-item>
                                     </v-list>
                                 </v-card-item>
-                            </v-tabs-window-item>
-                            <v-tabs-window-item value="other">
+                            </v-window-item>
+                            <v-window-item value="other">
                                 <v-card-item>
                                     <div class="text-h6 font-weight-black">價格範圍</div>
                                     <v-sheet class="mt-3">
@@ -431,8 +431,8 @@
                                         </v-list>
                                     </v-sheet>
                                 </v-card-item>
-                            </v-tabs-window-item>
-                        </v-tabs-window>
+                            </v-window-item>
+                        </v-window>
                     </v-card>
                 </v-slide-y-transition>
             </v-col>
