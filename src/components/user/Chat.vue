@@ -133,6 +133,7 @@ const other = reactive({});
 const index = ref(0);
 const itemsMap = ref(new Map());
 const selectedItemId = ref(null);
+const socket = ref(null);
 const page = ref(0);
 
 const chatRecord = reactive({
@@ -157,8 +158,6 @@ const rules = {
   },
 };
 
-const socket = ref(null);
-
 onMounted(async () => {
   chatRecord.chatRecords = await getChatRecord();
   Object.assign(me, user);
@@ -170,43 +169,36 @@ onMounted(async () => {
   }
 
   // Connect to WebSocket
-  socket.value = new WebSocket("ws://localhost:8081");
+  socket.value = new WebSocket("ws://localhost:3002");
+
+  socket.value.onopen = () => {
+    console.log("WebSocket connection established");
+
+    // 註冊用戶 ID 到伺服器
+    socket.value.send(
+      JSON.stringify({
+        type: "register",
+        userId: me.id,
+      })
+    );
+  };
 
   socket.value.onmessage = async (event) => {
-    if (event.data instanceof Blob) {
-      const textData = await event.data.text();
-      try {
-        const parsedData = JSON.parse(textData);
-        handleIncomingMessage(parsedData);
-      } catch (error) {
-        console.error("Error parsing JSON:", error);
-      }
-    } else {
-      try {
-        const parsedData = JSON.parse(event.data);
-        handleIncomingMessage(parsedData);
-        console.log(parsedData);
-      } catch (error) {
-        console.error("Error parsing JSON:", error);
-      }
-    }
+    const message = JSON.parse(event.data);
+    handleIncomingMessage(message);
   };
 
-  socket.onopen = () => {
-    console.log("WebSocket connection established");
-  };
-
-  socket.onclose = () => {
+  socket.value.onclose = () => {
     console.log("WebSocket connection closed");
   };
 
-  socket.onerror = (error) => {
+  socket.value.onerror = (error) => {
     console.log("WebSocket error:", error);
   };
 });
 
 function handleIncomingMessage(message) {
-  if (message.chat != "" && message.chat != null) {
+  if (message.chat !== "" && message.chat !== null) {
     chatRecord.chatRecords.unshift(message);
     getChatList();
   }
@@ -241,12 +233,13 @@ const submit = async () => {
   }
 
   const messageData = {
+    type: "private_message",
     chat: state.message,
     senderId: me.id,
     sender: me.name,
     receiverId: other.id,
     senderAvatar: me.avatarBase64,
-    createdAt: new Date(),
+    createdAt: new Date().toISOString(),
   };
 
   // Send message through WebSocket
