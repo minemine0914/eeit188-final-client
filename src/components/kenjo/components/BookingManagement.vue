@@ -277,7 +277,8 @@ methods: {
     this.orders = [
       { orderNumber: '001', propertyId: 'A01', guestInfo: 'aaa', hostInfo: 'ccc', startDate: '2024-10-01', endDate: '2024-10-07', amount: '5000', orderDate: '2024-09-10', status: '確認' },
       { orderNumber: '002', propertyId: 'A02', guestInfo: 'bbb', hostInfo: 'ddd', startDate: '2024-10-05', endDate: '2024-10-10', amount: '3000', orderDate: '2024-09-12', status: '待確認' }
-      /* { orderNumber: '002',   TransactionRecord_id
+      /* { 
+      orderNumber: '002',   TransactionRecord_id
       propertyId: 'A02',  house_id   House
       guestInfo: 'bbb',  User_id      User
       hostInfo: 'ddd',   User_id      house

@@ -1,12 +1,20 @@
+<!--訂單管理系統-->
+  
+<!--/*預訂管理	
+	預訂列表:顯示所有的預訂記錄，包括當前、未來和歷史的預訂。
+	預訂詳情:查看和編輯單個預訂的詳細信息，包括客戶信息、預訂狀態、房間分配等。
+	預訂確認/取消:處理預訂確認和取消請求。
+*/ -->
+
 <template>
   <v-data-table
     v-model:search="search"
     :headers="headers"
-    :items="desserts"
-    :sort-by="[{ key: 'date', order: 'desc' }]">
+    :items="orders"
+    :sort-by="[{ key: 'createdAt', order: 'asc' }]">
     <template v-slot:top>
       <v-toolbar flat>
-        <v-toolbar-title>金額管理</v-toolbar-title>
+        <v-toolbar-title>訂單管理</v-toolbar-title>
         <v-divider class="mx-4" inset vertical></v-divider>
         <v-spacer></v-spacer>
         <v-text-field
@@ -21,65 +29,72 @@
           :style="{ width: '200px' }"
         ></v-text-field>
         <v-dialog v-model="dialog" max-width="500px">
-          <!-- <template v-slot:activator="{ props }">
-            <v-btn class="mb-2" color="primary" dark v-bind="props">
-              新增
-            </v-btn>
-          </template> -->
+          
           <v-card>
             <v-card-title>
-              <span class="text-h5">{{ formTitle }}</span>
+              <!-- <span class="text-h5">{{ formTitle }}</span> -->
             </v-card-title>
             <v-card-text>
               <v-container>
                 <v-row>
                   <v-col cols="12" md="4" sm="6" v-if="editedIndex !== -1">
                     <v-text-field
-                      v-model="editedItem.id"
-                      label="編號"
+                      v-model="editedOrder.orderNumber"
+                      label="訂單編號"
                       readonly
                     ></v-text-field>
                   </v-col>
                   <v-col cols="12" md="4" sm="6">
                     <v-text-field
-                      v-model="editedItem.date"
-                      label="日期"
+                      v-model="editedOrder.propertyId"
+                      label="房屋ID"
+                      @click="showPropertyId(editedOrder)"
                     ></v-text-field>
                   </v-col>
                   <v-col cols="12" md="4" sm="6">
                     <v-text-field
-                      v-model="editedItem.orderQuantity"
-                      label="訂單數量"
+                      v-model="editedOrder.amount"
+                      label="金額"
                     ></v-text-field>
                   </v-col>
                   <v-col cols="12" md="4" sm="6">
                     <v-text-field
-                      v-model="editedItem.totalAmount"
-                      label="總金額"
+                      v-model="editedOrder.guestInfo"
+                      label="房客資訊"
+                      @click="showGuestInfo(editedOrder)"
                     ></v-text-field>
                   </v-col>
                   <v-col cols="12" md="4" sm="6">
                     <v-text-field
-                      v-model="editedItem.discountAmount"
-                      label="折扣金額"
+                      v-model="editedOrder.hostInfo"
+                      label="房東資訊"
+                      @click="showHostInfo(editedOrder)"
                     ></v-text-field>
                   </v-col>
                   <v-col cols="12" md="4" sm="6">
                     <v-text-field
-                      v-model="editedItem.prepaidAmount"
-                      label="預收款項"
+                      v-model="editedOrder.orderDate"
+                      label="下單時間"
                     ></v-text-field>
                   </v-col>
                   <v-col cols="12" md="4" sm="6">
                     <v-text-field
-                      v-model="editedItem.pendingAmount"
-                      label="待付款"
+                      v-model="editedOrder.startDate"
+                      label="訂單開始時間"
                     ></v-text-field>
                   </v-col>
                   <v-col cols="12" md="4" sm="6">
                     <v-text-field
-                      v-model="editedItem.processingFee"
-                      label="手續費收入"
+                      v-model="editedOrder.endDate"
+                      label="訂單結束時間"
+                    ></v-text-field>
+                  </v-col>
+                  
+                  
+                  <v-col cols="12" md="4" sm="6">
+                    <v-text-field
+                      v-model="editedOrder.status"
+                      label="訂單狀態"
                     ></v-text-field>
                   </v-col>
                 </v-row>
@@ -102,158 +117,291 @@
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn color="blue-darken-1" variant="text" @click="closeDelete">取消</v-btn>
-              <v-btn color="blue-darken-1" variant="text" @click="deleteItemConfirm">刪除</v-btn>
+              <v-btn color="blue-darken-1" variant="text" @click="deleteOrderConfirm">刪除</v-btn>
               <v-spacer></v-spacer>
             </v-card-actions>
           </v-card>
         </v-dialog>
+        <template>
+      <!-- 房東資訊框 -->
+      <v-dialog v-model="dialogHostInfo" max-width="500px">
+          <v-card>
+          <v-card-title class="text-h5">房東資訊</v-card-title>
+          <v-card-text>
+              <p>姓名:{{ hostInfo }}</p>
+              <P>----------聯絡方法------------</P>
+              <p>電話:我是電話</p>
+              <p>信箱:我是信箱</p>
+          </v-card-text>
+          <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="blue-darken-1" variant="text" @click="closeHostInfo">關閉</v-btn>
+              <v-spacer></v-spacer>
+          </v-card-actions>
+          </v-card>
+      </v-dialog>
+
+      <!-- 房客資訊框 -->
+      <v-dialog v-model="dialogGuestInfo" max-width="500px">
+          <v-card>
+          <v-card-title class="text-h5">房客資訊</v-card-title>
+          <v-card-text>
+              <p>{{ guestInfo }}</p>
+              <P>----------聯絡方法------------</P>
+              <p>電話:我是電話</p>
+              <p>信箱:我是信箱</p>
+          </v-card-text>
+          <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="blue-darken-1" variant="text" @click="closeGuestInfo">關閉</v-btn>
+              <v-spacer></v-spacer>
+          </v-card-actions>
+          </v-card>
+      </v-dialog>
+       <!-- 房屋資訊框 -->
+       <v-dialog v-model="dialogPropertyId" max-width="500px">
+          <v-card>
+          <v-card-title class="text-h5">房屋資訊</v-card-title>
+          <v-card-text>
+              <p>名稱:{{ propertyId }}</p>
+              <p>地點:我在..</p>
+              <p>類型:我是xx</p>
+              <p>平日價格:$$$$</p>
+              <p>假日價格:$$$$</p>
+          </v-card-text>
+          <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="blue-darken-1" variant="text" @click="closePropertyId">關閉</v-btn>
+              <v-spacer></v-spacer>
+          </v-card-actions>
+          </v-card>
+      </v-dialog>
+
+      </template>
       </v-toolbar>
     </template>
     
     <template v-slot:item.actions="{ item }">
-      <v-icon class="me-2" size="small" @click="editItem(item)">
-        mdi-see
+      <v-icon class="me-2" size="small" @click="editOrder(item)">
+        mdi-pencil
       </v-icon>
-      <v-icon size="small" @click="deleteItem(item)">
+      <v-icon size="small" @click="deleteOrder(item)">
         mdi-delete
       </v-icon>
     </template>
     <template v-slot:no-data>
-      <v-btn color="primary" @click="initialize">
+      <!-- <v-btn color="primary" @click="initialize">
         Reset
-      </v-btn>
+      </v-btn> -->
     </template>
   </v-data-table>
 </template>
 
+
 <script>
+import axios, { all } from 'axios';
 export default {
-  data: () => ({
-    search: '',
-    dialog: false,
-    dialogDelete: false,
-    headers: [
-      //{ title: '編號', align: 'start', key: 'id' },
-      { title: '日期', key: 'date' },
-      { title: '訂單數量', key: 'orderQuantity' },
-      { title: '總金額', key: 'totalAmount' },
-      { title: '折扣金額', key: 'discountAmount' },
-      { title: '預收款項', key: 'prepaidAmount' },
-      { title: '待付款', key: 'pendingAmount' },
-      { title: '手續費收入', key: 'processingFee' },
-     // { title: '編輯', key: 'actions', sortable: false },
-    ],
-    desserts: [],
-    editedIndex: -1,
-    editedItem: {
-      id: 0,
-      date: '',
-      orderQuantity: 0,
-      totalAmount: 0,
-      discountAmount: 0,
-      prepaidAmount: 0,
-      pendingAmount: 0,
-      processingFee: 0
-    },
-    defaultItem: {
-      id: 0,
-      date: '',
-      orderQuantity: 0,
-      totalAmount: 0,
-      discountAmount: 0,
-      prepaidAmount: 0,
-      pendingAmount: 0,
-      processingFee: 0
-    },
-  }),
+data: () => ({
+  search: '',
+  dialog: false,
+  dialogDelete: false,
+  dialogHostInfo: false,
+  dialogGuestInfo:false,
+  dialogPropertyId:false,
 
-  computed: {
-    formTitle () {
-      return this.editedIndex === -1 ? '新增訂單' : '編輯訂單'
-    },
+
+  
+  headers: [
+    { title: '訂單編號', align: 'start', sortable: false, key: 'id' },
+    { title: '房屋ID', key: 'house_id' },
+    { title: '房客資訊', key: 'user.name' },
+    { title: '房東資訊', key: 'user.name' },
+    { title: '金額', key: 'cashFlow' },
+    { title: '下單時間', key: 'createdAt' },
+    { title: '訂單開始時間', key: 'startDate' },
+    { title: '訂單結束時間', key: 'endDate' },
+    { title: '訂單狀態', key: 'deal' },
+    { title: '編輯', key: 'actions', sortable: false },
+  ],
+  orders: [],
+  editedIndex: -1,
+  editedOrder: {
+    orderNumber: '',
+    propertyId: '',
+    guestInfo: '',
+    hostInfo: '',
+    startDate: '',
+    endDate: '',
+    amount: '',
+    orderDate: '',
+    status: ''
   },
-
-  watch: {
-    dialog (val) {
-      val || this.close()
-    },
-    dialogDelete (val) {
-      val || this.closeDelete()
-    },
+  defaultOrder: {
+    orderNumber: '',
+    propertyId: '',
+    guestInfo: '',
+    hostInfo: '',
+    startDate: '',
+    endDate: '',
+    amount: '',
+    orderDate: '',
+    status: ''
   },
+  hostInfo: ''
+}),
 
-  created () {
-    this.initialize()
+
+
+watch: {
+  dialog (val) {
+    val || this.close()
   },
+  dialogDelete (val) {
+    val || this.closeDelete()
+  },
+  dialogHostInfo (val) {
+    val || this.closeHostInfo()
+  },
+  dialogGuestInfo (val) {
+    val || this.closeGuestInfo()
+  },
+  dialogPropertyId (val) {
+    val || this.closePropertyId()
+  }
+  
+},
 
-  methods: {
-    initialize () {
-      this.desserts = [
-        { date: '2024-08-13', orderQuantity: 25, totalAmount: 30000, discountAmount: 1000, prepaidAmount: 29000, pendingAmount: 25000, processingFee: 4000 },
-        { date: '2024-08-14', orderQuantity: 30, totalAmount: 35000, discountAmount: 1500, prepaidAmount: 30000, pendingAmount: 20000, processingFee: 5000 },
-        { date: '2024-03-10', orderQuantity: 18, totalAmount: 22000, discountAmount: 1100, prepaidAmount: 18000, pendingAmount: 16000, processingFee: 2800 },
-        { date: '2024-04-05', orderQuantity: 22, totalAmount: 29000, discountAmount: 1600, prepaidAmount: 24000, pendingAmount: 21000, processingFee: 3500 },
-        { date: '2024-05-18', orderQuantity: 28, totalAmount: 32000, discountAmount: 1700, prepaidAmount: 27000, pendingAmount: 23000, processingFee: 3800 },
-        { date: '2024-06-22', orderQuantity: 26, totalAmount: 31000, discountAmount: 1550, prepaidAmount: 26000, pendingAmount: 22000, processingFee: 3600 },
-        { date: '2024-07-14', orderQuantity: 24, totalAmount: 28000, discountAmount: 1450, prepaidAmount: 23000, pendingAmount: 20000, processingFee: 3400 },
-        { date: '2024-08-12', orderQuantity: 30, totalAmount: 35000, discountAmount: 1500, prepaidAmount: 30000, pendingAmount: 20000, processingFee: 5000 },
-        { date: '2024-09-10', orderQuantity: 27, totalAmount: 30000, discountAmount: 1600, prepaidAmount: 25000, pendingAmount: 22000, processingFee: 3700 },
-        { date: '2024-10-25', orderQuantity: 31, totalAmount: 34000, discountAmount: 1700, prepaidAmount: 29000, pendingAmount: 25000, processingFee: 4200 },
-        { date: '2024-11-15', orderQuantity: 29, totalAmount: 33000, discountAmount: 1650, prepaidAmount: 28000, pendingAmount: 24000, processingFee: 4100 },
-        { date: '2024-12-30', orderQuantity: 32, totalAmount: 36000, discountAmount: 1800, prepaidAmount: 31000, pendingAmount: 26000, processingFee: 4300 }
- 
-      ]
-    },
+created () {
+  this.fetchOrder()
 
-    editItem (item) {
-      this.editedIndex = this.desserts.indexOf(item)
-      this.editedItem = { ...item }
-      this.dialog = true
-    },
+},
 
-    deleteItem (item) {
-      this.editedIndex = this.desserts.indexOf(item)
-      this.editedItem = { ...item }
-      this.dialogDelete = true
-    },
-
-    deleteItemConfirm () {
-      this.desserts.splice(this.editedIndex, 1)
-      this.closeDelete()
-    },
-
-    close () {
-      this.dialog = false
-      this.$nextTick(() => {
-        this.editedItem = { ...this.defaultItem }
-        this.editedIndex = -1
-      })
-    },
-
-    closeDelete () {
-      this.dialogDelete = false
-      this.$nextTick(() => {
-        this.editedItem = { ...this.defaultItem }
-        this.editedIndex = -1
-      })
-    },
-
-    save () {
-      if (!this.editedItem.date || this.editedItem.orderQuantity === null || this.editedItem.totalAmount === null) {
-        alert('日期、訂單數量和總金額為必填項')
-        return
+methods: {
+  
+  async fetchOrder() {
+  try {
+    const response = await axios.get('http://localhost:8080/transcation_record/all', {
+      params: {
+        pageNo: 0,
+        pageSize: 1000
       }
-      if (this.editedIndex > -1) {
-        Object.assign(this.desserts[this.editedIndex], this.editedItem)
+    });
+    
+    if (response.status === 200) {
+      console.log('API response:', response.data);
+      
+      if (response.data && Array.isArray(response.data.orders)) { 
+        this.orders = response.data.orders;
       } else {
-        this.desserts.push(this.editedItem)
+        console.error('API response is not in expected format:', response.data);
+        this.orders = [];
       }
-      this.close()
-    },
+    } else {
+      console.error('API response status is not OK:', response.status);
+    }
+  } catch (error) {
+    console.error('Error in fetchOrder:', error);
+    // 可以顯示錯誤提示給用戶
+  }
+},
+
+
+  editOrder (item) {
+    this.editedIndex = this.orders.indexOf(item)
+    this.editedOrder = Object.assign({}, item)
+    this.dialog = true
   },
+
+  deleteOrder (item) {
+    this.editedIndex = this.orders.indexOf(item)
+    this.editedOrder = Object.assign({}, item)
+    this.dialogDelete = true
+  },
+
+  deleteOrderConfirm () {
+    this.orders.splice(this.editedIndex, 1)
+    this.closeDelete()
+  },
+
+  async deleteOrderConfirm() {
+      try {
+        await axios.delete(`http://localhost:8080/user/${this.editOrder.id}`);
+        this.desserts.splice(this.editedIndex, 1);
+        this.closeDelete();
+      } catch (error) {
+        console.error('Error deleting order:', error);
+      }
+    },
+
+  showHostInfo (order) {
+    this.hostInfo = order.hostInfo
+    this.dialogHostInfo = true
+  },
+  showGuestInfo (order) {
+    this.guestInfo = order.guestInfo
+    this.dialogGuestInfo = true
+  },
+  
+  showPropertyId (order) {
+    this.propertyId = order.propertyId
+    this.dialogPropertyId = true
+  },
+  close () {
+    this.dialog = false
+    this.$nextTick(() => {
+      this.editedOrder = Object.assign({}, this.defaultOrder)
+      this.editedIndex = -1
+    })
+  },
+
+  closeDelete () {
+    this.dialogDelete = false
+    this.$nextTick(() => {
+      this.editedOrder = Object.assign({}, this.defaultOrder)
+      this.editedIndex = -1
+    })
+  },
+
+  closeHostInfo () {
+    this.dialogHostInfo = false
+  },
+  closeGuestInfo () {
+    this.dialogGuestInfo = false
+  },
+  
+  closePropertyId () {
+    this.dialogPropertyId = false
+  },
+
+  async save() {
+    if (!this.editedOrder.orderNumber || !this.editedOrder.propertyId) {
+      alert('訂單編號和房屋ID為必填項');
+      return;
+    }
+
+    try {
+      if (this.editedIndex > -1) {
+        // 更新現有訂單
+        await axios.put(`http://localhost:8080/transcation_record/${this.editedOrder.orderNumber}`, this.editedOrder);
+        this.orders[this.editedIndex] = this.editedOrder; // 更新本地列表
+      } else {
+        // 創建新訂單
+        const response = await axios.post('http://localhost:8080/transcation_record/', this.editedOrder);
+        this.orders.push(response.data); // 添加新訂單到本地列表
+      }
+      this.close();
+    } catch (error) {
+      console.error('Error saving order:', error);
+      // 顯示錯誤消息
+      alert('儲存訂單時發生錯誤。');
+    }
+  },
+
 }
+};
+
 </script>
 
 <style scoped>
-/* Add any custom styles here */
 </style>
+
