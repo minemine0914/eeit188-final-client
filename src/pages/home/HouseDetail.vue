@@ -20,18 +20,10 @@
                             color="transparent"
                         >
                             <v-btn
-                                :disabled="isCollecting"
+                                :disabled="isLoadingCollection"
                                 variant="text"
                                 rounded="pill"
                                 size="large"
-                                v-tooltip="{
-                                    text: '已收藏',
-                                    scrollStrategy: 'close',
-                                    scrim: false,
-                                    persistent: false,
-                                    openOnClick: true,
-                                    openOnHover: false,
-                                }"
                                 @click.stop="onClickCollect"
                             >
                                 <template v-slot:prepend>
@@ -46,14 +38,6 @@
                                 variant="text"
                                 rounded="pill"
                                 size="large"
-                                v-tooltip="{
-                                    text: '已複製連結',
-                                    scrollStrategy: 'close',
-                                    scrim: false,
-                                    persistent: false,
-                                    openOnClick: true,
-                                    openOnHover: false,
-                                }"
                             >
                                 <template v-slot:prepend>
                                     <v-icon
@@ -328,16 +312,16 @@ const route = useRoute();
 
 // Use pinia store
 const houseDetailStore = useHouseDetailStore();
-const { houseInfo, isErrorGetHouseInfo, isLoading, isCollecting, isCollected } =
+const { houseInfo, isErrorGetHouseInfo, isLoading, isLoadingCollection, isCollected } =
     storeToRefs(houseDetailStore);
 
 // Functions
 
 function onClickCollect() {
     if (isCollected.value) {
-        houseDetailStore.removeHouseToCollection(houseInfo.value.id);
+        houseDetailStore.removeHouseToCollection();
     } else {
-        houseDetailStore.addHouseToCollection(houseInfo.value.id);
+        houseDetailStore.addHouseToCollection();
     }
 }
 

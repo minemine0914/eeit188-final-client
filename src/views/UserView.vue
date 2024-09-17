@@ -29,7 +29,7 @@
           density="comfortable"
           to="/signup"
           class="ml-2 mr-5"
-          prepend-icon="mdi-logout"
+          prepend-icon="mdi-account-plus"
           >註冊</v-btn
         >
         <v-btn

@@ -46,7 +46,7 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
     const houseInfo = reactive({ ...initialHouseInfo });
     const isErrorGetHouseInfo = ref(false);
     const isLoading = ref(true);
-    const isCollecting = ref(false);
+    const isLoadingCollection = ref(false);
     const isCollected = ref(false);
 
     function resetHouseInfo() {
@@ -79,6 +79,7 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
                 isErrorGetHouseInfo.value = false;
                 isLoading.value = false;
                 console.log("Get houseInfo from database sucessed!");
+                checkIsCollectedHouse();
             })
             .catch((err) => {
                 Object.assign(houseInfo, initialHouseInfo);
@@ -88,45 +89,74 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
             });
     }
 
-    function addHouseToCollection(houseId) {
-        isCollecting.value = true;
+    function addHouseToCollection() {
+        isLoadingCollection.value = true;
         if (typeof userStore.user.id !== "undefined") {
             api.post("/user-collection/", {
                 userId: userStore.user.id,
-                houseId,
+                houseId: houseInfo.id,
             })
                 .then((res) => {
                     console.log("Add house to collection success.", res);
                     isCollected.value = true;
-                    isCollecting.value = false;
+                    isLoadingCollection.value = false;
                 })
                 .catch((err) => {
                     console.log("Add house to collection failed.");
-                    isCollecting.value = false;
+                    isLoadingCollection.value = false;
                 });
         } else {
             console.log("You are not login! can't collect house.");
         }
     }
 
-    function removeHouseToCollection(houseId) {
-        isCollecting.value = true;
+    function removeHouseToCollection() {
+        isLoadingCollection.value = true;
         if (typeof userStore.user.id !== "undefined") {
             api.delete("/user-collection/", {
-                userId: userStore.user.id,
-                houseId,
+                data: {
+                    userId: userStore.user.id,
+                    houseId: houseInfo.id,
+                },
             })
                 .then((res) => {
                     console.log("Remove house to collection success.", res);
                     isCollected.value = false;
-                    isCollecting.value = false;
+                    isLoadingCollection.value = false;
                 })
                 .catch((err) => {
                     console.log("Remove house to collection failed.");
-                    isCollecting.value = false;
+                    isLoadingCollection.value = false;
                 });
         } else {
             console.log("You are not login! can't collect house.");
+        }
+    }
+
+    function checkIsCollectedHouse() {
+        isLoadingCollection.value = true;
+        if (typeof userStore.user.id !== "undefined") {
+            api.get("/user-collection/", {
+                params: {
+                    userId: userStore.user.id,
+                    houseId: houseInfo.id,
+                },
+            })
+                .then((res) => {
+                    console.log("Check house collection success.");
+                    if (res.data.isCollected) {
+                        isCollected.value = true;
+                    } else {
+                        isCollected.value = false;
+                    }
+                    isLoadingCollection.value = false;
+                })
+                .catch((err) => {
+                    console.log("Check house collection failed.");
+                    isLoadingCollection.value = false;
+                });
+        } else {
+            console.log("You are not login! can't check collection.");
         }
     }
 
@@ -134,12 +164,13 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
         houseInfo,
         isErrorGetHouseInfo,
         isLoading,
-        isCollecting,
+        isLoadingCollection,
         isCollected,
         resetHouseInfo,
         getImageUrlList,
         getHouseInfo,
         addHouseToCollection,
         removeHouseToCollection,
+        checkIsCollectedHouse,
     };
 });
