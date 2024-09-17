@@ -189,26 +189,23 @@ export const useUserStore = defineStore(
       try {
         const response = await api({
           method: "post",
-          url: `/check-password/`,
+          url: `/user/check-password/${user.id}`,
           data: request,
         });
-
-        userResetToken.value = response;
+        return response;
       } catch (error) {
         console.error(error);
-        throw error;
+        return false;
       }
     }
 
     async function resetPassword(request) {
       try {
-        const response = await api({
-          method: "post",
-          url: `/user/forgot-password`,
+        await api({
+          method: "put",
+          url: `/user/set-new-password/${user.id}`,
           data: request,
         });
-
-        userResetToken.value = response;
       } catch (error) {
         console.error(error);
         throw error;
@@ -244,6 +241,8 @@ export const useUserStore = defineStore(
       downloadBackgroundImage,
       getChatRecord,
       addChatRecord,
+      checkPassword,
+      resetPassword,
     };
   },
   {

@@ -3,7 +3,7 @@
   <div class="content-container">
     <div class="conetnt">
       <UserDetail v-show="selectedBtn === 1" />
-      <ResetPassword v-show="selectedBtn === 2" />
+      <ResetPassword class="resetPassword" v-show="selectedBtn === 2" />
       <Coupon v-show="selectedBtn === 4" />
       <UserCollection v-show="selectedBtn === 5" />
       <Discuss v-show="selectedBtn === 6" />
@@ -129,5 +129,10 @@ function handleClick(index) {
 
 .btn {
   margin-top: 20px;
+}
+
+.resetPassword {
+  width: 300px;
+  margin-left: 220px;
 }
 </style>
