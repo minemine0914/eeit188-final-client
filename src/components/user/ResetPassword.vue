@@ -36,7 +36,6 @@ import { reactive, computed } from "vue";
 import { useVuelidate } from "@vuelidate/core";
 import { required, helpers, sameAs } from "@vuelidate/validators";
 import { useUserStore } from "../../stores/userStore";
-import { useRouter } from "vue-router";
 
 // Custom password validation
 const passwordComplexity = helpers.regex(
@@ -74,8 +73,7 @@ const rules = {
 
 const v$ = useVuelidate(rules, state);
 const userStore = useUserStore();
-const { loginAuth } = userStore;
-const router = useRouter();
+const { checkPassword, resetPassword } = userStore;
 
 const submit = async () => {
   const isValid = await v$.value.$validate();
@@ -83,6 +81,21 @@ const submit = async () => {
   if (!isValid) {
     return;
   }
+
+  const checkResult = await checkPassword({
+    oldPassword: state.oldPassword,
+  });
+
+  if (checkResult.data !== true) {
+    alert("您輸入的舊密碼不存在或有錯誤，請重新輸入");
+  }
+
+  await resetPassword({
+    newPassword: state.newPassword,
+  });
+
+  alert("密碼修改成功！");
+
   clear();
 };
 
@@ -95,8 +108,4 @@ function clear() {
 }
 </script>
 
-<style scoped>
-form {
-  width: 300px;
-}
-</style>
+<style scoped></style>
