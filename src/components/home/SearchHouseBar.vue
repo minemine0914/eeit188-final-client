@@ -444,7 +444,7 @@
 import taiwanCityData from "@/assets/CityCountyData.json";
 import Fuse from "fuse.js";
 import { computed, onMounted, reactive, ref } from "vue";
-import { useHouseSearchStore } from "../../../stores/searchHouseStore";
+import { useHouseSearchStore } from "@/stores/searchHouseStore";
 import { storeToRefs } from "pinia";
 import { useRoute, useRouter } from "vue-router";
 const route = useRoute();

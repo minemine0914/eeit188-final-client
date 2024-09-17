@@ -53,91 +53,7 @@
             </v-col>
         </v-row>
         <!-- Images Grid -->
-        <v-responsive :aspect-ratio="10 / 4" ref="imageBoxRef" class="mx-1">
-            <v-sheet class="fill-height d-flex flex-row ga-1" style="contain: size">
-                <v-sheet class="flex-grow-1 rounded-s-xl overflow-hidden">
-                    <v-skeleton-loader
-                        class="custom-skeleton-image"
-                        type="image"
-                        height="100%"
-                        v-if="isLoading"
-                    />
-                    <v-img
-                        :src="houseDetailStore.getImageUrlList(0)"
-                        position="center"
-                        :height="bigImageHeight"
-                        cover
-                        v-else
-                    ></v-img>
-                </v-sheet>
-                <v-sheet class="flex-grow-1 d-flex flex-column ga-1">
-                    <v-sheet class="flex-grow-1 d-flex flex-row ga-1">
-                        <v-sheet class="flex-grow-1">
-                            <v-skeleton-loader
-                                type="image"
-                                height="100%"
-                                width="100%"
-                                v-if="isLoading"
-                            />
-                            <v-img
-                                :src="houseDetailStore.getImageUrlList(1)"
-                                position="center"
-                                cover
-                                :height="smallImageHeight"
-                                v-else
-                            ></v-img>
-                        </v-sheet>
-                        <v-sheet class="flex-grow-1 rounded-te-xl overflow-hidden">
-                            <v-skeleton-loader
-                                type="image"
-                                height="100%"
-                                width="100%"
-                                v-if="isLoading"
-                            />
-                            <v-img
-                                :src="houseDetailStore.getImageUrlList(2)"
-                                position="center"
-                                :height="smallImageHeight"
-                                cover
-                                v-else
-                            ></v-img>
-                        </v-sheet>
-                    </v-sheet>
-                    <v-sheet class="flex-grow-1 d-flex flex-row ga-1">
-                        <v-sheet class="flex-grow-1">
-                            <v-skeleton-loader
-                                type="image"
-                                height="100%"
-                                width="100%"
-                                v-if="isLoading"
-                            />
-                            <v-img
-                                :src="houseDetailStore.getImageUrlList(3)"
-                                position="center"
-                                :height="smallImageHeight"
-                                cover
-                                v-else
-                            ></v-img>
-                        </v-sheet>
-                        <v-sheet class="flex-grow-1 rounded-be-xl overflow-hidden">
-                            <v-skeleton-loader
-                                type="image"
-                                height="100%"
-                                width="100%"
-                                v-if="isLoading"
-                            />
-                            <v-img
-                                :src="houseDetailStore.getImageUrlList(4)"
-                                position="center"
-                                :height="smallImageHeight"
-                                cover
-                                v-else
-                            ></v-img>
-                        </v-sheet>
-                    </v-sheet>
-                </v-sheet>
-            </v-sheet>
-        </v-responsive>
+        <ImageGrid />
         <!-- House details -->
         <v-row class="px-1 mt-3" no-gutters>
             <v-col cols="12" md="12">
@@ -205,9 +121,13 @@
                                 </div>
                             </v-sheet>
                             <v-sheet color="transparent">
-                                <v-btn color="brown-lighten-1" min-width="130" size="large"
-                                    >立即預定</v-btn
-                                >
+                                <v-btn
+                                    color="brown-lighten-1"
+                                    min-width="130"
+                                    size="large"
+                                    text="立即預定"
+                                    :to="`/booking/${houseInfo.id}`"
+                                ></v-btn>
                             </v-sheet>
                         </v-col>
                     </v-row>
@@ -288,10 +208,9 @@
 <script setup>
 import { computed, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { useHouseDetailStore } from "../../stores/houseDetailStore";
+import { useHouseDetailStore } from "@/stores/houseDetailStore";
 import { storeToRefs } from "pinia";
-import { useResizeObserver } from "@vueuse/core";
-
+import ImageGrid from "@/components/home/ImageGrid.vue";
 // Use route, router
 const router = useRouter();
 const route = useRoute();
@@ -301,20 +220,7 @@ const houseDetailStore = useHouseDetailStore();
 const { houseInfo, isErrorGetHouseInfo, isLoading, isLoadingCollection, isCollected } =
     storeToRefs(houseDetailStore);
 
-// Detect image box v-responsive height
-const imageBoxRef = ref(null);
-const bigImageHeight = ref(1);
-const smallImageHeight = ref(1);
-useResizeObserver(imageBoxRef, (entries) => {
-    const entry = entries[0];
-    const { width, height } = entry.contentRect;
-    // console.log(`Image box: width: ${width}, height: ${height}`);
-    bigImageHeight.value = height;
-    smallImageHeight.value = height / 2 - 2; // with gap width(4px / 2)
-});
-
 // Functions
-
 function onClickCollect() {
     if (isCollected.value) {
         houseDetailStore.removeHouseToCollection();

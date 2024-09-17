@@ -180,11 +180,10 @@
 </template>
 
 <script setup>
-import testImg from "@/assets/banner06.webp";
-import SearchHouseBar from "@/components/minemine/components/SearchHouseBar.vue";
+import SearchHouseBar from "@/components/home/SearchHouseBar.vue";
 import { computed, onBeforeUnmount, onMounted, reactive, ref, nextTick } from "vue";
-import { useHouseSearchStore } from "../../stores/searchHouseStore";
-import { useUserViewStore } from "../../stores/userViewStore";
+import { useHouseSearchStore } from "@/stores/searchHouseStore";
+import { useUserViewStore } from "@/stores/userViewStore";
 import { storeToRefs } from "pinia";
 import { useResizeObserver } from "@vueuse/core";
 const searchContainerRef = ref(null);

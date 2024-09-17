@@ -34,9 +34,15 @@ const routes = [
       },
       {
         path: "house/:houseId",
-        name: "HouseWithId",
+        name: "HouseWithHouseId",
         component: () => import("@/pages/home/HouseDetail.vue"),
         meta: { title: "Nomad 房源", requiresAuth: false },
+      },
+      {
+        path: "booking/:houseId",
+        name: "BookingWithHouseId",
+        component: () => import("@/pages/home/Booking.vue"),
+        meta: { title: "Nomad 預定您的房源", requiresAuth: false },
       },
       {
         path: "member",
