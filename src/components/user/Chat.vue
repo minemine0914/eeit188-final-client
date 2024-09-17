@@ -10,6 +10,7 @@
         ></v-card>
         <v-list class="chat-recored">
           <v-list-item
+            :class="{ 'selected-item': selectedItemId === item.id }"
             v-for="item in itemSet?.items"
             :key="item.id"
             @click="handleClick(item)"
@@ -36,7 +37,6 @@
                 </v-list-item-content>
               </div>
             </div>
-            <v-divider :thickness="5"></v-divider>
           </v-list-item>
         </v-list>
       </v-card>
@@ -132,6 +132,7 @@ const me = reactive({});
 const other = reactive({});
 const index = ref(0);
 const itemsMap = ref(new Map());
+const selectedItemId = ref(null);
 const page = ref(0);
 
 const chatRecord = reactive({
@@ -159,10 +160,14 @@ const rules = {
 const socket = ref(null);
 
 onMounted(async () => {
-  chatRecord.chatRecords = await getChatRecord(user.id);
+  chatRecord.chatRecords = await getChatRecord();
   Object.assign(me, user);
   Object.assign(other, await getOther());
   getChatList();
+
+  if (itemSet?.items.length !== 0) {
+    selectedItemId.value = itemSet?.items[0]?.id || null;
+  }
 
   // Connect to WebSocket
   socket.value = new WebSocket("ws://localhost:8081");
@@ -238,6 +243,7 @@ const submit = async () => {
   const messageData = {
     chat: state.message,
     senderId: me.id,
+    sender: me.name,
     receiverId: other.id,
     senderAvatar: me.avatarBase64,
     createdAt: new Date(),
@@ -271,6 +277,7 @@ function getChatList() {
       const newItem = {
         id: chat.id,
         avatar: chat.senderAvatar,
+        senderId: chat.senderId,
         title: chat.sender,
         subtitle: chat.chat,
         createdAt: chat.createdAt,
@@ -281,15 +288,19 @@ function getChatList() {
   }
 
   itemSet.items = Array.from(itemsMap.value.values());
+
+  // Sort items by createdAt in descending order (newest first)
+  itemSet.items.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 }
 
 const handleClick = async (item) => {
-  index.value = findIndexById(chatRecord.chatRecords, item.id);
+  index.value = findIndexById(chatRecord.chatRecords, item.senderId);
   Object.assign(other, await getOther());
+  selectedItemId.value = item.id;
 };
 
 const findIndexById = (array, id) => {
-  return array.findIndex((item) => item.id === id);
+  return array.findIndex((item) => item.senderId === id);
 };
 
 // function handleScroll(event) {
@@ -415,5 +426,9 @@ const findIndexById = (array, id) => {
 #submit-btn {
   margin-left: 10px;
   height: 55px;
+}
+
+.selected-item {
+  background-color: #b0bec5;
 }
 </style>

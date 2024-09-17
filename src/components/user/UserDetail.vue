@@ -189,7 +189,6 @@ const submit = async () => {
       address: state.address,
       about: state.about,
     });
-    await reloadUser();
     alert("修改成功！");
   } catch (error) {
     console.error("Registration failed:", error);
