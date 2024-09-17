@@ -107,8 +107,30 @@
                             </v-tabs-window-item>
                             <v-tabs-window-item value="postulate">
                                 <v-card-item>
-                                    <div class="text-h6 font-weight-black">選擇設施</div>
+                                    <v-row class="d-flex flex-row justify-center align-center">
+                                        <v-col class="flex-grow-1 text-h6 font-weight-black"
+                                            >選擇設施</v-col
+                                        >
+                                        <v-col class="flex-grow-1 d-flex justify-end align-center">
+                                            <v-checkbox
+                                                label="嚴格模式"
+                                                v-model="searchParams.matchAllPostulates"
+                                                hide-details
+                                                density="compact"
+                                                color="red"
+                                                v-tooltip="{
+                                                    text: '當勾選時，設施必須全部符合條件',
+                                                    scrollStrategy: 'close',
+                                                    scrim: false,
+                                                    persistent: false,
+                                                    openOnClick: false,
+                                                    openOnHover: true,
+                                                }"
+                                            ></v-checkbox>
+                                        </v-col>
+                                    </v-row>
                                     <v-chip-group
+                                        v-model="postlateChipGroup"
                                         column
                                         multiple
                                         selected-class="text-brown"
@@ -137,6 +159,7 @@
                                                     fluid
                                                 >
                                                     <v-btn
+                                                        :disabled="searchParams.adult < 1"
                                                         icon="mdi-minus"
                                                         size="small"
                                                         density="comfortable"
@@ -144,7 +167,7 @@
                                                             () => {
                                                                 searchParams.adult > 0
                                                                     ? searchParams.adult--
-                                                                    : _;
+                                                                    : 0;
                                                             }
                                                         "
                                                     ></v-btn>
@@ -166,6 +189,7 @@
                                                     fluid
                                                 >
                                                     <v-btn
+                                                        :disabled="searchParams.child < 1"
                                                         icon="mdi-minus"
                                                         size="small"
                                                         density="comfortable"
@@ -173,7 +197,7 @@
                                                             () => {
                                                                 searchParams.child > 0
                                                                     ? searchParams.child--
-                                                                    : _;
+                                                                    : 0;
                                                             }
                                                         "
                                                     ></v-btn>
@@ -214,7 +238,198 @@
                             </v-tabs-window-item>
                             <v-tabs-window-item value="other">
                                 <v-card-item>
-                                    <div class="text-h6 font-weight-black">進階搜尋</div>
+                                    <div class="text-h6 font-weight-black">價格範圍</div>
+                                    <v-sheet class="mt-3">
+                                        <v-range-slider
+                                            v-model="housePriceRange"
+                                            :max="100000"
+                                            :min="0"
+                                            :step="1"
+                                            class="align-center"
+                                            hide-details
+                                            color="brown-lighten-1"
+                                            @update:model-value="onUpdateHousePriceRange"
+                                        >
+                                            <template v-slot:prepend>
+                                                <v-text-field
+                                                    v-model="housePriceRange[0]"
+                                                    prefix="$"
+                                                    density="compact"
+                                                    style="width: 100px"
+                                                    type="number"
+                                                    variant="outlined"
+                                                    hide-details
+                                                    single-line
+                                                    hide-spin-buttons
+                                                    rounded="pill"
+                                                ></v-text-field>
+                                            </template>
+                                            <template v-slot:append>
+                                                <v-text-field
+                                                    v-model="housePriceRange[1]"
+                                                    prefix="$"
+                                                    density="compact"
+                                                    style="width: 100px"
+                                                    type="number"
+                                                    variant="outlined"
+                                                    hide-details
+                                                    single-line
+                                                    hide-spin-buttons
+                                                    rounded="pill"
+                                                ></v-text-field>
+                                            </template>
+                                        </v-range-slider>
+                                    </v-sheet>
+                                    <v-divider class="border-opacity-25 my-5"></v-divider>
+                                    <div class="text-h6 font-weight-black">基本起居</div>
+                                    <v-sheet class="mt-3">
+                                        <v-list lines="two">
+                                            <v-list-item title="客廳">
+                                                <template v-slot:append>
+                                                    <v-container
+                                                        class="pa-2 d-flex justify-center align-center ga-5"
+                                                        min-width="180px"
+                                                        fluid
+                                                    >
+                                                        <v-btn
+                                                            :disabled="searchParams.livingDiningRoom < 1"
+                                                            icon="mdi-minus"
+                                                            size="small"
+                                                            density="comfortable"
+                                                            @click.stop="
+                                                                () => {
+                                                                    searchParams.livingDiningRoom > 0
+                                                                        ? searchParams.livingDiningRoom--
+                                                                        : 0;
+                                                                }
+                                                            "
+                                                        ></v-btn>
+                                                        <div class="mx-1">
+                                                            {{
+                                                                searchParams.livingDiningRoom == 0
+                                                                    ? "任意"
+                                                                    : searchParams.livingDiningRoom + "+"
+                                                            }}
+                                                        </div>
+                                                        <v-btn
+                                                            icon="mdi-plus"
+                                                            size="small"
+                                                            density="comfortable"
+                                                            @click.stop="searchParams.livingDiningRoom++"
+                                                        ></v-btn>
+                                                    </v-container>
+                                                </template>
+                                            </v-list-item>
+                                            <v-list-item title="臥室">
+                                                <template v-slot:append>
+                                                    <v-container
+                                                        class="pa-2 d-flex justify-center align-center ga-5"
+                                                        min-width="180px"
+                                                        fluid
+                                                    >
+                                                        <v-btn
+                                                            :disabled="searchParams.bedroom < 1"
+                                                            icon="mdi-minus"
+                                                            size="small"
+                                                            density="comfortable"
+                                                            @click.stop="
+                                                                () => {
+                                                                    searchParams.bedroom > 0
+                                                                        ? searchParams.bedroom--
+                                                                        : 0;
+                                                                }
+                                                            "
+                                                        ></v-btn>
+                                                        <div class="mx-1">
+                                                            {{
+                                                                searchParams.bedroom == 0
+                                                                    ? "任意"
+                                                                    : searchParams.bedroom + "+"
+                                                            }}
+                                                        </div>
+                                                        <v-btn
+                                                            icon="mdi-plus"
+                                                            size="small"
+                                                            density="comfortable"
+                                                            @click.stop="searchParams.bedroom++"
+                                                        ></v-btn>
+                                                    </v-container>
+                                                </template>
+                                            </v-list-item>
+                                            <v-list-item title="淋浴間">
+                                                <template v-slot:append>
+                                                    <v-container
+                                                        class="pa-2 d-flex justify-center align-center ga-5"
+                                                        min-width="180px"
+                                                        fluid
+                                                    >
+                                                        <v-btn
+                                                            :disabled="searchParams.bathroom < 1"
+                                                            icon="mdi-minus"
+                                                            size="small"
+                                                            density="comfortable"
+                                                            @click.stop="
+                                                                () => {
+                                                                    searchParams.bathroom > 0
+                                                                        ? searchParams.bathroom--
+                                                                        : 0;
+                                                                }
+                                                            "
+                                                        ></v-btn>
+                                                        <div class="mx-1">
+                                                            {{
+                                                                searchParams.bathroom == 0
+                                                                    ? "任意"
+                                                                    : searchParams.bathroom + "+"
+                                                            }}
+                                                        </div>
+                                                        <v-btn
+                                                            icon="mdi-plus"
+                                                            size="small"
+                                                            density="comfortable"
+                                                            @click.stop="searchParams.bathroom++"
+                                                        ></v-btn>
+                                                    </v-container>
+                                                </template>
+                                            </v-list-item>
+                                            <v-list-item title="衛生間">
+                                                <template v-slot:append>
+                                                    <v-container
+                                                        class="pa-2 d-flex justify-center align-center ga-5"
+                                                        min-width="180px"
+                                                        fluid
+                                                    >
+                                                        <v-btn
+                                                            :disabled="searchParams.restroom < 1"
+                                                            icon="mdi-minus"
+                                                            size="small"
+                                                            density="comfortable"
+                                                            @click.stop="
+                                                                () => {
+                                                                    searchParams.restroom > 0
+                                                                        ? searchParams.restroom--
+                                                                        : 0;
+                                                                }
+                                                            "
+                                                        ></v-btn>
+                                                        <div class="mx-1">
+                                                            {{
+                                                                searchParams.restroom == 0
+                                                                    ? "任意"
+                                                                    : searchParams.restroom + "+"
+                                                            }}
+                                                        </div>
+                                                        <v-btn
+                                                            icon="mdi-plus"
+                                                            size="small"
+                                                            density="comfortable"
+                                                            @click.stop="searchParams.restroom++"
+                                                        ></v-btn>
+                                                    </v-container>
+                                                </template>
+                                            </v-list-item>
+                                        </v-list>
+                                    </v-sheet>
                                 </v-card-item>
                             </v-tabs-window-item>
                         </v-tabs-window>
@@ -229,13 +444,20 @@
 import taiwanCityData from "@/assets/CityCountyData.json";
 import Fuse from "fuse.js";
 import { computed, onMounted, reactive, ref } from "vue";
-import { useHouseSearchStore } from "../../../stores/searchHouseStore";
+import { useHouseSearchStore } from "@/stores/searchHouseStore";
 import { storeToRefs } from "pinia";
 import { useRoute, useRouter } from "vue-router";
 const route = useRoute();
 const router = useRouter();
 const houseSearchStore = useHouseSearchStore();
-const { inputValues, searchParams, postulateList, filterHouseList } = storeToRefs(houseSearchStore);
+const {
+    inputValues,
+    searchParams,
+    postlateChipGroup,
+    housePriceRange,
+    postulateList,
+    filterHouseList,
+} = storeToRefs(houseSearchStore);
 // State
 // const inputCityName = ref("");
 // const inputDateRange = ref(null);
@@ -300,6 +522,7 @@ function onUpdateDatePicker(value) {
 }
 
 function onUpdatePostulates(value) {
+    console.log(value);
     let selectedIds = value.map((index) => postulateList.value[index].id);
     // console.log(selectedIds);
     searchParams.value.postulateIds.splice(0, searchParams.value.postulateIds.length);
@@ -310,6 +533,15 @@ function onUpdateCity(value) {
     const result = fuse.search(value);
     cityResult.value = result.length > 0 ? result.map((obj) => obj.item) : fuse._docs;
     searchParams.value.city = value;
+}
+
+function onUpdateHousePriceRange() {
+    searchParams.value.minPrice = housePriceRange.value[0];
+    if (housePriceRange[1] > 99999) {
+        searchParams.value.maxPrice = null;
+    } else {
+        searchParams.value.maxPrice = housePriceRange.value[1];
+    }
 }
 
 function onFocusSearchCity(value) {
@@ -336,18 +568,22 @@ function onFocusSearchOther(value) {
 }
 
 function onClickSearchBtn() {
-    const searchPaths = ['/search', '/advanced-search']; // 搜尋頁面的路由
+    const searchPaths = ["/search", "/advanced-search"]; // 搜尋頁面的路由
     isFocusSearchBar.value = false;
     if (searchPaths.includes(route.path)) {
         // router.go(0); // 如果當前頁面在 searchPaths 中，重新整理頁面
         houseSearchStore.resetSearchResult();
     } else {
         router.push(searchPaths[0]); // 如果不是 searchPaths 中的頁面，導航到第一個 searchPath
+        houseSearchStore.resetSearchResult();
     }
 }
 
 onMounted(() => {
     houseSearchStore.getPostulateList();
+    // init search param values
+    searchParams.value.minPrice = housePriceRange.value[0];
+    searchParams.value.maxPrice = housePriceRange.value[1];
 });
 </script>
 

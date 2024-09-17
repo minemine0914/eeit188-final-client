@@ -3,6 +3,8 @@ import { computed, reactive, ref } from "vue";
 import api from "../plugins/axios";
 import { useRouter } from "vue-router";
 import { useUserStore } from "./userStore";
+import NotAvailableImage from "@/assets/ImageNotAvailable01.webp";
+
 const userStore = useUserStore();
 export const useHouseDetailStore = defineStore("HouseDetail", () => {
     const initialHouseInfo = {
@@ -38,15 +40,34 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
         collectionCount: null,
         userId: null,
         userName: null,
+        houseExternalResourceRecords: [],
     };
+
     const houseInfo = reactive({ ...initialHouseInfo });
     const isErrorGetHouseInfo = ref(false);
     const isLoading = ref(true);
-    const isCollecting = ref(false);
+    const isLoadingCollection = ref(false);
     const isCollected = ref(false);
 
     function resetHouseInfo() {
         Object.assign(houseInfo, initialHouseInfo);
+    }
+
+    function getImageUrlList(index) {
+        const records = houseInfo.houseExternalResourceRecords;
+        let imageBaseUrl = import.meta.env.VITE_API_URL + "/house-external-resource/image/";
+        let imageSrc = null;
+        if (
+            typeof records === "undefined" ||
+            typeof records[index] === "undefined" ||
+            records[index] === null ||
+            records[index] === ""
+        ) {
+            imageSrc = NotAvailableImage;
+        } else {
+            imageSrc = imageBaseUrl + records[index].id;
+        }
+        return imageSrc;
     }
 
     async function getHouseInfo(id) {
@@ -58,6 +79,7 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
                 isErrorGetHouseInfo.value = false;
                 isLoading.value = false;
                 console.log("Get houseInfo from database sucessed!");
+                checkIsCollectedHouse();
             })
             .catch((err) => {
                 Object.assign(houseInfo, initialHouseInfo);
@@ -67,45 +89,74 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
             });
     }
 
-    function addHouseToCollection(houseId) {
-        isCollecting.value = true;
+    function addHouseToCollection() {
+        isLoadingCollection.value = true;
         if (typeof userStore.user.id !== "undefined") {
             api.post("/user-collection/", {
                 userId: userStore.user.id,
-                houseId,
+                houseId: houseInfo.id,
             })
                 .then((res) => {
                     console.log("Add house to collection success.", res);
                     isCollected.value = true;
-                    isCollecting.value = false;
+                    isLoadingCollection.value = false;
                 })
                 .catch((err) => {
                     console.log("Add house to collection failed.");
-                    isCollecting.value = false;
+                    isLoadingCollection.value = false;
                 });
         } else {
             console.log("You are not login! can't collect house.");
         }
     }
 
-    function removeHouseToCollection(houseId) {
-        isCollecting.value = true;
+    function removeHouseToCollection() {
+        isLoadingCollection.value = true;
         if (typeof userStore.user.id !== "undefined") {
             api.delete("/user-collection/", {
-                userId: userStore.user.id,
-                houseId,
+                data: {
+                    userId: userStore.user.id,
+                    houseId: houseInfo.id,
+                },
             })
                 .then((res) => {
                     console.log("Remove house to collection success.", res);
                     isCollected.value = false;
-                    isCollecting.value = false;
+                    isLoadingCollection.value = false;
                 })
                 .catch((err) => {
                     console.log("Remove house to collection failed.");
-                    isCollecting.value = false;
+                    isLoadingCollection.value = false;
                 });
         } else {
             console.log("You are not login! can't collect house.");
+        }
+    }
+
+    function checkIsCollectedHouse() {
+        isLoadingCollection.value = true;
+        if (typeof userStore.user.id !== "undefined") {
+            api.get("/user-collection/", {
+                params: {
+                    userId: userStore.user.id,
+                    houseId: houseInfo.id,
+                },
+            })
+                .then((res) => {
+                    console.log("Check house collection success.");
+                    if (res.data.isCollected) {
+                        isCollected.value = true;
+                    } else {
+                        isCollected.value = false;
+                    }
+                    isLoadingCollection.value = false;
+                })
+                .catch((err) => {
+                    console.log("Check house collection failed.");
+                    isLoadingCollection.value = false;
+                });
+        } else {
+            console.log("You are not login! can't check collection.");
         }
     }
 
@@ -113,11 +164,13 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
         houseInfo,
         isErrorGetHouseInfo,
         isLoading,
-        isCollecting,
+        isLoadingCollection,
         isCollected,
         resetHouseInfo,
+        getImageUrlList,
         getHouseInfo,
         addHouseToCollection,
         removeHouseToCollection,
+        checkIsCollectedHouse,
     };
 });

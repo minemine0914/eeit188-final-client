@@ -20,18 +20,10 @@
                             color="transparent"
                         >
                             <v-btn
-                                :disabled="isCollecting"
+                                :disabled="isLoadingCollection"
                                 variant="text"
                                 rounded="pill"
                                 size="large"
-                                v-tooltip="{
-                                    text: '已收藏',
-                                    scrollStrategy: 'close',
-                                    scrim: false,
-                                    persistent: false,
-                                    openOnClick: true,
-                                    openOnHover: false,
-                                }"
                                 @click.stop="onClickCollect"
                             >
                                 <template v-slot:prepend>
@@ -42,19 +34,7 @@
                                 </template>
                                 <span>收藏</span>
                             </v-btn>
-                            <v-btn
-                                variant="text"
-                                rounded="pill"
-                                size="large"
-                                v-tooltip="{
-                                    text: '已複製連結',
-                                    scrollStrategy: 'close',
-                                    scrim: false,
-                                    persistent: false,
-                                    openOnClick: true,
-                                    openOnHover: false,
-                                }"
-                            >
+                            <v-btn variant="text" rounded="pill" size="large">
                                 <template v-slot:prepend>
                                     <v-icon
                                         :icon="
@@ -73,96 +53,7 @@
             </v-col>
         </v-row>
         <!-- Images Grid -->
-        <v-row no-gutters>
-            <v-col cols="6">
-                <v-responsive :aspect-ratio="10 / 8">
-                    <v-sheet class="h-100 w-100 pa-1 rounded-s-xl overflow-hidden">
-                        <v-skeleton-loader
-                            class="custom-skeleton-image"
-                            type="image"
-                            height="100%"
-                            width="100%"
-                            v-if="isLoading"
-                        />
-                        <v-img :src="testImg" position="center" class="h-100" cover v-else></v-img>
-                    </v-sheet>
-                </v-responsive>
-            </v-col>
-            <v-col cols="6">
-                <v-row no-gutters class="h-50">
-                    <v-col cols="6">
-                        <v-sheet color=" pa-1 h-100 w-100">
-                            <v-skeleton-loader
-                                type="image"
-                                height="100%"
-                                width="100%"
-                                v-if="isLoading"
-                            />
-                            <v-img
-                                :src="testImg"
-                                position="center"
-                                class="h-100"
-                                cover
-                                v-else
-                            ></v-img>
-                        </v-sheet>
-                    </v-col>
-                    <v-col cols="6">
-                        <v-sheet color=" pa-1 h-100 w-100 overflow-hidden rounded-te-xl ">
-                            <v-skeleton-loader
-                                type="image"
-                                height="100%"
-                                width="100%"
-                                v-if="isLoading"
-                            />
-                            <v-img
-                                :src="testImg"
-                                position="center"
-                                class="h-100"
-                                cover
-                                v-else
-                            ></v-img>
-                        </v-sheet>
-                    </v-col>
-                </v-row>
-                <v-row no-gutters class="h-50">
-                    <v-col cols="6">
-                        <v-sheet color=" pa-1 h-100 w-100">
-                            <v-skeleton-loader
-                                type="image"
-                                height="100%"
-                                width="100%"
-                                v-if="isLoading"
-                            />
-                            <v-img
-                                :src="testImg"
-                                position="center"
-                                class="h-100"
-                                cover
-                                v-else
-                            ></v-img>
-                        </v-sheet>
-                    </v-col>
-                    <v-col cols="6">
-                        <v-sheet color=" pa-1 h-100 w-100 rounded-be-xl overflow-hidden">
-                            <v-skeleton-loader
-                                v-if="isLoading"
-                                type="image"
-                                height="100%"
-                                width="100%"
-                            />
-                            <v-img
-                                v-else
-                                :src="testImg"
-                                position="center"
-                                class="h-100"
-                                cover
-                            ></v-img>
-                        </v-sheet>
-                    </v-col>
-                </v-row>
-            </v-col>
-        </v-row>
+        <ImageGrid />
         <!-- House details -->
         <v-row class="px-1 mt-3" no-gutters>
             <v-col cols="12" md="12">
@@ -230,9 +121,13 @@
                                 </div>
                             </v-sheet>
                             <v-sheet color="transparent">
-                                <v-btn color="brown-lighten-1" min-width="130" size="large"
-                                    >立即預定</v-btn
-                                >
+                                <v-btn
+                                    color="brown-lighten-1"
+                                    min-width="130"
+                                    size="large"
+                                    text="立即預定"
+                                    :to="`/booking/${houseInfo.id}`"
+                                ></v-btn>
                             </v-sheet>
                         </v-col>
                     </v-row>
@@ -243,13 +138,25 @@
                     <v-skeleton-loader type="chip, chip, chip" v-if="isLoading" />
                     <v-sheet class="d-flex flex-row flex-wrap w-100 ga-3" v-else>
                         <v-sheet
-                            v-for="index in 5"
+                            v-for="(postulaue, index) in houseInfo.postulates"
                             class="d-flex flex-column justufy-center align-center px-4 py-3"
                             rounded="lg"
                             color="brown-lighten-5"
+                            :key="index"
                         >
-                            <v-icon icon="mdi-wifi" color="brown-lighten-1"></v-icon>
-                            <div class="text-brown-lighten-1 text-body-2 pt-2">無線網路</div>
+                            <v-icon
+                                v-if="postulaue.icon"
+                                :icon="postulaue.icon"
+                                color="brown-lighten-1"
+                            ></v-icon>
+                            <v-icon
+                                v-else
+                                icon="mdi-emoticon-excited-outline"
+                                color="brown-lighten-1"
+                            ></v-icon>
+                            <div class="text-brown-lighten-1 text-body-2 pt-2">
+                                {{ postulaue.name }}
+                            </div>
                         </v-sheet>
                     </v-sheet>
                 </v-sheet>
@@ -299,28 +206,26 @@
 </template>
 
 <script setup>
-import { onMounted, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { useHouseDetailStore } from "../../stores/houseDetailStore";
+import { useHouseDetailStore } from "@/stores/houseDetailStore";
 import { storeToRefs } from "pinia";
-import testImg from "@/assets/banner05.webp";
-
+import ImageGrid from "@/components/home/ImageGrid.vue";
 // Use route, router
 const router = useRouter();
 const route = useRoute();
 
 // Use pinia store
 const houseDetailStore = useHouseDetailStore();
-const { houseInfo, isErrorGetHouseInfo, isLoading, isCollecting, isCollected } =
+const { houseInfo, isErrorGetHouseInfo, isLoading, isLoadingCollection, isCollected } =
     storeToRefs(houseDetailStore);
 
 // Functions
-
 function onClickCollect() {
     if (isCollected.value) {
-        houseDetailStore.removeHouseToCollection(houseInfo.value.id);
+        houseDetailStore.removeHouseToCollection();
     } else {
-        houseDetailStore.addHouseToCollection(houseInfo.value.id);
+        houseDetailStore.addHouseToCollection();
     }
 }
 

@@ -9,6 +9,7 @@ export const useUserStore = defineStore(
   () => {
     // Data
     const jwtToken = ref(null);
+    const userResetToken = ref(null);
     const user = reactive({});
     const router = useRouter();
 
@@ -17,11 +18,9 @@ export const useUserStore = defineStore(
       try {
         const response = await api({
           method: "post",
-          url: "/user/",
+          url: "/user/createUser",
           data: userData,
         });
-        console.log("Registration successful:", response.data);
-        return response.data;
       } catch (error) {
         console.error(error);
         throw error;
@@ -36,7 +35,7 @@ export const useUserStore = defineStore(
           data: loginData,
         });
         jwtToken.value = response.data.token;
-        await findUserById();
+        await reloadUser();
       } catch (error) {
         console.error(error);
         throw error;
@@ -51,12 +50,20 @@ export const useUserStore = defineStore(
       });
     }
 
-    async function findUserById() {
+    function adminLogout() {
+      localStorage.removeItem("jwtToken");
+      localStorage.removeItem("user");
+      router.push("/system").then(() => {
+        window.location.reload();
+      });
+    }
+
+    async function reloadUser() {
       try {
-        const userId = decodeToken(jwtToken).id;
+        const userId = decodeToken().id;
         const response = await api({
           method: "get",
-          url: `/user/${userId}`,
+          url: `/user/find/${userId}`,
         });
         Object.assign(user, response.data);
       } catch (error) {
@@ -66,57 +73,62 @@ export const useUserStore = defineStore(
 
     async function updateUser(request) {
       try {
-        const userId = decodeToken(jwtToken).id;
         await api({
+          headers: {
+            Authorization: `Bearer ${jwtToken.value}`,
+          },
           method: "put",
-          url: `/user/${userId}`,
+          url: `/user/${user.id}`,
           data: request,
         });
+        await reloadUser();
       } catch (error) {
         console.log(error);
       }
     }
 
-    async function uploadAvater(request) {
+    async function uploadAvater(payload) {
       try {
-        const userId = decodeToken(jwtToken).id;
         await api({
-          method: "post",
-          url: `/user/upload-avatar/${userId}`,
-          data: request,
+          headers: {
+            Authorization: `Bearer ${jwtToken.value}`,
+          },
+          method: "put",
+          url: `/user/upload-avatar/${user.id}`,
+          data: payload,
         });
+        await reloadUser();
       } catch (error) {
         console.log(error);
       }
     }
 
     async function uploadBackgroundImage(file) {
-      const userId = decodeToken(jwtToken).id;
       if (file) {
         const formData = new FormData();
         formData.append("file", file);
 
         try {
-          const response = await api.post(
-            `/user/upload-background-image/${userId}`,
-            formData,
-            {
-              headers: {
-                "Content-Type": "multipart/form-data",
-              },
-            }
-          );
+          await api.post(`/user/upload-background-image/${user.id}`, formData, {
+            headers: {
+              Authorization: `Bearer ${jwtToken.value}`,
+              "Content-Type": "multipart/form-data",
+            },
+          });
         } catch (error) {
           console.error(error);
         }
       }
     }
 
-    async function downloadBackgroundImage(userId) {
+    async function downloadBackgroundImage() {
       try {
         const response = await api({
+          headers: {
+            Authorization: `Bearer ${jwtToken.value}`,
+          },
           method: "get",
-          url: `/user/download-background-image/${userId}`,
+          url: `/user/download-background-image/${user.id}`,
           responseType: "blob",
         });
         return response.data;
@@ -126,11 +138,14 @@ export const useUserStore = defineStore(
       }
     }
 
-    async function getChatRecord(userId) {
+    async function getChatRecord() {
       try {
         const response = await api({
+          headers: {
+            Authorization: `Bearer ${jwtToken.value}`,
+          },
           method: "get",
-          url: `/chat-record/${userId}`,
+          url: `/chat-record/${user.id}`,
         });
         return response.data.chatRecords;
       } catch (error) {
@@ -142,10 +157,58 @@ export const useUserStore = defineStore(
     async function addChatRecord(request) {
       try {
         await api({
+          headers: {
+            Authorization: `Bearer ${jwtToken.value}`,
+          },
           method: "post",
           url: `/chat-record/`,
           data: request,
         });
+      } catch (error) {
+        console.error(error);
+        throw error;
+      }
+    }
+
+    async function forgotPassword(request) {
+      try {
+        const response = await api({
+          method: "post",
+          url: `/user/forgot-password`,
+          data: request,
+        });
+
+        userResetToken.value = response;
+      } catch (error) {
+        console.error(error);
+        throw error;
+      }
+    }
+
+    async function checkPassword(request) {
+      try {
+        const response = await api({
+          method: "post",
+          url: `/check-password/`,
+          data: request,
+        });
+
+        userResetToken.value = response;
+      } catch (error) {
+        console.error(error);
+        throw error;
+      }
+    }
+
+    async function resetPassword(request) {
+      try {
+        const response = await api({
+          method: "post",
+          url: `/user/forgot-password`,
+          data: request,
+        });
+
+        userResetToken.value = response;
       } catch (error) {
         console.error(error);
         throw error;
@@ -172,9 +235,10 @@ export const useUserStore = defineStore(
       register,
       loginAuth,
       logout,
+      adminLogout,
       decodeToken,
-      findUserById,
       updateUser,
+      reloadUser,
       uploadAvater,
       uploadBackgroundImage,
       downloadBackgroundImage,

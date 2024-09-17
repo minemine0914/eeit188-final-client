@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { computed, reactive, ref, nextTick } from "vue";
 import api from "../plugins/axios";
+import NotAvailableImage from "@/assets/ImageNotAvailable01.webp";
 
 export const useHouseSearchStore = defineStore("HouseSearch", () => {
     const currentPage = ref(0);
@@ -16,9 +17,43 @@ export const useHouseSearchStore = defineStore("HouseSearch", () => {
         adult: 0,
         child: 0,
         pet: false,
+        matchAllPostulates: false,
+        livingDiningRoom: 0,
+        bedroom: 0,
+        bathroom: 0,
+        restroom: 0,
+        minPrice: 0,
+        maxPrice: 100000,
     });
+    const postlateChipGroup = ref([]);
+    const housePriceRange = ref([0, 5000]);
     const filterHouseList = reactive([]);
     const postulateList = reactive([]);
+
+    function getImageUrlList(index) {
+        const records = filterHouseList[index].houseExternalResourceRecords;
+        // console.log(records);
+        let imageBaseUrl = import.meta.env.VITE_API_URL + "/house-external-resource/image/";
+        let imageSrcList = [];
+        if ( records.length === 0 ) {
+            imageSrcList.push(NotAvailableImage);
+        } else {
+            for (let index = 0; index < records.length; index++) {
+                if (
+                    typeof records === "undefined" ||
+                    typeof records[index] === "undefined" ||
+                    records[index] === null ||
+                    records[index] === ""
+                ) {
+                    imageSrcList.push(NotAvailableImage);
+                } else {
+                    imageSrcList.push(imageBaseUrl + records[index].id);
+                }
+            }
+        }
+        return imageSrcList;
+    }
+
     async function resetSearchResult() {
         console.log("Research house filter list...");
         // Reset list and current page
@@ -42,6 +77,7 @@ export const useHouseSearchStore = defineStore("HouseSearch", () => {
                 console.log("讀取設施失敗!");
             });
     }
+
     async function getFilterHouses(data) {
         let resData = null;
         await api
@@ -62,8 +98,11 @@ export const useHouseSearchStore = defineStore("HouseSearch", () => {
         currentPage,
         inputValues,
         searchParams,
+        postlateChipGroup,
+        housePriceRange,
         postulateList,
         filterHouseList,
+        getImageUrlList,
         resetSearchResult,
         getPostulateList,
         getFilterHouses,

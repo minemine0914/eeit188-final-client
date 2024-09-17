@@ -10,6 +10,7 @@
         ></v-card>
         <v-list class="chat-recored">
           <v-list-item
+            :class="{ 'selected-item': selectedItemId === item.id }"
             v-for="item in itemSet?.items"
             :key="item.id"
             @click="handleClick(item)"
@@ -36,7 +37,6 @@
                 </v-list-item-content>
               </div>
             </div>
-            <v-divider :thickness="5"></v-divider>
           </v-list-item>
         </v-list>
       </v-card>
@@ -132,6 +132,8 @@ const me = reactive({});
 const other = reactive({});
 const index = ref(0);
 const itemsMap = ref(new Map());
+const selectedItemId = ref(null);
+const socket = ref(null);
 const page = ref(0);
 
 const chatRecord = reactive({
@@ -156,52 +158,47 @@ const rules = {
   },
 };
 
-const socket = ref(null);
-
 onMounted(async () => {
-  chatRecord.chatRecords = await getChatRecord(user.id);
+  chatRecord.chatRecords = await getChatRecord();
   Object.assign(me, user);
   Object.assign(other, await getOther());
   getChatList();
 
+  if (itemSet?.items.length !== 0) {
+    selectedItemId.value = itemSet?.items[0]?.id || null;
+  }
+
   // Connect to WebSocket
-  socket.value = new WebSocket("ws://localhost:8081");
+  socket.value = new WebSocket("ws://localhost:3002");
+
+  socket.value.onopen = () => {
+    console.log("WebSocket connection established");
+
+    // 註冊用戶 ID 到伺服器
+    socket.value.send(
+      JSON.stringify({
+        type: "register",
+        userId: me.id,
+      })
+    );
+  };
 
   socket.value.onmessage = async (event) => {
-    if (event.data instanceof Blob) {
-      const textData = await event.data.text();
-      try {
-        const parsedData = JSON.parse(textData);
-        handleIncomingMessage(parsedData);
-      } catch (error) {
-        console.error("Error parsing JSON:", error);
-      }
-    } else {
-      try {
-        const parsedData = JSON.parse(event.data);
-        handleIncomingMessage(parsedData);
-        console.log(parsedData);
-      } catch (error) {
-        console.error("Error parsing JSON:", error);
-      }
-    }
+    const message = JSON.parse(event.data);
+    handleIncomingMessage(message);
   };
 
-  socket.onopen = () => {
-    console.log("WebSocket connection established");
-  };
-
-  socket.onclose = () => {
+  socket.value.onclose = () => {
     console.log("WebSocket connection closed");
   };
 
-  socket.onerror = (error) => {
+  socket.value.onerror = (error) => {
     console.log("WebSocket error:", error);
   };
 });
 
 function handleIncomingMessage(message) {
-  if (message.chat != "" && message.chat != null) {
+  if (message.chat !== "" && message.chat !== null) {
     chatRecord.chatRecords.unshift(message);
     getChatList();
   }
@@ -212,7 +209,7 @@ async function getOther() {
     const otherId = checkOther(index.value);
     const response = await api({
       method: "get",
-      url: `/user/${otherId}`,
+      url: `/user/find/${otherId}`,
     });
     return response.data;
   } catch (error) {
@@ -236,11 +233,13 @@ const submit = async () => {
   }
 
   const messageData = {
+    type: "private_message",
     chat: state.message,
     senderId: me.id,
+    sender: me.name,
     receiverId: other.id,
     senderAvatar: me.avatarBase64,
-    createdAt: new Date(),
+    createdAt: new Date().toISOString(),
   };
 
   // Send message through WebSocket
@@ -271,6 +270,7 @@ function getChatList() {
       const newItem = {
         id: chat.id,
         avatar: chat.senderAvatar,
+        senderId: chat.senderId,
         title: chat.sender,
         subtitle: chat.chat,
         createdAt: chat.createdAt,
@@ -281,15 +281,19 @@ function getChatList() {
   }
 
   itemSet.items = Array.from(itemsMap.value.values());
+
+  // Sort items by createdAt in descending order (newest first)
+  itemSet.items.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 }
 
 const handleClick = async (item) => {
-  index.value = findIndexById(chatRecord.chatRecords, item.id);
+  index.value = findIndexById(chatRecord.chatRecords, item.senderId);
   Object.assign(other, await getOther());
+  selectedItemId.value = item.id;
 };
 
 const findIndexById = (array, id) => {
-  return array.findIndex((item) => item.id === id);
+  return array.findIndex((item) => item.senderId === id);
 };
 
 // function handleScroll(event) {
@@ -318,8 +322,8 @@ const findIndexById = (array, id) => {
 }
 
 .chat-recored {
-  height: 400px;
-  max-height: 400px;
+  height: 500px;
+  max-height: 500px;
   overflow: auto;
 }
 
@@ -375,8 +379,8 @@ const findIndexById = (array, id) => {
 #chat-box {
   display: flex;
   flex-direction: column-reverse;
-  height: 400px;
-  max-height: 400px;
+  height: 500px;
+  max-height: 500px;
   overflow-y: auto;
 }
 
@@ -415,5 +419,9 @@ const findIndexById = (array, id) => {
 #submit-btn {
   margin-left: 10px;
   height: 55px;
+}
+
+.selected-item {
+  background-color: #b0bec5;
 }
 </style>

@@ -20,6 +20,26 @@
       @input="v$.email.$touch"
     ></v-text-field>
 
+    <v-text-field
+      v-model="state.password"
+      :error-messages="v$.password.$errors.map((e) => e.$message)"
+      label="密碼"
+      type="password"
+      required
+      @blur="v$.password.$touch"
+      @input="v$.password.$touch"
+    ></v-text-field>
+
+    <v-text-field
+      v-model="state.confirmPassword"
+      :error-messages="v$.confirmPassword.$errors.map((e) => e.$message)"
+      label="密碼確認"
+      type="password"
+      required
+      @blur="v$.confirmPassword.$touch"
+      @input="v$.confirmPassword.$touch"
+    ></v-text-field>
+
     <v-select
       v-model="state.gender"
       :error-messages="v$.gender.$errors.map((e) => e.$message)"
@@ -79,11 +99,12 @@
       @input="v$.about.$touch"
     ></v-textarea>
 
-    <v-btn id="submit" class="me-4" @click="submit"> 修改 </v-btn>
+    <v-btn class="me-4" @click="submit"> 註冊 </v-btn>
+    <v-btn @click="clear"> 清除 </v-btn>
   </form>
 </template>
 <script setup>
-import { reactive, onMounted } from "vue";
+import { reactive, computed } from "vue";
 import { useVuelidate } from "@vuelidate/core";
 import {
   email,
@@ -92,27 +113,12 @@ import {
   minLength,
   maxLength,
   helpers,
+  sameAs,
 } from "@vuelidate/validators";
 import { VDateInput } from "vuetify/labs/VDateInput";
-import { useUserStore } from "../../stores/userStore";
+import { useRouter } from "vue-router";
 
-const userStore = useUserStore();
-const { reloadUser, updateUser, user } = userStore;
-
-onMounted(async () => {
-  if (user) {
-    Object.assign(state, {
-      name: user.name,
-      email: user.email,
-      birthday: new Date(user.birthday),
-      gender: user.gender,
-      phone: user.phone,
-      mobilePhone: user.mobilePhone,
-      address: user.address,
-      about: user.about,
-    });
-  }
-});
+const router = useRouter();
 
 // Custom password validation
 const passwordComplexity = helpers.regex(
@@ -122,6 +128,8 @@ const passwordComplexity = helpers.regex(
 const initialState = {
   name: null,
   email: null,
+  password: null,
+  confirmPassword: null,
   birthday: null,
   gender: null,
   phone: null,
@@ -134,6 +142,9 @@ const state = reactive({
   ...initialState,
 });
 
+// Create a computed property for the password
+const password = computed(() => state.password);
+
 const items = ["暫不提供", "男性", "女性", "其他"];
 
 const rules = {
@@ -145,6 +156,17 @@ const rules = {
     required: helpers.withMessage("請輸入Email", required),
     email: helpers.withMessage("請輸入有效的Email地址", email),
     maxLength: helpers.withMessage("Email不能超過50個字元", maxLength(50)),
+  },
+  password: {
+    required: helpers.withMessage("請輸入密碼", required),
+    passwordComplexity: helpers.withMessage(
+      "密碼必須包含8到16位英文大小寫、數字及特殊符號",
+      passwordComplexity
+    ),
+  },
+  confirmPassword: {
+    required: helpers.withMessage("請再次輸入密碼", required),
+    sameAsPassword: helpers.withMessage("密碼不一致", sameAs(password)),
   },
   gender: {
     required: helpers.withMessage("請選擇性別", required),
@@ -172,6 +194,10 @@ const rules = {
 
 const v$ = useVuelidate(rules, state);
 
+import { useUserStore } from "../../stores/userStore";
+const userStore = useUserStore();
+const { register } = userStore;
+
 const submit = async () => {
   const isValid = await v$.value.$validate();
 
@@ -179,9 +205,11 @@ const submit = async () => {
     return;
   }
   try {
-    await updateUser({
+    await register({
       name: state.name,
+      role: "admin",
       email: state.email,
+      password: state.password,
       birthday: state.birthday,
       gender: state.gender,
       phone: state.phone,
@@ -189,11 +217,20 @@ const submit = async () => {
       address: state.address,
       about: state.about,
     });
-    alert("修改成功！");
+    alert("註冊成功！ 請登入");
+    router.push("/login");
   } catch (error) {
     console.error("Registration failed:", error);
   }
 };
+
+function clear() {
+  v$.value.$reset();
+
+  for (const [key, value] of Object.entries(initialState)) {
+    state[key] = value;
+  }
+}
 </script>
 
 <style scoped></style>
