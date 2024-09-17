@@ -84,7 +84,13 @@
                             width="100%"
                             v-if="isLoading"
                         />
-                        <v-img :src="testImg" position="center" class="h-100" cover v-else></v-img>
+                        <v-img
+                            :src="houseDetailStore.getImageUrlList(0)"
+                            position="center"
+                            class="h-100"
+                            cover
+                            v-else
+                        ></v-img>
                     </v-sheet>
                 </v-responsive>
             </v-col>
@@ -99,7 +105,7 @@
                                 v-if="isLoading"
                             />
                             <v-img
-                                :src="testImg"
+                                :src="houseDetailStore.getImageUrlList(1)"
                                 position="center"
                                 class="h-100"
                                 cover
@@ -116,7 +122,7 @@
                                 v-if="isLoading"
                             />
                             <v-img
-                                :src="testImg"
+                                :src="houseDetailStore.getImageUrlList(2)"
                                 position="center"
                                 class="h-100"
                                 cover
@@ -135,7 +141,7 @@
                                 v-if="isLoading"
                             />
                             <v-img
-                                :src="testImg"
+                                :src="houseDetailStore.getImageUrlList(3)"
                                 position="center"
                                 class="h-100"
                                 cover
@@ -153,7 +159,7 @@
                             />
                             <v-img
                                 v-else
-                                :src="testImg"
+                                :src="houseDetailStore.getImageUrlList(4)"
                                 position="center"
                                 class="h-100"
                                 cover
@@ -243,13 +249,25 @@
                     <v-skeleton-loader type="chip, chip, chip" v-if="isLoading" />
                     <v-sheet class="d-flex flex-row flex-wrap w-100 ga-3" v-else>
                         <v-sheet
-                            v-for="index in 5"
+                            v-for="(postulaue, index) in houseInfo.postulates"
                             class="d-flex flex-column justufy-center align-center px-4 py-3"
                             rounded="lg"
                             color="brown-lighten-5"
+                            :key="index"
                         >
-                            <v-icon icon="mdi-wifi" color="brown-lighten-1"></v-icon>
-                            <div class="text-brown-lighten-1 text-body-2 pt-2">無線網路</div>
+                            <v-icon
+                                v-if="postulaue.icon"
+                                :icon="postulaue.icon"
+                                color="brown-lighten-1"
+                            ></v-icon>
+                            <v-icon
+                                v-else
+                                icon="mdi-emoticon-excited-outline"
+                                color="brown-lighten-1"
+                            ></v-icon>
+                            <div class="text-brown-lighten-1 text-body-2 pt-2">
+                                {{ postulaue.name }}
+                            </div>
                         </v-sheet>
                     </v-sheet>
                 </v-sheet>
@@ -299,11 +317,10 @@
 </template>
 
 <script setup>
-import { onMounted, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useHouseDetailStore } from "../../stores/houseDetailStore";
 import { storeToRefs } from "pinia";
-import testImg from "@/assets/banner05.webp";
 
 // Use route, router
 const router = useRouter();

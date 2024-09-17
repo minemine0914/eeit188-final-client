@@ -30,12 +30,43 @@
                                         rounded="lg"
                                         class="overflow-hidden"
                                     >
-                                        <v-img
-                                            :aspect-ratio="1"
-                                            :height="200"
-                                            :src="testImg"
-                                            cover
-                                        ></v-img>
+                                        <v-carousel
+                                            height="200"
+                                            show-arrows="hover"
+                                            hide-delimiter-background
+                                            hide-delimiters
+                                        >
+                                            <template v-slot:prev="{ props }">
+                                                <v-btn
+                                                    :class="props.class"
+                                                    color="rgba(255,255,255,0.5)"
+                                                    size="small"
+                                                    density="compact"
+                                                    icon="mdi-chevron-left"
+                                                    variant="elevated"
+                                                    @click="props.onClick"
+                                                ></v-btn>
+                                            </template>
+                                            <template v-slot:next="{ props }">
+                                                <v-btn
+                                                    :class="props.class"
+                                                    color="rgba(255,255,255,0.5)"
+                                                    size="small"
+                                                    density="compact"
+                                                    icon="mdi-chevron-right"
+                                                    variant="elevated"
+                                                    @click="props.onClick"
+                                                ></v-btn>
+                                            </template>
+                                            <v-carousel-item v-for="imageSrc in houseSearchStore.getImageUrlList(index)">
+                                                <v-img
+                                                    :aspect-ratio="1"
+                                                    :height="200"
+                                                    :src="imageSrc"
+                                                    cover
+                                                ></v-img>
+                                            </v-carousel-item>
+                                        </v-carousel>
                                     </v-sheet>
                                 </v-col>
                                 <v-col
@@ -56,7 +87,9 @@
                                             </div>
                                             <div class="text-grey-darken-1">
                                                 <span class="mdi mdi-map-marker mr-2"></span>
-                                                <span class="mr-2">{{ `位於 ${item.city} ${item.region}` }}</span>
+                                                <span class="mr-2">{{
+                                                    `位於 ${item.city} ${item.region}`
+                                                }}</span>
                                             </div>
                                             <div class="text-grey-darken-1">
                                                 <span class="mdi mdi-sofa mr-2"></span>
@@ -75,7 +108,13 @@
                                             </div>
                                             <div class="text-grey-darken-1">
                                                 <span class="mdi mdi-bed mr-2"></span>
-                                                <span>可住</span>
+                                                <span>可住 </span>
+                                                <span class="mr-1" v-if="item.adult > 0">
+                                                    {{ `${item.adult} 位成人 ` }}
+                                                </span>
+                                                <span class="mr-1" v-if="item.child > 0">
+                                                    {{ `${item.child} 位孩童 ` }}
+                                                </span>
                                             </div>
                                             <div class="text-grey-darken-1">
                                                 <span class="mr-2" v-if="!item.pet">

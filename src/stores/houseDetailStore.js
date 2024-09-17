@@ -3,6 +3,8 @@ import { computed, reactive, ref } from "vue";
 import api from "../plugins/axios";
 import { useRouter } from "vue-router";
 import { useUserStore } from "./userStore";
+import NotAvailableImage from "@/assets/ImageNotAvailable01.webp";
+
 const userStore = useUserStore();
 export const useHouseDetailStore = defineStore("HouseDetail", () => {
     const initialHouseInfo = {
@@ -38,7 +40,9 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
         collectionCount: null,
         userId: null,
         userName: null,
+        houseExternalResourceRecords: [],
     };
+
     const houseInfo = reactive({ ...initialHouseInfo });
     const isErrorGetHouseInfo = ref(false);
     const isLoading = ref(true);
@@ -47,6 +51,23 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
 
     function resetHouseInfo() {
         Object.assign(houseInfo, initialHouseInfo);
+    }
+
+    function getImageUrlList(index) {
+        const records = houseInfo.houseExternalResourceRecords;
+        let imageBaseUrl = import.meta.env.VITE_API_URL + "/house-external-resource/image/";
+        let imageSrc = null;
+        if (
+            typeof records === "undefined" ||
+            typeof records[index] === "undefined" ||
+            records[index] === null ||
+            records[index] === ""
+        ) {
+            imageSrc = NotAvailableImage;
+        } else {
+            imageSrc = imageBaseUrl + records[index].id;
+        }
+        return imageSrc;
     }
 
     async function getHouseInfo(id) {
@@ -116,6 +137,7 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
         isCollecting,
         isCollected,
         resetHouseInfo,
+        getImageUrlList,
         getHouseInfo,
         addHouseToCollection,
         removeHouseToCollection,
