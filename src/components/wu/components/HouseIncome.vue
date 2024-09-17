@@ -39,18 +39,18 @@ const data = computed(() => {
     )
   }
 
-
+  console.log(store.records.map(record => record.cashFlow || 0))
 
   return {
     labels: store.labels.values, // Convert months to strings for labels
     datasets: [
       {
-        label: 'Monthly Data',
+        label: 'Data',
         backgroundColor: '#f87979',
         borderColor: '#f87979',
         pointBackgroundColor: pointColors, // Apply point colors here
 
-        data: store.records.map(record => record.cashFlow || 0) // Adjust data mapping as needed
+        data: store.selectedPeriod === 'year' ? store.recordsPrapared : store.recordsPrapared[store.selectedYear] // Adjust data mapping as needed
       }
     ]
   }
@@ -61,7 +61,8 @@ const options = computed(() => ({
   responsive: true,
   plugins: {
     legend: {
-      position: 'top',
+      position: '',
+      // position: 'top',
     },
     tooltip: {
       callbacks: {

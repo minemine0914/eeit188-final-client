@@ -39,6 +39,12 @@ const router = {
             component: () => import("@/components/wu/components/CreateTransactionRecord.vue"),
             meta: { title: "交易紀錄產生器", requiresAuth: false },
         },
+        {
+            path: "table", // Default
+            name: "table",
+            component: () => import("@/components/wu/components/Table.vue"),
+            meta: { title: "Table", requiresAuth: false },
+        },
     ],
 }
 

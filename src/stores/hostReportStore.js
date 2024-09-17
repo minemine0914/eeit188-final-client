@@ -13,6 +13,7 @@ export const useHostReportStore = defineStore('hostReport', {
         users: [{ "id": '' }],
         houses: [],
         records: [],
+        recordsPrapared: [],
 
         minCreatedAt: '',
         maxCreatedAt: '',
@@ -29,6 +30,7 @@ export const useHostReportStore = defineStore('hostReport', {
     }),
     getters: {},
     actions: {
+        // 1.用host(user)找house
         async fetchHouses(userId) {
             try {
                 //如果有傳入userId，以傳入值搜尋。否則以登入者loginUser查詢
@@ -53,6 +55,7 @@ export const useHostReportStore = defineStore('hostReport', {
             }
         },
 
+        // 2.列出找到的house，找出有資料的頭尾年分
         async fetchTransactionRecordsStartingValue(year, month, quarter) {
             if (!this.selectedHouse) {
                 this.records = []
@@ -101,6 +104,7 @@ export const useHostReportStore = defineStore('hostReport', {
             }
         },
 
+        // 3.找出所有交易紀錄(和交易過的user)
         async fetchTransactionRecords(year, month, quarter) {
             //log*******************
             console.log('this.selectedHouse', this.selectedHouse)
@@ -139,197 +143,28 @@ export const useHostReportStore = defineStore('hostReport', {
                 console.log('transformedRecords', transformedRecords)
                 this.records = transformedRecords;
 
+                //YMDC={Year: yyyy, Month: MM, Date: dd, cashFlow: $$$}
+
+                //YMD={yyyy:
+                //       1: [1,2,3,...,31], 
+                //       2: [...],...}
+
+                //YM={2023: [1,2,3,...,12], 
+                //    2024: [...], ...}
+
+                //YQ={2023: [Q1, Q2, Q3, Q4]
+                //    2024: [...], ...}
+
+                //Y={2023: $$$, 2024: $$$, ...}
+
+                this.useTestYMDC('YM')
+
             } catch (error) {
                 console.error('Error fetching users:', error);
             }
         },
 
-        async sumByYear() {
-
-            let simpleArr = this.records.map(record => ({
-                year: new Date(record.createdAt).getFullYear(),
-                month: new Date(record.createdAt).getMonth() + 1,
-                date: new Date(record.createdAt).getDate(),
-                cashFlow: record.cashFlow
-            }))
-
-            simpleArr = [
-                {
-                    "year": 2024,
-                    "month": 9,
-                    "cashFlow": 10000
-                },
-                {
-                    "year": 2024,
-                    "month": 9,
-                    "cashFlow": 100000000
-                },
-                {
-                    "year": 2024,
-                    "month": 9,
-                    "cashFlow": 10000
-                },
-                {
-                    "year": 2024,
-                    "month": 9,
-                    "cashFlow": 1000
-                },
-                {
-                    "year": 2024,
-                    "month": 9,
-                    "cashFlow": 100
-                },
-                {
-                    "year": 2024,
-                    "month": 9,
-                    "cashFlow": 10000
-                },
-                {
-                    "year": 2024,
-                    "month": 9,
-                    "cashFlow": 100
-                },
-                {
-                    "year": 2024,
-                    "month": 9,
-                    "cashFlow": 10000000
-                },
-                {
-                    "year": 2024,
-                    "month": 9,
-                    "cashFlow": 1
-                },
-                {
-                    "year": 2024,
-                    "month": 9,
-                    "cashFlow": 100000000
-                },
-                {
-                    "year": 2024,
-                    "month": 9,
-                    "cashFlow": 10000000
-                },
-                {
-                    "year": 2024,
-                    "month": 9,
-                    "cashFlow": 100000
-                },
-                {
-                    "year": 2024,
-                    "month": 9,
-                    "cashFlow": 10000
-                },
-                {
-                    "year": 2024,
-                    "month": 9,
-                    "cashFlow": 1000000000
-                },
-                {
-                    "year": 2024,
-                    "month": 9,
-                    "cashFlow": 1000
-                },
-                {
-                    "year": 2024,
-                    "month": 9,
-                    "cashFlow": 1000000000
-                },
-                {
-                    "year": 2024,
-                    "month": 9,
-                    "cashFlow": 100000000
-                },
-                {
-                    "year": 2024,
-                    "month": 9,
-                    "cashFlow": 10000000
-                },
-                {
-                    "year": 2024,
-                    "month": 9,
-                    "cashFlow": 1000000
-                },
-                {
-                    "year": 2024,
-                    "month": 9,
-                    "cashFlow": 100000
-                },
-                {
-                    "year": 2024,
-                    "month": 9,
-                    "cashFlow": 10000
-                },
-                {
-                    "year": 2024,
-                    "month": 8,
-                    "cashFlow": 1000
-                },
-                {
-                    "year": 2023,
-                    "month": 5,
-                    "cashFlow": 100
-                },
-                {
-                    "year": 2023,
-                    "month": 6,
-                    "cashFlow": 10
-                },
-                {
-                    "year": 2024,
-                    "month": 8,
-                    "cashFlow": 1
-                }
-            ]
-
-
-
-            // Aggregate cashFlow by year and month
-            const aggregatedCashFlow = simpleArr.reduce((acc, record) => {
-                const key = `${record.year}-${record.month}`;
-                if (!acc[key]) {
-                    acc[key] = { year: record.year, month: record.month, totalCashFlow: 0 };
-                }
-                acc[key].totalCashFlow += record.cashFlow;
-                return acc;
-            }, {});
-
-            // Convert the result to an array
-            const result = Object.values(aggregatedCashFlow);
-
-            console.log('arr', simpleArr)
-            console.log(aggregatedCashFlow);
-            console.log(result)
-
-            // Aggregate cashFlow by year
-            const aggregatedByYear = result.reduce((acc, record) => {
-                const { year, totalCashFlow } = record;
-                if (!acc[year]) {
-                    acc[year] = 0;
-                }
-                acc[year] += totalCashFlow;
-                return acc;
-            }, {});
-
-            // Convert to the desired output format
-            const output = Object.entries(aggregatedByYear).reduce((obj, [year, sumcashflow]) => {
-                obj[year] = { year: Number(year), sumcashflow };
-                return obj;
-            }, {});
-
-            console.log(output);
-            this.records = output
-        },
-
-        async findAllUser() {
-            try {
-                const response = await api.get(`/user/`);
-                this.users = response.data.users;
-                console.log('this.users', this.users)
-            } catch (error) {
-                console.error('Error fetching users:', error);
-            }
-        },
-
+        // 4.修正回傳值user只有ID的問題，userID->user物件
         async searchUserAgainByRecordId(contentArray) {
             const transformedArray = await Promise.all(contentArray.map(async (element) => {
                 if (typeof element === 'object' && !Array.isArray(element)) {
@@ -345,6 +180,310 @@ export const useHostReportStore = defineStore('hostReport', {
             }));
             return transformedArray.filter(item => item); // Filter out undefined values
         },
+
+        async useTestYMDC(callWhich) {
+            let testArr = [
+                {
+                    "year": 2024,
+                    "month": 3,
+                    'date': 2,
+                    "cashFlow": 100
+                },
+                {
+                    "year": 2024,
+                    "month": 3,
+                    'date': 12,
+                    "cashFlow": 100
+                },
+                {
+                    "year": 2024,
+                    "month": 9,
+                    'date': 2,
+                    "cashFlow": 10
+                },
+                {
+                    "year": 2024,
+                    "month": 9,
+                    'date': 22,
+                    "cashFlow": 10
+                },
+                {
+                    "year": 2024,
+                    "month": 9,
+                    'date': 13,
+                    "cashFlow": 1
+                },
+                {
+                    "year": 2024,
+                    "month": 9,
+                    'date': 5,
+                    "cashFlow": 100
+                },
+                {
+                    "year": 2024,
+                    "month": 9,
+                    'date': 8,
+                    "cashFlow": 100
+                },
+                {
+                    "year": 2024,
+                    "month": 9,
+                    'date': 27,
+                    "cashFlow": 1000
+                },
+                {
+                    "year": 2024,
+                    "month": 9,
+                    'date': 10,
+                    "cashFlow": 1
+                },
+                {
+                    "year": 2024,
+                    "month": 9,
+                    'date': 26,
+                    "cashFlow": 1000
+                },
+                {
+                    "year": 2024,
+                    "month": 9,
+                    'date': 2,
+                    "cashFlow": 100
+                },
+                {
+                    "year": 2024,
+                    "month": 9,
+                    'date': 4,
+                    "cashFlow": 10
+                },
+                {
+                    "year": 2024,
+                    "month": 9,
+                    'date': 4,
+                    "cashFlow": 100
+                },
+                {
+                    "year": 2024,
+                    "month": 9,
+                    'date': 6,
+                    "cashFlow": 1000
+                },
+                {
+                    "year": 2024,
+                    "month": 9,
+                    'date': 29,
+                    "cashFlow": 1000
+                },
+                {
+                    "year": 2024,
+                    "month": 9,
+                    'date': 2,
+                    "cashFlow": 100
+                },
+                {
+                    "year": 2024,
+                    "month": 9,
+                    'date': 2,
+                    "cashFlow": 1000
+                },
+                {
+                    "year": 2024,
+                    "month": 9,
+                    'date': 2,
+                    "cashFlow": 10
+                },
+                {
+                    "year": 2024,
+                    "month": 4,
+                    'date': 2,
+                    "cashFlow": 100
+                },
+                {
+                    "year": 2023,
+                    "month": 6,
+                    'date': 2,
+                    "cashFlow": 100
+                },
+                {
+                    "year": 2023,
+                    "month": 9,
+                    'date': 2,
+                    "cashFlow": 100
+                },
+                {
+                    "year": 2024,
+                    "month": 8,
+                    'date': 2,
+                    "cashFlow": 10
+                },
+                {
+                    "year": 2023,
+                    "month": 5,
+                    'date': 2,
+                    "cashFlow": 1
+                },
+                {
+                    "year": 2023,
+                    "month": 6,
+                    'date': 2,
+                    "cashFlow": 10
+                },
+                {
+                    "year": 2024,
+                    "month": 8,
+                    'date': 2,
+                    "cashFlow": 1
+                }
+            ]
+            if (callWhich === 'YMD') {
+                this.turnToYMD(testArr)
+            } else if (callWhich === 'YM') {
+                this.turnToYM(testArr)
+            } else if (callWhich === 'YQ') {
+                this.turnToYQ(testArr)
+            } else if (callWhich === 'Y') {
+                this.turnToY(testArr)
+            }
+
+        },
+
+        async turnToYMD(YMDC) {
+            if (!YMDC) {
+                YMDC = this.records.map(record => ({
+                    year: new Date(record.createdAt).getFullYear(),
+                    month: new Date(record.createdAt).getMonth() + 1,
+                    date: new Date(record.createdAt).getDate(),
+                    cashFlow: record.cashFlow
+                }))
+            }
+            // Initialize the result object
+            const result = {};
+
+            // Iterate over each entry in the simpleArr
+            YMDC.forEach(entry => {
+                const { year, month, date, cashFlow } = entry;
+
+                // Initialize the year and month entries if they don't exist
+                if (!result[year]) {
+                    result[year] = {};
+                }
+                if (!result[year][month]) {
+                    // Initialize an array for days of the month (31 days max)
+                    result[year][month] = new Array(31).fill(0);
+                }
+
+                // Add the cash flow to the appropriate day (date - 1 because array is zero-indexed)
+                result[year][month][date - 1] += cashFlow;
+            });
+            this.recordsPrapared = result
+            console.log('YMD', this.recordsPrapared);
+        },
+
+        async turnToYM(YMDC) {
+            if (!YMDC) {
+                YMDC = this.records.map(record => ({
+                    year: new Date(record.createdAt).getFullYear(),
+                    month: new Date(record.createdAt).getMonth() + 1,
+                    date: new Date(record.createdAt).getDate(),
+                    cashFlow: record.cashFlow
+                }))
+            }
+            // Initialize the result object
+            const result = {};
+
+            // Iterate over each entry in the simpleArr
+            YMDC.forEach(entry => {
+                const { year, month, cashFlow } = entry;
+
+                // Initialize the year entry if it doesn't exist
+                if (!result[year]) {
+                    result[year] = new Array(12).fill(0);
+                }
+
+                // Add the cash flow to the appropriate month (1-based index, so subtract 1)
+                result[year][month - 1] += cashFlow;
+            });
+            this.recordsPrapared = result
+            console.log('YM', this.recordsPrapared);
+        },
+
+        async turnToYQ(YMDC) {
+            if (!YMDC) {
+                YMDC = this.records.map(record => ({
+                    year: new Date(record.createdAt).getFullYear(),
+                    month: new Date(record.createdAt).getMonth() + 1,
+                    date: new Date(record.createdAt).getDate(),
+                    cashFlow: record.cashFlow
+                }))
+            }
+            // Initialize the result object
+            const result = {};
+
+            // Function to determine the quarter from the month
+            const getQuarter = (month) => {
+                if (month >= 1 && month <= 3) return 0; // Q1
+                if (month >= 4 && month <= 6) return 1; // Q2
+                if (month >= 7 && month <= 9) return 2; // Q3
+                if (month >= 10 && month <= 12) return 3; // Q4
+            };
+
+            // Process each entry
+            YMDC.forEach(entry => {
+                const { year, month, cashFlow } = entry;
+                const quarter = getQuarter(month);
+
+                // Initialize year and quarters if not present
+                if (!result[year]) {
+                    result[year] = [0, 0, 0, 0]; // Q1, Q2, Q3, Q4
+                }
+
+                // Add the cash flow to the appropriate quarter
+                result[year][quarter] += cashFlow;
+            });
+            this.recordsPrapared = result
+            console.log('YQ', this.recordsPrapared);
+        },
+
+        async turnToY(YMDC) {
+            if (!YMDC) {
+                YMDC = this.records.map(record => ({
+                    year: new Date(record.createdAt).getFullYear(),
+                    month: new Date(record.createdAt).getMonth() + 1,
+                    date: new Date(record.createdAt).getDate(),
+                    cashFlow: record.cashFlow
+                }))
+            }
+            // Initialize the result object
+            const result = {};
+
+            // Iterate over each entry in the input array
+            YMDC.forEach(entry => {
+                const { year, cashFlow } = entry;
+
+                // Initialize or update the yearly cash flow in the result object
+                if (!result[year]) {
+                    result[year] = 0;
+                }
+                result[year] += cashFlow;
+            });
+
+            // Convert the yearly cash flow object to an array of values
+            const output = Object.values(result);
+
+            this.recordsPrapared = output
+            console.log('Y', this.recordsPrapared);
+        },
+
+        async findAllUser() {
+            try {
+                const response = await api.get(`/user/`);
+                this.users = response.data.users;
+                console.log('this.users', this.users)
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        },
+
+
 
     }
 });

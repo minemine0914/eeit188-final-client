@@ -32,8 +32,9 @@
                     <!-- Conditionally render content based on selected period -->
                     <div>
                         <label for="yearRange">年份：</label>
-                        <select id="yearRange" v-model="store.selectedYear" @change="updateRecordView('year')">
-                            <option v-for="year, key in years" :key="key" :value="year">{{ year }}</option>
+                        <select id="yearRange" v-model="store.selectedYear">
+                            <!-- <select id="yearRange" v-model="store.selectedYear" @change="updateRecordView('year')"> -->
+                            <option v-for="year, key in store.years" :key="key" :value="year">{{ year }}</option>
                         </select>
                         <div v-if="store.selectedPeriod === 'year'">
                             <!-- Content for Month -->
@@ -79,7 +80,7 @@
                     </div>
                 </div>
                 <div>
-                    <HouseIncome :incomeRecords="incomeRecords"></HouseIncome>
+                    <HouseIncome></HouseIncome>
                 </div>
 
             </div>
@@ -115,7 +116,7 @@
 </template>
 
 <script setup>
-import { computed, ref, onMounted } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { Pie } from 'vue-chartjs';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import HouseIncome from '@/components/wu/components/HouseIncome.vue';
@@ -127,31 +128,36 @@ const store = useHostReportStore()
 
 
 const showPieChart = ref(true);
-const years = computed(() => store.years);
+// const years = computed(() => store.years);
 store.selectedYear
 store.selectedMonth = '1'
 store.selectedQuarter = '1'
 
-const updateRecordView = async (source) => {
-    if (source === 'year') {
-        store.fetchTransactionRecords(store.selectedYear)
+watch(
+    () => store.selectedPeriod,
+    (newVal) => {
+        // if (newVal === 'year') { store.turnToY() }
+        // else if (newVal === 'month') { store.turnToYM() }
+        // else if (newVal === 'quarter') { store.turnToYQ() }
+
+        //使用測試DATA**************************************************************************
+        if (newVal === 'year') { store.useTestYMDC('Y') }
+        else if (newVal === 'month') { store.useTestYMDC('YM') }
+        else if (newVal === 'quarter') { store.useTestYMDC('YQ') }
     }
-}
+);
+
+// const updateRecordView = async (source) => {
+//     if (source === 'year') {
+//         store.fetchTransactionRecords(store.selectedYear)
+//     }
+// }
 
 // Ensure that `years` is populated before rendering
 const isDataReady = computed(() => {
     return store.years.length > 0 && store.records.length > 0;
 });
 // '2024-09-13T06:15:24.140+00:00'
-
-// const incomeRecords = ref([100, 200, 300]);
-const incomeRecords = computed(() => {
-    // console.log('props.records=')
-    // console.log(props.records)
-    // Transform props.records into an array of cash flow values
-    return store.records.map(record => record.cashFlow || 0);
-});
-
 
 const maleCount = computed(() => {
     let count = 0
