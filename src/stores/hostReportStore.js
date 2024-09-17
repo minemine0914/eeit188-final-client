@@ -156,8 +156,13 @@ export const useHostReportStore = defineStore('hostReport', {
                 //    2024: [...], ...}
 
                 //Y={2023: $$$, 2024: $$$, ...}
-
-                this.useTestYMDC('YM')
+                if (this.selectedPeriod === 'year') {
+                    this.useTestYMDC('Y')
+                } else if (this.selectedPeriod === 'month') {
+                    this.useTestYMDC('YM')
+                } else if (this.selectedPeriod === 'quarter') {
+                    this.useTestYMDC('YQ')
+                }
 
             } catch (error) {
                 console.error('Error fetching users:', error);

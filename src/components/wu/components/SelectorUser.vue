@@ -19,8 +19,8 @@ const selectedUser = store.loginUser;
 
 const fetchHouses = async (userId) => {
     await store.fetchHouses(userId);
-    await store.fetchTransactionRecordsStartingValue()
-    await store.fetchTransactionRecords()
+    store.fetchTransactionRecordsStartingValue()
+    store.fetchTransactionRecords()
 
 };
 

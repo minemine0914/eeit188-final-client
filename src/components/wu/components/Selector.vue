@@ -16,8 +16,8 @@ import { useHostReportStore } from '@/stores/hostReportStore';
 const store = useHostReportStore()
 
 const update = async () => {
-    await store.fetchTransactionRecordsStartingValue()
-    await store.fetchTransactionRecords()
+    store.fetchTransactionRecordsStartingValue()
+    store.fetchTransactionRecords()
 }
 </script>
 

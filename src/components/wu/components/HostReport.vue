@@ -26,8 +26,8 @@ onMounted(async () => {
     // 3.找出所有交易紀錄(和交易過的user)
 
     await store.fetchHouses();
-    await store.fetchTransactionRecordsStartingValue()
-    await store.fetchTransactionRecords()
+    store.fetchTransactionRecordsStartingValue()
+    store.fetchTransactionRecords()
 
 });
 </script>

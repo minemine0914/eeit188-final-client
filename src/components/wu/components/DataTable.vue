@@ -206,10 +206,10 @@ const totalCashFlow = computed(() => {
 const genderData = computed(() => {
     const total = totalUsers.value;
     return {
-        labels: ['Male', 'Female', 'Other'],
+        labels: ['男', '女', '其他'],
         datasets: [
             {
-                label: 'Gender Distribution',
+                label: '性別分布',
                 backgroundColor: ['#f87979', '#d5cc4a', '#83d6ba'],
                 data: [
                     total ? (maleCount.value / total) * 100 : 0,
