@@ -34,11 +34,7 @@
                                 </template>
                                 <span>收藏</span>
                             </v-btn>
-                            <v-btn
-                                variant="text"
-                                rounded="pill"
-                                size="large"
-                            >
+                            <v-btn variant="text" rounded="pill" size="large">
                                 <template v-slot:prepend>
                                     <v-icon
                                         :icon="
@@ -57,31 +53,26 @@
             </v-col>
         </v-row>
         <!-- Images Grid -->
-        <v-row no-gutters>
-            <v-col cols="6">
-                <v-responsive :aspect-ratio="10 / 8">
-                    <v-sheet class="h-100 w-100 pa-1 rounded-s-xl overflow-hidden">
-                        <v-skeleton-loader
-                            class="custom-skeleton-image"
-                            type="image"
-                            height="100%"
-                            width="100%"
-                            v-if="isLoading"
-                        />
-                        <v-img
-                            :src="houseDetailStore.getImageUrlList(0)"
-                            position="center"
-                            class="h-100"
-                            cover
-                            v-else
-                        ></v-img>
-                    </v-sheet>
-                </v-responsive>
-            </v-col>
-            <v-col cols="6">
-                <v-row no-gutters class="h-50">
-                    <v-col cols="6">
-                        <v-sheet color=" pa-1 h-100 w-100">
+        <v-responsive :aspect-ratio="10 / 4" ref="imageBoxRef" class="mx-1">
+            <v-sheet class="fill-height d-flex flex-row ga-1" style="contain: size">
+                <v-sheet class="flex-grow-1 rounded-s-xl overflow-hidden">
+                    <v-skeleton-loader
+                        class="custom-skeleton-image"
+                        type="image"
+                        height="100%"
+                        v-if="isLoading"
+                    />
+                    <v-img
+                        :src="houseDetailStore.getImageUrlList(0)"
+                        position="center"
+                        :height="bigImageHeight"
+                        cover
+                        v-else
+                    ></v-img>
+                </v-sheet>
+                <v-sheet class="flex-grow-1 d-flex flex-column ga-1">
+                    <v-sheet class="flex-grow-1 d-flex flex-row ga-1">
+                        <v-sheet class="flex-grow-1">
                             <v-skeleton-loader
                                 type="image"
                                 height="100%"
@@ -91,14 +82,12 @@
                             <v-img
                                 :src="houseDetailStore.getImageUrlList(1)"
                                 position="center"
-                                class="h-100"
                                 cover
+                                :height="smallImageHeight"
                                 v-else
                             ></v-img>
                         </v-sheet>
-                    </v-col>
-                    <v-col cols="6">
-                        <v-sheet color=" pa-1 h-100 w-100 overflow-hidden rounded-te-xl ">
+                        <v-sheet class="flex-grow-1 rounded-te-xl overflow-hidden">
                             <v-skeleton-loader
                                 type="image"
                                 height="100%"
@@ -108,16 +97,14 @@
                             <v-img
                                 :src="houseDetailStore.getImageUrlList(2)"
                                 position="center"
-                                class="h-100"
+                                :height="smallImageHeight"
                                 cover
                                 v-else
                             ></v-img>
                         </v-sheet>
-                    </v-col>
-                </v-row>
-                <v-row no-gutters class="h-50">
-                    <v-col cols="6">
-                        <v-sheet color=" pa-1 h-100 w-100">
+                    </v-sheet>
+                    <v-sheet class="flex-grow-1 d-flex flex-row ga-1">
+                        <v-sheet class="flex-grow-1">
                             <v-skeleton-loader
                                 type="image"
                                 height="100%"
@@ -127,32 +114,30 @@
                             <v-img
                                 :src="houseDetailStore.getImageUrlList(3)"
                                 position="center"
-                                class="h-100"
+                                :height="smallImageHeight"
                                 cover
                                 v-else
                             ></v-img>
                         </v-sheet>
-                    </v-col>
-                    <v-col cols="6">
-                        <v-sheet color=" pa-1 h-100 w-100 rounded-be-xl overflow-hidden">
+                        <v-sheet class="flex-grow-1 rounded-be-xl overflow-hidden">
                             <v-skeleton-loader
-                                v-if="isLoading"
                                 type="image"
                                 height="100%"
                                 width="100%"
+                                v-if="isLoading"
                             />
                             <v-img
-                                v-else
                                 :src="houseDetailStore.getImageUrlList(4)"
                                 position="center"
-                                class="h-100"
+                                :height="smallImageHeight"
                                 cover
+                                v-else
                             ></v-img>
                         </v-sheet>
-                    </v-col>
-                </v-row>
-            </v-col>
-        </v-row>
+                    </v-sheet>
+                </v-sheet>
+            </v-sheet>
+        </v-responsive>
         <!-- House details -->
         <v-row class="px-1 mt-3" no-gutters>
             <v-col cols="12" md="12">
@@ -305,6 +290,7 @@ import { computed, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useHouseDetailStore } from "../../stores/houseDetailStore";
 import { storeToRefs } from "pinia";
+import { useResizeObserver } from "@vueuse/core";
 
 // Use route, router
 const router = useRouter();
@@ -314,6 +300,18 @@ const route = useRoute();
 const houseDetailStore = useHouseDetailStore();
 const { houseInfo, isErrorGetHouseInfo, isLoading, isLoadingCollection, isCollected } =
     storeToRefs(houseDetailStore);
+
+// Detect image box v-responsive height
+const imageBoxRef = ref(null);
+const bigImageHeight = ref(1);
+const smallImageHeight = ref(1);
+useResizeObserver(imageBoxRef, (entries) => {
+    const entry = entries[0];
+    const { width, height } = entry.contentRect;
+    // console.log(`Image box: width: ${width}, height: ${height}`);
+    bigImageHeight.value = height;
+    smallImageHeight.value = height / 2 - 2; // with gap width(4px / 2)
+});
 
 // Functions
 
