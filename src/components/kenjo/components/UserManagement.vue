@@ -228,7 +228,7 @@ export default {
   methods: {
     async fetchUsers() {
       try {
-        const response = await axios.get('http://localhost:8080/user/', {
+        const response = await axios.get('http://localhost:8080/user/find-users', {
           params: {
             pageNo: 0,
             pageSize: 1000
