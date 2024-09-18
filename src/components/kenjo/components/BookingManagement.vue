@@ -7,6 +7,7 @@
 
   部分資料無法顯示
   修改功能、連結資料尚未完成
+  彈跳視窗暫停
   
 */ -->
 
@@ -119,7 +120,7 @@
         </v-dialog>
 
         <!-- 房東資訊對話框 -->
-        <v-dialog v-model="dialogHostInfo" max-width="500px">
+        <!-- <v-dialog v-model="dialogHostInfo" max-width="500px">
           <v-card>
             <v-card-title class="text-h5">房東資訊</v-card-title>
             <v-card-text>
@@ -134,14 +135,14 @@
               <v-spacer></v-spacer>
             </v-card-actions>
           </v-card>
-        </v-dialog>
+        </v-dialog> -->
 
         <!-- 房客資訊對話框 -->
-        <v-dialog v-model="dialogGuestInfo" max-width="500px">
+        <!-- <v-dialog v-model="dialogGuestInfo" max-width="500px">
           <v-card>
             <v-card-title class="text-h5">房客資訊</v-card-title>
             <v-card-text>
-              <p>姓名:{{ guestInfo.name }}</p>
+              <p>姓名:{{ house.userName.phone }}</p>
               <p>聯絡方法:</p>
               <p>電話:{{ guestInfo.phone }}</p>
               <p>信箱:{{ guestInfo.email }}</p>
@@ -152,10 +153,10 @@
               <v-spacer></v-spacer>
             </v-card-actions>
           </v-card>
-        </v-dialog>
+        </v-dialog> -->
 
         <!-- 房屋資訊對話框 -->
-        <v-dialog v-model="dialogPropertyId" max-width="500px">
+        <!-- <v-dialog v-model="dialogPropertyId" max-width="500px">
           <v-card>
             <v-card-title class="text-h5">房屋資訊</v-card-title>
             <v-card-text>
@@ -171,7 +172,7 @@
               <v-spacer></v-spacer>
             </v-card-actions>
           </v-card>
-        </v-dialog>
+        </v-dialog> -->
       </v-toolbar>
     </template>
 
