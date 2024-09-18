@@ -133,7 +133,7 @@ export default {
 
         if (response.status === 200) {
           if (response.data && Array.isArray(response.data.content)) {
-            this.desserts = response.data.content; // 修改為 desserts
+            this.desserts = response.data.content; 
             console.log('Data successfully loaded:', this.desserts); // 確認資料
           } else {
             console.error('API response is not in expected format:', response.data);
