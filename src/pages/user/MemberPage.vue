@@ -7,6 +7,7 @@
       <Coupon v-show="selectedBtn === 4" />
       <UserCollection v-show="selectedBtn === 5" />
       <Discuss v-show="selectedBtn === 6" />
+      <DeleteUser v-show="selectedBtn === 7" />
     </div>
     <div class="avatar-container">
       <Avatar />
@@ -84,6 +85,7 @@ import UserCollection from "@/components/user/UserCollection.vue";
 import Discuss from "@/components/user/Discuss.vue";
 import About from "@/components/user/About.vue";
 import ResetPassword from "@/components/user/ResetPassword.vue";
+import DeleteUser from "@/components/user/DeleteUser.vue";
 
 const selectedBtn = ref(1);
 

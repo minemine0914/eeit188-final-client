@@ -234,6 +234,21 @@ export const useUserStore = defineStore(
       }
     }
 
+    async function deleteUser() {
+      try {
+        await api({
+          headers: {
+            Authorization: `Bearer ${jwtToken.value}`,
+          },
+          method: "delete",
+          url: `/user/${user.id}`,
+        });
+      } catch (error) {
+        console.error(error);
+        throw error;
+      }
+    }
+
     function decodeToken(token) {
       if (typeof token === "string" && token.trim() !== "") {
         try {
@@ -269,6 +284,7 @@ export const useUserStore = defineStore(
       resetPasswordFromEmailLink,
       checkPassword,
       resetPassword,
+      deleteUser,
     };
   },
   {
