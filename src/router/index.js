@@ -68,6 +68,19 @@ const routes = [
         component: () => import("@/pages/user/SignupPage.vue"),
         meta: { title: "Nomad 註冊", requiresAuth: false },
       },
+      {
+        path: "forgot-password",
+        name: "ForgotPassword",
+        component: () => import("@/pages/user/ForgotPasswordPage.vue"),
+        meta: { title: "Nomad 忘記密碼", requiresAuth: false },
+      },
+      {
+        path: "reset-password",
+        name: "ResetPassword",
+        component: () =>
+          import("@/pages/user/ResetPasswordFromEmailLinkPage.vue"),
+        meta: { title: "Nomad 忘記密碼", requiresAuth: false },
+      },
     ],
   },
   {
