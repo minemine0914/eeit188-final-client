@@ -51,6 +51,7 @@ export const useUserStore = defineStore(
     }
 
     function removePasswordResetToken() {
+      passwordResetToken.value = null;
       localStorage.removeItem("passwordResetToken");
       router.push("/login").then(() => {
         window.location.reload();
