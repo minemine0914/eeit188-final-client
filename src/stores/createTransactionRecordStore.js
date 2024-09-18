@@ -12,7 +12,7 @@ export const useCreateTransactionRecordStore = defineStore('createTransactionRec
     actions: {
         async findAllUserString() {
             try {
-                const response = await api.get(`/user/`);
+                const response = await api.get(`/user/find-users`);
                 this.usersResult = response.data.users.map(user => user.id || 0);
             } catch (error) {
                 console.error('Error fetching users:', error);

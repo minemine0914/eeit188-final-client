@@ -139,7 +139,8 @@ export const useHostReportStore = defineStore('hostReport', {
                 // console.log('111111', body.maxCreatedAt)
                 const response = await api.post(`/transcation_record/search`, body);
                 console.log('response.data', response.data)
-                const transformedRecords = await this.searchUserAgainByRecordId(response.data.content);
+                const transformedRecords = await this.searchRecordAgainByRecordId(response.data.content);
+                for (let item of transformedRecords) { item.house = await this.searchHouseAgainByRecordId(item.house); }
                 console.log('transformedRecords', transformedRecords)
                 this.records = transformedRecords;
 
@@ -169,8 +170,8 @@ export const useHostReportStore = defineStore('hostReport', {
             }
         },
 
-        // 4.修正回傳值user只有ID的問題，userID->user物件
-        async searchUserAgainByRecordId(contentArray) {
+        // 4.1 修正回傳值TxRecord只有ID的問題，TxRecord ID->TxRecord物件
+        async searchRecordAgainByRecordId(contentArray) {
             const transformedArray = await Promise.all(contentArray.map(async (element) => {
                 if (typeof element === 'object' && !Array.isArray(element)) {
                     return element;
@@ -184,6 +185,22 @@ export const useHostReportStore = defineStore('hostReport', {
                 }
             }));
             return transformedArray.filter(item => item); // Filter out undefined values
+        },
+
+        // 4.2 修正house只有ID的問題，House ID->House物件
+        async searchHouseAgainByRecordId(element) {
+
+            if (typeof element === 'object' && !Array.isArray(element)) {
+                return element;
+            } else if (typeof element === 'string') {
+                try {
+                    const response = await api.get(`/house/${element}`);
+                    return response.data;
+                } catch (error) {
+                    console.error('Error fetching record by ID:', error);
+                }
+            }
+
         },
 
         async useTestYMDC(callWhich) {
