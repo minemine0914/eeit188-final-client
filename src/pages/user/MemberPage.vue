@@ -2,12 +2,12 @@
   <BackgroundImage />
   <div class="content-container">
     <div class="conetnt">
-      <UserDetail v-show="selectedBtn === 1" />
-      <ResetPassword class="resetPassword" v-show="selectedBtn === 2" />
-      <Coupon v-show="selectedBtn === 4" />
-      <UserCollection v-show="selectedBtn === 5" />
-      <Discuss v-show="selectedBtn === 6" />
-      <DeleteUser v-show="selectedBtn === 7" />
+      <UserDetail v-if="selectedBtn === 1" />
+      <ResetPassword class="resetPassword" v-if="selectedBtn === 2" />
+      <Coupon v-if="selectedBtn === 4" />
+      <UserCollection v-if="selectedBtn === 5" />
+      <Discuss v-if="selectedBtn === 6" />
+      <DeleteUser v-if="selectedBtn === 7" />
     </div>
     <div class="avatar-container">
       <Avatar />
