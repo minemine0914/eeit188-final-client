@@ -4,7 +4,7 @@
     <div class="conetnt">
       <UserDetail v-if="selectedBtn === 1" />
       <ResetPassword class="resetPassword" v-if="selectedBtn === 2" />
-      <Coupon v-if="selectedBtn === 4" />
+      <Coupon class="coupon" v-if="selectedBtn === 4" />
       <UserCollection v-if="selectedBtn === 5" />
       <Discuss v-if="selectedBtn === 6" />
       <DeleteUser v-if="selectedBtn === 7" />
