@@ -31,7 +31,7 @@
                     <option v-for="year, key in store.years" :key="key" :value="year">{{ year }}</option>
                 </select>
                 <div v-if="store.selectedPeriod === 'year'">
-                    <!-- Content for Month -->
+                    <!-- Content for Year -->
                     <p>Year data goes here.</p>
                 </div>
                 <div v-if="store.selectedPeriod === 'month'">

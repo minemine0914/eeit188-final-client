@@ -5,6 +5,7 @@ import api from '@/plugins/axios';
 
 export const useHostReportStore = defineStore('hostReport', {
     state: () => ({
+        isLoading: false,
         loginUser: 'e61abdb4-d054-4188-9e41-c2691792cf73',
         // loginUser: 'f27a7b80-4d60-44cf-aa1c-9b44dd375698',
         selectedHouse: '',

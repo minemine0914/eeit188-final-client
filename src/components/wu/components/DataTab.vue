@@ -112,7 +112,14 @@ const tab = ref(null)
 </script>
 
 <style scoped>
+.chartContainer {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
 .chartContainer div {
+    display: inline-block;
     width: 500px;
 }
 </style>

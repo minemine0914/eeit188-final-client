@@ -11,13 +11,24 @@
 </template>
 
 <script setup>
+import { ref } from 'vue';
 import { useHostReportStore } from '@/stores/hostReportStore';
 
 const store = useHostReportStore()
+store.isLoading = ref(false)
 
 const update = async () => {
-    store.fetchTransactionRecordsStartingValue()
-    store.fetchTransactionRecords()
+    store.isLoading = true;
+    try {
+        store.fetchTransactionRecordsStartingValue()
+        store.fetchTransactionRecords()
+    } finally {
+        // Ensure loading state is set to false after fetching
+
+        setTimeout(() => {
+            store.isLoading = false;
+        }, 100);// setTimeout for test
+    }
 }
 </script>
 
