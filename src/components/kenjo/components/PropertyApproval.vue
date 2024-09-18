@@ -123,22 +123,24 @@ export default {
 
     getStatusColor(check) {
       switch (check) {
-        case 1:
-          return 'green';
-        case 0:
-          return 'orange';
-        case 0:
-          return 'orange';
+        case null:
+          return '待審核';
+        case true:
+          return '審核通過';
+        case false:
+          return '審核失敗';
         default:
           return 'red';
       }
     },
     getStatusText(check) {
       switch (check) {
-        case 1:
-          return '刊登中';
-        case 0:
-          return '審核中';
+        case null:
+          return '待審核';
+        case true:
+          return '審核通過';
+        case false:
+          return '審核失敗';
         default:
           return '確認中';
       }
