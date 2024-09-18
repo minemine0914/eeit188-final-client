@@ -1,19 +1,18 @@
 <template>
     <v-layout style="z-index: 99" height="100%">
         <SearchHouseBar style="top: 15px" />
-
         <v-main ref="searchMainRef">
             <v-container
                 ref="searchContainerRef"
                 :style="[`height: ${containerHeight}px`]"
-                :fluid="false"
+                class="py-0"
             >
                 <v-infinite-scroll
                     v-if="renderInfinityScrollComponent"
                     :height="searchContainerResizeObserve.height"
                     :items="filterHouseList"
                     @load="loadFilterHouses"
-                    class="pt-16"
+                    :style="{paddingTop: `80px`}"
                 >
                     <template v-for="(item, index) in filterHouseList" :key="index">
                         <!-- List view -->

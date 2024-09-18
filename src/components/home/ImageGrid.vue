@@ -36,17 +36,17 @@
                     </v-sheet>
                     <v-sheet class="flex-grow-1 rounded-te-xl overflow-hidden">
                         <v-skeleton-loader
+                            v-if="isLoading"
                             type="image"
                             height="100%"
                             width="100%"
-                            v-if="isLoading"
                         />
                         <v-img
+                            v-else
                             :src="houseDetailStore.getImageUrlList(2)"
                             position="center"
                             :height="smallImageHeight"
                             cover
-                            v-else
                         ></v-img>
                     </v-sheet>
                 </v-sheet>

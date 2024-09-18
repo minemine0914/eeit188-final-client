@@ -27,7 +27,19 @@ export default defineConfig({
     },
     optimizeDeps: {
         noDiscovery: true,
-        include: [],
+        include: ["geotiff"],
     },
-    cacheDir: 'node_modules/.vite_cache', // Use a cache directory to persist dependency optimization
+    cacheDir: "node_modules/.vite_cache", // Use a cache directory to persist dependency optimization
+    build: {
+        chunkSizeWarningLimit: 1000,
+        rollupOptions: {
+            output: {
+                manualChunks: function (id) {
+                    if (id.includes("node_modules")) {
+                        return id.toString().split("node_modules/")[1].split("/")[0];
+                    }
+                },
+            },
+        },
+    },
 });

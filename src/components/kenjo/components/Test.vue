@@ -1,259 +1,157 @@
+<!--/*房源審核	
+	待審核房源:顯示所有待審核的房源申請。
+	房源審核:處理房源審核請求，批准或拒絕房源發布。
+  //check 判斷欄位 >>需要新增
+*/ -->
 <template>
-  <v-data-table
-    v-model:search="search"
-    :headers="headers"
-    :items="desserts"
-    :sort-by="[{ key: 'date', order: 'desc' }]">
-    <template v-slot:top>
-      <v-toolbar flat>
-        <v-toolbar-title>金額管理</v-toolbar-title>
-        <v-divider class="mx-4" inset vertical></v-divider>
-        <v-spacer></v-spacer>
+  <v-toolbar flat>
+        <v-toolbar-title>房間管理</v-toolbar-title>
         <v-text-field
-          v-model="search"
-          density="compact"
-          label="查詢"
-          prepend-inner-icon="mdi-magnify"
-          variant="solo-filled"
-          flat
-          hide-details
-          single-line
-          :style="{ width: '200px' }"
-        ></v-text-field>
-        <v-dialog v-model="dialog" max-width="500px">
-          <!-- <template v-slot:activator="{ props }">
-            <v-btn class="mb-2" color="primary" dark v-bind="props">
-              新增
-            </v-btn>
-          </template> -->
-          <v-card>
-            <v-card-title>
-              <span class="text-h5">{{ formTitle }}</span>
-            </v-card-title>
-            <v-card-text>
-              <v-container>
-                <v-row>
-                  <v-col cols="12" md="4" sm="6" v-if="editedIndex !== -1">
-                    <v-text-field
-                      v-model="editedItem.id"
-                      label="編號"
-                      readonly
-                    ></v-text-field>
-                  </v-col>
-                  <v-col cols="12" md="4" sm="6">
-                    <v-text-field
-                      v-model="editedItem.date"
-                      label="日期"
-                    ></v-text-field>
-                  </v-col>
-                  <v-col cols="12" md="4" sm="6">
-                    <v-text-field
-                      v-model="editedItem.orderQuantity"
-                      label="訂單數量"
-                    ></v-text-field>
-                  </v-col>
-                  <v-col cols="12" md="4" sm="6">
-                    <v-text-field
-                      v-model="editedItem.totalAmount"
-                      label="總金額"
-                    ></v-text-field>
-                  </v-col>
-                  <v-col cols="12" md="4" sm="6">
-                    <v-text-field
-                      v-model="editedItem.discountAmount"
-                      label="折扣金額"
-                    ></v-text-field>
-                  </v-col>
-                  <v-col cols="12" md="4" sm="6">
-                    <v-text-field
-                      v-model="editedItem.prepaidAmount"
-                      label="預收款項"
-                    ></v-text-field>
-                  </v-col>
-                  <v-col cols="12" md="4" sm="6">
-                    <v-text-field
-                      v-model="editedItem.pendingAmount"
-                      label="待付款"
-                    ></v-text-field>
-                  </v-col>
-                  <v-col cols="12" md="4" sm="6">
-                    <v-text-field
-                      v-model="editedItem.processingFee"
-                      label="手續費收入"
-                    ></v-text-field>
-                  </v-col>
-                </v-row>
-              </v-container>
-            </v-card-text>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn color="blue-darken-1" variant="text" @click="close">
-                取消
-              </v-btn>
-              <v-btn color="blue-darken-1" variant="text" @click="save">
-                儲存
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-        <v-dialog v-model="dialogDelete" max-width="500px">
-          <v-card>
-            <v-card-title class="text-h5">確定要刪除?</v-card-title>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn color="blue-darken-1" variant="text" @click="closeDelete">取消</v-btn>
-              <v-btn color="blue-darken-1" variant="text" @click="deleteItemConfirm">刪除</v-btn>
-              <v-spacer></v-spacer>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-      </v-toolbar>
+        v-model="search"
+        density="compact"
+        label="查詢"
+        prepend-inner-icon="mdi-magnify"
+        variant="solo-filled"
+        flat
+        hide-details
+        single-line
+        :style="{ width: '100px' }"
+      ></v-text-field>
+  </v-toolbar>
+  
+  <div >
+  <v-data-table
+  v-model:search="search" 
+  
+    v-model:expanded="expanded"
+    :headers="dessertHeaders"
+    :items="desserts"
+    item-value="name"
+  >
+  <template v-slot:top>
+      
     </template>
-    
-    <template v-slot:item.actions="{ item }">
-      <v-icon class="me-2" size="small" @click="editItem(item)">
-        mdi-see
-      </v-icon>
-      <v-icon size="small" @click="deleteItem(item)">
-        mdi-delete
-      </v-icon>
-    </template>
-    <template v-slot:no-data>
-      <v-btn color="primary" @click="initialize">
-        Reset
-      </v-btn>
-    </template>
+    <template v-slot:item.check="{ item }">    <!--狀態欄位-->
+    <v-chip 
+      :color="getStatusColor(item.check)"
+      size="small"
+      class="text-uppercase">
+      {{ getStatusText(item.check) }}
+    </v-chip>
+  </template>
   </v-data-table>
+  </div>
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
-  data: () => ({
-    search: '',
-    dialog: false,
-    dialogDelete: false,
-    headers: [
-      //{ title: '編號', align: 'start', key: 'id' },
-      { title: '日期', key: 'date' },
-      { title: '訂單數量', key: 'orderQuantity' },
-      { title: '總金額', key: 'totalAmount' },
-      { title: '折扣金額', key: 'discountAmount' },
-      { title: '預收款項', key: 'prepaidAmount' },
-      { title: '待付款', key: 'pendingAmount' },
-      { title: '手續費收入', key: 'processingFee' },
-     // { title: '編輯', key: 'actions', sortable: false },
-    ],
-    desserts: [],
-    editedIndex: -1,
-    editedItem: {
-      id: 0,
-      date: '',
-      orderQuantity: 0,
-      totalAmount: 0,
-      discountAmount: 0,
-      prepaidAmount: 0,
-      pendingAmount: 0,
-      processingFee: 0
-    },
-    defaultItem: {
-      id: 0,
-      date: '',
-      orderQuantity: 0,
-      totalAmount: 0,
-      discountAmount: 0,
-      prepaidAmount: 0,
-      pendingAmount: 0,
-      processingFee: 0
-    },
-  }),
-
-  computed: {
-    formTitle () {
-      return this.editedIndex === -1 ? '新增訂單' : '編輯訂單'
-    },
+  data () {
+    return {
+      search:"",
+      expanded: [],
+      dessertHeaders: [
+          //標題
+        {
+          title: '房屋名稱',align: 'start',sortable: false,key: 'name',
+        },
+        { title: '房東', key: 'userName' },
+        { title: '地址 ', key: 'address' },
+        { title: '房屋類型 ', key: 'category' },
+        { title: '提交時間 ', key: 'createdAt' },
+        { title: '狀態 ', key: 'check' },
+      
+      ],
+      desserts: [],
+    }
   },
-
+  
   watch: {
-    dialog (val) {
-      val || this.close()
+    dialog(val) {
+      val || this.close();
     },
-    dialogDelete (val) {
-      val || this.closeDelete()
+    dialogDelete(val) {
+      val || this.closeDelete();
     },
+    dialogHostInfo(val) {
+      val || this.closeHostInfo();
+    },
+    dialogGuestInfo(val) {
+      val || this.closeGuestInfo();
+    },
+    dialogPropertyId(val) {
+      val || this.closePropertyId();
+    }
   },
 
-  created () {
-    this.initialize()
+  created() {
+    this.fetchOrder();
   },
+
 
   methods: {
-    initialize () {
-      this.desserts = [
-        { date: '2024-08-13', orderQuantity: 25, totalAmount: 30000, discountAmount: 1000, prepaidAmount: 29000, pendingAmount: 25000, processingFee: 4000 },
-        { date: '2024-08-14', orderQuantity: 30, totalAmount: 35000, discountAmount: 1500, prepaidAmount: 30000, pendingAmount: 20000, processingFee: 5000 },
-        { date: '2024-03-10', orderQuantity: 18, totalAmount: 22000, discountAmount: 1100, prepaidAmount: 18000, pendingAmount: 16000, processingFee: 2800 },
-        { date: '2024-04-05', orderQuantity: 22, totalAmount: 29000, discountAmount: 1600, prepaidAmount: 24000, pendingAmount: 21000, processingFee: 3500 },
-        { date: '2024-05-18', orderQuantity: 28, totalAmount: 32000, discountAmount: 1700, prepaidAmount: 27000, pendingAmount: 23000, processingFee: 3800 },
-        { date: '2024-06-22', orderQuantity: 26, totalAmount: 31000, discountAmount: 1550, prepaidAmount: 26000, pendingAmount: 22000, processingFee: 3600 },
-        { date: '2024-07-14', orderQuantity: 24, totalAmount: 28000, discountAmount: 1450, prepaidAmount: 23000, pendingAmount: 20000, processingFee: 3400 },
-        { date: '2024-08-12', orderQuantity: 30, totalAmount: 35000, discountAmount: 1500, prepaidAmount: 30000, pendingAmount: 20000, processingFee: 5000 },
-        { date: '2024-09-10', orderQuantity: 27, totalAmount: 30000, discountAmount: 1600, prepaidAmount: 25000, pendingAmount: 22000, processingFee: 3700 },
-        { date: '2024-10-25', orderQuantity: 31, totalAmount: 34000, discountAmount: 1700, prepaidAmount: 29000, pendingAmount: 25000, processingFee: 4200 },
-        { date: '2024-11-15', orderQuantity: 29, totalAmount: 33000, discountAmount: 1650, prepaidAmount: 28000, pendingAmount: 24000, processingFee: 4100 },
-        { date: '2024-12-30', orderQuantity: 32, totalAmount: 36000, discountAmount: 1800, prepaidAmount: 31000, pendingAmount: 26000, processingFee: 4300 }
- 
-      ]
-    },
+    
+    
+    async fetchOrder() {
+      try {
+        const response = await axios.get('http://localhost:8080/house/all', {
+          params: {
+            pageNo: 0,
+            pageSize: 1000
+          }
+        });
 
-    editItem (item) {
-      this.editedIndex = this.desserts.indexOf(item)
-      this.editedItem = { ...item }
-      this.dialog = true
-    },
+        console.log('API response:', response); // 詳細輸出整個響應
 
-    deleteItem (item) {
-      this.editedIndex = this.desserts.indexOf(item)
-      this.editedItem = { ...item }
-      this.dialogDelete = true
-    },
-
-    deleteItemConfirm () {
-      this.desserts.splice(this.editedIndex, 1)
-      this.closeDelete()
-    },
-
-    close () {
-      this.dialog = false
-      this.$nextTick(() => {
-        this.editedItem = { ...this.defaultItem }
-        this.editedIndex = -1
-      })
-    },
-
-    closeDelete () {
-      this.dialogDelete = false
-      this.$nextTick(() => {
-        this.editedItem = { ...this.defaultItem }
-        this.editedIndex = -1
-      })
-    },
-
-    save () {
-      if (!this.editedItem.date || this.editedItem.orderQuantity === null || this.editedItem.totalAmount === null) {
-        alert('日期、訂單數量和總金額為必填項')
-        return
+        if (response.status === 200) {
+          if (response.data && Array.isArray(response.data.content)) {
+            this.desserts = response.data.content; 
+            console.log('Data successfully loaded:', this.desserts); // 確認資料
+          } else {
+            console.error('API response is not in expected format:', response.data);
+            this.desserts = [];
+          }
+        } else {
+          console.error('API response status is not OK:', response.status);
+        }
+      } catch (error) {
+        console.error('Error in fetchOrder:', error);
+        // 顯示錯誤提示給用戶
       }
-      if (this.editedIndex > -1) {
-        Object.assign(this.desserts[this.editedIndex], this.editedItem)
-      } else {
-        this.desserts.push(this.editedItem)
-      }
-      this.close()
     },
-  },
+
+    getStatusColor(check) {
+      switch (check) {
+        case 1:
+          return 'green';
+        case 0:
+          return 'orange';
+        case 0:
+          return 'orange';
+        default:
+          return 'red';
+      }
+    },
+    getStatusText(check) {
+      switch (check) {
+        case 1:
+          return '刊登中';
+        case 0:
+          return '審核中';
+        default:
+          return '確認中';
+      }
+    },
+},
 }
 </script>
 
 <style scoped>
-/* Add any custom styles here */
+.title-center {
+display: flex;
+justify-content: center;
+flex-grow: 1;
+}
 </style>
+

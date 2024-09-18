@@ -1,1 +1,29 @@
 /* Use for openlayers */
+.ol-custom-zoom-control {
+    bottom: 30px !important;
+    right: 20px !important;
+    font-size: 20px;
+    text-align: center;
+    vertical-align: middle;
+    align-content: center;
+    font-family: "Courier New", Courier, monospace;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.302);
+}
+.ol-custom-zoom-control button {
+    margin: 0;
+    height: 35px;
+    width: 35px;
+}
+.ol-custom-zoom-control button:hover,
+.ol-custom-zoom-control button:focus {
+    outline: none!important;
+}
+.ol-custom-zoom-control button:hover {
+    background-color: rgb(240, 240, 240);
+}
+.ol-custom-zoom-control button.ol-zoom-in {
+    border-radius: 8px 8px 0 0;
+}
+.ol-custom-zoom-control button.ol-zoom-out {
+    border-radius: 0 0 8px 8px;
+}
