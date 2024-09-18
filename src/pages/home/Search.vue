@@ -117,12 +117,12 @@
                                             </div>
                                             <div class="text-grey-darken-1">
                                                 <span class="mr-2" v-if="!item.pet">
-                                                    <span class="mdi mdi-paw-off mr-1"></span>
+                                                    <span class="mdi mdi-paw-off mr-2"></span>
                                                     <span>禁止寵物</span>
                                                 </span>
 
                                                 <span class="mr-2" v-if="!item.smoke">
-                                                    <span class="mdi mdi-smoking-off mr-1"></span>
+                                                    <span class="mdi mdi-smoking-off mr-2"></span>
                                                     <span>禁止吸菸</span>
                                                 </span>
                                             </div>
