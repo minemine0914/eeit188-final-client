@@ -3,11 +3,13 @@
     <v-card
       v-for="house in collection.collections"
       :key="house?.id"
-      class="mx-auto mb-5 custom-card"
+      class="mx-auto mb-5"
       color="surface-light"
       min-width="300px"
-      :subtitle="house?.name"
     >
+      <v-card-subtitle class="custom-subtitle">{{
+        house?.name
+      }}</v-card-subtitle>
       <v-card-text class="bg-surface-light pt-4">
         <v-img
           v-if="house?.images.length === 0"
@@ -142,5 +144,11 @@ async function getUserCollectionHouseImages() {
   position: absolute;
   right: 10px;
   bottom: 10px;
+}
+
+.custom-subtitle {
+  margin-top: 10px;
+  font-size: 20px;
+  font-weight: bold;
 }
 </style>
