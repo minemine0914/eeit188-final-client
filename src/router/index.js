@@ -34,15 +34,27 @@ const routes = [
       },
       {
         path: "house/:houseId",
-        name: "HouseWithId",
+        name: "HouseWithHouseId",
         component: () => import("@/pages/home/HouseDetail.vue"),
         meta: { title: "Nomad 房源", requiresAuth: false },
+      },
+      {
+        path: "booking/:houseId",
+        name: "BookingWithHouseId",
+        component: () => import("@/pages/home/Booking.vue"),
+        meta: { title: "Nomad 預定您的房源", requiresAuth: false },
       },
       {
         path: "member",
         name: "Member",
         component: () => import("@/pages/user/MemberPage.vue"),
         meta: { title: "Nomad 會員中心", requiresAuth: false },
+      },
+      {
+        path: "chat",
+        name: "Chat",
+        component: () => import("@/pages/user/ChatPage.vue"),
+        meta: { title: "Nomad 聊天", requiresAuth: false },
       },
       {
         path: "login",
@@ -82,6 +94,24 @@ const routes = [
         component: () => import("@/pages/system/Dashboard.vue"),
         meta: { title: "Nomad 系統管理", requiresAuth: false },
       },
+      {
+        path: "admin",
+        name: "Admin",
+        component: () => import("@/pages/system/AdminPage.vue"),
+        meta: { title: "Nomad 管理中心", requiresAuth: false },
+      },
+      {
+        path: "login",
+        name: "SystemLogin",
+        component: () => import("@/pages/system/AdminLoginPage.vue"),
+        meta: { title: "Nomad 系統管理登入", requiresAuth: false },
+      },
+      {
+        path: "createAdmin",
+        name: "CreateAdmin",
+        component: () => import("@/pages/system/CreateAdminPage.vue"),
+        meta: { title: "Nomad 系統管理註冊", requiresAuth: false },
+      },
     ],
   },
   {
@@ -100,6 +130,10 @@ const router = createRouter({
   history: createWebHistory(),
   routes,
 });
+
+// router.beforeEach((to, from) => {
+//   document.title = to.meta.title || DEFAULT_TITLE;
+// });
 
 router.afterEach((to, from) => {
   document.title = to.meta.title || DEFAULT_TITLE;
