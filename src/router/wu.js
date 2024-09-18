@@ -42,8 +42,14 @@ const router = {
         {
             path: "table", // Default
             name: "table",
-            component: () => import("@/components/wu/components/Table.vue"),
+            component: () => import("@/components/wu/components/TextTable.vue"),
             meta: { title: "Table", requiresAuth: false },
+        },
+        {
+            path: "tab", // Default
+            name: "tab",
+            component: () => import("@/components/wu/components/Tab.vue"),
+            meta: { title: "Tab", requiresAuth: false },
         },
     ],
 }

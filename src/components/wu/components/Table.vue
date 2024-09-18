@@ -50,6 +50,7 @@ export default {
                     price: 699.99,
                     rating: 5,
                     stock: true,
+                    aaa: 'ddd'
                 },
                 {
                     name: 'Galaxy RTX 3080',
@@ -73,6 +74,54 @@ export default {
                     stock: true,
                 },
                 {
+                    name: 'Cosmos GTX 1660 Super',
+                    image: '5.png',
+                    price: 299.99,
+                    rating: 4,
+                    stock: false,
+                }, {
+                    name: 'Cosmos GTX 1660 Super',
+                    image: '5.png',
+                    price: 299.99,
+                    rating: 4,
+                    stock: false,
+                }, {
+                    name: 'Cosmos GTX 1660 Super',
+                    image: '5.png',
+                    price: 299.99,
+                    rating: 4,
+                    stock: false,
+                }, {
+                    name: 'Cosmos GTX 1660 Super',
+                    image: '5.png',
+                    price: 299.99,
+                    rating: 4,
+                    stock: false,
+                }, {
+                    name: 'Cosmos GTX 1660 Super',
+                    image: '5.png',
+                    price: 299.99,
+                    rating: 4,
+                    stock: false,
+                }, {
+                    name: 'Cosmos GTX 1660 Super',
+                    image: '5.png',
+                    price: 299.99,
+                    rating: 4,
+                    stock: false,
+                }, {
+                    name: 'Cosmos GTX 1660 Super',
+                    image: '5.png',
+                    price: 299.99,
+                    rating: 4,
+                    stock: false,
+                }, {
+                    name: 'Cosmos GTX 1660 Super',
+                    image: '5.png',
+                    price: 299.99,
+                    rating: 4,
+                    stock: false,
+                }, {
                     name: 'Cosmos GTX 1660 Super',
                     image: '5.png',
                     price: 299.99,

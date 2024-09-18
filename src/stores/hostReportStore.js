@@ -5,8 +5,8 @@ import api from '@/plugins/axios';
 
 export const useHostReportStore = defineStore('hostReport', {
     state: () => ({
-        // loginUser: 'e61abdb4-d054-4188-9e41-c2691792cf73',
-        loginUser: 'f27a7b80-4d60-44cf-aa1c-9b44dd375698',
+        loginUser: 'e61abdb4-d054-4188-9e41-c2691792cf73',
+        // loginUser: 'f27a7b80-4d60-44cf-aa1c-9b44dd375698',
         selectedHouse: '',
         selectedUser: '',
 
@@ -97,7 +97,7 @@ export const useHostReportStore = defineStore('hostReport', {
                         this.years.push(i)
                     }
 
-                    this.selectedYear = this.years[0]
+                    this.selectedYear = this.years[this.years.length - 1]
                 }
             } catch (error) {
                 console.error('Error fetching users:', error);
@@ -480,7 +480,7 @@ export const useHostReportStore = defineStore('hostReport', {
 
         async findAllUser() {
             try {
-                const response = await api.get(`/user/`);
+                const response = await api.get(`/user/find-users`);
                 this.users = response.data.users;
                 console.log('this.users', this.users)
             } catch (error) {

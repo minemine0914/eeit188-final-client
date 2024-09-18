@@ -6,7 +6,6 @@
         <h2>Hello, {{ store.loginUser }}</h2>
         <Selector />
         <DataTable />
-
     </div>
 </template>
 
