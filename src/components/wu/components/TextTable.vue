@@ -2,8 +2,9 @@
     <v-card flat>
         <v-card-title class="d-flex align-center pe-2">
             <v-icon icon="mdi-home"></v-icon>&nbsp;近期訂單紀錄&nbsp;<v-icon icon="mdi-home"></v-icon>
-            房源名稱：{{ itemsSource[0].house.name }}[{{
-                `${itemsSource[0].house?.country}${itemsSource[0].house?.city}${itemsSource[0].house?.region}` }}]
+            房源名稱：{{ store.itemsSource[0]?.house.name }}[{{
+                `${store.itemsSource[0]?.house?.country}${store.itemsSource[0]?.house?.city}${store.itemsSource[0]?.house?.region}`
+            }}]
             <v-spacer></v-spacer>
 
             <v-text-field v-model="search" density="compact" label="Search" prepend-inner-icon="mdi-magnify"
@@ -77,34 +78,14 @@ const headers = [
 ];
 const itemsPerPage = 3 // Default items per page
 const itemsPerPageOptions = [3, 5, 10, 25, 50, 100, -1] // Options for per-page selector
-// Extract and map only required properties from store.records
-const itemsSource = computed(() => {
-    if (!store.allYear) {
-        return store.records.filter(item => item.year === store.selectedYear)
-    }
-    return store.records
-
-
-
-
-    // .map(item => ({
-    //     // Extract only the required properties
-    //     'houseId': item.house?.id || item.house, // Handle case where house might be an object or string
-    //     'houseName': item.house?.name, // Handle case where house might be an object or string
-    //     'bookerId': item.user?.id, // Handle nested user property
-    //     'bookerName': item.user?.name, // Handle nested user property
-    //     'bookerGender': item?.userGender,
-    // }))
-}
-);
 
 const items = computed(() => {
-    console.log('is', itemsSource.value)
+    console.log('is', store.itemsSource)
     let filtered = ''
-    if (!search.value) { filtered = itemsSource.value; }
+    if (!search.value) { filtered = store.itemsSource; }
     else {
         const searchLower = search.value.toLowerCase();
-        filtered = itemsSource.value.filter(item =>
+        filtered = store.itemsSource.filter(item =>
             (item.house?.id ? item.house.id.toLowerCase().includes(searchLower) : item.house.toLowerCase().includes(searchLower)) ||
             (item.house?.name.toLowerCase().includes(searchLower)) ||
             (item.house?.country.toLowerCase().includes(searchLower)) ||

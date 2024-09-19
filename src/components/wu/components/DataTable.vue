@@ -39,9 +39,11 @@
                 <div v-if="store.selectedPeriod === 'month'">
                     <!-- Content for Month -->
                     <p>Month data goes here.</p>
-
-                    <label for="monthRange">月份：</label>
-                    <select id="monthRange" v-model="store.selectedMonth">
+                    <input id="allMonth" type="checkbox" v-model="store.allMonth"><label
+                        for="allMonth">顯示所有月份的資料</label>
+                    &nbsp;
+                    <label for="monthRange">選擇月份：</label>
+                    <select id="monthRange" v-model="store.selectedMonth" :disabled="store.allMonth">
                         <option v-for="month, key in 12" :key="key" :value="month">{{ month }}</option>
                     </select>
                 </div>
@@ -69,27 +71,22 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue';
+import { watch } from 'vue';
 import { useHostReportStore } from '@/stores/hostReportStore';
 import DataTab from './DataTab.vue';
 
 const store = useHostReportStore()
 
-store.selectedMonth = '1'
-store.selectedQuarter = '1'
-watch(
-    () => store.selectedPeriod,
-    (newVal) => {
-        // if (newVal === 'year') { store.turnToY() }
-        // else if (newVal === 'month') { store.turnToYM() }
-        // else if (newVal === 'quarter') { store.turnToYQ() }
-
-        //使用測試DATA**************************************************************************
-        if (newVal === 'year') { store.useTestYMDC('Y') }
-        else if (newVal === 'month') { store.useTestYMDC('YM') }
-        else if (newVal === 'quarter') { store.useTestYMDC('YQ') }
+watch(() => store.selectedPeriod, (newPeriod) => {
+    if (newPeriod === 'year') {
+        store.recordsPrapared = store.turnToY(store.records);
+        console.log('SRP', store.recordsPrapared)
+    } else if (newPeriod === 'month') {
+        store.recordsPrapared = store.turnToYM(store.records);
+    } else if (newPeriod === 'quarter') {
+        store.recordsPrapared = store.turnToYQ(store.records);
     }
-);
+});
 
 </script>
 

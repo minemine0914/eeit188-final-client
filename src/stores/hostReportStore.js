@@ -2,6 +2,7 @@
 
 import { defineStore } from 'pinia';
 import api from '@/plugins/axios';
+import { set } from 'ol/transform';
 
 export const useHostReportStore = defineStore('hostReport', {
     state: () => ({
@@ -21,15 +22,17 @@ export const useHostReportStore = defineStore('hostReport', {
 
         selectedPeriod: 'month',
         allYear: false,
-        allMonth: false,
+        allMonth: true,
         allQuarter: false,
-        labels: { name: '', values: [] },
+
         years: [],
         months: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
         quarters: ['Q1', 'Q2', 'Q3', 'Q4'],
         selectedYear: '',
-        selectedMonth: '',
-        selectedQuarter: '',
+        selectedMonth: '1',
+        selectedQuarter: '1',
+
+        labels: { name: '', values: [] },
 
         pics: {
             doge: {
@@ -54,7 +57,21 @@ export const useHostReportStore = defineStore('hostReport', {
             },
         }
     }),
-    getters: {},
+    getters: {
+        //依據查詢結果(records)處理資料(依照年份做篩選)
+        itemsSource: (state) => {
+            let output = state.records
+            if (!output) return
+            if (!state.allYear) {
+                output = output.filter(item => item.year === state.selectedYear);
+            }
+            if (!state.allMonth) {
+                output = output.filter(item => item.year === state.selectedMonth);
+            }
+            return output
+        },
+
+    },
     actions: {
         // 1.用host(user)找house
         async fetchHouses(userId) {
@@ -184,12 +201,21 @@ export const useHostReportStore = defineStore('hostReport', {
                 //    2024: [...], ...}
 
                 //Y={2023: $$$, 2024: $$$, ...}
+
+                // if (this.selectedPeriod === 'year') {
+                //     this.useTestYMDC('Y')
+                // } else if (this.selectedPeriod === 'month') {
+                //     this.useTestYMDC('YM')
+                // } else if (this.selectedPeriod === 'quarter') {
+                //     this.useTestYMDC('YQ')
+                // }
+
                 if (this.selectedPeriod === 'year') {
-                    this.useTestYMDC('Y')
+                    this.turnToY()
                 } else if (this.selectedPeriod === 'month') {
-                    this.useTestYMDC('YM')
+                    this.turnToYM()
                 } else if (this.selectedPeriod === 'quarter') {
-                    this.useTestYMDC('YQ')
+                    this.turnToYQ()
                 }
 
             } catch (error) {
@@ -228,6 +254,7 @@ export const useHostReportStore = defineStore('hostReport', {
             }
         },
 
+        // 4.3 把CreatedAt的時間拆開成不同object，方便篩選
         async separateCreatedAt(contentArray) {
             for (let i = 0; i < contentArray.length; i++) {
                 // Parse the date string
@@ -244,11 +271,13 @@ export const useHostReportStore = defineStore('hostReport', {
                 // delete output.createdAt;
                 contentArray[i] = output
             }
+            //log**************************
             console.log(contentArray)
+            //log**************************
             return contentArray
         },
 
-        async useTestYMDC(callWhich) {
+        useTestYMDC(callWhich) {
             let testArr = [
                 {
                     "year": 2024,
@@ -402,25 +431,20 @@ export const useHostReportStore = defineStore('hostReport', {
                 }
             ]
             if (callWhich === 'YMD') {
-                this.turnToYMD(testArr)
+                return this.turnToYMD(testArr)
             } else if (callWhich === 'YM') {
-                this.turnToYM(testArr)
+                return this.turnToYM(testArr)
             } else if (callWhich === 'YQ') {
-                this.turnToYQ(testArr)
+                return this.turnToYQ(testArr)
             } else if (callWhich === 'Y') {
-                this.turnToY(testArr)
+                return this.turnToY(testArr)
             }
 
         },
 
-        async turnToYMD(YMDC) {
+        turnToYMD(YMDC) {
             if (!YMDC) {
-                YMDC = this.records.map(record => ({
-                    year: new Date(record.createdAt).getFullYear(),
-                    month: new Date(record.createdAt).getMonth() + 1,
-                    date: new Date(record.createdAt).getDate(),
-                    cashFlow: record.cashFlow
-                }))
+                YMDC = this.records
             }
             // Initialize the result object
             const result = {};
@@ -441,18 +465,13 @@ export const useHostReportStore = defineStore('hostReport', {
                 // Add the cash flow to the appropriate day (date - 1 because array is zero-indexed)
                 result[year][month][date - 1] += cashFlow;
             });
-            this.recordsPrapared = result
-            console.log('YMD', this.recordsPrapared);
+            // console.log('YMD', this.recordsPrapared);
+            return result
         },
 
-        async turnToYM(YMDC) {
+        turnToYM(YMDC) {
             if (!YMDC) {
-                YMDC = this.records.map(record => ({
-                    year: new Date(record.createdAt).getFullYear(),
-                    month: new Date(record.createdAt).getMonth() + 1,
-                    date: new Date(record.createdAt).getDate(),
-                    cashFlow: record.cashFlow
-                }))
+                YMDC = this.records
             }
             // Initialize the result object
             const result = {};
@@ -469,18 +488,13 @@ export const useHostReportStore = defineStore('hostReport', {
                 // Add the cash flow to the appropriate month (1-based index, so subtract 1)
                 result[year][month - 1] += cashFlow;
             });
-            this.recordsPrapared = result
-            console.log('YM', this.recordsPrapared);
+            // console.log('YM', this.recordsPrapared);
+            return result
         },
 
-        async turnToYQ(YMDC) {
+        turnToYQ(YMDC) {
             if (!YMDC) {
-                YMDC = this.records.map(record => ({
-                    year: new Date(record.createdAt).getFullYear(),
-                    month: new Date(record.createdAt).getMonth() + 1,
-                    date: new Date(record.createdAt).getDate(),
-                    cashFlow: record.cashFlow
-                }))
+                YMDC = this.records
             }
             // Initialize the result object
             const result = {};
@@ -506,18 +520,14 @@ export const useHostReportStore = defineStore('hostReport', {
                 // Add the cash flow to the appropriate quarter
                 result[year][quarter] += cashFlow;
             });
-            this.recordsPrapared = result
-            console.log('YQ', this.recordsPrapared);
+            // console.log('YQ', this.recordsPrapared);
+            return result
+
         },
 
-        async turnToY(YMDC) {
+        turnToY(YMDC) {
             if (!YMDC) {
-                YMDC = this.records.map(record => ({
-                    year: new Date(record.createdAt).getFullYear(),
-                    month: new Date(record.createdAt).getMonth() + 1,
-                    date: new Date(record.createdAt).getDate(),
-                    cashFlow: record.cashFlow
-                }))
+                YMDC = this.records
             }
             // Initialize the result object
             const result = {};
@@ -536,8 +546,9 @@ export const useHostReportStore = defineStore('hostReport', {
             // Convert the yearly cash flow object to an array of values
             const output = Object.values(result);
 
-            this.recordsPrapared = output
-            console.log('Y', this.recordsPrapared);
+            // console.log('Y', this.recordsPrapared);
+            return output
+
         },
 
         async findAllUser() {

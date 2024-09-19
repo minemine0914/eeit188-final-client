@@ -5,13 +5,15 @@
 <script setup>
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js'
 import { Line } from 'vue-chartjs'
-import { computed } from 'vue';
+import { computed, watch, onMounted } from 'vue';
 import { useHostReportStore } from '@/stores/hostReportStore';
-
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
 
 const store = useHostReportStore()
+
+
+
 // Create a computed property for the chart data
 const data = computed(() => {
   // Define an array of colors for each data point
@@ -89,4 +91,13 @@ const options = computed(() => ({
   }
 }))
 
+onMounted(() => {
+  if (store.selectedPeriod === 'year') {
+    store.recordsPrapared = store.turnToY(store.records);
+  } else if (store.selectedPeriod === 'month') {
+    store.recordsPrapared = store.turnToYM(store.records);
+  } else if (store.selectedPeriod === 'quarter') {
+    store.recordsPrapared = store.turnToYQ(store.records);
+  }
+})
 </script>
