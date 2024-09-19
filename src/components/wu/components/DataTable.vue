@@ -25,8 +25,10 @@
 
             <!-- Conditionally render content based on selected period -->
             <div>
-                <label for="yearRange">年份：</label>
-                <select id="yearRange" v-model="store.selectedYear">
+                <input id="allYear" type="checkbox" v-model="store.allYear"><label for="allYear">顯示所有年度的資料</label>
+                &nbsp;
+                <label for="yearRange">選擇年份：</label>
+                <select id="yearRange" v-model="store.selectedYear" :disabled="store.allYear">
                     <!-- <select id="yearRange" v-model="store.selectedYear" @change="updateRecordView('year')"> -->
                     <option v-for="year, key in store.years" :key="key" :value="year">{{ year }}</option>
                 </select>
@@ -67,7 +69,7 @@
 </template>
 
 <script setup>
-import { computed, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useHostReportStore } from '@/stores/hostReportStore';
 import DataTab from './DataTab.vue';
 
@@ -75,7 +77,6 @@ const store = useHostReportStore()
 
 store.selectedMonth = '1'
 store.selectedQuarter = '1'
-
 watch(
     () => store.selectedPeriod,
     (newVal) => {

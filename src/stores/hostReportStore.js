@@ -20,6 +20,9 @@ export const useHostReportStore = defineStore('hostReport', {
         maxCreatedAt: '',
 
         selectedPeriod: 'month',
+        allYear: false,
+        allMonth: false,
+        allQuarter: false,
         labels: { name: '', values: [] },
         years: [],
         months: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
@@ -28,6 +31,28 @@ export const useHostReportStore = defineStore('hostReport', {
         selectedMonth: '',
         selectedQuarter: '',
 
+        pics: {
+            doge: {
+                title: 'doge',
+                src: 'https://m.media-amazon.com/images/I/41Bk064aTrL._AC_UF894,1000_QL80_.jpg',
+            },
+            cat: {
+                title: 'cat',
+                src: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTerRVtsqtqpRscjFIa4yKtVl5XheMoJSvCQA&s',
+            },
+            smoker: {
+                title: 'smoker',
+                src: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT8XvMeMgm-z6_XRI9StUPdeyQLrmVQ8Xmd1w&s',
+            },
+            toys: {
+                title: 'toys',
+                src: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdGzzG5LzcHNGjCKOg2gACv_8tT0ZN2lbcbw&s',
+            },
+            good: {
+                title: 'good',
+                src: 'https://memeprod.ap-south-1.linodeobjects.com/user-template/b3a4babd59ebb46530a7f7cca856d848.png',
+            },
+        }
     }),
     getters: {},
     actions: {
@@ -140,8 +165,9 @@ export const useHostReportStore = defineStore('hostReport', {
                 // console.log('111111', body.maxCreatedAt)
                 const response = await api.post(`/transcation_record/search`, body);
                 console.log('response.data', response.data)
-                const transformedRecords = await this.searchRecordAgainByRecordId(response.data.content);
+                let transformedRecords = await this.searchRecordAgainByRecordId(response.data.content);
                 for (let item of transformedRecords) { item.house = await this.searchHouseAgainByRecordId(item.house); }
+                transformedRecords = await this.separateCreatedAt(transformedRecords)
                 console.log('transformedRecords', transformedRecords)
                 this.records = transformedRecords;
 
@@ -190,7 +216,6 @@ export const useHostReportStore = defineStore('hostReport', {
 
         // 4.2 修正house只有ID的問題，House ID->House物件
         async searchHouseAgainByRecordId(element) {
-
             if (typeof element === 'object' && !Array.isArray(element)) {
                 return element;
             } else if (typeof element === 'string') {
@@ -201,7 +226,26 @@ export const useHostReportStore = defineStore('hostReport', {
                     console.error('Error fetching record by ID:', error);
                 }
             }
+        },
 
+        async separateCreatedAt(contentArray) {
+            for (let i = 0; i < contentArray.length; i++) {
+                // Parse the date string
+                const date = new Date(contentArray[i].createdAt);
+
+                // Create the output object
+                const output = {
+                    year: date.getFullYear(),
+                    month: date.getMonth() + 1, // getMonth() returns 0-11
+                    date: date.getDate(),
+                    ...contentArray[i] // Spread the other properties
+                };
+                // Remove the original createdAt property if desired
+                // delete output.createdAt;
+                contentArray[i] = output
+            }
+            console.log(contentArray)
+            return contentArray
         },
 
         async useTestYMDC(callWhich) {
@@ -505,7 +549,6 @@ export const useHostReportStore = defineStore('hostReport', {
                 console.error('Error fetching users:', error);
             }
         },
-
 
 
     }
