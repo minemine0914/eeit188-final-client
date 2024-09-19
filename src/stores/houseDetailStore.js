@@ -5,45 +5,62 @@ import { useRouter } from "vue-router";
 import { useUserStore } from "./userStore";
 import NotAvailableImage from "@/assets/ImageNotAvailable01.webp";
 
+const initialHouseInfo = {
+    id: null,
+    name: null,
+    category: null,
+    information: null,
+    latitudeX: null,
+    longitudeY: null,
+    country: null,
+    city: null,
+    region: null,
+    address: null,
+    price: null,
+    pricePerDay: null,
+    pricePerWeek: null,
+    pricePerMonth: null,
+    livingDiningRoom: null,
+    bedroom: null,
+    restroom: null,
+    bathroom: null,
+    adult: null,
+    child: null,
+    pet: null,
+    smoke: null,
+    kitchen: null,
+    balcony: null,
+    createdAt: null,
+    updatedAt: null,
+    priceRanges: null,
+    postulates: null,
+    tickets: null,
+    collectionCount: null,
+    userId: null,
+    userName: null,
+    houseExternalResourceRecords: [],
+};
+
+const initialHostInfo = {
+    id: null,
+    name: null,
+    role: null,
+    gender: null,
+    birthday: null,
+    phone: null,
+    mobilePhone: null,
+    address: null,
+    email: null,
+    about: null,
+    createdAt: null,
+    updatedAt: null,
+    avatarBase64: null,
+};
+
 const userStore = useUserStore();
 export const useHouseDetailStore = defineStore("HouseDetail", () => {
-    const initialHouseInfo = {
-        id: null,
-        name: null,
-        category: null,
-        information: null,
-        latitudeX: null,
-        longitudeY: null,
-        country: null,
-        city: null,
-        region: null,
-        address: null,
-        price: null,
-        pricePerDay: null,
-        pricePerWeek: null,
-        pricePerMonth: null,
-        livingDiningRoom: null,
-        bedroom: null,
-        restroom: null,
-        bathroom: null,
-        adult: null,
-        child: null,
-        pet: null,
-        smoke: null,
-        kitchen: null,
-        balcony: null,
-        createdAt: null,
-        updatedAt: null,
-        priceRanges: null,
-        postulates: null,
-        tickets: null,
-        collectionCount: null,
-        userId: null,
-        userName: null,
-        houseExternalResourceRecords: [],
-    };
-
     const houseInfo = reactive({ ...initialHouseInfo });
+    const hostInfo = reactive({ ...initialHostInfo });
     const isErrorGetHouseInfo = ref(false);
     const isLoading = ref(true);
     const isLoadingCollection = ref(false);
@@ -81,12 +98,26 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
                 isLoading.value = false;
                 console.log("Get houseInfo from database sucessed!");
                 checkIsCollectedHouse();
+                getHostInfo();
             })
             .catch((err) => {
                 Object.assign(houseInfo, initialHouseInfo);
                 isErrorGetHouseInfo.value = true;
                 isLoading.value = false;
                 console.log("Get houseInfo from database failed! Take you to home page!");
+            });
+    }
+
+    async function getHostInfo() {
+        await api
+            .get(`/user/find/${houseInfo.userId}`)
+            .then((res) => {
+                console.log("Get host avater success");
+                Object.assign(hostInfo, res.data);
+            })
+            .catch((err) => {
+                Object.assign(hostInfo, initialHostInfo);
+                console.log("Get host avater failed");
             });
     }
 
@@ -161,6 +192,7 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
 
     return {
         houseInfo,
+        hostInfo,
         isErrorGetHouseInfo,
         isLoading,
         isLoadingCollection,

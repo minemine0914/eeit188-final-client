@@ -62,9 +62,7 @@ const submit = async () => {
       password: state.password,
     });
     alert("登入成功");
-    router.push("/").then(() => {
-      window.location.reload();
-    });
+    router.push("/");
   } catch (error) {
     alert("登入失敗，請確認email及密碼");
     console.error("Login failed:", error);

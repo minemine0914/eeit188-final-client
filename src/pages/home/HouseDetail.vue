@@ -142,7 +142,14 @@
                     <div class="text-h6 mb-3">設施</div>
                     <v-skeleton-loader type="chip, chip, chip" v-if="isLoading" />
                     <v-sheet class="d-flex flex-row flex-wrap w-100 ga-3" v-else>
+                        <v-sheet v-if="houseInfo.postulates.length === 0" class="w-100 text-center">
+                            <v-alert variant="plain">
+                                <v-icon icon="mdi-emoticon-cry-outline" size="x-large"></v-icon>
+                                <div class="mt-2">房東忘記添加設施</div>
+                            </v-alert>
+                        </v-sheet>
                         <v-sheet
+                            v-else
                             v-for="(postulaue, index) in houseInfo.postulates"
                             class="d-flex flex-column justufy-center align-center px-4 py-3"
                             rounded="lg"
@@ -195,7 +202,7 @@
                                 :rotation="0"
                             />
                             <ol-tile-layer :cacheSize="0">
-                                <ol-source-osm  />
+                                <ol-source-osm />
                             </ol-tile-layer>
                             <ol-vector-layer>
                                 <ol-source-vector>
@@ -235,11 +242,30 @@
                 </v-sheet>
                 <v-divider class="border-opacity-25 my-5"></v-divider>
                 <v-sheet min-height="100">
-                    <div class="text-h6 pa-0">房東</div>
+                    <div class="text-h6 pa-0">房東資訊</div>
                     <v-skeleton-loader type="avatar, list-item-three-line" v-if="isLoading" />
-                    <v-sheet v-else>
-                        <div>{{ houseInfo.userName }}</div>
-                    </v-sheet>
+                    <v-row v-else class="d-flex flex-row">
+                        <v-col class="flex-grow-1" cols="12" md="4">
+                            <v-card flat>
+                                <template v-slot:prepend>
+                                    <v-avatar size="100" class="mr-5">
+                                        <v-img :src="hostInfo.avatarBase64"></v-img>
+                                    </v-avatar>
+                                </template>
+                                <template v-slot:title>
+                                    <div>{{ hostInfo.name }}</div>
+                                </template>
+                                <template v-slot:subtitle>
+                                    <div>100 間房源</div>
+                                </template>
+                            </v-card>
+                        </v-col>
+                        <v-col class="flex-grow-1" cols="12" md="8">
+                            <v-card class="py-0" flat>
+                                <v-card-item class="py-0">{{ hostInfo.about }}</v-card-item>
+                            </v-card>
+                        </v-col>
+                    </v-row>
                 </v-sheet>
                 <v-divider class="border-opacity-25 my-5"></v-divider>
                 <v-sheet min-height="100" flat>
@@ -286,14 +312,18 @@
                                 <template v-slot:subtitle>
                                     <div>共100則評論</div>
                                 </template>
-                                <v-card-text>
-                                    <p>
+                                <v-card-text class="pb-1">
+                                    <v-sheet max-height="80px" class="overflow-auto">
                                         很棒很棒很棒很棒很棒很棒很棒很棒很棒很棒，很棒很棒很棒很棒很棒，很棒!!!!!
                                         很棒很棒很棒，很棒!!!!!很棒很棒很棒，很棒!!!!!很棒很棒很棒，很棒!!!!!
                                         很棒很棒很棒，很棒!!!!!很棒很棒很棒，很棒!!!!!很棒很棒很棒，很棒!!!!!
+                                        很棒很棒很棒，很棒!!!棒!!!!!很棒很棒很棒，很棒!!!!!很棒很棒很棒，很棒!!!!!
                                         很棒很棒很棒，很棒!!!!!很棒很棒很棒，很棒!!!!!很棒很棒很棒，很棒!!!!!
-                                    </p>
-                                    <div class="text-caption text-end">評論日期: 2024-09-09</div>
+                                        很棒很棒很棒，很棒!!!棒!!!!!很棒很棒很棒，很棒!!!!!很棒很棒很棒，很棒!!!!!
+                                        很棒很棒很棒，很棒!!!!!很棒很棒很棒，很棒!!!!!很棒很棒很棒，很棒!!!!!
+                                        很棒很棒很棒，很棒!!!!!很棒很棒很棒，很棒!!!!!很棒很棒很棒，很棒!!!!!
+                                    </v-sheet>
+                                    <div class="text-caption text-end pt-3">評論日期: 2024-09-09</div>
                                 </v-card-text>
                             </v-card>
                         </v-col>
@@ -322,6 +352,7 @@ const route = useRoute();
 const houseDetailStore = useHouseDetailStore();
 const {
     houseInfo,
+    hostInfo,
     isErrorGetHouseInfo,
     isLoading,
     isLoadingCollection,

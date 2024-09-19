@@ -98,7 +98,7 @@
   </v-app>
 </template>
 <script setup>
-import avaterImg from "@/assets/banner01.webp";
+// import avaterImg from "@/assets/banner01.webp";
 import { useElementSize } from "@vueuse/core";
 import { ref } from "vue";
 import { useUserViewStore } from "../stores/userViewStore";
@@ -116,7 +116,7 @@ const {
 const { height: appbarHeight } = useElementSize(appbarRef);
 
 const userStore = useUserStore();
-const { user, jwtToken, logout } = userStore;
+const { user, jwtToken } = storeToRefs(userStore);
 
 let timeoutId = null; // 儲存定時器 ID
 function onResize() {
@@ -137,7 +137,7 @@ function handleLogout() {
   const confirmLogout = window.confirm("請確認是否要登出");
 
   if (confirmLogout) {
-    logout();
+    userStore.logout();
   }
 }
 </script>
