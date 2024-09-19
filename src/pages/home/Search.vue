@@ -181,7 +181,7 @@
 <script setup>
 import SearchHouseBar from "@/components/home/SearchHouseBar.vue";
 import { computed, onBeforeUnmount, onMounted, reactive, ref, nextTick } from "vue";
-import { useHouseSearchStore } from "@/stores/searchHouseStore";
+import { useHouseSearchStore } from "@/stores/houseSearchStore";
 import { useUserViewStore } from "@/stores/userViewStore";
 import { storeToRefs } from "pinia";
 import { useResizeObserver } from "@vueuse/core";
