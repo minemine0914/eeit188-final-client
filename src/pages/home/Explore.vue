@@ -196,7 +196,7 @@
 import primaryBannerImg from "@/assets/banner05.webp";
 import secondaryBannerImg from "@/assets/banner06.webp";
 import SearchHouseBar from "@/components/home/SearchHouseBar.vue";
-import { useHouseSearchStore } from "../../stores/searchHouseStore";
+import { useHouseSearchStore } from "@/stores/houseSearchStore";
 import { useUserViewStore } from "@/stores/userViewStore";
 import { useResizeObserver } from "@vueuse/core";
 import { storeToRefs } from "pinia";
