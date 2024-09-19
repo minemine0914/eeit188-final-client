@@ -8,18 +8,7 @@
       @blur="v$.email.$touch"
       @input="v$.email.$touch"
     ></v-text-field>
-
-    <v-text-field
-      v-model="state.password"
-      :error-messages="v$.password.$errors.map((e) => e.$message)"
-      label="密碼"
-      type="password"
-      required
-      @blur="v$.password.$touch"
-      @input="v$.password.$touch"
-    ></v-text-field>
-    <v-btn class="me-4" @click="forgotPassword"> 忘記密碼 </v-btn>
-    <v-btn class="me-4" @click="submit"> 登入 </v-btn>
+    <v-btn class="me-4" @click="submit"> 發送重設密碼連結到您的email </v-btn>
   </form>
 </template>
 <script setup>
@@ -42,14 +31,11 @@ const rules = {
   email: {
     required: helpers.withMessage("請輸入Email", required),
   },
-  password: {
-    required: helpers.withMessage("請輸入密碼", required),
-  },
 };
 
 const v$ = useVuelidate(rules, state);
 const userStore = useUserStore();
-const { loginAuth } = userStore;
+const { adminForgotPassword } = userStore;
 const router = useRouter();
 
 const submit = async () => {
@@ -57,22 +43,25 @@ const submit = async () => {
     return;
   }
   try {
-    await loginAuth({
+    await adminForgotPassword({
       email: state.email,
-      password: state.password,
     });
-    alert("登入成功");
-    router.push("/").then(() => {
-      window.location.reload();
-    });
+    alert("連結已寄送成功，請確認您的email，並在三分鐘內設定新密碼");
   } catch (error) {
-    alert("登入失敗，請確認email及密碼");
+    alert("寄送失敗，請確認email是否正確");
     console.error("Login failed:", error);
+  } finally {
+    clear();
   }
 };
-const forgotPassword = () => {
-  router.push("/forgot-password");
-};
+
+function clear() {
+  v$.value.$reset();
+
+  for (const [key, value] of Object.entries(initialState)) {
+    state[key] = value;
+  }
+}
 </script>
 
 <style scoped></style>

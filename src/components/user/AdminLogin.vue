@@ -18,6 +18,7 @@
       @blur="v$.password.$touch"
       @input="v$.password.$touch"
     ></v-text-field>
+    <v-btn class="me-4" @click="forgotPassword"> 忘記密碼 </v-btn>
     <v-btn class="me-4" @click="submit"> 登入 </v-btn>
   </form>
 </template>
@@ -68,6 +69,10 @@ const submit = async () => {
     alert("登入失敗，請確認email及密碼");
     console.error("Login failed:", error);
   }
+};
+
+const forgotPassword = () => {
+  router.push("/system/forgot-password");
 };
 </script>
 

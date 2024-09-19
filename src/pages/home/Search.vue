@@ -11,7 +11,7 @@
                     v-if="renderInfinityScrollComponent"
                     :height="searchContainerResizeObserve.height"
                     :items="filterHouseList"
-                    @load="loadFilterHouses"
+                    @load="loadFilterHouse"
                     :style="{paddingTop: `80px`}"
                 >
                     <template v-for="(item, index) in filterHouseList" :key="index">
@@ -57,7 +57,7 @@
                                                     @click="props.onClick"
                                                 ></v-btn>
                                             </template>
-                                            <v-carousel-item v-for="imageSrc in houseSearchStore.getImageUrlList(index)">
+                                            <v-carousel-item v-for="imageSrc in houseSearchStore.getFilterHouseImageUrlList(index)">
                                                 <v-img
                                                     :aspect-ratio="1"
                                                     :height="200"
@@ -117,12 +117,12 @@
                                             </div>
                                             <div class="text-grey-darken-1">
                                                 <span class="mr-2" v-if="!item.pet">
-                                                    <span class="mdi mdi-paw-off mr-1"></span>
+                                                    <span class="mdi mdi-paw-off mr-2"></span>
                                                     <span>禁止寵物</span>
                                                 </span>
 
                                                 <span class="mr-2" v-if="!item.smoke">
-                                                    <span class="mdi mdi-smoking-off mr-1"></span>
+                                                    <span class="mdi mdi-smoking-off mr-2"></span>
                                                     <span>禁止吸菸</span>
                                                 </span>
                                             </div>
@@ -189,7 +189,7 @@ const searchContainerRef = ref(null);
 const searchMainRef = ref(null);
 const houseSearchStore = useHouseSearchStore();
 const userViewStore = useUserViewStore();
-const { renderInfinityScrollComponent, currentPage, filterHouseList } =
+const { renderInfinityScrollComponent, currentFilterHousePage, filterHouseList } =
     storeToRefs(houseSearchStore);
 const { containerHeight } = storeToRefs(userViewStore);
 const searchContainerResizeObserve = reactive({ width: 0, height: 0 });
@@ -208,20 +208,21 @@ useResizeObserver(searchContainerRef, (entries) => {
     }, 100); // 設定 500 毫秒的延遲
 });
 
-async function loadFilterHouses({ done }) {
-    let data = await houseSearchStore.getFilterHouses({ page: currentPage.value, limit: 10 });
+async function loadFilterHouse({ done }) {
     console.log("Infinity scroll get data...");
+    let data = await houseSearchStore.getFilterHouse();
     if (data != null) {
         if (!data.empty) {
             filterHouseList.value.push(...data.content);
-            currentPage.value++;
-            console.log(`Read house list ok! Page: ${currentPage.value}`);
+            currentFilterHousePage.value++;
+            console.log(`Read house list ok! Page: ${currentFilterHousePage.value}`);
             done("ok");
         } else {
-            console.log(`Read house list empty! Page: ${currentPage.value}`);
+            console.log(`Read house list empty! Page: ${currentFilterHousePage.value}`);
             done("empty");
         }
     } else {
+        console.log(`Read house list error! Page: ${currentFilterHousePage.value}`);
         done("error");
     }
 }

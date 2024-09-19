@@ -68,6 +68,19 @@ const routes = [
         component: () => import("@/pages/user/SignupPage.vue"),
         meta: { title: "Nomad 註冊", requiresAuth: false },
       },
+      {
+        path: "forgot-password",
+        name: "ForgotPassword",
+        component: () => import("@/pages/user/ForgotPasswordPage.vue"),
+        meta: { title: "Nomad 忘記密碼", requiresAuth: false },
+      },
+      {
+        path: "reset-password",
+        name: "ResetPassword",
+        component: () =>
+          import("@/pages/user/ResetPasswordFromEmailLinkPage.vue"),
+        meta: { title: "Nomad 重設密碼", requiresAuth: false },
+      },
     ],
   },
   {
@@ -111,6 +124,25 @@ const routes = [
         name: "CreateAdmin",
         component: () => import("@/pages/system/CreateAdminPage.vue"),
         meta: { title: "Nomad 系統管理註冊", requiresAuth: false },
+      },
+      {
+        path: "forgot-password",
+        name: "AdminForgotPassword",
+        component: () => import("@/pages/system/AdminForgotPasswordPage.vue"),
+        meta: { title: "Nomad 系統管理忘記密碼", requiresAuth: false },
+      },
+      {
+        path: "/system/reset-password",
+        name: "ResetPassword",
+        component: () =>
+          import("@/pages/system/AdminResetPasswordFromEmailLinkPage.vue"),
+        meta: { title: "Nomad 系統管理重設密碼", requiresAuth: false },
+      },
+      {
+        path: "admin-chat",
+        name: "AdminChat",
+        component: () => import("@/pages/system/AdminChatPage.vue"),
+        meta: { title: "Nomad 聊天", requiresAuth: false },
       },
     ],
   },

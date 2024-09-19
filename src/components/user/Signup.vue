@@ -220,6 +220,7 @@ const submit = async () => {
     alert("註冊成功！ 請登入");
     router.push("/login");
   } catch (error) {
+    alert("此email已經註冊過，請使用其他email，或直接登入");
     console.error("Registration failed:", error);
   }
 };

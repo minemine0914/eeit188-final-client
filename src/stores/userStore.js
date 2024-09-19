@@ -9,14 +9,14 @@ export const useUserStore = defineStore(
   () => {
     // Data
     const jwtToken = ref(null);
-    const userResetToken = ref(null);
+    const passwordResetToken = ref(null);
     const user = reactive({});
     const router = useRouter();
 
     // Methods
     async function register(userData) {
       try {
-        const response = await api({
+        await api({
           method: "post",
           url: "/user/createUser",
           data: userData,
@@ -50,6 +50,22 @@ export const useUserStore = defineStore(
       });
     }
 
+    function removePasswordResetToken() {
+      passwordResetToken.value = null;
+      localStorage.removeItem("passwordResetToken");
+      router.push("/login").then(() => {
+        window.location.reload();
+      });
+    }
+
+    function adminRemovePasswordResetToken() {
+      passwordResetToken.value = null;
+      localStorage.removeItem("passwordResetToken");
+      router.push("/system/login").then(() => {
+        window.location.reload();
+      });
+    }
+
     function adminLogout() {
       localStorage.removeItem("jwtToken");
       localStorage.removeItem("user");
@@ -60,7 +76,7 @@ export const useUserStore = defineStore(
 
     async function reloadUser() {
       try {
-        const userId = decodeToken().id;
+        const userId = decodeToken(jwtToken.value).id;
         const response = await api({
           method: "get",
           url: `/user/find/${userId}`,
@@ -177,8 +193,36 @@ export const useUserStore = defineStore(
           url: `/user/forgot-password`,
           data: request,
         });
+        passwordResetToken.value = response.data.token;
+      } catch (error) {
+        console.error(error);
+        throw error;
+      }
+    }
 
-        userResetToken.value = response;
+    async function adminForgotPassword(request) {
+      try {
+        const response = await api({
+          method: "post",
+          url: `/user/system/forgot-password`,
+          data: request,
+        });
+        passwordResetToken.value = response.data.token;
+      } catch (error) {
+        console.error(error);
+        throw error;
+      }
+    }
+
+    async function resetPasswordFromEmailLink(request) {
+      const userId = decodeToken(passwordResetToken.value).id;
+      console.log(userId);
+      try {
+        await api({
+          method: "put",
+          url: `/user/set-new-password/${userId}`,
+          data: request,
+        });
       } catch (error) {
         console.error(error);
         throw error;
@@ -212,16 +256,31 @@ export const useUserStore = defineStore(
       }
     }
 
-    function decodeToken() {
-      if (typeof jwtToken.value === "string" && jwtToken.value.trim() !== "") {
+    async function deleteUser() {
+      try {
+        await api({
+          headers: {
+            Authorization: `Bearer ${jwtToken.value}`,
+          },
+          method: "delete",
+          url: `/user/${user.id}`,
+        });
+      } catch (error) {
+        console.error(error);
+        throw error;
+      }
+    }
+
+    function decodeToken(token) {
+      if (typeof token === "string" && token.trim() !== "") {
         try {
-          return jwtDecode.jwtDecode(jwtToken.value);
+          return jwtDecode.jwtDecode(token);
         } catch (error) {
           console.error("Failed to decode JWT token:", error);
           return null;
         }
       } else {
-        console.error("Invalid JWT token:", jwtToken.value);
+        console.error("Invalid JWT token:", token);
         return null;
       }
     }
@@ -229,9 +288,12 @@ export const useUserStore = defineStore(
     return {
       user,
       jwtToken,
+      passwordResetToken,
       register,
       loginAuth,
       logout,
+      removePasswordResetToken,
+      adminRemovePasswordResetToken,
       adminLogout,
       decodeToken,
       updateUser,
@@ -241,8 +303,12 @@ export const useUserStore = defineStore(
       downloadBackgroundImage,
       getChatRecord,
       addChatRecord,
+      forgotPassword,
+      adminForgotPassword,
+      resetPasswordFromEmailLink,
       checkPassword,
       resetPassword,
+      deleteUser,
     };
   },
   {

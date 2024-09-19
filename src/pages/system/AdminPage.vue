@@ -2,7 +2,9 @@
   <BackgroundImage />
   <div class="content-container">
     <div class="conetnt">
-      <UserDetail v-show="selectedBtn === 1" />
+      <UserDetail v-if="selectedBtn === 1" />
+      <ResetPassword class="resetPassword" v-if="selectedBtn === 2" />
+      <DeleteUser v-if="selectedBtn === 3" />
     </div>
     <div class="avatar-container">
       <Avatar />
@@ -21,30 +23,14 @@
         class="btn"
         @click="handleClick(2)"
       >
-        ******
+        修改密碼
       </v-btn>
       <v-btn
         :color="selectedBtn === 3 ? 'blue-grey-lighten-2' : ''"
         class="btn"
         @click="handleClick(3)"
       >
-        ******
-      </v-btn>
-
-      <v-btn
-        :color="selectedBtn === 4 ? 'blue-grey-lighten-2' : ''"
-        class="btn"
-        @click="handleClick(4)"
-      >
-        ******
-      </v-btn>
-
-      <v-btn
-        :color="selectedBtn === 5 ? 'blue-grey-lighten-2' : ''"
-        class="btn"
-        @click="handleClick(5)"
-      >
-        ******
+        註銷帳號
       </v-btn>
     </div>
   </div>
@@ -56,6 +42,8 @@ import BackgroundImage from "@/components/user/BackgroundImage.vue";
 import Avatar from "@/components/user/Avatar.vue";
 import UserDetail from "@/components/user/UserDetail.vue";
 import About from "@/components/user/About.vue";
+import ResetPassword from "@/components/user/ResetPassword.vue";
+import DeleteUser from "@/components/user/DeleteUser.vue";
 
 const selectedBtn = ref(1);
 
@@ -93,5 +81,10 @@ function handleClick(index) {
 
 .btn {
   margin-top: 10px;
+}
+
+.resetPassword {
+  width: 300px;
+  margin-left: 220px;
 }
 </style>

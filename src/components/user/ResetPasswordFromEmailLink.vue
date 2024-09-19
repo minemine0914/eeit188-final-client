@@ -1,15 +1,6 @@
 <template>
   <form>
     <v-text-field
-      v-model="state.oldPassword"
-      :error-messages="v$.oldPassword.$errors.map((e) => e.$message)"
-      label="舊密碼"
-      type="password"
-      required
-      @blur="v$.oldPassword.$touch"
-      @input="v$.oldPassword.$touch"
-    ></v-text-field>
-    <v-text-field
       v-model="state.newPassword"
       :error-messages="v$.newPassword.$errors.map((e) => e.$message)"
       label="新密碼"
@@ -45,7 +36,6 @@ const passwordComplexity = helpers.regex(
 const newPassword = computed(() => state.newPassword);
 
 const initialState = {
-  oldPassword: null,
   newPassword: null,
   checkNewPassword: null,
 };
@@ -55,9 +45,6 @@ const state = reactive({
 });
 
 const rules = {
-  oldPassword: {
-    required: helpers.withMessage("請輸入舊密碼", required),
-  },
   newPassword: {
     required: helpers.withMessage("請輸入新密碼", required),
     passwordComplexity: helpers.withMessage(
@@ -73,7 +60,7 @@ const rules = {
 
 const v$ = useVuelidate(rules, state);
 const userStore = useUserStore();
-const { checkPassword, resetPassword } = userStore;
+const { resetPasswordFromEmailLink, removePasswordResetToken } = userStore;
 
 const submit = async () => {
   const isValid = await v$.value.$validate();
@@ -82,20 +69,13 @@ const submit = async () => {
     return;
   }
 
-  const checkResult = await checkPassword({
-    oldPassword: state.oldPassword,
-  });
-
-  if (checkResult.data !== true) {
-    alert("您輸入的舊密碼不存在或有錯誤，請重新輸入");
-    return;
-  }
-
-  await resetPassword({
+  await resetPasswordFromEmailLink({
     newPassword: state.newPassword,
   });
 
-  alert("密碼修改成功！");
+  alert("密碼修改成功！請登入");
+
+  removePasswordResetToken();
 
   clear();
 };

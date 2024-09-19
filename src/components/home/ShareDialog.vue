@@ -33,34 +33,26 @@
                 <v-divider class="mb-1"></v-divider>
                 <v-card-text>
                     <v-slide-group show-arrows>
-                        <v-slide-group-item>
+                        <v-slide-group-item v-for="network in networks">
                             <share-network
-                                network="facebook"
-                                :url="shareHouseLink"
+                                :network="network.network"
+                                :key="network.network"
+                                :title="sharingInfo.title"
+                                :url="sharingInfo.url"
+                                :description="sharingInfo.description"
+                                :quote="sharingInfo.quote"
+                                :hashtags="sharingInfo.hashtags"
+                                :twitterUser="sharingInfo.twitterUser"
+                                :media="sharingInfo.media"
                                 v-slot="{ share }"
                             >
                                 <v-btn icon class="ma-3" @click.stop="share">
-                                    <v-avatar icon="fa:fa-brands fa-square-facebook"></v-avatar>
-                                </v-btn>
-                            </share-network>
-                        </v-slide-group-item>
-                        <v-slide-group-item>
-                            <share-network network="line" :url="shareHouseLink" v-slot="{ share }">
-                                <v-btn icon class="ma-3" @click.stop="share">
-                                    <v-avatar icon="fa:fa-brands fa-line"></v-avatar>
+                                    <v-avatar :icon="network.icon"></v-avatar>
                                 </v-btn>
                             </share-network>
                         </v-slide-group-item>
                     </v-slide-group>
                 </v-card-text>
-                <!-- <v-card-actions class="my-2 d-flex justify-end">
-                    <v-btn
-                        class="text-none"q
-                        rounded="xl"
-                        text="關閉"
-                        @click="isActive.value = false"
-                    ></v-btn>
-                </v-card-actions> -->
             </v-card>
         </template>
     </v-dialog>
@@ -68,13 +60,32 @@
 <script setup>
 import { storeToRefs } from "pinia";
 import { useHouseDetailStore } from "../../stores/houseDetailStore";
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { UseClipboard } from "@vueuse/components";
 
 const houseDetailStore = useHouseDetailStore();
 const { isShareDialogOpen, houseInfo } = storeToRefs(houseDetailStore);
 const shareHouseLink = computed(() => {
     return window.location.origin + "/house/" + houseInfo.value.id;
+});
+const networks = ref([
+    { network: "facebook", icon: "fa:fa-brands fa-square-facebook" },
+    { network: "line", icon: "fa:fa-brands fa-line" },
+    { network: "x", icon: "fa:fab fah fa-lg fa-twitter" },
+    { network: "whatsapp", icon: "fa:fab fah fa-lg fa-whatsapp" },
+    { network: "skype", icon: "fa:fab fah fa-lg fa-skype" },
+    { network: "telegram", icon: "fa:fab fah fa-lg fa-telegram-plane" },
+    { network: "sms", icon: "fa:far fah fa-lg fa-comment-dots" },
+    { network: "email", icon: "fa:fa fa-envelope" },
+]);
+const sharingInfo = ref({
+    title: "Nomad: " + houseInfo.value.name,
+    url: shareHouseLink.value,
+    description: "我找到了優質的房源 " + houseInfo.value.name,
+    quote: "Nomad House",
+    hashtags: "nomad",
+    twitterUser: "NOMAD",
+    media: "https://images.unsplash.com/photo-1708283508253-337621680a84?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
 });
 </script>
 <style scoped></style>

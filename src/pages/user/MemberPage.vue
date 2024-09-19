@@ -2,12 +2,14 @@
   <BackgroundImage />
   <div class="content-container">
     <div class="conetnt">
-      <UserDetail v-show="selectedBtn === 1" />
-      <ResetPassword class="resetPassword" v-show="selectedBtn === 2" />
-      <HostHome v-show="selectedBtn === 3" />
-      <Coupon v-show="selectedBtn === 4" />
-      <UserCollection v-show="selectedBtn === 5" />
-      <Discuss v-show="selectedBtn === 6" />
+      <UserDetail v-if="selectedBtn === 1" />
+      <ResetPassword class="resetPassword" v-if="selectedBtn === 2" />
+      <Coupon class="coupon" v-if="selectedBtn === 4" />
+      <UserCollection v-if="selectedBtn === 5" />
+      <Discuss v-if="selectedBtn === 6" />
+      <DeleteUser v-if="selectedBtn === 7" />
+      <HostHome v-if="selectedBtn === 3" />
+
     </div>
     <div class="avatar-container">
       <Avatar />
@@ -87,6 +89,7 @@ import Discuss from "@/components/user/Discuss.vue";
 import About from "@/components/user/About.vue";
 import ResetPassword from "@/components/user/ResetPassword.vue";
 import HostHome from '@/components/lo/HostHome.vue';
+import DeleteUser from "@/components/user/DeleteUser.vue";
 
 const selectedBtn = ref(1);
 
