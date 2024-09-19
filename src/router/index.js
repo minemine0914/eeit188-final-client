@@ -133,7 +133,7 @@ const routes = [
       },
       {
         path: "/system/reset-password",
-        name: "ResetPassword",
+        name: "AdminResetPassword",
         component: () =>
           import("@/pages/system/AdminResetPasswordFromEmailLinkPage.vue"),
         meta: { title: "Nomad 系統管理重設密碼", requiresAuth: false },

@@ -5,7 +5,8 @@
       :key="house?.id"
       class="mx-auto mb-5"
       color="surface-light"
-      min-width="300px"
+      width="350"
+      height="350"
     >
       <v-card-subtitle class="custom-subtitle">{{
         house?.name
@@ -15,7 +16,11 @@
           v-if="house?.images.length === 0"
           src="src/assets/ImageNotAvailable02.webp"
         ></v-img>
-        <v-img :src="house?.images[0]"></v-img>
+        <v-img
+          class="main-img"
+          :src="house?.images[0]"
+          @click="handleClick(house)"
+        ></v-img>
         <v-btn
           class="btn"
           @click="
@@ -41,6 +46,9 @@
 import { ref, onMounted, reactive } from "vue";
 import { useUserStore } from "../../stores/userStore";
 import api from "@/plugins/axios";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 
 const userStore = useUserStore();
 const { user } = userStore;
@@ -132,6 +140,11 @@ async function getUserCollectionHouseImages() {
     }
   }
 }
+
+function handleClick(house) {
+  const url = `/house/${house.houseId}`;
+  window.open(url, "_blank");
+}
 </script>
 
 <style scoped>
@@ -150,5 +163,9 @@ async function getUserCollectionHouseImages() {
   margin-top: 10px;
   font-size: 20px;
   font-weight: bold;
+}
+
+.main-img {
+  cursor: pointer;
 }
 </style>

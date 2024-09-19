@@ -1,13 +1,8 @@
 <template>
   <div class="container">
     <div class="list-container">
-      <v-card class="mx-auto" width="300">
-        <v-card
-          class="title"
-          color="blue-grey-lighten-4"
-          title="聊天紀錄"
-          width="500"
-        ></v-card>
+      <v-card class="mx-auto" color="#263238" width="300">
+        <v-card-title>聊天紀錄</v-card-title>
         <v-list class="chat-recored">
           <v-list-item
             :class="{ 'selected-item': selectedItemId === item.id }"
