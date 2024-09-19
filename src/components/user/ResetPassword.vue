@@ -88,6 +88,7 @@ const submit = async () => {
 
   if (checkResult.data !== true) {
     alert("您輸入的舊密碼不存在或有錯誤，請重新輸入");
+    return;
   }
 
   await resetPassword({
