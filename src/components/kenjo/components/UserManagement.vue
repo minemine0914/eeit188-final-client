@@ -238,7 +238,10 @@ export default {
           console.log('API response:', response.data); 
           // 確保 response.data 是包含 users 屬性的物件
           if (response.data && Array.isArray(response.data.users)) {
-            this.desserts = response.data.users; // 提取 users 陣列並設置為 desserts
+            this.desserts = response.data.users.map(user => ({
+            ...user,
+            birthday: this.formatDate(user.birthday) 
+          }));
           } else {
             console.error('API response is not in expected format:', response.data);
             this.desserts = []; // 初始化為空數組
@@ -250,7 +253,10 @@ export default {
         console.error('Error in fetchUsers:', error);
       }
     },
-
+    formatDate(dateString) {
+        if (!dateString) return '';
+        return dateString.split(' ')[0]; 
+      },
     editUser(item) {
       this.editedIndex = this.desserts.indexOf(item);
       this.editedUser = Object.assign({}, item);

@@ -100,13 +100,13 @@ const routes = [
     path: "/system",
     name: "System",
     component: () => import("@/views/SystemView.vue"),
-    children: [
-      {
-        path: "", // Default
-        name: "Dashboard",
-        component: () => import("@/pages/system/Dashboard.vue"),
-        meta: { title: "Nomad 系統管理", requiresAuth: false },
-      },
+    children: [kenjoRouter,
+      // {
+      //   path: "/",
+      //   name: "kenjo",
+      //   component: () => import("@/components/kenjo/Home.vue"),
+      //   meta: { title: "Nomad 系統管理", requiresAuth: false },
+      // },
       {
         path: "admin",
         name: "Admin",
@@ -144,6 +144,7 @@ const routes = [
         component: () => import("@/pages/system/AdminChatPage.vue"),
         meta: { title: "Nomad 聊天", requiresAuth: false },
       },
+      
     ],
   },
   {
@@ -153,7 +154,7 @@ const routes = [
   },
   minemineRouter,
   wuRouter,
-  kenjoRouter,
+  // kenjoRouter,
   leonRouter,
   loRouter,
 ];

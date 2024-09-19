@@ -2,8 +2,6 @@
   <v-container>
     <v-toolbar flat>
       <v-toolbar-title>金額管理</v-toolbar-title>
-      <v-divider class="mx-4" inset vertical></v-divider>
-      <v-spacer></v-spacer>
       <v-text-field
         v-model="search"
         density="compact"
@@ -25,7 +23,7 @@
       :sort-by="[{ key: 'date', order: 'desc' }]">
       <template v-slot:item.actions="{ item }">
         <v-icon size="small" @click="editItem(item)">
-          mdi-pencil
+          mdi-eye
         </v-icon>
         <v-icon size="small" @click="deleteItem(item)">
           mdi-delete

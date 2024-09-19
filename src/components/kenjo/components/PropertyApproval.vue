@@ -91,8 +91,6 @@ export default {
 
 
   methods: {
-    
-    
     async fetchOrder() {
       try {
         const response = await axios.get('http://localhost:8080/house/all', {
@@ -106,7 +104,10 @@ export default {
 
         if (response.status === 200) {
           if (response.data && Array.isArray(response.data.content)) {
-            this.desserts = response.data.content; 
+            this.desserts =  response.data.content.map(desserts => ({
+            ...desserts,
+            createdAt: this.formatDate(desserts.createdAt) 
+          })); 
             console.log('Data successfully loaded:', this.desserts); // 確認資料
           } else {
             console.error('API response is not in expected format:', response.data);
@@ -120,7 +121,11 @@ export default {
         // 顯示錯誤提示給用戶
       }
     },
-
+    formatDate(dateString) {
+      if (!dateString) return '';
+        const date = new Date(dateString);
+        return date.toISOString().split('T')[0];
+      },
     getStatusColor(check) {
       switch (check) {
         case null:
