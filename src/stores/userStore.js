@@ -58,6 +58,14 @@ export const useUserStore = defineStore(
       });
     }
 
+    function adminRemovePasswordResetToken() {
+      passwordResetToken.value = null;
+      localStorage.removeItem("passwordResetToken");
+      router.push("/system/login").then(() => {
+        window.location.reload();
+      });
+    }
+
     function adminLogout() {
       localStorage.removeItem("jwtToken");
       localStorage.removeItem("user");
@@ -192,6 +200,20 @@ export const useUserStore = defineStore(
       }
     }
 
+    async function adminForgotPassword(request) {
+      try {
+        const response = await api({
+          method: "post",
+          url: `/user/system/forgot-password`,
+          data: request,
+        });
+        passwordResetToken.value = response.data.token;
+      } catch (error) {
+        console.error(error);
+        throw error;
+      }
+    }
+
     async function resetPasswordFromEmailLink(request) {
       const userId = decodeToken(passwordResetToken.value).id;
       console.log(userId);
@@ -271,6 +293,7 @@ export const useUserStore = defineStore(
       loginAuth,
       logout,
       removePasswordResetToken,
+      adminRemovePasswordResetToken,
       adminLogout,
       decodeToken,
       updateUser,
@@ -281,6 +304,7 @@ export const useUserStore = defineStore(
       getChatRecord,
       addChatRecord,
       forgotPassword,
+      adminForgotPassword,
       resetPasswordFromEmailLink,
       checkPassword,
       resetPassword,

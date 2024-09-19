@@ -218,7 +218,7 @@ const submit = async () => {
       about: state.about,
     });
     alert("註冊成功！ 請登入");
-    router.push("/login");
+    router.push("/system/login");
   } catch (error) {
     console.error("Registration failed:", error);
   }
