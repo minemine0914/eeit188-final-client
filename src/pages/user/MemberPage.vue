@@ -4,6 +4,7 @@
     <div class="conetnt">
       <UserDetail v-show="selectedBtn === 1" />
       <ResetPassword class="resetPassword" v-show="selectedBtn === 2" />
+      <HostHome v-show="selectedBtn === 3" />
       <Coupon v-show="selectedBtn === 4" />
       <UserCollection v-show="selectedBtn === 5" />
       <Discuss v-show="selectedBtn === 6" />
@@ -37,6 +38,7 @@
         >
           管理房源
         </v-btn>
+
 
         <v-btn
           :color="selectedBtn === 4 ? 'blue-grey-lighten-2' : ''"
@@ -84,6 +86,7 @@ import UserCollection from "@/components/user/UserCollection.vue";
 import Discuss from "@/components/user/Discuss.vue";
 import About from "@/components/user/About.vue";
 import ResetPassword from "@/components/user/ResetPassword.vue";
+import HostHome from '@/components/lo/HostHome.vue';
 
 const selectedBtn = ref(1);
 

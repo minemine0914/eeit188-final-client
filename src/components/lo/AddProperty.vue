@@ -81,11 +81,13 @@
 </template>
 
 <script>
+import { useUserStore } from "../../stores/userStore";
 export default {
   data() {
     return {
       step: 1, // 控制分頁的變量
       property: {
+        
         name: '',
         house_category_id: '',
         information: '',
@@ -118,6 +120,11 @@ export default {
       cities: [], // 城市選項
       districts: [] // 行政區選項
     };
+  },
+  computed: {
+    userStore() {
+      return useUserStore(); // Accessing userStore data or actions
+    }
   },
   methods: {
     goToNextStep() {
