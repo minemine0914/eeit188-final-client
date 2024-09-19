@@ -66,6 +66,7 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
     const isLoadingCollection = ref(false);
     const isCollected = ref(false);
     const isShareDialogOpen = ref(false);
+    const isDiscussDialogOpen = ref(false);
 
     function resetHouseInfo() {
         Object.assign(houseInfo, initialHouseInfo);
@@ -198,6 +199,7 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
         isLoadingCollection,
         isCollected,
         isShareDialogOpen,
+        isDiscussDialogOpen,
         resetHouseInfo,
         getImageUrlList,
         getHouseInfo,

@@ -187,7 +187,13 @@
                 <v-sheet min-height="180">
                     <div class="text-h6 mb-3">地理位置</div>
                     <v-skeleton-loader type="image" height="250" v-if="isLoading" />
-                    <v-sheet v-else class="overflow-hidden" rounded="lg">
+                    <v-sheet
+                        v-else
+                        class="overflow-hidden"
+                        rounded="lg"
+                        :border="true"
+                        :elevation="0"
+                    >
                         <!-- Map -->
                         <ol-map
                             style="height: 250px; width: 100%"
@@ -248,7 +254,7 @@
                         <v-col class="flex-grow-1" cols="12" md="4">
                             <v-card flat>
                                 <template v-slot:prepend>
-                                    <v-avatar size="100" class="mr-5">
+                                    <v-avatar size="100" class="mr-5" border>
                                         <v-img :src="hostInfo.avatarBase64"></v-img>
                                     </v-avatar>
                                 </template>
@@ -272,7 +278,12 @@
                     <v-sheet class="d-flex flex-row align-top">
                         <div class="flex-grow-1 text-h6 mb-3">評價</div>
                         <div class="d-flex flex-grow-1 text-h6 mb-3 justify-end align-top">
-                            <v-btn variant="text" size="default" rounded="pill">
+                            <v-btn
+                                variant="text"
+                                size="default"
+                                rounded="pill"
+                                @click="onClickDiscuss"
+                            >
                                 <template v-slot:prepend>
                                     <v-icon icon="mdi-message-draw" color="brown"></v-icon>
                                 </template>
@@ -286,11 +297,10 @@
                     />
                     <v-row v-else>
                         <v-col cols="12" md="6" v-for="index in 4">
-                            <v-card>
+                            <v-card color="brown-lighten-5" flat>
                                 <template v-slot:prepend>
-                                    <v-avatar size="large">
+                                    <v-avatar size="large" border>
                                         <v-img
-                                            alt="John"
                                             src="https://cdn.vuetifyjs.com/images/john.jpg"
                                         ></v-img>
                                     </v-avatar>
@@ -313,7 +323,11 @@
                                     <div>共100則評論</div>
                                 </template>
                                 <v-card-text class="pb-1">
-                                    <v-sheet max-height="80px" class="overflow-auto">
+                                    <v-sheet
+                                        max-height="80px"
+                                        class="overflow-auto"
+                                        color="transparent"
+                                    >
                                         很棒很棒很棒很棒很棒很棒很棒很棒很棒很棒，很棒很棒很棒很棒很棒，很棒!!!!!
                                         很棒很棒很棒，很棒!!!!!很棒很棒很棒，很棒!!!!!很棒很棒很棒，很棒!!!!!
                                         很棒很棒很棒，很棒!!!!!很棒很棒很棒，很棒!!!!!很棒很棒很棒，很棒!!!!!
@@ -323,7 +337,9 @@
                                         很棒很棒很棒，很棒!!!!!很棒很棒很棒，很棒!!!!!很棒很棒很棒，很棒!!!!!
                                         很棒很棒很棒，很棒!!!!!很棒很棒很棒，很棒!!!!!很棒很棒很棒，很棒!!!!!
                                     </v-sheet>
-                                    <div class="text-caption text-end pt-3">評論日期: 2024-09-09</div>
+                                    <div class="text-caption text-end pt-3">
+                                        評論日期: 2024-09-09
+                                    </div>
                                 </v-card-text>
                             </v-card>
                         </v-col>
@@ -332,6 +348,7 @@
             </v-col>
         </v-row>
     </v-container>
+    <DiscussDialog />
     <ShareDialog />
 </template>
 
@@ -340,9 +357,14 @@ import { computed, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useHouseDetailStore } from "@/stores/houseDetailStore";
 import { storeToRefs } from "pinia";
+
+// Components
 import ImageGrid from "@/components/home/ImageGrid.vue";
 import ShareDialog from "@/components/home/ShareDialog.vue";
+import DiscussDialog from "@/components/home/DiscussDialog.vue";
+// Assets
 import pointIcon from "@/assets/point01.svg";
+// Openlayers
 import { platformModifierKeyOnly } from "ol/events/condition";
 // Use route, router
 const router = useRouter();
@@ -358,6 +380,7 @@ const {
     isLoadingCollection,
     isCollected,
     isShareDialogOpen,
+    isDiscussDialogOpen,
 } = storeToRefs(houseDetailStore);
 
 // Functions
@@ -371,6 +394,11 @@ function onClickCollect() {
 function onClickShare() {
     if (!isShareDialogOpen.value) {
         isShareDialogOpen.value = true;
+    }
+}
+function onClickDiscuss() {
+    if (!isDiscussDialogOpen.value) {
+        isDiscussDialogOpen.value = true;
     }
 }
 // Map event
