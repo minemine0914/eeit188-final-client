@@ -66,6 +66,9 @@
             <v-list-item to="/member" prepend-icon="mdi-account" slim
               >會員中心</v-list-item
             >
+            <v-list-item to="/detail" prepend-icon="mdi-list-box" slim
+              >查詢訂單</v-list-item
+            >
             <v-list-item to="/host" prepend-icon="mdi-home-group-plus" slim
               >成為房東</v-list-item
             >
