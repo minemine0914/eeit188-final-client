@@ -296,6 +296,21 @@ export default {
 
           if (response.data && Array.isArray(response.data.content)) {
             this.orders = response.data.content;
+
+            // 檢查每個訂單，並記錄格式不正確或缺少 house 資料的訂單
+            const invalidOrders = this.orders.filter(order => 
+              typeof order !== 'object' || order === null || 
+              !order.id || order.cashFlow === undefined || 
+              !order.house || !order.house.name
+            );
+
+            console.log('API 返回的完整資料:', response.data);
+            if (invalidOrders.length > 0) {
+              console.error('以下訂單格式不正確或缺少房屋資料，將進行重新抓取:', invalidOrders);
+              // 確保重抓取時不會有 undefined 的 ID
+              const validIds = invalidOrders.map(order => order.id).filter(id => id);
+              await Promise.all(validIds.map(id => this.reFetchOrder(id)));
+            }
           } else {
             console.error('API response is not in expected format:', response.data);
             this.orders = [];
@@ -308,6 +323,7 @@ export default {
         // 可以顯示錯誤提示給用戶
       }
     },
+
 
     editOrder(item) {
       this.editedIndex = this.orders.indexOf(item);
@@ -410,7 +426,25 @@ export default {
         // 顯示錯誤消息
         alert('儲存訂單時發生錯誤。');
       }
-    }
+    },
+    async reFetchOrder(orderId) {
+      try {
+        const response = await axios.get(`http://localhost:8080/transcation_record/${orderId}`);
+        
+        if (response.status === 200) {
+          console.log(`重新抓取訂單 ${orderId}:`, response.data);
+          // 假設 API 返回的格式是正確的，更新相應的訂單資料
+          const index = this.orders.findIndex(order => order.id === orderId);
+          if (index !== -1) {
+            this.orders[index] = response.data; // 更新訂單
+          }
+        } else {
+          console.error(`無法重新抓取訂單 ${orderId}:`, response.status);
+        }
+      } catch (error) {
+        console.error(`重新抓取訂單 ${orderId} 時發生錯誤:`, error);
+      }
+    },
   }
 }
 </script>
