@@ -19,24 +19,18 @@ const selectedUser = store.loginUser;
 
 const fetchHouses = async (userId) => {
     await store.fetchHouses(userId);
-    // console.log('store.houses', store.houses);
+    store.fetchTransactionRecordsStartingValue()
+    store.fetchTransactionRecords()
 
-
-    // if (Object.keys(store.houses).length === 0) {
-    //     store.houses.house = { id: 0, name: 'NOT FOUND' }
-    //     console.log(store.houses)
-    // }
 };
 
-const findAllUserArray = () => {
-    store.findAllUserArray();
-};
-
-onMounted(() => {
-    findAllUserArray();
+onMounted(async () => {
+    await store.findAllUser();
     store.selectedUser = store.users[0].id
+    //log************
     console.log('store.selectedUser', store.selectedUser)
     console.log('store.users', store.users)
+    //log************
 });
 </script>
 

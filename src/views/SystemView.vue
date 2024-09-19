@@ -41,7 +41,7 @@
           size="large"
           density="comfortable"
           class="mr-2"
-          to="/chat"
+          to="/system/admin-chat"
         ></v-btn>
         <v-menu v-if="jwtToken" v-model="memberMenu" offset="15">
           <template v-slot:activator="{ props }">
