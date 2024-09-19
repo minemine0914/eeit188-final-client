@@ -104,7 +104,7 @@ const routes = [
         path: "/system",
         name: "System",
         component: () => import("@/views/SystemView.vue"),
-        children: [
+        children: [kenjoRouter,
             {
                 path: "", // Default
                 name: "Dashboard",
@@ -156,7 +156,7 @@ const routes = [
     },
     minemineRouter,
     wuRouter,
-    kenjoRouter,
+    
     leonRouter,
     loRouter,
 ];
