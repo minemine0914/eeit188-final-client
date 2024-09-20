@@ -10,7 +10,7 @@
                     v-if="isLoading"
                 />
                 <v-img
-                    :src="houseDetailStore.getImageUrlList(0)"
+                    :src="houseDetailStore.getHouseDetailImage(0)"
                     position="center"
                     :height="bigImageHeight"
                     cover
@@ -27,7 +27,7 @@
                             v-if="isLoading"
                         />
                         <v-img
-                            :src="houseDetailStore.getImageUrlList(1)"
+                            :src="houseDetailStore.getHouseDetailImage(1)"
                             position="center"
                             cover
                             :height="smallImageHeight"
@@ -43,7 +43,7 @@
                         />
                         <v-img
                             v-else
-                            :src="houseDetailStore.getImageUrlList(2)"
+                            :src="houseDetailStore.getHouseDetailImage(2)"
                             position="center"
                             :height="smallImageHeight"
                             cover
@@ -59,7 +59,7 @@
                             v-if="isLoading"
                         />
                         <v-img
-                            :src="houseDetailStore.getImageUrlList(3)"
+                            :src="houseDetailStore.getHouseDetailImage(3)"
                             position="center"
                             :height="smallImageHeight"
                             cover
@@ -74,7 +74,7 @@
                             v-if="isLoading"
                         />
                         <v-img
-                            :src="houseDetailStore.getImageUrlList(4)"
+                            :src="houseDetailStore.getHouseDetailImage(4)"
                             position="center"
                             :height="smallImageHeight"
                             cover

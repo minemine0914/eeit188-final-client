@@ -72,8 +72,10 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
         Object.assign(houseInfo, initialHouseInfo);
     }
 
-    function getImageUrlList(index) {
+    function getHouseDetailImage(index) {
         const records = houseInfo.houseExternalResourceRecords;
+        // Sort records by createdAt culomn
+        records.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
         let imageBaseUrl = import.meta.env.VITE_API_URL + "/house-external-resource/image/";
         let imageSrc = null;
         if (
@@ -201,7 +203,7 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
         isShareDialogOpen,
         isDiscussDialogOpen,
         resetHouseInfo,
-        getImageUrlList,
+        getHouseDetailImage,
         getHouseInfo,
         addHouseToCollection,
         removeHouseToCollection,

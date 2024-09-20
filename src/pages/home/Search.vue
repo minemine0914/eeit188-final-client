@@ -57,7 +57,7 @@
                                                     @click="props.onClick"
                                                 ></v-btn>
                                             </template>
-                                            <v-carousel-item v-for="imageSrc in houseSearchStore.getFilterHouseImageUrlList(index)">
+                                            <v-carousel-item v-for="imageSrc in houseSearchStore.getHouseImageUrlList(item.houseExternalResourceRecords)">
                                                 <v-img
                                                     :aspect-ratio="1"
                                                     :height="200"
