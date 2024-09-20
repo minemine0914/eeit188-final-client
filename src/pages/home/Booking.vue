@@ -238,6 +238,7 @@
                         <v-sheet class="flex-grow-1 d-flex justify-start">
                             <v-btn
                                 v-if="renderStepPrevBtn"
+                                :loading="isLoadingStepBtn"
                                 color="brown"
                                 @click="checkStepPrev"
                                 size="large"
@@ -247,6 +248,7 @@
                         <v-sheet class="flex-grow-1 d-flex justify-end">
                             <v-btn
                                 v-if="renderStepNextBtn"
+                                :loading="isLoadingStepBtn"
                                 color="brown"
                                 @click="checkStepNext"
                                 size="large"
@@ -279,6 +281,7 @@ const { houseInfo, isErrorGetHouseInfo, isLoading, isLoadingCollection, isCollec
 const bookingStep = ref(1);
 const renderStepPrevBtn = ref(false);
 const renderStepNextBtn = ref(true);
+const isLoadingStepBtn = ref(false);
 
 // Funcions
 
@@ -314,8 +317,15 @@ async function checkStepNext() {
 }
 
 async function checkBookingDate() {
-    renderStepPrevBtn.value = true;
-    bookingStep.value = 2;
+    isLoadingStepBtn.value = true;
+    return new Promise(function (resolve, reject) {
+        setTimeout(function () {
+            renderStepPrevBtn.value = true;
+            isLoadingStepBtn.value = false;
+            bookingStep.value = 2;
+            resolve("anything");
+        }, 1000);
+    });
 }
 
 async function checkPayment() {
