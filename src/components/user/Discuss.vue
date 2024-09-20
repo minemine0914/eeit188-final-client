@@ -35,6 +35,12 @@
           density="default"
         ></v-rating>
         <v-textarea v-model="d.discuss" label="評論"></v-textarea>
+        <v-text v-if="!d.updatedAt"
+          >發布時間： {{ formatDate(d.createdAt) }}</v-text
+        >
+        <v-text v-if="d.updatedAt"
+          >上次修改時間： {{ formatDate(d.updatedAt) }}</v-text
+        >
         <div class="btn-container">
           <v-btn
             @click="
@@ -107,6 +113,7 @@ const fetchDiscusses = async () => {
     });
 
     for (let d of response.data.discusses) {
+      console.log(d);
       discuss.discusses.push(d);
     }
 
@@ -199,6 +206,18 @@ const retractDiscuss = async (discussId, houseId) => {
   }
 };
 
+// Date formatting function
+const formatDate = (dateString) => {
+  const options = {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  };
+  return new Intl.DateTimeFormat("zh-TW", options).format(new Date(dateString));
+};
+
 // Scroll event handler
 const onScroll = async (event) => {
   const container = event.target;
@@ -224,7 +243,7 @@ const onScroll = async (event) => {
 }
 
 .btn-container {
-  margin-left: 90px;
+  margin-top: 30px;
 }
 
 #retract-btn {
@@ -239,6 +258,10 @@ const onScroll = async (event) => {
 
 #card1 {
   padding: 10px;
+}
+
+#card2 {
+  text-align: center;
 }
 
 .loader {
