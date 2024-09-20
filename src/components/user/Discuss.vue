@@ -1,4 +1,16 @@
 <template>
+  <v-text-field
+    class="search"
+    v-model="search"
+    density="compact"
+    label="查詢"
+    prepend-inner-icon="mdi-magnify"
+    variant="solo-filled"
+    flat
+    hide-details
+    single-line
+    width="300"
+  ></v-text-field>
   <div class="container" @scroll="onScroll">
     <v-card
       v-if="discuss.discusses.length === 0"
@@ -118,7 +130,6 @@ const fetchDiscusses = async () => {
     });
 
     for (let d of response.data.discusses) {
-      console.log(d);
       discuss.discusses.push(d);
     }
 
@@ -242,9 +253,13 @@ const onScroll = async (event) => {
 
 <style scoped>
 .container {
-  height: 500px;
-  max-height: 500px;
+  height: 400px;
+  max-height: 400px;
   overflow-y: auto;
+}
+
+.search {
+  margin-bottom: 30px;
 }
 
 .inner-container {
