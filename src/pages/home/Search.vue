@@ -12,7 +12,7 @@
                     :height="searchContainerResizeObserve.height"
                     :items="filterHouseList"
                     @load="loadFilterHouse"
-                    :style="{paddingTop: `80px`}"
+                    :style="{ paddingTop: `80px` }"
                 >
                     <template v-for="(item, index) in filterHouseList" :key="index">
                         <!-- List view -->
@@ -37,6 +37,7 @@
                                         >
                                             <template v-slot:prev="{ props }">
                                                 <v-btn
+                                                    v-if="item.houseExternalResourceRecords.length > 1"
                                                     :class="props.class"
                                                     color="rgba(255,255,255,0.5)"
                                                     size="small"
@@ -48,6 +49,7 @@
                                             </template>
                                             <template v-slot:next="{ props }">
                                                 <v-btn
+                                                    v-if="item.houseExternalResourceRecords.length > 1"
                                                     :class="props.class"
                                                     color="rgba(255,255,255,0.5)"
                                                     size="small"
@@ -57,7 +59,11 @@
                                                     @click="props.onClick"
                                                 ></v-btn>
                                             </template>
-                                            <v-carousel-item v-for="imageSrc in houseSearchStore.getFilterHouseImageUrlList(index)">
+                                            <v-carousel-item
+                                                v-for="imageSrc in houseSearchStore.getHouseImageUrlList(
+                                                    item.houseExternalResourceRecords
+                                                )"
+                                            >
                                                 <v-img
                                                     :aspect-ratio="1"
                                                     :height="200"
