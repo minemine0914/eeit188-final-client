@@ -54,12 +54,21 @@
                             readonly
                             @update:focused="onFocusSearchOther"
                         />
-                        <v-btn
-                            icon="mdi-magnify"
-                            variant="flat"
-                            color="brown-lighten-1"
-                            @click.stop="onClickSearchBtn"
-                        />
+                        <v-sheet rounded="pill" color="brown-lighten-5" class="pa-1 d-flex ga-1">
+                            <v-hover></v-hover>
+                            <v-btn
+                                icon="mdi-magnify"
+                                variant="flat"
+                                color="brown-lighten-4"
+                                @click.stop="onClickSearchBtn('list')"
+                            />
+                            <v-btn
+                                icon="mdi-map-search"
+                                variant="flat"
+                                color="brown-lighten-1"
+                                @click.stop="onClickSearchBtn('map')"
+                            />
+                        </v-sheet>
                     </v-toolbar>
                 </v-card>
                 <v-slide-y-transition>
@@ -292,13 +301,16 @@
                                                         fluid
                                                     >
                                                         <v-btn
-                                                            :disabled="searchParams.livingDiningRoom < 1"
+                                                            :disabled="
+                                                                searchParams.livingDiningRoom < 1
+                                                            "
                                                             icon="mdi-minus"
                                                             size="small"
                                                             density="comfortable"
                                                             @click.stop="
                                                                 () => {
-                                                                    searchParams.livingDiningRoom > 0
+                                                                    searchParams.livingDiningRoom >
+                                                                    0
                                                                         ? searchParams.livingDiningRoom--
                                                                         : 0;
                                                                 }
@@ -308,14 +320,17 @@
                                                             {{
                                                                 searchParams.livingDiningRoom == 0
                                                                     ? "任意"
-                                                                    : searchParams.livingDiningRoom + "+"
+                                                                    : searchParams.livingDiningRoom +
+                                                                      "+"
                                                             }}
                                                         </div>
                                                         <v-btn
                                                             icon="mdi-plus"
                                                             size="small"
                                                             density="comfortable"
-                                                            @click.stop="searchParams.livingDiningRoom++"
+                                                            @click.stop="
+                                                                searchParams.livingDiningRoom++
+                                                            "
                                                         ></v-btn>
                                                     </v-container>
                                                 </template>
@@ -567,16 +582,20 @@ function onFocusSearchOther(value) {
     searchBarTab.value = "other";
 }
 
-function onClickSearchBtn() {
-    const searchPaths = ["/search", "/advanced-search"]; // 搜尋頁面的路由
+function onClickSearchBtn(mode) {
+    const searchPaths = ["/search", "/search-map"]; // 搜尋頁面的路由
     isFocusSearchBar.value = false;
-    if (searchPaths.includes(route.path)) {
-        // router.go(0); // 如果當前頁面在 searchPaths 中，重新整理頁面
-        houseSearchStore.resetSearchResult();
-    } else {
-        router.push(searchPaths[0]); // 如果不是 searchPaths 中的頁面，導航到第一個 searchPath
-        houseSearchStore.resetSearchResult();
+    if (mode === "list" && searchPaths[0] != route.path) {
+        // 如果點擊的mode是list 且不在/search 就路由到/search
+        router.push(searchPaths[0]);
+    } else if (mode === "map" && searchPaths[1] != route.path) {
+        // 如果點擊的mode是map 且不在/search-map 就路由到/search-map
+        router.push(searchPaths[1]);
     }
+    // 不管如何，點擊搜尋按鈕就重新搜尋結果
+    houseSearchStore.resetSearchResult();
+
+    // Change active mode
 }
 
 onMounted(() => {
@@ -584,6 +603,7 @@ onMounted(() => {
     // init search param values
     searchParams.value.minPrice = housePriceRange.value[0];
     searchParams.value.maxPrice = housePriceRange.value[1];
+    // 
 });
 </script>
 

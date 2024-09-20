@@ -88,16 +88,15 @@ import { useUserViewStore } from "../stores/userViewStore";
 
 
 const userStore = useUserStore();
-const { user, jwtToken, adminLogout } = userStore;
+const { user, jwtToken, adminLogout } = storeToRefs(userStore);
 const userViewStore = useUserViewStore();
 const { memberMenu } = storeToRefs(userViewStore);
 
 // 登出
 function handleLogout() {
   const confirmLogout = window.confirm("請確認是否要登出");
-
   if (confirmLogout) {
-    adminLogout();
+    userStore.adminLogout();
   }
 }
 </script>

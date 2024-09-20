@@ -32,6 +32,12 @@ const routes = [
                 meta: { title: "Nomad 搜尋", requiresAuth: false },
             },
             {
+                path: "search-map",
+                name: "SearchMap",
+                component: () => import("@/pages/home/SearchMap.vue"),
+                meta: { title: "Nomad 地圖搜尋", requiresAuth: false },
+            },
+            {
                 path: "house",
                 name: "House",
                 component: () => import("@/pages/home/HouseDetail.vue"),
