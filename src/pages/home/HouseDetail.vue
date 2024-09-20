@@ -209,7 +209,7 @@
             >
               <ol-view
                 :projection="`EPSG:4326`"
-                :center="[houseInfo.latitudeX, houseInfo.longitudeY]"
+                :center="[houseInfo.longitudeY, houseInfo.latitudeX]"
                 :zoom="18"
                 :rotation="0"
               />
@@ -220,7 +220,7 @@
                 <ol-source-vector>
                   <ol-feature :properties="[]">
                     <ol-geom-point
-                      :coordinates="[houseInfo.latitudeX, houseInfo.longitudeY]"
+                      :coordinates="[houseInfo.longitudeY, houseInfo.latitudeX]"
                     ></ol-geom-point>
                   </ol-feature>
                   <ol-style>
