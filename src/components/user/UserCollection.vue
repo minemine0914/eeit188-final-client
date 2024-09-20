@@ -1,6 +1,12 @@
 <template>
   <div class="collection-container">
     <v-card
+      v-if="collection.collections.length === 0"
+      class="mx-auto mb-5"
+      subtitle="您目前沒有已收藏的房源"
+      width="400"
+    ></v-card>
+    <v-card
       v-for="house in collection.collections"
       :key="house?.id"
       class="mx-auto mb-5"

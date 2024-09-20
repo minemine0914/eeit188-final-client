@@ -1,5 +1,11 @@
 <template>
   <div class="container" @scroll="onScroll">
+    <v-card
+      v-if="discuss.discusses.length === 0"
+      class="mx-auto mb-5"
+      subtitle="您目前沒有發布任何評論"
+      width="400"
+    ></v-card>
     <div
       class="inner-container"
       v-for="(d, index) in discuss.discusses"
@@ -43,7 +49,10 @@
         </div>
       </v-card>
     </div>
-    <div v-if="!isBottom" class="loader"></div>
+    <div
+      v-if="!isBottom && discuss.discusses.length !== 0"
+      class="loader"
+    ></div>
     <v-text class="bottom-text" v-if="isBottom">已經到底囉～</v-text>
   </div>
 </template>
