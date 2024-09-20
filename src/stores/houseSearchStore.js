@@ -44,6 +44,30 @@ export const useHouseSearchStore = defineStore("HouseSearch", () => {
     const filterHouseList = reactive([]);
     const allHouseList = reactive([]);
 
+    function getHouseImageUrlList(records) {
+        // const records = filterHouseList[index].houseExternalResourceRecords;
+        let imageBaseUrl = import.meta.env.VITE_API_URL + "/house-external-resource/image/";
+        let imageSrcList = [];
+        if (records.length === 0) {
+            imageSrcList.push(NotAvailableImage);
+        } else {
+            records.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+            for (let index = 0; index < records.length; index++) {
+                if (
+                    typeof records === "undefined" ||
+                    typeof records[index] === "undefined" ||
+                    records[index] === null ||
+                    records[index] === ""
+                ) {
+                    imageSrcList.push(NotAvailableImage);
+                } else {
+                    imageSrcList.push(imageBaseUrl + records[index].id);
+                }
+            }
+        }
+        return imageSrcList;
+    }
+
     function getFilterHouseImageUrlList(index) {
         const records = filterHouseList[index].houseExternalResourceRecords;
         let imageBaseUrl = import.meta.env.VITE_API_URL + "/house-external-resource/image/";
@@ -164,6 +188,7 @@ export const useHouseSearchStore = defineStore("HouseSearch", () => {
         postulateList,
         filterHouseList,
         allHouseList,
+        getHouseImageUrlList,
         getFilterHouseImageUrlList,
         getAllHouseImageUrlList,
         resetSearchResult,

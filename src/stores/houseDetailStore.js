@@ -184,7 +184,7 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
                 })
                 .catch((err) => {
                     console.log("Check house collection failed.");
-                    isLoadingCollection.value = false;
+                    isLoadingCollection.value = true;
                 });
         } else {
             console.log("You are not login! can't check collection.");

@@ -3,7 +3,6 @@ import api from "@/plugins/axios";
 import { ref, reactive } from "vue";
 import * as jwtDecode from "jwt-decode";
 import { useRouter } from "vue-router";
-
 const initialUser = {
     id: null,
     name: null,
@@ -23,18 +22,25 @@ const initialUser = {
 export const useUserStore = defineStore(
     "user",
     () => {
+        // use Router
+        const router = useRouter();
+
         // Data
         const jwtToken = ref(null);
         const passwordResetToken = ref(null);
         const user = reactive({ ...initialUser });
-        const router = useRouter();
 
         // Methods
-
         function resetJWTTokenAndUser() {
-            jwtToken.value = null;
+            console.log("Reset user info");
+            // remove axios auth header
             api.defaults.headers.common["Authorization"] = null;
-            Object.assign(user, initialUser);
+            // reset pinia user state
+            jwtToken.value = null;
+            // Object.assign(user, initialUser);
+            for (const key in initialUser) {
+                user[key] = initialUser[key]; // 逐一設置 user 的屬性
+            }
         }
 
         async function register(userData) {
@@ -90,7 +96,7 @@ export const useUserStore = defineStore(
 
         async function reloadUser() {
             console.log("Reloading user info...");
-
+            api.defaults.headers.common["Authorization"] = `Bearer ${jwtToken.value}`;
             try {
                 const userId = decodeToken(jwtToken.value).id;
                 const response = await api({
@@ -98,7 +104,6 @@ export const useUserStore = defineStore(
                     url: `/user/find/${userId}`,
                 });
                 Object.assign(user, response.data);
-                api.defaults.headers.common["Authorization"] = `Bearer ${jwtToken.value}`;
             } catch (error) {
                 console.log(error);
             }

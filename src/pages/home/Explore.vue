@@ -35,7 +35,7 @@
             </v-parallax>
             <!-- SearchHouseBar -->
             <v-sheet class="position-relative">
-                <SearchHouseBar style="top: -100px;"/>
+                <SearchHouseBar style="top: -100px" />
             </v-sheet>
             <!-- Hot Houses -->
             <v-container fluid class="pa-0 my-5">
@@ -100,6 +100,10 @@
                                         >
                                             <template v-slot:prev="{ props }">
                                                 <v-btn
+                                                    v-if="
+                                                        scrollItem.houseExternalResourceRecords
+                                                            .length > 1
+                                                    "
                                                     :class="props.class"
                                                     color="rgba(255,255,255,0.5)"
                                                     size="small"
@@ -111,6 +115,10 @@
                                             </template>
                                             <template v-slot:next="{ props }">
                                                 <v-btn
+                                                    v-if="
+                                                        scrollItem.houseExternalResourceRecords
+                                                            .length > 1
+                                                    "
                                                     :class="props.class"
                                                     color="rgba(255,255,255,0.5)"
                                                     size="small"
@@ -121,8 +129,8 @@
                                                 ></v-btn>
                                             </template>
                                             <v-carousel-item
-                                                v-for="imageSrc in houseSearchStore.getAllHouseImageUrlList(
-                                                    scrollIndex
+                                                v-for="imageSrc in houseSearchStore.getHouseImageUrlList(
+                                                    scrollItem.houseExternalResourceRecords
                                                 )"
                                             >
                                                 <v-img

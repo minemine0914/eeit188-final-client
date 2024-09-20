@@ -170,7 +170,7 @@ router.beforeEach((to, from, next) => {
     const userStore = useUserStore();
     const {jwtToken, user} = storeToRefs(userStore);
     if (to.meta.requiresAuth && jwtToken.value == null && user.value != null) {
-        console.log("[Router beforeach] Youare not login, take you to login page...");
+        console.log("[Router beforeach] You are not login, take you to login page...");
         next("/login");
     } else {
         console.log("[Router beforeach] Check success");
