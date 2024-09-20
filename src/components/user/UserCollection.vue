@@ -1,60 +1,81 @@
 <template>
-  <div class="collection-container">
-    <v-card
-      v-if="collection.collections.length === 0"
-      class="mx-auto mb-5"
-      subtitle="您目前沒有已收藏的房源"
-      width="400"
-    ></v-card>
-    <v-card
-      v-for="house in collection.collections"
-      :key="house?.id"
-      class="mx-auto mb-5"
-      color="surface-light"
-      width="350"
-      height="350"
-    >
-      <v-card-subtitle class="custom-subtitle">{{
-        house?.name
-      }}</v-card-subtitle>
-      <v-card-text class="bg-surface-light pt-4">
-        <v-img
-          v-if="house?.images.length === 0"
-          src="src/assets/ImageNotAvailable02.webp"
-        ></v-img>
-        <v-img
-          class="main-img"
-          :src="house?.images[0]"
-          @click="handleClick(house)"
-        ></v-img>
-        <v-btn
-          class="btn"
-          @click="
-            removeCollection({
-              userId: user?.id,
-              houseId: house?.houseId,
-            })
-          "
-          >移除收藏</v-btn
-        >
-      </v-card-text>
-    </v-card>
+  <div class="container">
+    <v-text-field
+      class="search"
+      v-model="search"
+      density="compact"
+      label="查詢"
+      prepend-inner-icon="mdi-magnify"
+      variant="solo-filled"
+      flat
+      hide-details
+      single-line
+      width="300"
+      @update:modelValue="handleInput"
+    ></v-text-field>
+    <div class="collection-container">
+      <v-card
+        v-if="collection.collections.length === 0"
+        class="mx-auto mb-5"
+        subtitle="您目前沒有已收藏的房源"
+        width="400"
+      ></v-card>
+      <v-card
+        v-for="house in collection.collections"
+        :key="house?.id"
+        class="mx-auto mb-5"
+        color="surface-light"
+        width="350"
+        height="350"
+      >
+        <v-card-subtitle class="custom-subtitle">{{
+          house?.name
+        }}</v-card-subtitle>
+        <v-card-text class="bg-surface-light pt-4">
+          <div class="image" @click="handleClick(house)">
+            <v-img
+              v-if="house?.images.length === 0"
+              src="src/assets/ImageNotAvailable02.webp"
+            ></v-img>
+            <v-img :src="house?.images[0]"></v-img>
+          </div>
+          <v-btn
+            class="btn"
+            @click="
+              removeCollection({
+                userId: user?.id,
+                houseId: house?.houseId,
+              })
+            "
+            >移除收藏</v-btn
+          >
+        </v-card-text>
+      </v-card>
+    </div>
+    <div class="paging">
+      <v-pagination
+        v-model="pageNo"
+        :length="totalPages"
+        :total-visible="5"
+        @update:modelValue="handleInput"
+      ></v-pagination>
+      <v-select
+        v-model="pageNo"
+        :items="availablePage.availablePages"
+        label="快速移動至頁面"
+        variant="solo"
+        hide-details
+        width="200"
+        @update:modelValue="handleInput"
+      ></v-select>
+    </div>
   </div>
-  <v-pagination
-    v-model="pageNo"
-    :length="totalPages"
-    :total-visible="5"
-    @update:modelValue="handleInput"
-  ></v-pagination>
 </template>
 
 <script setup>
 import { ref, onMounted, reactive } from "vue";
 import { useUserStore } from "../../stores/userStore";
 import api from "@/plugins/axios";
-import { useRouter } from "vue-router";
-
-const router = useRouter();
 
 const userStore = useUserStore();
 const { user } = userStore;
@@ -63,27 +84,41 @@ const collection = reactive({
   collections: [],
 });
 const pageNo = ref(1);
-const pageSize = ref(3); // Set default page size
-const totalPages = ref(0); // To track total pages
+const pageSize = ref(3);
+const totalPages = ref(0);
+const search = ref("");
+const availablePage = reactive({
+  availablePages: [],
+});
 
 onMounted(async () => {
-  await getUserCollectionHouse(pageNo.value - 1, pageSize.value);
+  await getUserCollectionHouse(pageNo.value - 1, pageSize.value, search.value);
   totalPages.value = Math.ceil((await getTotalCount()) / pageSize.value);
-  await getUserCollectionHouseImages();
+  updateAvailablePages();
 });
 
 async function handleInput() {
-  await getUserCollectionHouse(pageNo.value - 1, pageSize.value);
-  await getUserCollectionHouseImages();
+  await getUserCollectionHouse(pageNo.value - 1, pageSize.value, search.value);
+  totalPages.value = Math.ceil((await getTotalCount()) / pageSize.value);
+  updateAvailablePages();
 }
 
-async function getUserCollectionHouse(pageNo, pageSize) {
+async function getUserCollectionHouse(pageNo, pageSize, search) {
   try {
-    const response = await api({
-      method: "get",
-      url: "/user-collection/from-user/" + user.id,
-      params: { pageNo, pageSize },
-    });
+    let response;
+    if (search === "") {
+      response = await api({
+        method: "get",
+        url: `/user-collection/from-user/${user.id}`,
+        params: { pageNo, pageSize },
+      });
+    } else {
+      response = await api({
+        method: "get",
+        url: `/user-collection/from-user/${user.id}/${search}`,
+        params: { pageNo, pageSize },
+      });
+    }
 
     collection.collections = response.data.userCollections.map(
       (collection) => ({
@@ -91,17 +126,29 @@ async function getUserCollectionHouse(pageNo, pageSize) {
         images: [], // Initialize an empty images array for each collection
       })
     );
+
+    await getUserCollectionHouseImages();
   } catch (error) {
-    console.error("Failed to fetch user collections:", error);
+    collection.collections = [];
+    console.error(error);
   }
 }
 
 async function getTotalCount() {
   try {
-    const response = await api({
-      method: "get",
-      url: "/user-collection/from-user/total-count/" + user.id,
-    });
+    let response;
+    if (search.value === "") {
+      response = await api({
+        method: "get",
+        url: `/user-collection/from-user/total-count/${user.id}`,
+      });
+    } else {
+      response = await api({
+        method: "get",
+        url: `/user-collection/from-user/total-count/${user.id}/${search.value}`,
+      });
+    }
+
     return response.data.totalCollectionsCount;
   } catch (error) {
     console.log(error);
@@ -151,9 +198,26 @@ function handleClick(house) {
   const url = `/house/${house.houseId}`;
   window.open(url, "_blank");
 }
+
+function updateAvailablePages() {
+  availablePage.availablePages = [];
+  for (let i = totalPages.value; i >= 1; i--) {
+    availablePage.availablePages.push(i);
+  }
+}
 </script>
 
 <style scoped>
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.search {
+  margin-bottom: 30px;
+}
+
 .collection-container {
   display: flex;
   gap: 50px;
@@ -171,7 +235,12 @@ function handleClick(house) {
   font-weight: bold;
 }
 
-.main-img {
+.image {
   cursor: pointer;
+}
+
+.paging {
+  display: flex;
+  margin-top: 10px;
 }
 </style>

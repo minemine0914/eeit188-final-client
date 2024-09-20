@@ -92,6 +92,7 @@ import {
   minLength,
   maxLength,
   helpers,
+  maxValue,
 } from "@vuelidate/validators";
 import { VDateInput } from "vuetify/labs/VDateInput";
 import { useUserStore } from "../../stores/userStore";
@@ -101,10 +102,13 @@ const { reloadUser, updateUser, user } = userStore;
 
 onMounted(async () => {
   if (user) {
+    const birthday = new Date(user.birthday);
+    birthday.setDate(birthday.getDate() + 1);
+
     Object.assign(state, {
       name: user.name,
       email: user.email,
-      birthday: new Date(user.birthday),
+      birthday: birthday,
       gender: user.gender,
       phone: user.phone,
       mobilePhone: user.mobilePhone,
@@ -151,6 +155,7 @@ const rules = {
   },
   birthday: {
     required: helpers.withMessage("請選擇出生日期", required),
+    maxValue: helpers.withMessage("請選擇合理的出生日期", maxValue(new Date())),
   },
   phone: {
     integer: helpers.withMessage("市話必須為數字", integer),
