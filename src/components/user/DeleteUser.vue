@@ -1,5 +1,5 @@
 <template>
-  <v-card class="mx-auto" color="brown-lighten-3" id="card" width="400">
+  <v-card class="mx-auto" color="grey-lighten-3" id="card" width="400">
     <template v-slot:title>
       <span class="font-weight-black">註銷用戶</span>
     </template>

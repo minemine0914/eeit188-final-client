@@ -13,7 +13,7 @@
     >
       <v-card
         class="mx-auto mb-5"
-        color="blue-grey-lighten-4"
+        color="grey-lighten-3"
         id="card1"
         width="400"
         height="350"
@@ -21,11 +21,16 @@
         <v-card-subtitle class="custom-subtitle">{{
           d?.house
         }}</v-card-subtitle>
-        <v-img height="300" :src="fetchImage(d?.externalResourceId)"></v-img>
+        <v-img
+          class="main-img"
+          height="300"
+          :src="fetchImage(d?.externalResourceId)"
+          @click="handleClick(d)"
+        ></v-img>
       </v-card>
       <v-card
         class="mx-auto mb-5"
-        color="blue-grey-lighten-4"
+        color="grey-lighten-3"
         id="card2"
         width="400"
       >
@@ -218,6 +223,11 @@ const formatDate = (dateString) => {
   return new Intl.DateTimeFormat("zh-TW", options).format(new Date(dateString));
 };
 
+const handleClick = (d) => {
+  const url = `/house/${d.houseId}`;
+  window.open(url, "_blank");
+};
+
 // Scroll event handler
 const onScroll = async (event) => {
   const container = event.target;
@@ -239,6 +249,7 @@ const onScroll = async (event) => {
 
 .inner-container {
   display: flex;
+  margin: 10px;
   gap: 10px;
 }
 
@@ -286,5 +297,9 @@ const onScroll = async (event) => {
 
 .bottom-text {
   margin-left: 50%;
+}
+
+.main-img {
+  cursor: pointer;
 }
 </style>
