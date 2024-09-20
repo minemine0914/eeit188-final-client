@@ -5,7 +5,7 @@
         <v-card-title>聊天紀錄</v-card-title>
         <v-list class="chat-recored">
           <v-list-item
-            :class="{ 'selected-item': selectedItemId === item.id }"
+            :class="{ 'selected-item': selectedItemId === item.senderId }"
             v-for="item in itemSet?.items"
             :key="item.id"
             @click="handleClick(item)"
@@ -13,7 +13,18 @@
             <div class="chat-recored-part">
               <div class="chat-recored-title">
                 <v-list-item-avatar>
-                  <v-img :src="item?.avatar" width="50px" alt=""></v-img>
+                  <v-img
+                    v-if="!item?.avatar"
+                    src="src/assets/user.png"
+                    width="50px"
+                    alt=""
+                  ></v-img>
+                  <v-img
+                    v-if="item?.avatar"
+                    :src="item?.avatar"
+                    width="50px"
+                    alt=""
+                  ></v-img>
                 </v-list-item-avatar>
                 <v-list-item-content>
                   <v-list-item-title>{{ item?.title }}</v-list-item-title>
@@ -83,7 +94,17 @@
           >
             <div class="member">
               <v-avatar class="avatar" color="surface-light" size="50">
-                <v-img :src="other?.avatarBase64" cover></v-img>
+                <v-img
+                  v-if="!chat?.senderAvatar"
+                  src="src/assets/user.png"
+                  width="50px"
+                  alt=""
+                ></v-img>
+                <v-img
+                  v-if="chat?.senderAvatar"
+                  :src="other?.avatarBase64"
+                  cover
+                ></v-img>
               </v-avatar>
               {{ other?.name }}
               <!-- <v-btn color="red-darken-4">收回</v-btn> -->
@@ -126,7 +147,9 @@ const { user, getChatRecord, addChatRecord } = userStore;
 const me = reactive({});
 const other = reactive({});
 const index = ref(0);
-const itemsMap = ref(new Map());
+const itemsMap = reactive({
+  map: new Map(),
+});
 const selectedItemId = ref(null);
 const socket = ref(null);
 const page = ref(0);
@@ -160,7 +183,7 @@ onMounted(async () => {
   getChatList();
 
   if (itemSet?.items.length !== 0) {
-    selectedItemId.value = itemSet?.items[0]?.id || null;
+    selectedItemId.value = itemSet?.items[0]?.senderId || null;
   }
 
   // Connect to WebSocket
@@ -184,7 +207,10 @@ onMounted(async () => {
   };
 
   socket.value.onclose = () => {
-    console.log("WebSocket connection closed");
+    console.log("WebSocket connection closed, attempting to reconnect...");
+    setTimeout(() => {
+      socket.value = new WebSocket("ws://localhost:3002");
+    }, 5000); // Retry after 5 seconds
   };
 
   socket.value.onerror = (error) => {
@@ -255,7 +281,7 @@ const submit = async () => {
 
 function getChatList() {
   itemSet.items = [];
-  itemsMap.value.clear();
+  itemsMap.map.clear();
 
   let chat;
 
@@ -271,11 +297,11 @@ function getChatList() {
         createdAt: chat.createdAt,
       };
 
-      itemsMap.value.set(chat.senderId, newItem);
+      itemsMap.map.set(chat.senderId, newItem);
     }
   }
 
-  itemSet.items = Array.from(itemsMap.value.values());
+  itemSet.items = Array.from(itemsMap.map.values());
 
   // Sort items by createdAt in descending order (newest first)
   itemSet.items.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
@@ -284,7 +310,7 @@ function getChatList() {
 const handleClick = async (item) => {
   index.value = findIndexById(chatRecord.chatRecords, item.senderId);
   Object.assign(other, await getOther());
-  selectedItemId.value = item.id;
+  selectedItemId.value = item.senderId;
 };
 
 const findIndexById = (array, id) => {
@@ -349,7 +375,7 @@ const formatDate = (dateString) => {
 }
 
 #item-subtitle-1 {
-  font-size: 25px;
+  font-size: 15px;
 }
 
 #item-subtitle-2 {
