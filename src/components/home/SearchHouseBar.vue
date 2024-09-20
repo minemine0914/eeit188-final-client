@@ -54,18 +54,20 @@
                             readonly
                             @update:focused="onFocusSearchOther"
                         />
-                        <v-sheet rounded="pill" color="brown-lighten-5" class="pa-1 d-flex ga-1">
+                        <v-sheet rounded="pill" color="brown-lighten-4" class="pa-1 d-flex ga-1">
                             <v-hover></v-hover>
                             <v-btn
+                                v-tooltip:bottom="'清單搜尋'"
                                 icon="mdi-magnify"
                                 variant="flat"
-                                color="brown-lighten-4"
+                                :color="$route.path === '/search' ? 'brown' : 'brown-lighten-2'"
                                 @click.stop="onClickSearchBtn('list')"
                             />
                             <v-btn
+                                v-tooltip:bottom="'地圖搜尋'"
                                 icon="mdi-map-search"
                                 variant="flat"
-                                color="brown-lighten-1"
+                                :color="$route.path === '/search-map' ? 'brown' : 'brown-lighten-2'"
                                 @click.stop="onClickSearchBtn('map')"
                             />
                         </v-sheet>
@@ -603,7 +605,6 @@ onMounted(() => {
     // init search param values
     searchParams.value.minPrice = housePriceRange.value[0];
     searchParams.value.maxPrice = housePriceRange.value[1];
-    // 
 });
 </script>
 
