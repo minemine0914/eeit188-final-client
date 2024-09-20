@@ -13,7 +13,7 @@
     >
       <v-card
         class="mx-auto mb-5"
-        color="blue-grey-lighten-4"
+        color="grey-lighten-3"
         id="card1"
         width="400"
         height="350"
@@ -21,11 +21,16 @@
         <v-card-subtitle class="custom-subtitle">{{
           d?.house
         }}</v-card-subtitle>
-        <v-img height="300" :src="fetchImage(d?.externalResourceId)"></v-img>
+        <v-img
+          class="main-img"
+          height="300"
+          :src="fetchImage(d?.externalResourceId)"
+          @click="handleClick(d)"
+        ></v-img>
       </v-card>
       <v-card
         class="mx-auto mb-5"
-        color="blue-grey-lighten-4"
+        color="grey-lighten-3"
         id="card2"
         width="400"
       >
@@ -35,6 +40,12 @@
           density="default"
         ></v-rating>
         <v-textarea v-model="d.discuss" label="評論"></v-textarea>
+        <v-text v-if="!d.updatedAt"
+          >發布時間： {{ formatDate(d.createdAt) }}</v-text
+        >
+        <v-text v-if="d.updatedAt"
+          >上次修改時間： {{ formatDate(d.updatedAt) }}</v-text
+        >
         <div class="btn-container">
           <v-btn
             @click="
@@ -107,6 +118,7 @@ const fetchDiscusses = async () => {
     });
 
     for (let d of response.data.discusses) {
+      console.log(d);
       discuss.discusses.push(d);
     }
 
@@ -199,6 +211,23 @@ const retractDiscuss = async (discussId, houseId) => {
   }
 };
 
+// Date formatting function
+const formatDate = (dateString) => {
+  const options = {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  };
+  return new Intl.DateTimeFormat("zh-TW", options).format(new Date(dateString));
+};
+
+const handleClick = (d) => {
+  const url = `/house/${d.houseId}`;
+  window.open(url, "_blank");
+};
+
 // Scroll event handler
 const onScroll = async (event) => {
   const container = event.target;
@@ -220,11 +249,12 @@ const onScroll = async (event) => {
 
 .inner-container {
   display: flex;
+  margin: 10px;
   gap: 10px;
 }
 
 .btn-container {
-  margin-left: 90px;
+  margin-top: 30px;
 }
 
 #retract-btn {
@@ -239,6 +269,10 @@ const onScroll = async (event) => {
 
 #card1 {
   padding: 10px;
+}
+
+#card2 {
+  text-align: center;
 }
 
 .loader {
@@ -263,5 +297,9 @@ const onScroll = async (event) => {
 
 .bottom-text {
   margin-left: 50%;
+}
+
+.main-img {
+  cursor: pointer;
 }
 </style>

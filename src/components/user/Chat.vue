@@ -27,7 +27,7 @@
                 </v-list-item-content>
                 <v-list-item-content class="chat-recored-content">
                   <v-list-item-content id="item-subtitle-2">{{
-                    item?.createdAt
+                    formatDate(item?.createdAt)
                   }}</v-list-item-content>
                 </v-list-item-content>
               </div>
@@ -65,7 +65,7 @@
                 {{ chat?.chat }}
               </v-card-text>
               <v-card-text width="300">
-                {{ chat?.createdAt }}
+                {{ formatDate(chat?.createdAt) }}
               </v-card-text>
             </div>
             <div class="member">
@@ -93,7 +93,7 @@
                 {{ chat?.chat }}
               </v-card-text>
               <v-card-text width="300">
-                {{ chat?.createdAt }}
+                {{ formatDate(chat?.createdAt) }}
               </v-card-text>
             </div>
           </v-card>
@@ -234,7 +234,7 @@ const submit = async () => {
     sender: me.name,
     receiverId: other.id,
     senderAvatar: me.avatarBase64,
-    createdAt: new Date().toISOString(),
+    createdAt: new Date(),
   };
 
   // Send message through WebSocket
@@ -289,6 +289,18 @@ const handleClick = async (item) => {
 
 const findIndexById = (array, id) => {
   return array.findIndex((item) => item.senderId === id);
+};
+
+// Date formatting function
+const formatDate = (dateString) => {
+  const options = {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  };
+  return new Intl.DateTimeFormat("zh-TW", options).format(new Date(dateString));
 };
 
 // function handleScroll(event) {
