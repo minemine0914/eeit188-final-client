@@ -148,7 +148,7 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
     function removeHouseToCollection() {
         isLoadingCollection.value = true;
         if (typeof userStore.user.id !== "undefined") {
-            api.post("/user-collection/", {
+            api.post("/user-collection/delete", {
                 userId: userStore.user.id,
                 houseId: houseInfo.id,
             })
