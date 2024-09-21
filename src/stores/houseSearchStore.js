@@ -38,6 +38,10 @@ export const useHouseSearchStore = defineStore("HouseSearch", () => {
         restroom: 0,
         minPrice: 0,
         maxPrice: 100000,
+        minLatitudeX: null,
+        maxLatitudeX: null,
+        minLongitudeY: null,
+        maxLongitudeY: null,
     });
 
     // House List

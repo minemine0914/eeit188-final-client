@@ -589,13 +589,19 @@ function onClickSearchBtn(mode) {
     isFocusSearchBar.value = false;
     if (mode === "list" && searchPaths[0] != route.path) {
         // 如果點擊的mode是list 且不在/search 就路由到/search
+        searchParams.value.minLatitudeX = null;
+        searchParams.value.maxLatitudeX = null;
+        searchParams.value.minLongitudeY = null;
+        searchParams.value.maxLongitudeY = null;
         router.push(searchPaths[0]);
+        houseSearchStore.resetSearchResult();
     } else if (mode === "map" && searchPaths[1] != route.path) {
         // 如果點擊的mode是map 且不在/search-map 就路由到/search-map
         router.push(searchPaths[1]);
+    } else {
+        // 不管如何，點擊搜尋按鈕就重新搜尋結果
+        houseSearchStore.resetSearchResult();
     }
-    // 不管如何，點擊搜尋按鈕就重新搜尋結果
-    houseSearchStore.resetSearchResult();
 
     // Change active mode
 }
