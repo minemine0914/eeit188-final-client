@@ -219,6 +219,7 @@
               <ol-vector-layer>
                 <ol-source-vector>
                   <ol-feature :properties="[]">
+                    <!-- Long, Lat (經度,緯度) -->
                     <ol-geom-point
                       :coordinates="[houseInfo.longitudeY, houseInfo.latitudeX]"
                     ></ol-geom-point>
