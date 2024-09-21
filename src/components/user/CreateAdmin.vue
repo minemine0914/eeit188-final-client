@@ -114,6 +114,7 @@ import {
   maxLength,
   helpers,
   sameAs,
+  maxValue,
 } from "@vuelidate/validators";
 import { VDateInput } from "vuetify/labs/VDateInput";
 import { useRouter } from "vue-router";
@@ -173,6 +174,7 @@ const rules = {
   },
   birthday: {
     required: helpers.withMessage("請選擇出生日期", required),
+    maxValue: helpers.withMessage("請選擇合理的出生日期", maxValue(new Date())),
   },
   phone: {
     integer: helpers.withMessage("市話必須為數字", integer),

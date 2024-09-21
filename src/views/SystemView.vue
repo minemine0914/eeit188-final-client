@@ -75,7 +75,7 @@
       <!-- <v-btn v-if="jwtToken" >登出</v-btn> -->
     </v-app-bar>
     <v-main>
-      <router-view/>
+      <router-view />
     </v-main>
   </v-app>
 </template>
@@ -85,7 +85,6 @@ import { storeToRefs } from "pinia";
 import { useUserStore } from "../stores/userStore";
 import { useUserViewStore } from "../stores/userViewStore";
 // import Home from '../components/kenjo/Home.vue';
-
 
 const userStore = useUserStore();
 const { user, jwtToken, adminLogout } = storeToRefs(userStore);
