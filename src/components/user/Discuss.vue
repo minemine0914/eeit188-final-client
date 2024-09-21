@@ -1,16 +1,4 @@
 <template>
-  <v-text-field
-    class="search"
-    v-model="search"
-    density="compact"
-    label="查詢"
-    prepend-inner-icon="mdi-magnify"
-    variant="solo-filled"
-    flat
-    hide-details
-    single-line
-    width="300"
-  ></v-text-field>
   <div class="container" @scroll="onScroll">
     <v-card
       v-if="discuss.discusses.length === 0"

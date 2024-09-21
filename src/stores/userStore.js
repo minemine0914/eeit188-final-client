@@ -20,28 +20,28 @@ const initialUser = {
 };
 
 export const useUserStore = defineStore(
-    "user",
-    () => {
-        // use Router
-        const router = useRouter();
+  "user",
+  () => {
+    // use Router
+    const router = useRouter();
 
-        // Data
-        const jwtToken = ref(null);
-        const passwordResetToken = ref(null);
-        const user = reactive({ ...initialUser });
+    // Data
+    const jwtToken = ref(null);
+    const passwordResetToken = ref(null);
+    const user = reactive({ ...initialUser });
 
-        // Methods
-        function resetJWTTokenAndUser() {
-            console.log("Reset user info");
-            // remove axios auth header
-            api.defaults.headers.common["Authorization"] = null;
-            // reset pinia user state
-            jwtToken.value = null;
-            // Object.assign(user, initialUser);
-            for (const key in initialUser) {
-                user[key] = initialUser[key]; // 逐一設置 user 的屬性
-            }
-        }
+    // Methods
+    function resetJWTTokenAndUser() {
+      console.log("Reset user info");
+      // remove axios auth header
+      api.defaults.headers.common["Authorization"] = null;
+      // reset pinia user state
+      jwtToken.value = null;
+      // Object.assign(user, initialUser);
+      for (const key in initialUser) {
+        user[key] = initialUser[key]; // 逐一設置 user 的屬性
+      }
+    }
 
     async function register(userData) {
       try {
@@ -94,20 +94,20 @@ export const useUserStore = defineStore(
       router.push("/system");
     }
 
-        async function reloadUser() {
-            console.log("Reloading user info...");
-            api.defaults.headers.common["Authorization"] = `Bearer ${jwtToken.value}`;
-            try {
-                const userId = decodeToken(jwtToken.value).id;
-                const response = await api({
-                    method: "get",
-                    url: `/user/find/${userId}`,
-                });
-                Object.assign(user, response.data);
-            } catch (error) {
-                console.log(error);
-            }
-        }
+    async function reloadUser() {
+      console.log("Reloading user info...");
+      api.defaults.headers.common["Authorization"] = `Bearer ${jwtToken.value}`;
+      try {
+        const userId = decodeToken(jwtToken.value).id;
+        const response = await api({
+          method: "get",
+          url: `/user/find/${userId}`,
+        });
+        Object.assign(user, response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    }
 
     async function updateUser(request) {
       try {
@@ -222,13 +222,19 @@ export const useUserStore = defineStore(
 
     async function resetPasswordFromEmailLink(request) {
       const userId = decodeToken(passwordResetToken.value).id;
-      console.log(userId);
+
+      api.defaults.headers.common[
+        "Authorization"
+      ] = `Bearer ${passwordResetToken.value}`;
+
       try {
         await api({
           method: "put",
           url: `/user/set-new-password/${userId}`,
           data: request,
         });
+
+        resetJWTTokenAndUser();
       } catch (error) {
         console.error(error);
         throw error;
