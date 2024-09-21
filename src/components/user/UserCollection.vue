@@ -18,14 +18,14 @@
         v-if="collection.collections.length === 0"
         class="mx-auto mb-5"
         subtitle="您目前沒有已收藏的房源"
-        width="400"
+        width="300"
       ></v-card>
       <v-card
         v-for="house in collection.collections"
         :key="house?.id"
         class="mx-auto mb-5"
         color="surface-light"
-        width="350"
+        width="300"
         height="350"
       >
         <v-card-subtitle class="custom-subtitle">{{
@@ -84,7 +84,7 @@ const collection = reactive({
   collections: [],
 });
 const pageNo = ref(1);
-const pageSize = ref(3);
+const pageSize = ref(4);
 const totalPages = ref(0);
 const search = ref("");
 const availablePage = reactive({
@@ -212,6 +212,7 @@ function updateAvailablePages() {
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-left: 200px;
 }
 
 .search {
