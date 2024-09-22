@@ -1,6 +1,6 @@
 <template>
-    <v-layout style="z-index: 99" height="100%">
-        <SearchHouseBar style="top: 15px" />
+    <v-layout style="z-index: 90" height="100%">
+        <SearchHouseBar style="top: 30px" />
         <v-main ref="searchMainRef">
             <v-container
                 ref="searchContainerRef"
@@ -12,7 +12,7 @@
                     :height="searchContainerResizeObserve.height"
                     :items="filterHouseList"
                     @load="loadFilterHouse"
-                    :style="{ paddingTop: `80px` }"
+                    :style="{ paddingTop: `100px` }"
                 >
                     <template v-for="(item, index) in filterHouseList" :key="index">
                         <!-- List view -->
