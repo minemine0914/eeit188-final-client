@@ -382,7 +382,20 @@ async function checkPayment() {
             console.error("Error creating order:", error);
             // 將返回的表單寫入新視窗並提交
             paymentWindow.document.open();
-            paymentWindow.document.write(`<html><body>交易失敗，請關閉視窗</body></html>`);
+            paymentWindow.document.write(`
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>NOMAD支付</title>
+    </head>
+    <body>
+        <div style="text-align: center; width: 100%;">
+            <p>交易失敗，請關閉視窗重新預定房源!</p>
+            <button onclick="window.close();">關閉視窗</button>
+        </div>
+    </body>
+</html>
+                        `);
             paymentWindow.document.close();
             // 監聽新視窗關閉狀態
             const timer = setInterval(() => {
