@@ -21,7 +21,7 @@
                 alt-labels
                 flat
                 color="brown"
-                :items="['確認資訊', '付款方式', '進行付款', '完成訂房']"
+                :items="['確認資訊', '付款方式', '進行付款', '訂房結果']"
             >
                 <template v-slot:item.1>
                     <v-card title="房源資訊" flat>
@@ -208,14 +208,18 @@
                                 >付款中</v-progress-circular
                             >
                             <h2 class="text-h5 mb-1">付款中 請稍候...</h2>
-                            <p class="mb-4 text-medium-emphasis text-body-1">交由綠界第三方支付付款</p>
-                            <p class="mb-4 text-medium-emphasis text-body-1">付款成功後請關閉支付頁面，並完成付款流程</p>
+                            <p class="mb-4 text-medium-emphasis text-body-1">
+                                交由綠界第三方支付付款
+                            </p>
+                            <p class="mb-4 text-medium-emphasis text-body-1">
+                                付款成功後請關閉支付頁面，並完成付款流程
+                            </p>
                         </v-card-item>
                     </v-card>
                 </template>
 
                 <template v-slot:item.4>
-                    <v-card title="完成訂房" flat>
+                    <v-card v-if="paymentResult" title="完成訂房" flat>
                         <v-card-item class="text-center">
                             <v-icon
                                 class="mb-5"
@@ -230,6 +234,18 @@
                                 查看您的預定，了解預定資訊
                             </p>
                             <v-btn color="success" class="mb-3">訂單詳情</v-btn>
+                        </v-card-item>
+                    </v-card>
+                    <v-card v-else title="訂房失敗" flat>
+                        <v-card-item class="text-center">
+                            <v-icon
+                                class="mb-5"
+                                color="red"
+                                icon="mdi-close-circle"
+                                size="112"
+                            ></v-icon>
+                            <h2 class="text-h5 mb-4">付款失敗，請重新預定</h2>
+                            <v-btn color="orange" class="mb-3" @click="resetStep">重新預定</v-btn>
                         </v-card-item>
                     </v-card>
                 </template>
@@ -286,6 +302,7 @@ const bookingStep = ref(1);
 const renderStepPrevBtn = ref(false);
 const renderStepNextBtn = ref(true);
 const isLoadingStepBtn = ref(false);
+const paymentResult = ref(false);
 
 // Funcions
 
@@ -357,19 +374,37 @@ async function checkPayment() {
             const timer = setInterval(() => {
                 if (paymentWindow.closed) {
                     clearInterval(timer); // 清除定時器
-                    checkDetail(); // 視窗關閉後執行
+                    checkDetail(true); // 視窗關閉後執行
                 }
             }, 500); // 每0.5秒檢查一次
         })
         .catch((error) => {
             console.error("Error creating order:", error);
+            // 將返回的表單寫入新視窗並提交
+            paymentWindow.document.open();
+            paymentWindow.document.write(`<html><body>交易失敗，請關閉視窗</body></html>`);
+            paymentWindow.document.close();
+            // 監聽新視窗關閉狀態
+            const timer = setInterval(() => {
+                if (paymentWindow.closed) {
+                    clearInterval(timer); // 清除定時器
+                    checkDetail(false); // 視窗關閉後執行
+                }
+            }, 500); // 每0.5秒檢查一次
         });
 }
 
-async function checkDetail() {
+async function checkDetail(result) {
+    result ? (paymentResult.value = true) : (paymentResult.value = false);
     renderStepPrevBtn.value = false;
     renderStepNextBtn.value = false;
     bookingStep.value = 4;
+}
+
+function resetStep() {
+    bookingStep.value = 1;
+    renderStepPrevBtn.value = false;
+    renderStepNextBtn.value = true;
 }
 
 watch(
