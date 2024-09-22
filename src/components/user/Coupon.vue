@@ -33,7 +33,9 @@
       </v-card>
     </v-card>
     <div v-if="hasMore && coupon.coupons.length !== 0" class="loader"></div>
-    <v-text class="bottom-text" v-if="!hasMore">已經到底囉～</v-text>
+    <v-text class="bottom-text" v-if="!hasMore && coupon.coupons.length !== 0"
+      >已經到底囉～</v-text
+    >
   </div>
 </template>
 
