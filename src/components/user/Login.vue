@@ -23,11 +23,12 @@
   </form>
 </template>
 <script setup>
-import { reactive, computed } from "vue";
+import { reactive } from "vue";
 import { useVuelidate } from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
 import { useUserStore } from "../../stores/userStore";
 import { useRouter } from "vue-router";
+import Swal from "sweetalert2";
 
 const initialState = {
   email: null,
@@ -53,18 +54,27 @@ const { loginAuth } = userStore;
 const router = useRouter();
 
 const submit = async () => {
-  if (v$.$invalid) {
+  const isValid = await v$.value.$validate();
+
+  if (!isValid) {
     return;
   }
+
   try {
     await loginAuth({
       email: state.email,
       password: state.password,
     });
-    alert("登入成功");
+    Swal.fire({
+      title: "登入成功!",
+      icon: "success",
+    });
     router.push("/");
   } catch (error) {
-    alert("登入失敗，請確認email及密碼");
+    Swal.fire({
+      title: "登入失敗，請確認email及密碼",
+      icon: "error",
+    });
     console.error("Login failed:", error);
   }
 };

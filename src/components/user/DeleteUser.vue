@@ -14,27 +14,50 @@
 </template>
 <script setup>
 import { useUserStore } from "../../stores/userStore";
-import { useRouter } from "vue-router";
+import Swal from "sweetalert2";
 
 const userStore = useUserStore();
 const { deleteUser, logout } = userStore;
-const router = useRouter();
 
 const handleClick = async () => {
-  const confirmLogout1 = window.confirm("請確認是否要刪除帳號");
-  let confirmLogout2 = false;
-
-  if (confirmLogout1) {
-    confirmLogout2 = window.confirm(
-      "再次提醒，帳號永久刪除後將無法復原，請確認是否要刪除帳號"
-    );
-  }
-
-  if (confirmLogout2) {
-    alert("帳號已刪除！");
-    await deleteUser();
-    logout();
-  }
+  Swal.fire({
+    title: "請確認是否要刪除帳號？",
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "確定",
+    cancelButtonText: "取消",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      Swal.fire({
+        title: "再次提醒，帳號永久刪除後將無法復原，請確認是否要刪除帳號？",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "確定",
+        cancelButtonText: "取消",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          try {
+            deleteUser();
+            Swal.fire({
+              title: "帳號已刪除！",
+              icon: "success",
+            });
+            logout();
+          } catch (error) {
+            Swal.fire({
+              title: "帳號刪除失敗，請重新操作一次",
+              icon: "error",
+            });
+            console.error(error);
+          }
+        }
+      });
+    }
+  });
 };
 </script>
 

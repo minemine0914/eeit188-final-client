@@ -27,6 +27,7 @@ import { reactive, computed } from "vue";
 import { useVuelidate } from "@vuelidate/core";
 import { required, helpers, sameAs } from "@vuelidate/validators";
 import { useUserStore } from "../../stores/userStore";
+import Swal from "sweetalert2";
 
 // Custom password validation
 const passwordComplexity = helpers.regex(
@@ -69,15 +70,25 @@ const submit = async () => {
     return;
   }
 
-  await resetPasswordFromEmailLink({
-    newPassword: state.newPassword,
-  });
+  try {
+    await resetPasswordFromEmailLink({
+      newPassword: state.newPassword,
+    });
 
-  alert("密碼修改成功！請登入");
+    Swal.fire({
+      title: "密碼修改成功！請登入",
+      icon: "success",
+    });
 
-  removePasswordResetToken();
-
-  clear();
+    removePasswordResetToken();
+    clear();
+  } catch (error) {
+    Swal.fire({
+      title: "密碼修改失敗，請重新嘗試",
+      icon: "error",
+    });
+    console.log(error);
+  }
 };
 
 function clear() {
