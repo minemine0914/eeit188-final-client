@@ -12,11 +12,12 @@
   </form>
 </template>
 <script setup>
-import { reactive, computed } from "vue";
+import { reactive } from "vue";
 import { useVuelidate } from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
 import { useUserStore } from "../../stores/userStore";
 import { useRouter } from "vue-router";
+import Swal from "sweetalert2";
 
 const initialState = {
   email: null,
@@ -46,9 +47,15 @@ const submit = async () => {
     await forgotPassword({
       email: state.email,
     });
-    alert("連結已寄送成功，請確認您的email，並在三分鐘內設定新密碼");
+    Swal.fire({
+      title: "連結已寄送成功，請確認您的email，並在三分鐘內設定新密碼",
+      icon: "success",
+    });
   } catch (error) {
-    alert("寄送失敗，請確認email是否正確");
+    Swal.fire({
+      title: "寄送失敗，請確認email是否正確",
+      icon: "error",
+    });
     console.error("Login failed:", error);
   } finally {
     clear();

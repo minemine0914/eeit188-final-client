@@ -1,14 +1,14 @@
 <template>
   <div class="container" @scroll="onScroll">
     <v-card
-      v-if="discuss.discusses.length === 0"
+      v-if="discuss?.discusses.length === 0"
       class="mx-auto mb-5"
       subtitle="您目前沒有發布任何評論"
       width="400"
     ></v-card>
     <div
       class="inner-container"
-      v-for="(d, index) in discuss.discusses"
+      v-for="(d, index) in discuss?.discusses"
       :key="d?.id"
     >
       <v-card
@@ -40,10 +40,10 @@
           density="default"
         ></v-rating>
         <v-textarea v-model="d.discuss" label="評論"></v-textarea>
-        <v-text v-if="!d.updatedAt"
+        <v-text v-if="!d?.updatedAt"
           >發布時間： {{ formatDate(d.createdAt) }}</v-text
         >
-        <v-text v-if="d.updatedAt"
+        <v-text v-if="d?.updatedAt"
           >上次修改時間： {{ formatDate(d.updatedAt) }}</v-text
         >
         <div class="btn-container">
@@ -61,12 +61,12 @@
       </v-card>
     </div>
     <div
-      v-if="!isBottom && discuss.discusses.length !== 0"
+      v-if="!isBottom && discuss?.discusses.length !== 0"
       class="loader"
     ></div>
     <v-text
       class="bottom-text"
-      v-if="isBottom && discuss.discusses.length !== 0"
+      v-if="isBottom && discuss?.discusses.length !== 0"
       >已經到底囉～</v-text
     >
   </div>
@@ -76,6 +76,7 @@
 import { onMounted, reactive, ref } from "vue";
 import { useUserStore } from "../../stores/userStore";
 import api from "@/plugins/axios";
+import Swal from "sweetalert2";
 
 const userStore = useUserStore();
 const { user } = userStore;
@@ -168,50 +169,86 @@ const fetchImage = (id) => {
 };
 
 const updateDiscuss = async (discussId, discuss, houseId, score) => {
-  const confirmUpdate = confirm("是否確定要更改評論？");
+  Swal.fire({
+    title: "是否確定要更改評論？",
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "確定",
+    cancelButtonText: "取消",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      try {
+        api({
+          method: "put",
+          url: `/discuss/update/${discussId}`,
+          data: { discuss: discuss },
+        });
 
-  if (confirmUpdate) {
-    try {
-      await api({
-        method: "put",
-        url: `/discuss/update/${discussId}`,
-        data: { discuss: discuss },
-      });
+        api({
+          method: "post",
+          url: `/house/mongo/rate`,
+          data: {
+            userId: user.id,
+            houseId: houseId,
+            score: score,
+          },
+        });
 
-      await api({
-        method: "post",
-        url: `/house/mongo/rate`,
-        data: {
-          userId: user.id,
-          houseId: houseId,
-          score: score,
-        },
-      });
-
-      await fetchDiscusses();
-      alert("您的評論已修改成功！");
-    } catch (error) {
-      console.error(error);
+        Swal.fire({
+          title: "您的評論已修改成功！",
+          icon: "success",
+        });
+      } catch (error) {
+        Swal.fire({
+          title: "修改失敗，請重新修改",
+          icon: "error",
+        });
+        console.error(error);
+      } finally {
+        discuss.discusses = [];
+        countTotalDiscuss();
+        fetchDiscusses();
+      }
     }
-  }
+  });
 };
 
 const retractDiscuss = async (discussId, houseId) => {
-  const confirmRetract = confirm("是否確定要收回評論？");
+  Swal.fire({
+    title: "是否確定要收回評論？",
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "確定",
+    cancelButtonText: "取消",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      try {
+        api({
+          method: "put",
+          url: `/discuss/retract/${discussId}`,
+        });
 
-  if (confirmRetract) {
-    try {
-      await api({
-        method: "put",
-        url: `/discuss/retract/${discussId}`,
-      });
-
-      await fetchDiscusses();
-      alert("您的評論已收回！");
-    } catch (error) {
-      console.error(error);
+        Swal.fire({
+          title: "您的評論已收回！",
+          icon: "success",
+        });
+      } catch (error) {
+        Swal.fire({
+          title: "收回失敗，請重新操作一次",
+          icon: "error",
+        });
+        console.error(error);
+      } finally {
+        discuss.discusses = [];
+        countTotalDiscuss();
+        fetchDiscusses();
+      }
     }
-  }
+  });
 };
 
 // Date formatting function

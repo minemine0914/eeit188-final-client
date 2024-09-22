@@ -118,6 +118,7 @@ import {
 } from "@vuelidate/validators";
 import { VDateInput } from "vuetify/labs/VDateInput";
 import { useRouter } from "vue-router";
+import Swal from "sweetalert2";
 
 const router = useRouter();
 
@@ -206,6 +207,7 @@ const submit = async () => {
   if (!isValid) {
     return;
   }
+
   try {
     await register({
       name: state.name,
@@ -219,11 +221,17 @@ const submit = async () => {
       address: state.address,
       about: state.about,
     });
-    alert("註冊成功！ 請登入");
+    Swal.fire({
+      title: "註冊成功！ 請登入",
+      icon: "success",
+    });
     router.push("/login");
   } catch (error) {
-    alert("此email已經註冊過，請使用其他email，或直接登入");
-    console.error("Registration failed:", error);
+    Swal.fire({
+      title: "此email已經註冊過，請使用其他email，或直接登入",
+      icon: "warning",
+    });
+    console.error(error);
   }
 };
 

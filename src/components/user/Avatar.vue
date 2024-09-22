@@ -18,10 +18,9 @@
 <script setup>
 import { ref } from "vue";
 import { useUserStore } from "../../stores/userStore";
-import api from "@/plugins/axios";
 
 const userStore = useUserStore();
-const { uploadAvater, reloadUser, user } = userStore;
+const { uploadAvater, user } = userStore;
 
 const fileInput = ref(null);
 
