@@ -101,6 +101,7 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
                 isLoading.value = false;
                 console.log("Get houseInfo from database sucessed!");
                 checkIsCollectedHouse();
+                checkIsDiscussHouse();
                 getHostInfo();
             })
             .catch((err) => {
@@ -124,13 +125,14 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
             });
     }
 
-    function addHouseToCollection() {
+    async function addHouseToCollection() {
         isLoadingCollection.value = true;
         if (typeof userStore.user.id !== "undefined") {
-            api.post("/user-collection/", {
-                userId: userStore.user.id,
-                houseId: houseInfo.id,
-            })
+            await api
+                .post("/user-collection/", {
+                    userId: userStore.user.id,
+                    houseId: houseInfo.id,
+                })
                 .then((res) => {
                     console.log("Add house to collection success.", res);
                     isCollected.value = true;
@@ -145,13 +147,14 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
         }
     }
 
-    function removeHouseToCollection() {
+    async function removeHouseToCollection() {
         isLoadingCollection.value = true;
         if (typeof userStore.user.id !== "undefined") {
-            api.post("/user-collection/delete", {
-                userId: userStore.user.id,
-                houseId: houseInfo.id,
-            })
+            await api
+                .post("/user-collection/delete", {
+                    userId: userStore.user.id,
+                    houseId: houseInfo.id,
+                })
                 .then((res) => {
                     console.log("Remove house to collection success.", res);
                     isCollected.value = false;
@@ -166,15 +169,16 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
         }
     }
 
-    function checkIsCollectedHouse() {
+    async function checkIsCollectedHouse() {
         isLoadingCollection.value = true;
         if (typeof userStore.user.id !== "undefined") {
-            api.get("/user-collection/", {
-                params: {
-                    userId: userStore.user.id,
-                    houseId: houseInfo.id,
-                },
-            })
+            await api
+                .get("/user-collection/", {
+                    params: {
+                        userId: userStore.user.id,
+                        houseId: houseInfo.id,
+                    },
+                })
                 .then((res) => {
                     console.log("Check house collection success.");
                     if (res.data.isCollected) {
@@ -193,6 +197,29 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
         }
     }
 
+    async function checkIsDiscussHouse() {
+        if (typeof userStore.user.id !== "undefined") {
+            await api
+                .get(`/house/mongo/find/${userStore.user.id}/${houseInfo.id}`)
+                .then((res) => {
+                    console.log("Check house disscess success.");
+                    // if (res.data.isCollected) {
+                    //     isCollected.value = true;
+                    // } else {
+                    //     isCollected.value = false;
+                    // }
+                    // isLoadingCollection.value = false;
+                    console.log(res.data);
+                })
+                .catch((err) => {
+                    console.log("Check house collection failed.");
+                    // isLoadingCollection.value = true;
+                });
+        } else {
+            console.log("You are not login! can't check discuss.");
+        }
+    }
+
     return {
         houseInfo,
         hostInfo,
@@ -208,5 +235,6 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
         addHouseToCollection,
         removeHouseToCollection,
         checkIsCollectedHouse,
+        checkIsDiscussHouse,
     };
 });

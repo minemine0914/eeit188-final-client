@@ -39,5 +39,7 @@ import { computed, ref } from "vue";
 
 const houseDetailStore = useHouseDetailStore();
 const { isDiscussDialogOpen, houseInfo } = storeToRefs(houseDetailStore);
+
+
 </script>
 <style scoped></style>
