@@ -42,13 +42,16 @@
                 <v-sheet class="mb-3">
                     <div class="text-h5 font-weight-medium mx-15">熱門推薦</div>
                     <v-slide-group show-arrows>
-                        <v-slide-group-item v-for="n in 15" :key="n">
+                        <v-slide-group-item v-if="hotHouseList.length === 0" v-for="n in 15" :key="n">
                             <v-card class="ma-2" height="320" width="300" elevation="0">
                                 <v-skeleton-loader
                                     class="mx-auto"
                                     type="card, list-item-two-line"
                                 />
                             </v-card>
+                        </v-slide-group-item>
+                        <v-slide-group-item v-else v-for="hotHouse in hotHouseList" :key="hotHouse.id">
+                            <HouseCard :house="hotHouse" min-width="320"/>
                         </v-slide-group-item>
                     </v-slide-group>
                 </v-sheet>
@@ -64,135 +67,29 @@
             <!-- Height rating houses -->
             <v-container fluid class="pa-0 my-5">
                 <v-sheet class="mb-3">
-                    <div class="text-h5 font-weight-medium mx-15">評價最好</div>
+                    <div class="text-h5 font-weight-medium mx-15">最新房源</div>
                     <v-slide-group show-arrows>
-                        <v-slide-group-item v-for="n in 15" :key="n">
+                        <v-slide-group-item v-if="newHouseList.length === 0" v-for="n in 15" :key="n">
                             <v-card class="ma-2" height="320" width="300" elevation="0">
-                                <v-skeleton-loader class="mx-auto" type="image, article" />
+                                <v-skeleton-loader
+                                    class="mx-auto"
+                                    type="card, list-item-two-line"
+                                />
                             </v-card>
+                        </v-slide-group-item>
+                        <v-slide-group-item v-else v-for="newHouse in newHouseList" :key="newHouse.id">
+                            <HouseCard :house="newHouse" min-width="320"/>
                         </v-slide-group-item>
                     </v-slide-group>
                 </v-sheet>
             </v-container>
             <!-- Explore all houses -->
             <v-container fluid class="my-5">
+                <div class="text-h5 font-weight-medium mx-5">探索房源</div>
                 <v-row justify="start" align="start">
                     <template v-for="(scrollItem, scrollIndex) in allHouseList" :key="scrollIndex">
                         <v-col cols="12" lg="3" md="4" sm="6" xs="12">
-                            <v-card
-                                flat
-                                rounded="lg"
-                                @click="$router.push(`/house/${scrollItem.id}`)"
-                                :ripple="false"
-                                :hover="false"
-                            >
-                                <v-card-item class="pt-4">
-                                    <v-sheet
-                                        color="transparent"
-                                        class="overflow-hidden"
-                                        rounded="lg"
-                                    >
-                                        <v-carousel
-                                            height="200"
-                                            show-arrows="hover"
-                                            hide-delimiter-background
-                                            hide-delimiters
-                                        >
-                                            <template v-slot:prev="{ props }">
-                                                <v-btn
-                                                    v-if="
-                                                        scrollItem.houseExternalResourceRecords
-                                                            .length > 1
-                                                    "
-                                                    :class="props.class"
-                                                    color="rgba(255,255,255,0.5)"
-                                                    size="small"
-                                                    density="compact"
-                                                    icon="mdi-chevron-left"
-                                                    variant="elevated"
-                                                    @click.stop="props.onClick"
-                                                ></v-btn>
-                                            </template>
-                                            <template v-slot:next="{ props }">
-                                                <v-btn
-                                                    v-if="
-                                                        scrollItem.houseExternalResourceRecords
-                                                            .length > 1
-                                                    "
-                                                    :class="props.class"
-                                                    color="rgba(255,255,255,0.5)"
-                                                    size="small"
-                                                    density="compact"
-                                                    icon="mdi-chevron-right"
-                                                    variant="elevated"
-                                                    @click.stop="props.onClick"
-                                                ></v-btn>
-                                            </template>
-                                            <v-carousel-item
-                                                v-for="imageSrc in houseSearchStore.getHouseImageUrlList(
-                                                    scrollItem.houseExternalResourceRecords
-                                                )"
-                                            >
-                                                <v-img
-                                                    :aspect-ratio="1"
-                                                    :height="200"
-                                                    :src="imageSrc"
-                                                    cover
-                                                    class="cursor-pointer"
-                                                ></v-img>
-                                            </v-carousel-item>
-                                        </v-carousel>
-                                    </v-sheet>
-                                </v-card-item>
-                                <v-card-title
-                                    class="py-0 d-flex flex-row align-center justify-center"
-                                >
-                                    <div class="flex-grow-1">{{ scrollItem.name }}</div>
-                                    <div
-                                        class="d-flex flex-grow-1 text-body-2 justify-end align-top"
-                                    >
-                                        <v-icon icon="mdi-star-outline" size="small"></v-icon>
-                                        <span>4.9</span>
-                                    </div>
-                                </v-card-title>
-                                <v-card-subtitle class="pb-2">
-                                    <div class="text-grey-darken-1">
-                                        <span class="mdi mdi-map-marker mr-2"></span>
-                                        <span class="mr-2">{{
-                                            `${scrollItem.city} ${scrollItem.region}`
-                                        }}</span>
-                                    </div>
-                                    <div class="text-grey-darken-1">
-                                        <span class="mdi mdi-sofa mr-2"></span>
-                                        <span>共 </span>
-                                        <span class="mr-1" v-if="scrollItem.livingDiningRoom > 0">
-                                            {{ `${scrollItem.livingDiningRoom} 廳` }}
-                                        </span>
-                                        <span class="mr-1" v-if="scrollItem.bedroom > 0">
-                                            {{ `${scrollItem.bedroom} 房` }}
-                                        </span>
-                                        <span class="mr-1" v-if="scrollItem.bathroom > 0">
-                                            {{ `${scrollItem.bathroom} 淋浴` }}
-                                        </span>
-                                        <span class="mr-1" v-if="scrollItem.restroom > 0">
-                                            {{ `${scrollItem.restroom} 衛生` }}
-                                        </span>
-                                    </div>
-                                    <div class="text-grey-darken-1">
-                                        <span class="mdi mdi-bed mr-2"></span>
-                                        <span>可住 </span>
-                                        <span class="mr-1" v-if="scrollItem.adult > 0">
-                                            {{ `${scrollItem.adult} 位成人 ` }}
-                                        </span>
-                                        <span class="mr-1" v-if="scrollItem.child > 0">
-                                            {{ `${scrollItem.child} 位孩童 ` }}
-                                        </span>
-                                    </div>
-                                </v-card-subtitle>
-                                <v-card-text class="font-weight-bold pt-0"
-                                    >${{ scrollItem.price }} / 日</v-card-text
-                                >
-                            </v-card>
+                            <HouseCard :house="scrollItem"/>
                         </v-col>
                     </template>
                 </v-row>
@@ -208,10 +105,12 @@ import { useHouseSearchStore } from "@/stores/houseSearchStore";
 import { useUserViewStore } from "@/stores/userViewStore";
 import { useResizeObserver } from "@vueuse/core";
 import { storeToRefs } from "pinia";
-import { reactive, ref } from "vue";
+import { onMounted, reactive, ref } from "vue";
+import HouseCard from "../../components/home/HouseCard.vue";
 const houseSearchStore = useHouseSearchStore();
 const userViewStore = useUserViewStore();
-const { allHouseList, currentAllHousePage } = storeToRefs(houseSearchStore);
+const { allHouseList, hotHouseList, newHouseList, currentAllHousePage } =
+    storeToRefs(houseSearchStore);
 const { containerHeight } = storeToRefs(userViewStore);
 const exploreContainerRef = ref(null);
 const exploreContainerResizeObserve = reactive({ width: 0, height: 0 });
@@ -245,6 +144,17 @@ useResizeObserver(exploreContainerRef, (entries) => {
         console.log(`width: ${width}, height: ${height}`);
         exploreContainerResizeObserve.height = height;
     }, 100); // 設定 500 毫秒的延遲
+});
+
+onMounted(async () => {
+    let hotHouseData = await houseSearchStore.getHotHouse();
+    let newHouseData = await houseSearchStore.getNewHouse();
+    if (hotHouseData != null) {
+        hotHouseList.value.push(...hotHouseData.content);
+    }
+    if (newHouseData != null) {
+        newHouseList.value.push(...newHouseData.content);
+    }
 });
 </script>
 <style scoped>

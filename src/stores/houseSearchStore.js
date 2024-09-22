@@ -47,6 +47,8 @@ export const useHouseSearchStore = defineStore("HouseSearch", () => {
     // House List
     const filterHouseList = reactive([]);
     const allHouseList = reactive([]);
+    const newHouseList = reactive([]);
+    const hotHouseList = reactive([]);
 
     function getHouseImageUrlList(records) {
         let imageBaseUrl = import.meta.env.VITE_API_URL + "/house-external-resource/image/";
@@ -135,6 +137,46 @@ export const useHouseSearchStore = defineStore("HouseSearch", () => {
         return resData;
     }
 
+    async function getNewHouse() {
+        let resData = null;
+        await api
+            .post("/house/search", {
+                limit: currentAllHouseLimit.value,
+                page: currentAllHousePage.value,
+                dir: true,
+                order: "createdAt"
+            })
+            .then((res) => {
+                console.log(res);
+                // Object.assign(allHouseList, res.data);
+                resData = res.data;
+            })
+            .catch((err) => {
+                console.log("取得房源失敗");
+            });
+        return resData;
+    }
+
+    async function getHotHouse() {
+        let resData = null;
+        await api
+            .post("/house/search", {
+                limit: currentAllHouseLimit.value,
+                page: currentAllHousePage.value,
+                dir: true,
+                order: "createdAt"
+            })
+            .then((res) => {
+                console.log(res);
+                // Object.assign(allHouseList, res.data);
+                resData = res.data;
+            })
+            .catch((err) => {
+                console.log("取得房源失敗");
+            });
+        return resData;
+    }
+
     return {
         currentFilterHouseLimit,
         currentAllHouseLimit,
@@ -148,10 +190,14 @@ export const useHouseSearchStore = defineStore("HouseSearch", () => {
         postulateList,
         filterHouseList,
         allHouseList,
+        newHouseList,
+        hotHouseList,
         getHouseImageUrlList,
         resetSearchResult,
         getPostulateList,
         getFilterHouse,
         getAllHouse,
+        getNewHouse,
+        getHotHouse,
     };
 });
