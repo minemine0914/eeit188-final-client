@@ -76,6 +76,7 @@
 import { ref, onMounted, reactive } from "vue";
 import { useUserStore } from "../../stores/userStore";
 import api from "@/plugins/axios";
+import Swal from "sweetalert2";
 
 const userStore = useUserStore();
 const { user } = userStore;
@@ -92,14 +93,14 @@ const availablePage = reactive({
 });
 
 onMounted(async () => {
-  await getUserCollectionHouse(pageNo.value - 1, pageSize.value, search.value);
   totalPages.value = Math.ceil((await getTotalCount()) / pageSize.value);
+  await getUserCollectionHouse(pageNo.value - 1, pageSize.value, search.value);
   updateAvailablePages();
 });
 
 async function handleInput() {
-  await getUserCollectionHouse(pageNo.value - 1, pageSize.value, search.value);
   totalPages.value = Math.ceil((await getTotalCount()) / pageSize.value);
+  await getUserCollectionHouse(pageNo.value - 1, pageSize.value, search.value);
   updateAvailablePages();
 }
 
@@ -157,23 +158,37 @@ async function getTotalCount() {
 }
 
 async function removeCollection(request) {
-  const confirmDelete = confirm("確認是否要移除收藏？");
-
-  if (confirmDelete) {
-    try {
-      await api({
-        method: "post",
-        url: "/user-collection/delete",
-        data: request,
-      });
-      alert("已成功移除收藏");
-      await getUserCollectionHouse(pageNo.value - 1, pageSize.value);
-      await getUserCollectionHouseImages();
-    } catch (error) {
-      console.log(error);
-      throw error;
+  Swal.fire({
+    title: "確認是否要移除收藏?",
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "確定",
+    cancelButtonText: "取消",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      try {
+        api({
+          method: "post",
+          url: "/user-collection/delete",
+          data: request,
+        });
+        Swal.fire({
+          title: "已成功移除!",
+          icon: "success",
+        });
+      } catch (error) {
+        Swal.fire({
+          title: "移除失敗，請再試一次",
+          icon: "error",
+        });
+        console.error(error);
+      } finally {
+        handleInput();
+      }
     }
-  }
+  });
 }
 
 async function getUserCollectionHouseImages() {
