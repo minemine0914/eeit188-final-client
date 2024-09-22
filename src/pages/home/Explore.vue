@@ -180,9 +180,11 @@ onMounted(async () => {
     let hotHouseData = await houseSearchStore.getHotHouse();
     let newHouseData = await houseSearchStore.getNewHouse();
     if (hotHouseData != null) {
+        hotHouseList.value.splice(0, hotHouseList.value.length);
         hotHouseList.value.push(...hotHouseData.content);
     }
     if (newHouseData != null) {
+        newHouseList.value.splice(0, newHouseList.value.length);
         newHouseList.value.push(...newHouseData.content);
     }
 });
