@@ -208,7 +208,8 @@
                                 >付款中</v-progress-circular
                             >
                             <h2 class="text-h5 mb-1">付款中 請稍候...</h2>
-                            <p class="mb-4 text-medium-emphasis text-body-1">請勿關閉頁面</p>
+                            <p class="mb-4 text-medium-emphasis text-body-1">交由綠界第三方支付付款</p>
+                            <p class="mb-4 text-medium-emphasis text-body-1">付款成功後請關閉支付頁面，並完成付款流程</p>
                         </v-card-item>
                     </v-card>
                 </template>
@@ -266,8 +267,10 @@ import { computed, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useHouseDetailStore } from "@/stores/houseDetailStore";
 import { useHouseSearchStore } from "@/stores/houseSearchStore";
+import { useUserStore } from "@/stores/userStore";
 import { storeToRefs } from "pinia";
 import ImageGrid from "@/components/home/ImageGrid.vue";
+import api from "@/plugins/axios.js";
 // Use route, router
 const router = useRouter();
 const route = useRoute();
@@ -275,6 +278,7 @@ const route = useRoute();
 // Use pinia store
 const houseDetailStore = useHouseDetailStore();
 const houseSearchStore = useHouseSearchStore();
+const userStore = useUserStore();
 const { houseInfo, isErrorGetHouseInfo, isLoading, isLoadingCollection, isCollected } =
     storeToRefs(houseDetailStore);
 //
@@ -329,15 +333,37 @@ async function checkBookingDate() {
 }
 
 async function checkPayment() {
+    // 創建新視窗
+    const paymentWindow = window.open(
+        "",
+        "_blank",
+        "location=yes,height=570,width=520,scrollbars=yes,status=yes"
+    );
     renderStepPrevBtn.value = false;
     renderStepNextBtn.value = false;
     bookingStep.value = 3;
-    return new Promise(function (resolve, reject) {
-        setTimeout(function () {
-            checkDetail();
-            resolve("anything");
-        }, 3000);
-    });
+    await api
+        .post("/payment/booking-house", {
+            houseId: houseInfo.value.id,
+            userId: userStore.user.id,
+        })
+        .then((response) => {
+            const formHtml = response.data;
+            // 將返回的表單寫入新視窗並提交
+            paymentWindow.document.open();
+            paymentWindow.document.write(formHtml);
+            paymentWindow.document.close();
+            // 監聽新視窗關閉狀態
+            const timer = setInterval(() => {
+                if (paymentWindow.closed) {
+                    clearInterval(timer); // 清除定時器
+                    checkDetail(); // 視窗關閉後執行
+                }
+            }, 500); // 每0.5秒檢查一次
+        })
+        .catch((error) => {
+            console.error("Error creating order:", error);
+        });
 }
 
 async function checkDetail() {

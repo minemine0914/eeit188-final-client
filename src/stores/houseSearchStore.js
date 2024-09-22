@@ -18,7 +18,7 @@ export const useHouseSearchStore = defineStore("HouseSearch", () => {
         dateRange: [],
     });
     const postlateChipGroup = ref([]);
-    const housePriceRange = ref([0, 5000]);
+    const housePriceRange = ref([0, 100000]);
 
     // Postulate List
     const postulateList = reactive([]);
