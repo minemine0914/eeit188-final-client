@@ -64,7 +64,11 @@
       v-if="!isBottom && discuss.discusses.length !== 0"
       class="loader"
     ></div>
-    <v-text class="bottom-text" v-if="isBottom">已經到底囉～</v-text>
+    <v-text
+      class="bottom-text"
+      v-if="isBottom && discuss.discusses.length !== 0"
+      >已經到底囉～</v-text
+    >
   </div>
 </template>
 
