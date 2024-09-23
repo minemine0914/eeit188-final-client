@@ -1,7 +1,15 @@
 <template>
     <v-card flat>
         <v-card-title class="d-flex align-center pe-2">
-            <v-icon icon="mdi-home"></v-icon>&nbsp;近期訂單紀錄&nbsp;<v-icon icon="mdi-home"></v-icon>
+            <template v-if="store.loginUser.role === 'noral'">
+                <v-icon icon="mdi-home"></v-icon>
+                &nbsp;近期訂單紀錄&nbsp;
+            </template>
+            <template v-if="store.loginUser.role === 'normal'">
+                <v-icon icon="mdi-home"></v-icon>
+                &nbsp;{{ store.selectedUser }}&nbsp;
+            </template>
+            <v-icon icon="mdi-home"></v-icon>
             房源名稱：{{ store.itemsSource[0]?.house.name }}[{{
                 `${store.itemsSource[0]?.house?.country}${store.itemsSource[0]?.house?.city}${store.itemsSource[0]?.house?.region}`
             }}]

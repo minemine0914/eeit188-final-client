@@ -34,6 +34,12 @@ const router = {
             meta: { title: "歷史紀錄與報表[房東]", requiresAuth: false },
         },
         {
+            path: "platform-report", // Default
+            name: "platform-report",
+            component: () => import("@/components/wu/components/PlatformReport.vue"),
+            meta: { title: "歷史紀錄與報表[平台]", requiresAuth: false },
+        },
+        {
             path: "create", // Default
             name: "create",
             component: () => import("@/components/wu/components/CreateTransactionRecord.vue"),

@@ -7,10 +7,14 @@ import { set } from 'ol/transform';
 export const useHostReportStore = defineStore('hostReport', {
     state: () => ({
         isLoading: false,
-        loginUser: 'e61abdb4-d054-4188-9e41-c2691792cf73',
+        loginUser: {
+            id: 'e61abdb4-d054-4188-9e41-c2691792cf73',
+            role: 'normal',
+            name: 'UserName123',
+        },
         // loginUser: 'f27a7b80-4d60-44cf-aa1c-9b44dd375698',
         selectedHouse: '',
-        selectedUser: '',
+        selectedUserId: '',
 
         users: [{ "id": '' }],
         houses: [],
@@ -66,11 +70,10 @@ export const useHostReportStore = defineStore('hostReport', {
                 output = output.filter(item => item.year === state.selectedYear);
             }
             if (!state.allMonth) {
-                output = output.filter(item => item.year === state.selectedMonth);
+                output = output.filter(item => item.month === state.selectedMonth);
             }
             return output
         },
-
     },
     actions: {
         // 1.用host(user)找house
@@ -78,10 +81,10 @@ export const useHostReportStore = defineStore('hostReport', {
             try {
                 //如果有傳入userId，以傳入值搜尋。否則以登入者loginUser查詢
                 if (userId) {
-                    this.loginUser = userId
+                    this.loginUser.id = userId
                 }
                 const response = await api.post('/house/search', {
-                    userId: this.loginUser,
+                    userId: this.loginUser.id,
                     page: 0,
                     limit: 1000
                 });
@@ -488,7 +491,7 @@ export const useHostReportStore = defineStore('hostReport', {
                 // Add the cash flow to the appropriate month (1-based index, so subtract 1)
                 result[year][month - 1] += cashFlow;
             });
-            // console.log('YM', this.recordsPrapared);
+            console.log('YM', this.recordsPrapared);
             return result
         },
 
@@ -549,6 +552,23 @@ export const useHostReportStore = defineStore('hostReport', {
             // console.log('Y', this.recordsPrapared);
             return output
 
+        },
+
+        // Function to sum monthly data across all years
+        sumMonthlyData(data) {
+            const monthlySum = new Array(12).fill(0); // Initialize an array for 12 months
+
+            // Iterate over each year in the data
+            for (const year in data) {
+                const monthlyData = data[year];
+
+                // Sum each month's data
+                monthlyData.forEach((value, month) => {
+                    monthlySum[month] += value; // Add to the corresponding month
+                });
+            }
+
+            return monthlySum; // Returns an array of summed monthly data
         },
 
         async findAllUser() {

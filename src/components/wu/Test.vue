@@ -3,6 +3,7 @@
     <div>
         <router-link class="link" to="/wu">Go to Wu</router-link>
         <router-link class="link" :to="{ name: 'host-report' }">Go to Host Report</router-link>
+        <router-link class="link" :to="{ name: 'platform-report' }">Go to Platform Report</router-link>
         <router-link class="link" :to="{ name: 'create' }">Go to create</router-link>
         <router-link class="link" :to="{ name: 'table' }">Go to table</router-link>
         <router-link class="link" :to="{ name: 'tab' }">Go to tab</router-link>

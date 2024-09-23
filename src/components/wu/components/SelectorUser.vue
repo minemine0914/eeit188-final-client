@@ -1,8 +1,8 @@
 <!-- src/components/Selector.vue -->
 <template>
     <div>
-        <label for="user-select">Select a User:</label>
-        <select id="user-select" v-model="selectedUser" @change="fetchHouses(selectedUser)">
+        <label for="user-select">請選擇房東：</label>
+        <select id="user-select" v-model="store.selectedUserId" @change="fetchHouses(store.selectedUserId)">
             <option v-for="user in store.users" :key="user.id" :value="user.id">
                 [{{ user.name }}][{{ user.id }}]
             </option>
@@ -15,7 +15,6 @@ import { onMounted } from 'vue';
 import { useHostReportStore } from '@/stores/hostReportStore';
 
 const store = useHostReportStore()
-const selectedUser = store.loginUser;
 
 const fetchHouses = async (userId) => {
     await store.fetchHouses(userId);
@@ -26,7 +25,7 @@ const fetchHouses = async (userId) => {
 
 onMounted(async () => {
     await store.findAllUser();
-    store.selectedUser = store.users[0].id
+    store.selectedUserId = store.users[0].id
     //log************
     console.log('store.selectedUser', store.selectedUser)
     console.log('store.users', store.users)

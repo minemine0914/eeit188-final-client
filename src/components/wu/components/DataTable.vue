@@ -2,25 +2,21 @@
 <template>
     <div>
 
-        <h2>Reports</h2>
+        <h2>查詢結果</h2>
 
 
         <div>
             <!-- Radio Buttons for selecting Month or Quarter -->
             <div>
-                <input type="radio" id="monthOrQuarter_year" value="year" v-model="store.selectedPeriod">
-                <label for="monthOrQuarter_year">Y</label>
+                <input type="radio" id="monthOrQuarter_year" value="year" v-model="store.selectedPeriod"
+                    @change="store.allMonth = true">
+                <label for="monthOrQuarter_year">以年顯示</label>
 
                 <input type="radio" id="monthOrQuarter_month" value="month" v-model="store.selectedPeriod">
-                <label for="monthOrQuarter_month">M</label>
+                <label for="monthOrQuarter_month">以月顯示</label>
 
                 <input type="radio" id="monthOrQuarter_quarter" value="quarter" v-model="store.selectedPeriod">
-                <label for="monthOrQuarter_quarter">Q</label>
-            </div>
-
-            <!-- Display the selected period -->
-            <div>
-                <p>Selected Period: {{ store.selectedPeriod }}</p>
+                <label for="monthOrQuarter_quarter">以季顯示</label>
             </div>
 
             <!-- Conditionally render content based on selected period -->
@@ -34,11 +30,9 @@
                 </select>
                 <div v-if="store.selectedPeriod === 'year'">
                     <!-- Content for Year -->
-                    <p>Year data goes here.</p>
                 </div>
                 <div v-if="store.selectedPeriod === 'month'">
                     <!-- Content for Month -->
-                    <p>Month data goes here.</p>
                     <input id="allMonth" type="checkbox" v-model="store.allMonth"><label
                         for="allMonth">顯示所有月份的資料</label>
                     &nbsp;
@@ -49,7 +43,6 @@
                 </div>
                 <div v-if="store.selectedPeriod === 'quarter'">
                     <!-- Content for Quarter -->
-                    <p>Quarter data goes here.</p>
 
                     <label for="quarterRange">季度：</label>
                     <select id="quarterRange" v-model="store.selectedQuarter">
