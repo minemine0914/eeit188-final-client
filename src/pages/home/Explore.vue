@@ -176,17 +176,9 @@ useResizeObserver(exploreContainerRef, (entries) => {
     }, 100); // 設定 500 毫秒的延遲
 });
 
-onMounted(async () => {
-    let hotHouseData = await houseSearchStore.getHotHouse();
-    let newHouseData = await houseSearchStore.getNewHouse();
-    if (hotHouseData != null) {
-        hotHouseList.value.splice(0, hotHouseList.value.length);
-        hotHouseList.value.push(...hotHouseData.content);
-    }
-    if (newHouseData != null) {
-        newHouseList.value.splice(0, newHouseList.value.length);
-        newHouseList.value.push(...newHouseData.content);
-    }
+onMounted(() => {
+    houseSearchStore.getHotHouse();
+    houseSearchStore.getNewHouse();
 });
 </script>
 <style scoped>
