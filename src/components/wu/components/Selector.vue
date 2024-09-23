@@ -1,10 +1,10 @@
 <!-- src/components/Selector.vue -->
 <template>
     <div>
-        <label for="house-select">Select a House:</label>
+        <label for="house-select">請選擇房源：</label>
         <select id="house-select" v-model="store.selectedHouse" @change="update">
             <option v-for="house in store.houses" :key="house.id" :value="house.id">
-                [{{ house.name }}][{{ house.id }}]
+                [{{ house.name }}][{{ house.country }}{{ house.city }}{{ house.region }}]
             </option>
         </select>
     </div>
