@@ -17,11 +17,11 @@
   </template>
 
 <script >
-import { computed } from 'vue';
-import { useUserStore } from '@/stores/userStore';
+// import { computed } from 'vue';
+// import { useUserStore } from '@/stores/userStore';
 
-const userStore = useUserStore();
-const isAdmin = computed(() => userStore.user.role === 'admin');
+// const userStore = useUserStore();
+// const isAdmin = computed(() => userStore.user.role === 'admin');
 </script>
 <style scoped>
 </style>

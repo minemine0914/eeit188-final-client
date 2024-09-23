@@ -112,7 +112,7 @@ const routes = [
         component: () => import("@/views/SystemView.vue"),
         meta: { title: "Nomad 系統管理", requiresAuth: true, role: "admin" },
         children: [
-            kenjoRouter,
+            // kenjoRouter,
             {
                 path: "", // Default
                 name: "Dashboard",
@@ -178,13 +178,13 @@ router.beforeEach((to, from, next) => {
     if (to.meta.requiresAuth && jwtToken.value == null && user.value != null) {
         console.log("[Router beforeach] You are not login, take you to login page...");
         next("/login");
-    }if (to.meta.requiresAdmin && user.value?.role !== 'admin') {
-        console.log("[Router beforeEach] You do not have admin access, redirecting...");
-        return next("/"); 
+    // }else if (to.meta.requiresAdmin && user.value?.role !== 'admin') {
+    //     console.log("[Router beforeEach] You do not have admin access, redirecting...");
+    //     return next("/"); 
     }else {
         console.log("[Router beforeach] Check success");
         next();
-    const { jwtToken, user } = storeToRefs(userStore);
+    }
     console.log("[Router beforeEach] path=" + to.path, " requiresAuth=", to.meta.requiresAuth);
     // 如果用戶已經登入，並且嘗試訪問 /login 或 /system/login，重定向到首頁
     if (

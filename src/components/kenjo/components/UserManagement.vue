@@ -147,9 +147,9 @@
 
 <script>
 import axios, { all } from 'axios';
-import { decodeToken } from '../../../stores/userStore';
-const token = localStorage.getItem('authToken'); 
-const decoded = decodeToken(token);
+// import { decodeToken } from '../../../stores/userStore';
+// const token = localStorage.getItem('authToken'); 
+// const decoded = decodeToken(token);
 export default {
   data() {
     return {
@@ -230,10 +230,11 @@ export default {
   methods: {
     async fetchUsers() {
       try {
-        const response = await axios.get('http://localhost:8080/user/find-users', {
-          headers: {
-            Authorization: `Bearer ${token}` // 添加授權標頭
-          },
+        const response = await axios.get('http://localhost:8080/user/find-users'
+        , {
+          // headers: {
+          //   Authorization: `Bearer ${token}` // 添加授權標頭
+          // },
           params: {
             pageNo: 0,
             pageSize: 1000
@@ -277,9 +278,9 @@ export default {
     async deleteUserConfirm() {
       try {
         await axios.delete(`http://localhost:8080/user/${this.editedUser.id}`,{
-          headers: {
-            Authorization: `Bearer ${token}` // 添加授權標頭
-          }
+          // headers: {
+          //   Authorization: `Bearer ${token}` // 添加授權標頭
+          // }
         });
         this.desserts.splice(this.editedIndex, 1);
         this.closeDelete();
@@ -314,12 +315,14 @@ export default {
         if (this.editedIndex > -1) {
           // 更新現有用戶
           await axios.put(`http://localhost:8080/user/${this.editedUser.id}`, this.editedUser,
-          {headers: {Authorization: `Bearer ${token}`}});
+          // {headers: {Authorization: `Bearer ${token}`}}
+          );
           Object.assign(this.desserts[this.editedIndex], this.editedUser);
         } else {
           // 創建新用戶
           const response = await axios.post('http://localhost:8080/user/createUser', this.editedUser,
-            {headers: {Authorization: `Bearer ${token}`}});
+            // {headers: {Authorization: `Bearer ${token}`}}
+            );
           this.desserts.push(response.data);
         }
         this.close();
