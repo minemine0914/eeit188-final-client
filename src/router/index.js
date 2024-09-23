@@ -128,25 +128,25 @@ const routes = [
                 path: "login",
                 name: "SystemLogin",
                 component: () => import("@/pages/system/AdminLoginPage.vue"),
-                meta: { title: "Nomad 系統管理登入", requiresAuth: true, role: "admin" },
+                meta: { title: "Nomad 系統管理登入", requiresAuth: false, role: "admin" },
             },
             {
                 path: "createAdmin",
                 name: "CreateAdmin",
                 component: () => import("@/pages/system/CreateAdminPage.vue"),
-                meta: { title: "Nomad 系統管理註冊", requiresAuth: true, role: "admin" },
+                meta: { title: "Nomad 系統管理註冊", requiresAuth: false, role: "admin" },
             },
             {
                 path: "forgot-password",
                 name: "AdminForgotPassword",
                 component: () => import("@/pages/system/AdminForgotPasswordPage.vue"),
-                meta: { title: "Nomad 系統管理忘記密碼", requiresAuth: true, role: "admin" },
+                meta: { title: "Nomad 系統管理忘記密碼", requiresAuth: false, role: "admin" },
             },
             {
                 path: "/system/reset-password",
                 name: "AdminResetPassword",
                 component: () => import("@/pages/system/AdminResetPasswordFromEmailLinkPage.vue"),
-                meta: { title: "Nomad 系統管理重設密碼", requiresAuth: true, role: "admin" },
+                meta: { title: "Nomad 系統管理重設密碼", requiresAuth: false, role: "admin" },
             },
             {
                 path: "admin-chat",
@@ -178,7 +178,11 @@ router.beforeEach((to, from, next) => {
     const { jwtToken, user } = storeToRefs(userStore);
     console.log("[Router beforeEach] path=" + to.path, " requiresAuth=", to.meta.requiresAuth);
     // 只在 requiresAuth 為 true 時進行驗證
-    if (to.meta.requiresAuth) {
+    // 如果用戶已經登入，並且嘗試訪問 /login 或 /system/login，重定向到首頁
+    if (jwtToken.value != null && (to.path === "/login" || to.path === "/system/login")) {
+        console.log("[Router beforeEach] 已登入，重定向至首頁...");
+        next("/");
+    } else if (to.meta.requiresAuth) {
         // 檢查使用者是否已登入
         if (jwtToken.value == null) {
             console.log("[Router beforeEach] 你尚未登入，重定向至登入頁面...");
@@ -188,8 +192,16 @@ router.beforeEach((to, from, next) => {
             // 檢查是否有角色限制，並確認角色是否符合
             if (to.meta.role && user.value) {
                 if (to.meta.role === "admin" && user.value.role !== "admin") {
-                    console.log("[Router beforeEach] 訪問拒絕：此頁面僅限管理員訪問");
-                    next("/"); // 將非管理員重定向至首頁
+                    // 檢查是否是 /system 路由，若是則重定向到 /admin-login
+                    if (to.path.startsWith("/system")) {
+                        console.log(
+                            "[Router beforeEach] 訪問拒絕：此頁面僅限管理員訪問，重定向至 /admin-login"
+                        );
+                        next("/system/login");
+                    } else {
+                        console.log("[Router beforeEach] 訪問拒絕：此頁面僅限管理員訪問");
+                        next("/"); // 將非管理員重定向至首頁
+                    }
                 } else if (to.meta.role === "normal" && user.value.role !== "normal") {
                     console.log("[Router beforeEach] 訪問拒絕：此頁面僅限普通用戶訪問");
                     next("/"); // 將非普通用戶重定向至首頁

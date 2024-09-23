@@ -61,6 +61,7 @@ const userStore = useUserStore();
 export const useHouseDetailStore = defineStore("HouseDetail", () => {
     const houseInfo = reactive({ ...initialHouseInfo });
     const hostInfo = reactive({ ...initialHostInfo });
+    const discussList = reactive([]);
     const isErrorGetHouseInfo = ref(false);
     const isLoading = ref(true);
     const isLoadingCollection = ref(false);
@@ -123,6 +124,22 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
                 Object.assign(hostInfo, initialHostInfo);
                 console.log("Get host avater failed");
             });
+    }
+
+    async function getHouseDiscuss() {
+        let data = null;
+        await api
+            .get(`/discuss/house/${houseInfo.id}`)
+            .then((res) => {
+                console.log("Get house discuss success");
+                data = res.data;
+            })
+            .catch((err) => {
+                // Object.assign(houseDiscuss, initialHuseDiscuss);
+                console.log("Get host avater failed");
+            });
+
+        return data;
     }
 
     async function addHouseToCollection() {
@@ -223,6 +240,7 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
     return {
         houseInfo,
         hostInfo,
+        discussList,
         isErrorGetHouseInfo,
         isLoading,
         isLoadingCollection,
@@ -232,6 +250,7 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
         resetHouseInfo,
         getHouseDetailImage,
         getHouseInfo,
+        getHouseDiscuss,
         addHouseToCollection,
         removeHouseToCollection,
         checkIsCollectedHouse,
