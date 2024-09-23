@@ -308,6 +308,12 @@
                         type="avatar, list-item-three-line, avatar, list-item-three-line"
                         v-if="isLoading"
                     />
+                    <v-sheet v-else-if="previewDiscussList.length === 0" class="w-100 text-center">
+                        <v-alert variant="plain">
+                            <v-icon icon="mdi-emoticon-cry-outline" size="x-large"></v-icon>
+                            <div class="mt-2">目前沒有任何評價</div>
+                        </v-alert>
+                    </v-sheet>
                     <v-row v-else>
                         <v-col cols="12" md="6" v-for="previewDiscuss in previewDiscussList">
                             <v-card color="brown-lighten-5" flat>
@@ -341,10 +347,17 @@
                                         class="overflow-auto"
                                         color="transparent"
                                     >
-                                        <p v-if="previewDiscuss.discuss.length !== 0">
+                                        <p v-if="typeof previewDiscuss.discuss !== 'undefined'">
                                             {{ previewDiscuss.discuss }}
                                         </p>
-                                        <div v-else>無</div>
+                                        <div
+                                            v-else
+                                            class="d-flex justify-center align-center h-100"
+                                        >
+                                            <div class="flex-grow-1 text-grey-darken-2 text-center">
+                                                無評論
+                                            </div>
+                                        </div>
                                     </v-sheet>
                                     <div class="text-caption text-end pt-3">
                                         評論日期: 2024-09-09

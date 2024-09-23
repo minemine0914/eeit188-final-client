@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { computed, reactive, ref, nextTick } from "vue";
-import isEqual from 'lodash/isEqual'; // 可以使用 Lodash 進行深度比較
+import isEqual from "lodash/isEqual"; // 可以使用 Lodash 進行深度比較
 import api from "../plugins/axios";
 import NotAvailableImage from "@/assets/ImageNotAvailable01.webp";
 
@@ -61,7 +61,9 @@ export const useHouseSearchStore = defineStore("HouseSearch", () => {
     const hotHouseList = reactive([]);
 
     const isSearchParamsEqual = computed(() => {
-        return isEqual(searchParams, initialSearchParams) && isEqual(inputValues, initialInputValues);
+        return (
+            isEqual(searchParams, initialSearchParams) && isEqual(inputValues, initialInputValues)
+        );
     });
 
     function resetSearchParams() {
@@ -130,12 +132,11 @@ export const useHouseSearchStore = defineStore("HouseSearch", () => {
                 page: currentFilterHousePage.value,
             })
             .then((res) => {
-                console.log(res);
-                // Object.assign(filterHouseList, res.data);
+                console.log("取得FilterHouse成功");
                 resData = res.data;
             })
             .catch((err) => {
-                console.log("取得房源失敗");
+                console.log("取得FilterHouse失敗");
             });
         return resData;
     }
@@ -148,54 +149,49 @@ export const useHouseSearchStore = defineStore("HouseSearch", () => {
                 page: currentAllHousePage.value,
             })
             .then((res) => {
-                console.log(res);
-                // Object.assign(allHouseList, res.data);
+                console.log("取得AllHouse成功");
                 resData = res.data;
             })
             .catch((err) => {
-                console.log("取得房源失敗");
+                console.log("取得AllHouse失敗");
             });
         return resData;
     }
 
     async function getNewHouse() {
-        let resData = null;
         await api
             .post("/house/search", {
-                limit: currentAllHouseLimit.value,
-                page: currentAllHousePage.value,
+                limit: 10,
+                page: 0,
                 dir: true,
                 order: "createdAt",
             })
             .then((res) => {
-                console.log(res);
-                // Object.assign(allHouseList, res.data);
-                resData = res.data;
+                console.log("取得NewHouse成功");
+                newHouseList.splice(0, newHouseList.length);
+                newHouseList.push(...res.data.content);
             })
             .catch((err) => {
-                console.log("取得房源失敗");
+                console.log("取得NewHouse失敗");
             });
-        return resData;
     }
 
     async function getHotHouse() {
-        let resData = null;
         await api
             .post("/house/search", {
-                limit: currentAllHouseLimit.value,
-                page: currentAllHousePage.value,
+                limit: 10,
+                page: 0,
                 dir: true,
                 order: "createdAt",
             })
             .then((res) => {
-                console.log(res);
-                // Object.assign(allHouseList, res.data);
-                resData = res.data;
+                console.log("取得HotHouse成功");
+                hotHouseList.splice(0, hotHouseList.length);
+                hotHouseList.push(...res.data.content);
             })
             .catch((err) => {
-                console.log("取得房源失敗");
+                console.log("取得HotHouse失敗");
             });
-        return resData;
     }
 
     return {
