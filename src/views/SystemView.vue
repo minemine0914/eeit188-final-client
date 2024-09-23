@@ -104,7 +104,7 @@ function handleLogout() {
     cancelButtonText: "取消",
   }).then((result) => {
     if (result.isConfirmed) {
-      userStore.logout();
+      userStore.adminLogout();
     }
   });
 }

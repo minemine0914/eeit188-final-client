@@ -93,6 +93,11 @@ export const useUserStore = defineStore(
       router.push("/");
     }
 
+    function adminLogout() {
+      resetJWTTokenAndUser();
+      router.push("/system/login");
+    }
+
     function removePasswordResetToken() {
       passwordResetToken.value = null;
       router.push("/login");
@@ -299,7 +304,7 @@ export const useUserStore = defineStore(
     function decodeToken(token) {
       if (typeof token === "string" && token.trim() !== "") {
         try {
-          return jwtDecode(token);
+          return jwtDecode.jwtDecode(token);
         } catch (error) {
           console.error("Failed to decode JWT token:", error);
           return null;
