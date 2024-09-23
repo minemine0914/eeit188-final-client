@@ -300,7 +300,12 @@
                                 <template v-slot:prepend>
                                     <v-icon icon="mdi-message-draw" color="brown"></v-icon>
                                 </template>
-                                立即評價
+                                {{
+                                    selfHouseDiscuss.houseId === null &&
+                                    selfHouseDiscuss.userId === null
+                                        ? "立即評價"
+                                        : "修改評價"
+                                }}
                             </v-btn>
                         </div>
                     </v-sheet>
@@ -403,6 +408,7 @@ const {
     houseInfo,
     hostInfo,
     previewDiscussList,
+    selfHouseDiscuss,
     isErrorGetHouseInfo,
     isLoading,
     isLoadingCollection,
