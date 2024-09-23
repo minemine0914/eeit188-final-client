@@ -67,7 +67,30 @@
         </td>
       </tr>
     </template>
+    <template v-slot:item.actions="{ item }">
+        <v-icon @click="openDialog(item)" class="me-2" small>
+          mdi-pencil
+        </v-icon>
+  </template>
   </v-data-table>
+        <v-dialog v-model="dialog" max-width="290">
+          <v-card>
+            <v-card-title class="headline">選擇狀態</v-card-title>
+            <v-card-text>
+              <v-radio-group v-model="selectedStatus">
+                <v-radio label="上架" :value="true"></v-radio>
+                <v-radio label="下架" :value="false"></v-radio>
+                <!-- <v-radio label="審核中" :value="null"></v-radio> -->
+              </v-radio-group>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn @click="updateStatus" color="primary">確認</v-btn>
+              <v-btn @click="resetDialog" color="grey">取消</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+  
   </div>
 </template>
 
@@ -79,6 +102,9 @@ export default {
     return {
       search:"",
       expanded: [],
+      dialog: false,
+      selectedStatus: null,
+      currentItem: null,
       dessertHeaders: [
           //標題
         {
@@ -88,7 +114,7 @@ export default {
         { title: '地址 ', key: 'address' },
         { title: '房屋類型 ', key: 'category' },
         { title: '狀態 ', key: 'show' },
-      
+        { title: '編輯', value: 'actions', sortable: false }
       ],
       desserts: [],
     }
@@ -116,7 +142,13 @@ export default {
     this.fetchOrder();
   },
 
-
+  watch: {
+      dialog(val) {
+        if (!val) {
+          this.selectedStatus = null; 
+        }
+      },
+    },
   methods: {
     
     
@@ -158,8 +190,8 @@ export default {
           return 'green';
         case false:
           return 'orange';
-        case 0:
-          return 'orange';
+        case null:
+          return 'blue';  
         default:
           return 'red';
       }
@@ -168,8 +200,10 @@ export default {
       switch (show) {
         case true:
           return '刊登中';
-        case false:
+        case null:
           return '審核中';
+        case false:
+          return '下架中';  
         default:
           return '確認中';
       }
@@ -233,7 +267,31 @@ export default {
           return '有無陽台待確認';
       }
     },
+    async updateStatus() {
+      try {
+        const response = await axios.put(`http://localhost:8080/house/${this.currentItem.id}`, {
+          show: this.selectedStatus
+        });
 
+        if (response.status === 200) {
+          this.currentItem.show = this.selectedStatus; 
+          this.dialog = false; 
+        }
+      } catch (error) {
+        console.error('Error updating status:', error);
+        
+      }
+    },
+
+    openDialog(item) {
+      this.currentItem = item; 
+      this.selectedStatus = item.show; 
+      this.dialog = true; 
+    },
+    resetDialog() {
+        this.selectedStatus = null; 
+        this.dialog = false; 
+      },
     
 },
 }

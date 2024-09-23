@@ -283,7 +283,7 @@ export const useUserStore = defineStore(
     function decodeToken(token) {
       if (typeof token === "string" && token.trim() !== "") {
         try {
-          return jwtDecode.jwtDecode(token);
+          return jwtDecode(token);
         } catch (error) {
           console.error("Failed to decode JWT token:", error);
           return null;

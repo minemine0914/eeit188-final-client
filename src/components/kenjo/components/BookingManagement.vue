@@ -68,7 +68,7 @@
                     <v-text-field
                       v-model="editedOrder.user.name"
                       label="房客資訊"
-                      @click="showGuestInfo"
+                      
                     ></v-text-field>
                   </v-col>
                   <v-col cols="12" md="4" sm="6">
@@ -138,7 +138,7 @@
         </v-dialog> -->
 
         <!-- 房客資訊對話框 -->
-        <<v-dialog v-model="dialogGuestInfo" max-width="500px">
+        <v-dialog v-model="dialogGuestInfo" max-width="500px">
           <v-card>
             <v-card-title class="text-h5">房客資訊</v-card-title>
             <v-card-text>
@@ -205,7 +205,7 @@ export default {
         { title: '房客資訊', key: 'user.name' },
         { title: '房東資訊', key: 'house.userName' },
         { title: '金額', key: 'cashFlow' },
-        { title: '付款方式', key: '' },
+        // { title: '付款方式', key: '' },
         { title: '下單時間', key: 'createdAt' },
         { title: '訂單狀態', key: 'deal' },
         { title: '編輯', key: 'actions', sortable: false },
