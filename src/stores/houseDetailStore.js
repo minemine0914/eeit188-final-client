@@ -61,7 +61,9 @@ const userStore = useUserStore();
 export const useHouseDetailStore = defineStore("HouseDetail", () => {
     const houseInfo = reactive({ ...initialHouseInfo });
     const hostInfo = reactive({ ...initialHostInfo });
+    const previewDiscussList = reactive([]);
     const discussList = reactive([]);
+    const currentDiscussPage = ref(0);
     const isErrorGetHouseInfo = ref(false);
     const isLoading = ref(true);
     const isLoadingCollection = ref(false);
@@ -104,6 +106,7 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
                 checkIsCollectedHouse();
                 checkIsDiscussHouse();
                 getHostInfo();
+                getPreviewDiscussList();
             })
             .catch((err) => {
                 Object.assign(houseInfo, initialHouseInfo);
@@ -123,6 +126,19 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
             .catch((err) => {
                 Object.assign(hostInfo, initialHostInfo);
                 console.log("Get host avater failed");
+            });
+    }
+
+    async function getPreviewDiscussList() {
+        await api
+            .get(`/discuss/house/${houseInfo.id}`, { params: { pageNo: 0, pageSize: 4 } })
+            .then((res) => {
+                console.log("Get preview discuss success");
+                previewDiscussList.splice(0, previewDiscussList.length);
+                previewDiscussList.push(...res.data.discusses);
+            })
+            .catch((err) => {
+                console.log("Get preview discuss failed");
             });
     }
 
@@ -241,6 +257,8 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
         houseInfo,
         hostInfo,
         discussList,
+        previewDiscussList,
+        currentDiscussPage,
         isErrorGetHouseInfo,
         isLoading,
         isLoadingCollection,
@@ -250,6 +268,7 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
         resetHouseInfo,
         getHouseDetailImage,
         getHouseInfo,
+        getPreviewDiscussList,
         getHouseDiscuss,
         addHouseToCollection,
         removeHouseToCollection,

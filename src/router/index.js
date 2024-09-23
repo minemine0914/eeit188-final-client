@@ -177,25 +177,36 @@ router.beforeEach((to, from, next) => {
     const userStore = useUserStore();
     const { jwtToken, user } = storeToRefs(userStore);
     console.log("[Router beforeEach] path=" + to.path, " requiresAuth=", to.meta.requiresAuth);
-    // 只在 requiresAuth 為 true 時進行驗證
     // 如果用戶已經登入，並且嘗試訪問 /login 或 /system/login，重定向到首頁
-    if (jwtToken.value != null && (to.path === "/login" || to.path === "/system/login")) {
+    if (
+        jwtToken.value != null &&
+        user.value &&
+        (to.path === "/login" || to.path === "/system/login")
+    ) {
         console.log("[Router beforeEach] 已登入，重定向至首頁...");
         next("/");
     } else if (to.meta.requiresAuth) {
         // 檢查使用者是否已登入
         if (jwtToken.value == null) {
-            console.log("[Router beforeEach] 你尚未登入，重定向至登入頁面...");
-            next("/login");
+            console.log("[Router beforeEach] 你尚未登入，進行重定向...");
+
+            // 根據路徑決定重定向到哪個登入頁面
+            if (to.path.startsWith("/system")) {
+                console.log("[Router beforeEach] 重定向到 /system/login");
+                next("/system/login"); // 未登入用戶訪問 /system 時，重定向到 /system/login
+            } else {
+                console.log("[Router beforeEach] 重定向到 /login");
+                next("/login"); // 其他情況下重定向到 /login
+            }
         } else {
             console.log("[Router beforeEach] 驗證成功");
+
             // 檢查是否有角色限制，並確認角色是否符合
             if (to.meta.role && user.value) {
                 if (to.meta.role === "admin" && user.value.role !== "admin") {
-                    // 檢查是否是 /system 路由，若是則重定向到 /admin-login
                     if (to.path.startsWith("/system")) {
                         console.log(
-                            "[Router beforeEach] 訪問拒絕：此頁面僅限管理員訪問，重定向至 /admin-login"
+                            "[Router beforeEach] 訪問拒絕：此頁面僅限管理員訪問，重定向至 /system/login"
                         );
                         next("/system/login");
                     } else {
