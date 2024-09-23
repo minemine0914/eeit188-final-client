@@ -1,3 +1,5 @@
+import wuRouter from "./wu";
+
 const router = {
     path: "/lo",
     name: "Lo",
@@ -40,7 +42,7 @@ const router = {
             component: () => import('@/components/lo/EditProperty.vue'),
             props: true
         },
-
+        wuRouter,
 
     ],
 };

@@ -1,9 +1,14 @@
 <template>
-    <Pie :data="genderData" />
-    <div>
-        <p>男：{{ maleCount }}人，佔{{ (maleCount / totalUsers * 100).toFixed(2) }}%</p>
-        <p>女：{{ femaleCount }}人，佔{{ (femaleCount / totalUsers * 100).toFixed(2) }}%</p>
-        <p>其他：{{ otherCount }}人，佔{{ (otherCount / totalUsers * 100).toFixed(2) }}%</p>
+    <div v-if="totalUsers">
+        <Pie :data="genderData" />
+        <div>
+            <p>男：{{ maleCount }}人，佔{{ (maleCount / totalUsers * 100).toFixed(2) }}%</p>
+            <p>女：{{ femaleCount }}人，佔{{ (femaleCount / totalUsers * 100).toFixed(2) }}%</p>
+            <p>其他：{{ otherCount }}人，佔{{ (otherCount / totalUsers * 100).toFixed(2) }}%</p>
+        </div>
+    </div>
+    <div v-else>
+        <p>此區間無性別資料</p>
     </div>
 </template>
 

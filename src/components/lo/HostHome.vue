@@ -24,7 +24,7 @@
                     <v-btn text @click="navigateTo('reviews')">住客評價</v-btn>
                 </v-list-item>
                 <v-list-item>
-                    <v-btn text @click="navigateTo('report')">統計報表</v-btn>
+                    <v-btn text @click="navigateTo('host-report')">統計報表</v-btn>
                 </v-list-item>
             </v-list>
 

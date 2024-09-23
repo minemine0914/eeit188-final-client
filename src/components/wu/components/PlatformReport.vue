@@ -44,7 +44,7 @@ onMounted(async () => {
 
         setTimeout(() => {
             store.isLoading = false;
-        }, 0);// setTimeout for test
+        }, 500);// setTimeout for test
     }
 });
 </script>

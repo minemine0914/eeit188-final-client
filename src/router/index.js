@@ -162,7 +162,6 @@ const routes = [
         component: () => import("@/views/NotFound.vue"),
     },
     minemineRouter,
-    wuRouter,
 
     leonRouter,
     loRouter,

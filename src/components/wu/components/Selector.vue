@@ -27,7 +27,7 @@ const update = async () => {
 
         setTimeout(() => {
             store.isLoading = false;
-        }, 100);// setTimeout for test
+        }, 500);// setTimeout for test
     }
 }
 </script>
