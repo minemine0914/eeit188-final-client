@@ -50,7 +50,7 @@ const rules = {
 
 const v$ = useVuelidate(rules, state);
 const userStore = useUserStore();
-const { loginAuth } = userStore;
+const { adminLoginAuth } = userStore;
 const router = useRouter();
 
 const submit = async () => {
@@ -61,7 +61,7 @@ const submit = async () => {
   }
 
   try {
-    await loginAuth({
+    await adminLoginAuth({
       email: state.email,
       password: state.password,
     });
