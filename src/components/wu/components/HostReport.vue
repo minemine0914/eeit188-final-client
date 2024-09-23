@@ -1,8 +1,8 @@
 <!-- src/views/HostReport.vue -->
 <template>
     <div>
-        <h1>歷史紀錄與報表[房東]</h1>
-        <h2>歡迎回來，{{ store.loginUser.name }}</h2>
+        <h1>歷史紀錄與報表</h1>
+        <h2>您好，{{ store.loginUser.name }}，歡迎使用本系統</h2>
         <Selector />
 
         <!-- Loading Spinner -->
@@ -44,7 +44,7 @@ onMounted(async () => {
 
         setTimeout(() => {
             store.isLoading = false;
-        }, 0);// setTimeout for test
+        }, 500);// setTimeout for test
     }
 });
 </script>
