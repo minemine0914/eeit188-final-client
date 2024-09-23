@@ -2,9 +2,10 @@
     <v-card
         flat
         rounded="lg"
-        @click="$router.push(`/house/${house.id}`)"
+        @click.stop="$router.push(`/house/${house.id}`)"
         :ripple="false"
         :hover="false"
+        
     >
         <v-card-item class="pt-4">
             <v-sheet color="transparent" class="overflow-hidden" rounded="lg">

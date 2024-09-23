@@ -27,7 +27,7 @@ export default defineConfig({
     },
     optimizeDeps: {
         noDiscovery: true,
-        include: ["geotiff"],
+        include: ["geotiff", "lodash/isEqual"],
     },
     cacheDir: "node_modules/.vite_cache", // Use a cache directory to persist dependency optimization
     build: {

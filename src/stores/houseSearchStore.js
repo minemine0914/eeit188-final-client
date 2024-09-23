@@ -1,7 +1,38 @@
 import { defineStore } from "pinia";
 import { computed, reactive, ref, nextTick } from "vue";
+import isEqual from 'lodash/isEqual'; // 可以使用 Lodash 進行深度比較
 import api from "../plugins/axios";
 import NotAvailableImage from "@/assets/ImageNotAvailable01.webp";
+
+const initialSearchParams = {
+    city: "",
+    postulateIds: [],
+    daterange: [],
+    adult: 0,
+    child: 0,
+    pet: false,
+    matchAllPostulates: false,
+    livingDiningRoom: 0,
+    bedroom: 0,
+    bathroom: 0,
+    restroom: 0,
+    minPrice: 0,
+    maxPrice: 99999,
+    minLatitudeX: null,
+    maxLatitudeX: null,
+    minLongitudeY: null,
+    maxLongitudeY: null,
+    name: "",
+};
+
+const initialInputValues = {
+    cityName: "",
+    dateRange: [],
+    postulates: "",
+    cityChipGroup: [],
+    postulateChipGroup: [],
+    housePriceRange: [0, 99999],
+};
 
 export const useHouseSearchStore = defineStore("HouseSearch", () => {
     // Default pageable limit
@@ -12,43 +43,33 @@ export const useHouseSearchStore = defineStore("HouseSearch", () => {
     const currentAllHousePage = ref(0);
     const renderInfinityScrollComponent = ref(true);
 
+    // const isSearchParams = ref(true);
+
     // Some input values
-    const inputValues = reactive({
-        cityName: "",
-        dateRange: [],
-    });
-    const postlateChipGroup = ref([]);
-    const housePriceRange = ref([0, 100000]);
+    const inputValues = reactive({ ...initialInputValues });
 
     // Postulate List
     const postulateList = reactive([]);
 
     // Filter House Search params
-    const searchParams = reactive({
-        city: "",
-        postulateIds: [],
-        daterange: [],
-        adult: 0,
-        child: 0,
-        pet: false,
-        matchAllPostulates: false,
-        livingDiningRoom: 0,
-        bedroom: 0,
-        bathroom: 0,
-        restroom: 0,
-        minPrice: 0,
-        maxPrice: 100000,
-        minLatitudeX: null,
-        maxLatitudeX: null,
-        minLongitudeY: null,
-        maxLongitudeY: null,
-    });
+    const searchParams = reactive({ ...initialSearchParams });
 
     // House List
     const filterHouseList = reactive([]);
     const allHouseList = reactive([]);
     const newHouseList = reactive([]);
     const hotHouseList = reactive([]);
+
+    const isSearchParamsEqual = computed(() => {
+        return isEqual(searchParams, initialSearchParams) && isEqual(inputValues, initialInputValues);
+    });
+
+    function resetSearchParams() {
+        console.log("Reset search params");
+        Object.assign(searchParams, { ...initialSearchParams });
+        Object.assign(inputValues, { ...initialInputValues });
+        searchParams.postulateIds.splice(0, searchParams.postulateIds.length);
+    }
 
     function getHouseImageUrlList(records) {
         let imageBaseUrl = import.meta.env.VITE_API_URL + "/house-external-resource/image/";
@@ -144,7 +165,7 @@ export const useHouseSearchStore = defineStore("HouseSearch", () => {
                 limit: currentAllHouseLimit.value,
                 page: currentAllHousePage.value,
                 dir: true,
-                order: "createdAt"
+                order: "createdAt",
             })
             .then((res) => {
                 console.log(res);
@@ -164,7 +185,7 @@ export const useHouseSearchStore = defineStore("HouseSearch", () => {
                 limit: currentAllHouseLimit.value,
                 page: currentAllHousePage.value,
                 dir: true,
-                order: "createdAt"
+                order: "createdAt",
             })
             .then((res) => {
                 console.log(res);
@@ -185,13 +206,13 @@ export const useHouseSearchStore = defineStore("HouseSearch", () => {
         currentAllHousePage,
         inputValues,
         searchParams,
-        postlateChipGroup,
-        housePriceRange,
         postulateList,
         filterHouseList,
         allHouseList,
         newHouseList,
         hotHouseList,
+        isSearchParamsEqual,
+        resetSearchParams,
         getHouseImageUrlList,
         resetSearchResult,
         getPostulateList,

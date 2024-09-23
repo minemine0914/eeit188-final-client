@@ -8,7 +8,7 @@
                 md="5"
                 lg="4"
                 class="h-100"
-                style="contain: size; padding-top: 100px"
+                style="contain: size; padding-top: 110px"
             >
                 <v-card ref="infoCardRef" class="h-100" rounded="xl">
                     <v-toolbar color="transparent" ref="infoCardToolbarRef" class="pa-2">
