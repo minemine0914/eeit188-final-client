@@ -1,7 +1,6 @@
 const router = {
     path: "/wu",
     name: "Wu",
-    component: () => import("@/components/wu/Test.vue"),
     children: [
         {
             path: "", // Default

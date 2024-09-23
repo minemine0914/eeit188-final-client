@@ -1,18 +1,25 @@
 <template>
     <v-card flat>
         <v-card-title class="d-flex align-center pe-2">
-            <template v-if="store.loginUser.role === 'noral'">
+            <template v-if="store.loginUser.role === 'normal'">
                 <v-icon icon="mdi-home"></v-icon>
                 &nbsp;近期訂單紀錄&nbsp;
             </template>
-            <template v-if="store.loginUser.role === 'normal'">
-                <v-icon icon="mdi-home"></v-icon>
-                &nbsp;{{ store.selectedUser }}&nbsp;
+            <!-- *******************role to be fixed********************* -->
+            <template v-if="store.loginUser.role === 'admin'">
+                <v-icon icon="mdi-account"></v-icon>
+                &nbsp;房東名稱：{{ currentUser.name }}&nbsp;
             </template>
             <v-icon icon="mdi-home"></v-icon>
             房源名稱：{{ store.itemsSource[0]?.house.name }}[{{
                 `${store.itemsSource[0]?.house?.country}${store.itemsSource[0]?.house?.city}${store.itemsSource[0]?.house?.region}`
             }}]
+            <v-chip v-if="store.itemsSource[0]?.house?.balcony" variant="outlined"> 陽台 </v-chip>
+            <v-chip v-if="store.itemsSource[0]?.house?.bathroom" variant="outlined"> 衛浴 </v-chip>
+            <v-chip v-if="store.itemsSource[0]?.house?.bedroom" variant="outlined"> 臥房 </v-chip>
+            <v-chip v-if="store.itemsSource[0]?.house?.kitchen" variant="outlined"> 廚房 </v-chip>
+            <v-chip v-if="store.itemsSource[0]?.house?.pet" variant="outlined"> 可攜帶寵物 </v-chip>
+            <v-chip v-if="store.itemsSource[0]?.house?.smoke" variant="outlined"> 可吸菸 </v-chip>
             <v-spacer></v-spacer>
 
             <v-text-field v-model="search" density="compact" label="Search" prepend-inner-icon="mdi-magnify"
@@ -44,8 +51,6 @@
                         <v-img :src="item.pics.good.src" height="64" :title="item.pics.good.title" cover></v-img>
                     </v-card>
                 </div>
-
-
             </template>
 
             <template v-slot:item.rating="{ item }">
@@ -83,9 +88,17 @@ const headers = [
     { title: '性別', value: 'bookerGender', sortable: true },
     { title: '金額', value: 'cashFlow', sortable: true },
     { title: '圖片', value: 'pics', sortable: false, width: '200px' }, // Disable sorting for pics
+    { title: '設施', value: 'postulate', sortable: false }, // Disable sorting for pics
 ];
 const itemsPerPage = 3 // Default items per page
 const itemsPerPageOptions = [3, 5, 10, 25, 50, 100, -1] // Options for per-page selector
+
+const currentUser = computed(() => {
+    console.log('Fetching current user...');
+    const user = store.getUserBySelectedUserId(store.selectedUserId);
+    console.log('Current user:', user);
+    return user;
+});
 
 const items = computed(() => {
     console.log('is', store.itemsSource)
@@ -115,6 +128,7 @@ const items = computed(() => {
         'cashFlow': `$${item?.cashFlow}`,
         'createdAt': new Date(item?.createdAt),
         'pics': store.pics,
+        'postulate': '',
     }))
 });
 

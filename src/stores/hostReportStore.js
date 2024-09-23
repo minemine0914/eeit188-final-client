@@ -15,6 +15,7 @@ export const useHostReportStore = defineStore('hostReport', {
         // loginUser: 'f27a7b80-4d60-44cf-aa1c-9b44dd375698',
         selectedHouse: '',
         selectedUserId: '',
+        selectedUserIndex: 0,
 
         users: [{ "id": '' }],
         houses: [],
@@ -569,6 +570,12 @@ export const useHostReportStore = defineStore('hostReport', {
             }
 
             return monthlySum; // Returns an array of summed monthly data
+        },
+
+        getUserBySelectedUserId(userId) {
+            console.log(userId)
+            console.log(this.users)
+            return this.users.find(user => user.id === userId) || null;
         },
 
         async findAllUser() {
