@@ -104,6 +104,7 @@ import { ref } from "vue";
 import { useUserViewStore } from "../stores/userViewStore";
 import { useUserStore } from "../stores/userStore";
 import { storeToRefs } from "pinia";
+import Swal from "sweetalert2";
 
 const userViewStore = useUserViewStore();
 const {

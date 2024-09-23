@@ -84,6 +84,7 @@
 import { storeToRefs } from "pinia";
 import { useUserStore } from "../stores/userStore";
 import { useUserViewStore } from "../stores/userViewStore";
+import Swal from "sweetalert2";
 // import Home from '../components/kenjo/Home.vue';
 
 const userStore = useUserStore();
@@ -93,10 +94,19 @@ const { memberMenu } = storeToRefs(userViewStore);
 
 // 登出
 function handleLogout() {
-  const confirmLogout = window.confirm("請確認是否要登出");
-  if (confirmLogout) {
-    userStore.adminLogout();
-  }
+  Swal.fire({
+    title: "請確認是否要登出?",
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "確定",
+    cancelButtonText: "取消",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      userStore.logout();
+    }
+  });
 }
 </script>
 <style scoped></style>
