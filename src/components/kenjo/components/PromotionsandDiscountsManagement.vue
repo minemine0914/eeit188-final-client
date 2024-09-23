@@ -23,7 +23,7 @@
       item-key="id"
     >
       <template v-slot:header.id>
-        <div class="text-center">名稱</div>
+        <div class="text-center">ID</div>
       </template>
       <template v-slot:item.image="{ item }">
         <div class="text-center">
@@ -77,7 +77,7 @@
       item-key="id"
     >
       <template v-slot:header.id>
-        <div class="text-center">名稱</div>
+        <div class="text-center">ID</div>
       </template>
       <template v-slot:header.discount>
         <div class="text-center">折扣金額</div>
@@ -87,6 +87,9 @@
       </template>
       <template v-slot:header.createdAt>
         <div class="text-center">創建日期</div>
+      </template>
+      <template v-slot:item.expire="{ item }">
+        <div class="text-center">{{ item.expire }}</div>
       </template>
       <template v-slot:top>
         <v-text-field
@@ -228,6 +231,13 @@ const discountCodeHeaders = [
   { text: '操作', value: 'actions', sortable: false }
 ];
 
+const formatDate = (dateString) => {
+  if (typeof dateString === 'string') {
+    return dateString.split('T')[0]; 
+  }
+  return ''; 
+};
+
 // 從 API 獲取數據
 const fetchPromotions = async () => {
   try {
@@ -238,8 +248,13 @@ const fetchPromotions = async () => {
      promotions.value = allPromotions.filter(promotion => 
       promotion.discountRate !== null && 
       promotion.discountRate !== undefined &&
-      promotion.discountRate !== ''
-    );
+      promotion.discountRate !== '')
+      .map(promotion => ({
+        ...promotion,
+        createdAt: formatDate(promotion.createdAt),
+        expire: promotion.expire !== null ? promotion.expire : 60 // 給予預設值
+      }));
+    ;
     console.log(promotions.value );
   } catch (error) {
     console.error('Error fetching discountRate:', error);
@@ -256,8 +271,13 @@ const fetchDiscountCodes = async () => {
     discountCodes.value = allDiscountCodes.filter(discountCode => 
       discountCode.discount != null && 
       discountCode.discount != undefined &&
-      discountCode.discount !==''
-    );
+      discountCode.discount !=='' )
+      .map(discountCode => ({
+        ...discountCode,
+        createdAt: formatDate(discountCode.createdAt),
+      
+      }));
+      ;
 
     console.log(discountCodes.value);
   } catch (error) {
