@@ -186,7 +186,27 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
         }
     }
 
-    async function writeSelfHouseDiscuss() {}
+    async function writeSelfHouseDiscuss() {
+        if (typeof userStore.user.id !== "undefined") {
+            await api
+                .post(`/discuss/`, {
+                    houseId: houseInfo.id,
+                    userId: userStore.user.id,
+                    score: selfHouseDiscuss.score,
+                    show: true,
+                    discuss: selfHouseDiscuss.discuss
+                })
+                .then((res) => {
+                    console.log("評論成功");
+                    
+                })
+                .catch((err) => {
+                    console.log("評論失敗");
+                });
+                getSelfHouseDiscuss();
+                getPreviewDiscussList();
+        }
+    }
 
     async function addHouseToCollection() {
         isLoadingCollection.value = true;
@@ -302,6 +322,7 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
         getPreviewDiscussList,
         getHouseDiscuss,
         getSelfHouseDiscuss,
+        writeSelfHouseDiscuss,
         addHouseToCollection,
         removeHouseToCollection,
         checkIsCollectedHouse,
