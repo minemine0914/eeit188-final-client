@@ -1,7 +1,6 @@
 const router = {
     path: "/wu",
     name: "Wu",
-    component: () => import("@/components/wu/Test.vue"),
     children: [
         {
             path: "", // Default
@@ -32,6 +31,12 @@ const router = {
             name: "host-report",
             component: () => import("@/components/wu/components/HostReport.vue"),
             meta: { title: "歷史紀錄與報表[房東]", requiresAuth: false },
+        },
+        {
+            path: "platform-report", // Default
+            name: "platform-report",
+            component: () => import("@/components/wu/components/PlatformReport.vue"),
+            meta: { title: "歷史紀錄與報表[平台]", requiresAuth: false },
         },
         {
             path: "create", // Default

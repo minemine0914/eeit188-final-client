@@ -72,6 +72,22 @@ export const useUserStore = defineStore(
       }
     }
 
+    async function adminLoginAuth(loginData) {
+      try {
+        const response = await api({
+          method: "post",
+          url: "/user/system/login",
+          data: loginData,
+        });
+        jwtToken.value = response.data.token;
+
+        await reloadUser();
+      } catch (error) {
+        console.error(error);
+        throw error;
+      }
+    }
+
     function logout() {
       resetJWTTokenAndUser();
       router.push("/");
@@ -301,6 +317,7 @@ export const useUserStore = defineStore(
       resetJWTTokenAndUser,
       register,
       loginAuth,
+      adminLoginAuth,
       logout,
       removePasswordResetToken,
       adminRemovePasswordResetToken,

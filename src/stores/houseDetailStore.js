@@ -57,10 +57,25 @@ const initialHostInfo = {
     avatarBase64: null,
 };
 
+const initialSelfHouseDiscuss = {
+    id: null,
+    discuss: null,
+    userId: null,
+    user: null,
+    houseId: null,
+    house: null,
+    avatar: null,
+    score: null,
+};
+
 const userStore = useUserStore();
 export const useHouseDetailStore = defineStore("HouseDetail", () => {
     const houseInfo = reactive({ ...initialHouseInfo });
     const hostInfo = reactive({ ...initialHostInfo });
+    const selfHouseDiscuss = reactive({ ...initialSelfHouseDiscuss });
+    const previewDiscussList = reactive([]);
+    const discussList = reactive([]);
+    const currentDiscussPage = ref(0);
     const isErrorGetHouseInfo = ref(false);
     const isLoading = ref(true);
     const isLoadingCollection = ref(false);
@@ -103,6 +118,8 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
                 checkIsCollectedHouse();
                 checkIsDiscussHouse();
                 getHostInfo();
+                getPreviewDiscussList();
+                getSelfHouseDiscuss();
             })
             .catch((err) => {
                 Object.assign(houseInfo, initialHouseInfo);
@@ -124,6 +141,52 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
                 console.log("Get host avater failed");
             });
     }
+
+    async function getPreviewDiscussList() {
+        await api
+            .get(`/discuss/house/${houseInfo.id}`, { params: { pageNo: 0, pageSize: 4 } })
+            .then((res) => {
+                console.log("Get preview discuss success");
+                previewDiscussList.splice(0, previewDiscussList.length);
+                previewDiscussList.push(...res.data.discusses);
+            })
+            .catch((err) => {
+                console.log("Get preview discuss failed");
+            });
+    }
+
+    async function getHouseDiscuss() {
+        let data = null;
+        await api
+            .get(`/discuss/house/${houseInfo.id}`)
+            .then((res) => {
+                console.log("Get house discuss success");
+                data = res.data;
+            })
+            .catch((err) => {
+                // Object.assign(houseDiscuss, initialHuseDiscuss);
+                console.log("Get host avater failed");
+            });
+
+        return data;
+    }
+
+    async function getSelfHouseDiscuss() {
+        if (typeof userStore.user.id !== "undefined") {
+            await api
+                .get(`/discuss/user/${userStore.user.id}/${houseInfo.id}`)
+                .then((res) => {
+                    console.log("取得自己的評論成功", res.data.discuss, res.data.score);
+                    Object.assign(selfHouseDiscuss, res.data);
+                })
+                .catch((err) => {
+                    Object.assign(selfHouseDiscuss, initialSelfHouseDiscuss);
+                    console.log("取得自己的評論失敗，你沒有評論");
+                });
+        }
+    }
+
+    async function writeSelfHouseDiscuss() {}
 
     async function addHouseToCollection() {
         isLoadingCollection.value = true;
@@ -209,7 +272,7 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
                     //     isCollected.value = false;
                     // }
                     // isLoadingCollection.value = false;
-                    console.log(res.data);
+                    // console.log(res.data);
                 })
                 .catch((err) => {
                     console.log("Check house collection failed.");
@@ -223,6 +286,10 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
     return {
         houseInfo,
         hostInfo,
+        selfHouseDiscuss,
+        discussList,
+        previewDiscussList,
+        currentDiscussPage,
         isErrorGetHouseInfo,
         isLoading,
         isLoadingCollection,
@@ -232,6 +299,9 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
         resetHouseInfo,
         getHouseDetailImage,
         getHouseInfo,
+        getPreviewDiscussList,
+        getHouseDiscuss,
+        getSelfHouseDiscuss,
         addHouseToCollection,
         removeHouseToCollection,
         checkIsCollectedHouse,

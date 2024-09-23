@@ -1,8 +1,8 @@
 <!-- src/views/HostReport.vue -->
 <template>
     <div>
-        <h1>歷史紀錄與報表</h1>
-        <h2>您好，{{ store.loginUser.name }}，歡迎使用本系統</h2>
+        <h1>歷史紀錄與報表[平台]</h1>
+        <SelectorUser />
         <Selector />
 
         <!-- Loading Spinner -->

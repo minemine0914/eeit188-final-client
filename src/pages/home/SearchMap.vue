@@ -1,6 +1,6 @@
 <template>
-    <v-layout style="z-index: 99" height="100%">
-        <SearchHouseBar style="top: 15px" />
+    <v-layout style="z-index: 90" height="100%">
+        <SearchHouseBar style="top: 30px" />
         <v-main>
             <v-container
                 ref="searchContainerRef"

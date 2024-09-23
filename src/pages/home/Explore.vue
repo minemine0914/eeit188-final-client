@@ -42,16 +42,31 @@
                 <v-sheet class="mb-3">
                     <div class="text-h5 font-weight-medium mx-15">熱門推薦</div>
                     <v-slide-group show-arrows>
-                        <v-slide-group-item v-if="hotHouseList.length === 0" v-for="n in 15" :key="n">
-                            <v-card class="ma-2" height="320" width="300" elevation="0">
-                                <v-skeleton-loader
-                                    class="mx-auto"
-                                    type="card, list-item-two-line"
-                                />
+                        <v-slide-group-item
+                            v-if="hotHouseList.length === 0"
+                            v-for="n in 8"
+                            :key="n"
+                        >
+                            <v-card class="ma-2" height="360" min-width="320" elevation="0">
+                                <v-card-item class="pt-4">
+                                    <v-sheet
+                                        color="transparent"
+                                        class="overflow-hidden"
+                                        rounded="lg"
+                                        height="200"
+                                    >
+                                        <v-skeleton-loader class="mx-auto h-100" type="image" />
+                                    </v-sheet>
+                                </v-card-item>
+                                <v-skeleton-loader type="list-item-three-line" />
                             </v-card>
                         </v-slide-group-item>
-                        <v-slide-group-item v-else v-for="hotHouse in hotHouseList" :key="hotHouse.id">
-                            <HouseCard :house="hotHouse" min-width="320"/>
+                        <v-slide-group-item
+                            v-else
+                            v-for="hotHouse in hotHouseList"
+                            :key="hotHouse.id"
+                        >
+                            <HouseCard :house="hotHouse" min-width="320" />
                         </v-slide-group-item>
                     </v-slide-group>
                 </v-sheet>
@@ -69,16 +84,31 @@
                 <v-sheet class="mb-3">
                     <div class="text-h5 font-weight-medium mx-15">最新房源</div>
                     <v-slide-group show-arrows>
-                        <v-slide-group-item v-if="newHouseList.length === 0" v-for="n in 15" :key="n">
-                            <v-card class="ma-2" height="320" width="300" elevation="0">
-                                <v-skeleton-loader
-                                    class="mx-auto"
-                                    type="card, list-item-two-line"
-                                />
+                        <v-slide-group-item
+                            v-if="hotHouseList.length === 0"
+                            v-for="n in 8"
+                            :key="n"
+                        >
+                            <v-card class="ma-2" height="360" min-width="320" elevation="0">
+                                <v-card-item class="pt-4">
+                                    <v-sheet
+                                        color="transparent"
+                                        class="overflow-hidden"
+                                        rounded="lg"
+                                        height="200"
+                                    >
+                                        <v-skeleton-loader class="mx-auto h-100" type="image" />
+                                    </v-sheet>
+                                </v-card-item>
+                                <v-skeleton-loader type="list-item-three-line" />
                             </v-card>
                         </v-slide-group-item>
-                        <v-slide-group-item v-else v-for="newHouse in newHouseList" :key="newHouse.id">
-                            <HouseCard :house="newHouse" min-width="320"/>
+                        <v-slide-group-item
+                            v-else
+                            v-for="newHouse in newHouseList"
+                            :key="newHouse.id"
+                        >
+                            <HouseCard :house="newHouse" min-width="320" />
                         </v-slide-group-item>
                     </v-slide-group>
                 </v-sheet>
@@ -87,9 +117,9 @@
             <v-container fluid class="my-5">
                 <div class="text-h5 font-weight-medium mx-5">探索房源</div>
                 <v-row justify="start" align="start">
-                    <template v-for="(scrollItem, scrollIndex) in allHouseList" :key="scrollIndex">
+                    <template v-for="exploreHouse in allHouseList" :key="exploreHouse.id">
                         <v-col cols="12" lg="3" md="4" sm="6" xs="12">
-                            <HouseCard :house="scrollItem"/>
+                            <HouseCard :house="exploreHouse" />
                         </v-col>
                     </template>
                 </v-row>
@@ -146,19 +176,23 @@ useResizeObserver(exploreContainerRef, (entries) => {
     }, 100); // 設定 500 毫秒的延遲
 });
 
-onMounted(async () => {
-    let hotHouseData = await houseSearchStore.getHotHouse();
-    let newHouseData = await houseSearchStore.getNewHouse();
-    if (hotHouseData != null) {
-        hotHouseList.value.push(...hotHouseData.content);
-    }
-    if (newHouseData != null) {
-        newHouseList.value.push(...newHouseData.content);
-    }
+onMounted(() => {
+    houseSearchStore.getHotHouse();
+    houseSearchStore.getNewHouse();
 });
 </script>
 <style scoped>
 :deep(.v-infinite-scroll__side) {
     padding: 0 !important;
+}
+:deep(.v-skeleton-loader > *) {
+    margin: 0;
+}
+
+:deep(.v-skeleton-loader .v-skeleton-loader__image) {
+    display: flex;
+    flex-grow: 1;
+    height: 100%;
+    flex-direction: column;
 }
 </style>
