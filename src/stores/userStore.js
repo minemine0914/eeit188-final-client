@@ -79,7 +79,13 @@ export const useUserStore = defineStore(
           url: "/user/system/login",
           data: loginData,
         });
-        jwtToken.value = response.data.token;
+        // if (response.data && response.data.token) {
+        //   localStorage.setItem('jwtToken', response.data.token); 
+          jwtToken.value = response.data.token; 
+        // } else {
+        //   //console.error('未能取得 token');
+        //   throw new Error('未能取得 token');
+        // }
 
         await reloadUser();
       } catch (error) {
