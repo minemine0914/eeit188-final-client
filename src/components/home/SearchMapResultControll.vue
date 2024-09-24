@@ -48,7 +48,7 @@
                                                 <v-sheet
                                                     color="transparent"
                                                     rounded="lg"
-                                                    class="overflow-hidden px-3"
+                                                    class="overflow-hidden mx-3 mb-2"
                                                 >
                                                     <v-carousel
                                                         height="150"
@@ -69,7 +69,7 @@
                                                                 density="compact"
                                                                 icon="mdi-chevron-left"
                                                                 variant="elevated"
-                                                                @click="props.onClick"
+                                                                @click.stop="props.onClick"
                                                             ></v-btn>
                                                         </template>
                                                         <template v-slot:next="{ props }">
@@ -85,7 +85,7 @@
                                                                 density="compact"
                                                                 icon="mdi-chevron-right"
                                                                 variant="elevated"
-                                                                @click="props.onClick"
+                                                                @click.stop="props.onClick"
                                                             ></v-btn>
                                                         </template>
                                                         <v-carousel-item
