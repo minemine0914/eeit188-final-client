@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { computed, reactive, ref } from "vue";
+import { computed, nextTick, reactive, ref } from "vue";
 import api from "../plugins/axios";
 import { useRouter } from "vue-router";
 import { useUserStore } from "./userStore";
@@ -38,6 +38,7 @@ const initialHouseInfo = {
     collectionCount: null,
     userId: null,
     userName: null,
+    userHouseCount: null,
     houseExternalResourceRecords: [],
 };
 
@@ -84,9 +85,19 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
     const isCollected = ref(false);
     const isShareDialogOpen = ref(false);
     const isDiscussDialogOpen = ref(false);
+    const isMoreDiscussesDialogOpen = ref(false);
+    const renderDiscussList = ref(true);
 
     function resetHouseInfo() {
         Object.assign(houseInfo, initialHouseInfo);
+    }
+
+    function reloadDiscussList() {
+        currentDiscussPage.value = 0;
+        discussList.splice(0, discussList.length);
+        renderDiscussList.value = false;
+        nextTick();
+        renderDiscussList.value = true;
     }
 
     function getHouseDetailImage(index) {
@@ -161,7 +172,12 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
     async function getHouseDiscuss() {
         let data = null;
         await api
-            .get(`/discuss/house/${houseInfo.id}`)
+            .get(`/discuss/house/${houseInfo.id}`, {
+                params: {
+                    pageNo: currentDiscussPage.value,
+                    pageSize: 10,
+                },
+            })
             .then((res) => {
                 console.log("Get house discuss success");
                 data = res.data;
@@ -207,6 +223,7 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
                 });
             getSelfHouseDiscuss();
             getPreviewDiscussList();
+            reloadDiscussList();
         } else {
             console.log("尚未登入，登入後再評論");
             router.push("/login");
@@ -322,7 +339,10 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
         isCollected,
         isShareDialogOpen,
         isDiscussDialogOpen,
+        isMoreDiscussesDialogOpen,
+        renderDiscussList,
         resetHouseInfo,
+        reloadDiscussList,
         getHouseDetailImage,
         getHouseInfo,
         getPreviewDiscussList,
