@@ -128,27 +128,65 @@ export const useHouseDetailStore = defineStore(
 
         function addToBookingList() {
             // check exists in list
-            if (houseInfo.id != null) {
-                if (bookingList.filter((house) => house.id === houseInfo.id).length === 0) {
-                    console.log("已紀錄房源", houseInfo.id);
+            if (houseInfo.id != null && userStore.user.id != null) {
+                let house = {
+                    id: houseInfo.id,
+                    name: houseInfo.name,
+                    resources: houseInfo.houseExternalResourceRecords,
+                };
+                let currentLength = bookingList.length;
+                let currentIndex = bookingList.findIndex((list) => list.userId === userStore.user.id);
+                if (currentIndex === -1) {
                     bookingList.push({
-                        id: houseInfo.id,
-                        name: houseInfo.name,
-                        resources: houseInfo.houseExternalResourceRecords,
+                        userId: userStore.user.id,
+                        list: [],
                     });
+                    if (
+                        bookingList[currentLength].list.filter((house) => house.id === houseInfo.id)
+                            .length === 0
+                    ) {
+                        console.log("已紀錄房源", house);
+                        bookingList[currentLength].list.push(house);
+                    }
+                } else {
+                    if (
+                        bookingList[currentIndex].list.filter((house) => house.id === houseInfo.id)
+                            .length === 0
+                    ) {
+                        console.log("已紀錄房源", house);
+                        bookingList[currentIndex].list.push(house);
+                    }
                 }
             }
         }
 
         function removeBookingListById(id) {
-            if (id != null) {
-                let index = bookingList.findIndex((house) => house.id === id);
-                bookingList.splice(index, 1);
+            if (houseInfo.id != null && userStore.user.id) {
+                let currentIndex = bookingList.findIndex((list) => list.userId === userStore.user.id);
+                if (currentIndex !== -1) {
+                    if (
+                        bookingList[currentIndex].list.filter((house) => house.id === houseInfo.id)
+                            .length === 0
+                    ) {
+                        let houseIndex = bookingList.findIndex((house) => house.id === id);
+                        bookingList[currentIndex].list.splice(houseIndex, 1);
+                    }
+                }
             }
         }
 
         function cleanBookingList() {
-            bookingList.splice(0, bookingList.length);
+            if (houseInfo.id != null && userStore.user.id) {
+                let currentIndex = bookingList.findIndex((list) => list.userId === userStore.user.id);
+                if (currentIndex !== -1) {
+                    if (
+                        bookingList[currentIndex].list.filter((house) => house.id === houseInfo.id)
+                            .length === 0
+                    ) {
+                        bookingList[currentIndex].list.splice(0, bookingList[currentIndex].list.length);
+                    }
+                }
+            }
         }
 
         async function getHouseInfo(id) {
