@@ -1,16 +1,14 @@
+<!-- 房東和平台共用此component，故顯示內容需判斷權限 -->
 <template>
     <v-card flat>
         <v-card-title class="d-flex align-center pe-2">
-            <template v-if="store.loginUser.role === 'normal'">
-                <v-icon icon="mdi-home"></v-icon>
-                &nbsp;近期訂單紀錄&nbsp;
-            </template>
-            <!-- *******************role to be fixed********************* -->
+            <!-- *******************admin額外顯示查看的user(房東)資訊********************* -->
             <template v-if="store.loginUser.role === 'admin'">
-                <v-icon icon="mdi-account"></v-icon>
+                <v-icon icon="mdi-account" />
                 &nbsp;房東名稱：{{ currentUser.name }}&nbsp;
             </template>
-            <v-icon icon="mdi-home"></v-icon>
+
+            <v-icon icon="mdi-home" />
             房源名稱：{{ store.itemsSource[0]?.house.name }}[{{
                 `${store.itemsSource[0]?.house?.country}${store.itemsSource[0]?.house?.city}${store.itemsSource[0]?.house?.region}`
             }}]
@@ -29,55 +27,50 @@
                 color="green"> 可吸菸
             </v-chip>
             <v-chip v-else variant="outlined" prepend-icon="mdi-smoking-off" color="red"> 禁止吸菸 </v-chip>
-            <v-spacer></v-spacer>
 
-            <v-text-field v-model="search" density="compact" label="Search" prepend-inner-icon="mdi-magnify"
-                variant="solo-filled" flat hide-details single-line></v-text-field>
+            <v-spacer />
         </v-card-title>
 
-        <v-divider></v-divider>
+        <v-card-title class="d-flex align-center pe-2">
+            <v-text-field v-model="search" density="compact" label="Search" prepend-inner-icon="mdi-magnify"
+                variant="solo-filled" flat hide-details single-line />
+        </v-card-title>
+
+        <v-card-subtitle class="d-flex align-center pe-2 ">
+            <!-- normal user(房東)顯示訂單紀錄提示文字 -->
+            <template v-if="store.loginUser.role === 'normal'">
+                <v-icon icon="mdi-home" />
+                &nbsp;近期訂單紀錄&nbsp;
+            </template>
+
+        </v-card-subtitle>
+
+        <v-divider />
+
         <v-data-table v-model:search="search" :items="items" :headers="headers" :items-per-page="itemsPerPage"
             :items-per-page-options="itemsPerPageOptions">
-            <!-- <template v-slot:header.stock>
-                <div class="text-end">Stock</div>
-            </template> -->
             <template v-slot:item.createdAt="{ item }">
                 {{ item.formattedCreatedAt }} <!-- Display formatted date -->
             </template>
             <template v-slot:item.pics="{ item }">
                 <div style="display:grid ;grid-template-columns: 1fr 1fr;">
                     <v-card v-if="Math.floor(Math.random() * 10) % 2" class="my-2" elevation="2" rounded>
-                        <v-img :src="item.pics.doge.src" height="64" :title="item.pics.doge.title" cover></v-img>
+                        <v-img :src="item.pics.doge.src" height="64" :title="item.pics.doge.title" cover />
                     </v-card>
                     <v-card v-if="Math.floor(Math.random() * 10) % 2" class="my-2" elevation="2" rounded>
-                        <v-img :src="item.pics.cat.src" height="64" :title="item.pics.cat.title" cover></v-img>
+                        <v-img :src="item.pics.cat.src" height="64" :title="item.pics.cat.title" cover />
                     </v-card>
                     <v-card v-if="Math.floor(Math.random() * 10) % 2" class="my-2" elevation="2" rounded>
-                        <v-img :src="item.pics.smoker.src" height="64" :title="item.pics.smoker.title" cover></v-img>
+                        <v-img :src="item.pics.smoker.src" height="64" :title="item.pics.smoker.title" cover />
                     </v-card>
                     <v-card v-if="Math.floor(Math.random() * 10) % 2" class="my-2" elevation="2" rounded>
-                        <v-img :src="item.pics.toys.src" height="64" :title="item.pics.toys.title" cover></v-img>
+                        <v-img :src="item.pics.toys.src" height="64" :title="item.pics.toys.title" cover />
                     </v-card>
                     <v-card v-if="Math.floor(Math.random() * 10) % 2" class="my-2" elevation="2" rounded>
-                        <v-img :src="item.pics.good.src" height="64" :title="item.pics.good.title" cover></v-img>
+                        <v-img :src="item.pics.good.src" height="64" :title="item.pics.good.title" cover />
                     </v-card>
                 </div>
             </template>
-
-            <template v-slot:item.rating="{ item }">
-                <v-rating :model-value="item.rating" color="orange-darken-2" density="compact" size="small"
-                    readonly></v-rating>
-            </template>
-
-            <template v-slot:item.house="{ item }">
-                <div class="text-end">
-                    <v-chip :color="item.stock ? 'green' : 'red'" :text="item.stock ? 'In stock' : 'Out of stock'"
-                        class="text-uppercase" size="small" label></v-chip>
-                </div>
-            </template>
-
-
-
         </v-data-table>
     </v-card>
 </template>
@@ -90,33 +83,26 @@ const search = ref(''); // Using ref for reactivity in Vue 3 setup function
 
 // Define the headers for the data table
 let headers = []
+// 平台和房東共用此表格，先判定登入者權限，再決定顯示那些欄位
 if (store.loginUser.role === 'normal') {
     headers = [
-        // { title: '房源ID', value: 'houseId', sortable: true },
-        // { title: '房源名稱', value: 'houseName', sortable: true },
-        // { title: '房源位置', value: 'houseLocation', sortable: true },
-        // { title: '訂房者ID', value: 'bookerId', sortable: true },
         { title: '付款時間', value: 'createdAt', sortable: true },
         { title: '訂房者名稱', value: 'bookerName', sortable: true },
         { title: '性別', value: 'formattedBookerGender', sortable: true },
         { title: '金額', value: 'cashFlow', sortable: true },
         { title: '圖片', value: 'pics', sortable: false, width: '200px' }, // Disable sorting for pics
-        { title: '', value: 'postulate', sortable: false, width: '200px' }, // Disable sorting for pics
+        { title: '', value: '', sortable: false, width: '100px' }, // 空白欄 調整排版用
     ];
 } else if (store.loginUser.role === 'admin') {
-    //*******************************role********************************
     headers = [
-        // { title: '房源ID', value: 'houseId', sortable: true },
-        // { title: '房源名稱', value: 'houseName', sortable: true },
-        // { title: '房源位置', value: 'houseLocation', sortable: true },
-        // { title: '訂房者ID', value: 'bookerId', sortable: true },
+        { title: '訂房者ID', value: 'bookerId', sortable: true },
         { title: '付款時間', value: 'createdAt', sortable: true },
         { title: '訂房者名稱', value: 'bookerName', sortable: true },
         { title: '性別', value: 'formattedBookerGender', sortable: true },
         { title: '平台收入', value: 'platformIncome', sortable: true },
         { title: '金額', value: 'cashFlow', sortable: true },
         { title: '圖片', value: 'pics', sortable: false, width: '200px' }, // Disable sorting for pics
-        { title: '', value: 'postulate', sortable: false, width: '200px' }, // Disable sorting for pics
+        { title: '', value: 'postulate', sortable: false, width: '100px' }, // 空白欄 調整排版用
     ];
 }
 const itemsPerPage = 3 // Default items per page

@@ -2,7 +2,7 @@ import { createWebHistory, createRouter, useRouter } from "vue-router";
 
 // Import your router
 import minemineRouter from "./minemine";
-import wuRouter from "./wu";
+import wuRouter from "./wu_platform";
 import kenjoRouter from "./kenjo";
 import leonRouter from "./leon";
 import loRouter from "./lo";
@@ -162,7 +162,7 @@ const routes = [
         component: () => import("@/views/NotFound.vue"),
     },
     minemineRouter,
-
+    wuRouter,
     leonRouter,
     loRouter,
 ];

@@ -1,33 +1,51 @@
 <!-- src/views/HostReport.vue -->
 <template>
-    <div>
+    <v-container class="mainBox">
         <h1>歷史紀錄與報表[平台]</h1>
-        <SelectorUser />
-        <Selector />
+        <v-spacer></v-spacer>
+        <v-card class="subBox">
+            <v-card-title>
+                <SelectorUser />
+                <Selector />
+            </v-card-title>
+            <!-- Loading Spinner -->
+            <div v-if="store.isLoading"
+                style="position: fixed;left:80vw;top:30vh;transform: translate(-50%, -50%);z-index: 100;">
+                <v-progress-circular indeterminate color="primary" class="ma-5" :size="400"
+                    :width="50"></v-progress-circular>
+            </div>
+            <!-- Data Table -->
+            <v-card-title>
+                <DataTable />
+            </v-card-title>
+            <v-card-text>
+                <div v-if="store.records.length">
+                    <DataTab />
+                </div>
 
-        <!-- Loading Spinner -->
-        <div v-if="store.isLoading"
-            style="position: fixed;left:80vw;top:30vh;transform: translate(-50%, -50%);z-index: 100;">
-            <v-progress-circular indeterminate color="primary" class="ma-5" :size="400"
-                :width="50"></v-progress-circular>
-        </div>
-        <!-- Data Table -->
-        <DataTable />
-
-    </div>
+                <p v-else>查無資料</p>
+            </v-card-text>
+        </v-card>
+    </v-container>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useHostReportStore } from '@/stores/hostReportStore';
+import { useUserStore } from '@/stores/userStore';
 import Selector from '@/components/wu/components/Selector.vue';
 import DataTable from '@/components/wu/components/DataTable.vue';
 import SelectorUser from './SelectorUser.vue';
+import DataTab from './DataTab.vue';
 
 const store = useHostReportStore();
+const userStore = useUserStore();
 store.isLoading = ref(false)
 
 onMounted(async () => {
+    if (userStore.user) {
+        store.loginUser = userStore.user
+    }
     // Set loading state to true
     store.isLoading = true;
 
