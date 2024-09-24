@@ -435,6 +435,10 @@ onMounted(async () => {
         await houseDetailStore.getHouseInfo(route.params.houseId);
         if (isErrorGetHouseInfo.value) {
             router.push("/");
+        } else {
+            // Record booking list
+            houseDetailStore.addToBookingList();
+            
         }
     } else {
         // If Route params houseId not found
