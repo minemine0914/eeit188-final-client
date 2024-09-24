@@ -61,7 +61,7 @@
       </v-card>
     </div>
     <div
-      v-if="!isBottom && discuss?.discusses.length !== 0"
+      v-if="!isBottom && discuss?.discusses.length >= 5"
       class="loader"
     ></div>
     <v-text
@@ -206,16 +206,12 @@ const updateDiscuss = async (discussId, discuss, houseId, score) => {
           icon: "error",
         });
         console.error(error);
-      } finally {
-        discuss.discusses = [];
-        countTotalDiscuss();
-        fetchDiscusses();
       }
     }
   });
 };
 
-const retractDiscuss = async (discussId, houseId) => {
+const retractDiscuss = async (discussId) => {
   Swal.fire({
     title: "是否確定要收回評論？",
     icon: "question",
@@ -232,6 +228,13 @@ const retractDiscuss = async (discussId, houseId) => {
           url: `/discuss/retract/${discussId}`,
         });
 
+        for (let i = 0; i < discuss.discusses.length; i++) {
+          if (discuss.discusses[i].id === discussId) {
+            discuss.discusses.splice(i, 1);
+            break;
+          }
+        }
+
         Swal.fire({
           title: "您的評論已收回！",
           icon: "success",
@@ -242,10 +245,6 @@ const retractDiscuss = async (discussId, houseId) => {
           icon: "error",
         });
         console.error(error);
-      } finally {
-        discuss.discusses = [];
-        countTotalDiscuss();
-        fetchDiscusses();
       }
     }
   });
