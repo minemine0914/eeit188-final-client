@@ -68,7 +68,7 @@
                     <v-text-field
                       v-model="editedOrder.user.name"
                       label="房客資訊"
-                      @click="showGuestInfo"
+                      
                     ></v-text-field>
                   </v-col>
                   <v-col cols="12" md="4" sm="6">
@@ -138,7 +138,7 @@
         </v-dialog> -->
 
         <!-- 房客資訊對話框 -->
-        <!-- <v-dialog v-model="dialogGuestInfo" max-width="500px">
+        <v-dialog v-model="dialogGuestInfo" max-width="500px">
           <v-card>
             <v-card-title class="text-h5">房客資訊</v-card-title>
             <v-card-text>
@@ -153,7 +153,7 @@
               <v-spacer></v-spacer>
             </v-card-actions>
           </v-card>
-        </v-dialog> -->
+        </v-dialog> 
 
         <!-- 房屋資訊對話框 -->
         <!-- <v-dialog v-model="dialogPropertyId" max-width="500px">
@@ -205,7 +205,7 @@ export default {
         { title: '房客資訊', key: 'user.name' },
         { title: '房東資訊', key: 'house.userName' },
         { title: '金額', key: 'cashFlow' },
-        { title: '付款方式', key: '' },
+        // { title: '付款方式', key: '' },
         { title: '下單時間', key: 'createdAt' },
         { title: '訂單狀態', key: 'deal' },
         { title: '編輯', key: 'actions', sortable: false },
@@ -292,22 +292,47 @@ export default {
         });
 
         if (response.status === 200) {
-          console.log('API response:', response.data);
+          //console.log('API response:', response.data);
 
           if (response.data && Array.isArray(response.data.content)) {
-            this.orders = response.data.content;
-          } else {
-            console.error('API response is not in expected format:', response.data);
+            this.orders = response.data.content
+            ;
+            // 檢查每個訂單，並記錄格式不正確或缺少 house 資料的訂單
+            const invalidOrders = this.orders.filter(order => 
+              typeof order !== 'object' || order === null || 
+              !order.id || order.cashFlow === undefined || 
+              !order.house || !order.house.name
+            );
+
+            //console.log('API 返回的完整資料:', response.data);
+            if (invalidOrders.length > 0) {
+              //console.error('以下訂單格式不正確或缺少房屋資料，將進行重新抓取:', invalidOrders);
+              // 確保重抓取時不會有 undefined 的 ID
+              const validIds = invalidOrders.map(order => order.id).filter(id => id);
+              await Promise.all(validIds.map(id => this.reFetchOrder(id)));
+            }
+            this.orders = response.data.content.map(oder => ({
+            ...oder,
+            createdAt: this.formatDate(oder.createdAt) 
+          }))
+          } 
+          else {
+            //console.error('API response is not in expected format:', response.data);
             this.orders = [];
           }
         } else {
-          console.error('API response status is not OK:', response.status);
+          //console.error('API response status is not OK:', response.status);
         }
       } catch (error) {
-        console.error('Error in fetchOrder:', error);
+        //console.error('Error in fetchOrder:', error);
         // 可以顯示錯誤提示給用戶
       }
     },
+    formatDate(dateString) {
+      if (!dateString) return '';
+        const match = dateString.match(/(\d{4}-\d{2}-\d{2})/);
+        return match ? match[0] : '';  
+      },
 
     editOrder(item) {
       this.editedIndex = this.orders.indexOf(item);
@@ -401,7 +426,7 @@ export default {
           this.orders[this.editedIndex] = this.editedOrder; // 更新本地列表
         } else {
           // 創建新訂單
-          const response = await axios.post('http://localhost:8080/transcation_record/', this.editedOrder);
+          const response = await axios.post('http://localhost:8080/transcation_record', this.editedOrder);
           this.orders.push(response.data); // 添加新訂單到本地列表
         }
         this.close();
@@ -410,7 +435,25 @@ export default {
         // 顯示錯誤消息
         alert('儲存訂單時發生錯誤。');
       }
-    }
+    },
+    async reFetchOrder(orderId) {
+      try {
+        const response = await axios.get(`http://localhost:8080/transcation_record/${orderId}`);
+        
+        if (response.status === 200) {
+          console.log(`重新抓取訂單 ${orderId}:`, response.data);
+          // 假設 API 返回的格式是正確的，更新相應的訂單資料
+          const index = this.orders.findIndex(order => order.id === orderId);
+          if (index !== -1) {
+            this.orders[index] = response.data; // 更新訂單
+          }
+        } else {
+          console.error(`無法重新抓取訂單 ${orderId}:`, response.status);
+        }
+      } catch (error) {
+        console.error(`重新抓取訂單 ${orderId} 時發生錯誤:`, error);
+      }
+    },
   }
 }
 </script>

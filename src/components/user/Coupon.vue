@@ -1,8 +1,14 @@
 <template>
   <div class="container" @scroll="handleScroll">
     <v-card
-      v-for="(coupon, index) in coupons"
-      :key="coupon.id"
+      v-if="coupon.coupons.length === 0"
+      class="mx-auto mb-5"
+      subtitle="您目前沒有任何優惠券"
+      width="400"
+    ></v-card>
+    <v-card
+      v-for="(coupon, index) in coupon?.coupons"
+      :key="coupon?.id"
       class="mx-auto mb-5"
       id="coupon"
       subtitle="您的優惠券"
@@ -10,37 +16,44 @@
     >
       <v-card class="mx-auto" width="400">
         <v-card-text
-          v-if="coupon.discount != null"
+          v-if="coupon?.discount != null"
           class="bg-surface-light pt-4"
         >
-          折扣： {{ coupon.discount }} 元
+          折扣： {{ coupon?.discount }} 元
         </v-card-text>
         <v-card-text
-          v-if="coupon.discountRate != null"
+          v-if="coupon?.discountRate != null"
           class="bg-surface-light pt-4"
         >
-          {{ (Math.round(coupon.discountRate * 10) / 10) * 10 }} 折
+          {{ (Math.round(coupon?.discountRate * 10) / 10) * 10 }} 折
         </v-card-text>
         <v-card-text class="bg-surface-light pt-4">
-          折扣到期日: {{ expireDates[index] }}
+          折扣到期日: {{ expireDate?.expireDates[index] }}
         </v-card-text>
       </v-card>
     </v-card>
-    <div v-if="hasMore" class="loader"></div>
-    <v-text class="bottom-text" v-if="!hasMore">已經到底囉～</v-text>
+    <div v-if="hasMore && coupon.coupons.length !== 0" class="loader"></div>
+    <v-text class="bottom-text" v-if="!hasMore && coupon.coupons.length !== 0"
+      >已經到底囉～</v-text
+    >
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { reactive, ref, onMounted } from "vue";
 import { useUserStore } from "../../stores/userStore";
 import api from "@/plugins/axios";
 
 const userStore = useUserStore();
 const { user } = userStore;
 
-const coupons = ref([]);
-const expireDates = ref([]);
+const coupon = reactive({
+  coupons: [],
+});
+const expireDate = reactive({
+  expireDates: [],
+});
+
 const page = ref(0);
 const limit = ref(5);
 const isFetching = ref(false); // Prevent multiple fetches
@@ -72,7 +85,7 @@ async function getUserCollectionHouse(request) {
 
     // Append new coupons to the list
     if (fetchedCoupons.length > 0) {
-      coupons.value.push(...fetchedCoupons);
+      coupon.coupons.push(...fetchedCoupons);
       calculateExpireDates();
     } else {
       hasMore.value = false; // No more data to fetch
@@ -86,10 +99,10 @@ async function getUserCollectionHouse(request) {
 }
 
 function calculateExpireDates() {
-  expireDates.value = coupons.value.map((coupon) => {
-    const createdAt = new Date(coupon.createdAt);
+  expireDate.expireDates = coupon.coupons.map((c) => {
+    const createdAt = new Date(c.createdAt);
     const expireDate = new Date(
-      createdAt.getTime() + coupon.expire * 24 * 60 * 60 * 1000
+      createdAt.getTime() + c.expire * 24 * 60 * 60 * 1000
     );
 
     const year = expireDate.getFullYear();
@@ -139,8 +152,8 @@ async function loadNextPage() {
 .loader {
   margin-left: auto;
   margin-right: auto;
-  border: 5px solid #f3f3f3; /* Light grey */
-  border-top: 5px solid #3498db; /* Blue */
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #3498db;
   border-radius: 50%;
   width: 50px;
   height: 50px;

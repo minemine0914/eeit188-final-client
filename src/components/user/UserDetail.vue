@@ -92,19 +92,24 @@ import {
   minLength,
   maxLength,
   helpers,
+  maxValue,
 } from "@vuelidate/validators";
 import { VDateInput } from "vuetify/labs/VDateInput";
 import { useUserStore } from "../../stores/userStore";
+import Swal from "sweetalert2";
 
 const userStore = useUserStore();
 const { reloadUser, updateUser, user } = userStore;
 
 onMounted(async () => {
   if (user) {
+    const birthday = new Date(user.birthday);
+    birthday.setDate(birthday.getDate() + 1);
+
     Object.assign(state, {
       name: user.name,
       email: user.email,
-      birthday: new Date(user.birthday),
+      birthday: birthday,
       gender: user.gender,
       phone: user.phone,
       mobilePhone: user.mobilePhone,
@@ -151,6 +156,7 @@ const rules = {
   },
   birthday: {
     required: helpers.withMessage("請選擇出生日期", required),
+    maxValue: helpers.withMessage("請選擇合理的出生日期", maxValue(new Date())),
   },
   phone: {
     integer: helpers.withMessage("市話必須為數字", integer),
@@ -178,21 +184,41 @@ const submit = async () => {
   if (!isValid) {
     return;
   }
-  try {
-    await updateUser({
-      name: state.name,
-      email: state.email,
-      birthday: state.birthday,
-      gender: state.gender,
-      phone: state.phone,
-      mobilePhone: state.mobilePhone,
-      address: state.address,
-      about: state.about,
-    });
-    alert("修改成功！");
-  } catch (error) {
-    console.error("Registration failed:", error);
-  }
+
+  Swal.fire({
+    title: "確認使否要修改使用者資訊?",
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "確定",
+    cancelButtonText: "取消",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      try {
+        updateUser({
+          name: state.name,
+          email: state.email,
+          birthday: state.birthday,
+          gender: state.gender,
+          phone: state.phone,
+          mobilePhone: state.mobilePhone,
+          address: state.address,
+          about: state.about,
+        });
+        Swal.fire({
+          title: "修改成功!",
+          icon: "success",
+        });
+      } catch (error) {
+        Swal.fire({
+          title: "修改失敗，請重新修改",
+          icon: "error",
+        });
+        console.error("Registration failed:", error);
+      }
+    }
+  });
 };
 </script>
 

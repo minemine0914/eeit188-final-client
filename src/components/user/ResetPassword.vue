@@ -36,6 +36,7 @@ import { reactive, computed } from "vue";
 import { useVuelidate } from "@vuelidate/core";
 import { required, helpers, sameAs } from "@vuelidate/validators";
 import { useUserStore } from "../../stores/userStore";
+import Swal from "sweetalert2";
 
 // Custom password validation
 const passwordComplexity = helpers.regex(
@@ -87,17 +88,42 @@ const submit = async () => {
   });
 
   if (checkResult.data !== true) {
-    alert("您輸入的舊密碼不存在或有錯誤，請重新輸入");
+    Swal.fire({
+      title: "您輸入的舊密碼不存在或有錯誤，請重新輸入",
+      icon: "error",
+    });
     return;
   }
 
-  await resetPassword({
-    newPassword: state.newPassword,
+  Swal.fire({
+    title: "確認使否要修改密碼?",
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "確定",
+    cancelButtonText: "取消",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      try {
+        resetPassword({
+          newPassword: state.newPassword,
+        });
+        Swal.fire({
+          title: "修改成功!",
+          icon: "success",
+        });
+        clear();
+      } catch (error) {
+        Swal.fire({
+          title: "修改失敗，請重新修改",
+          icon: "error",
+        });
+        console.error("Registration failed:", error);
+        clear();
+      }
+    }
   });
-
-  alert("密碼修改成功！");
-
-  clear();
 };
 
 function clear() {

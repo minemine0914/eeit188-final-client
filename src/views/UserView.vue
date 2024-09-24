@@ -72,6 +72,9 @@
             <v-list-item to="/host" prepend-icon="mdi-home-group-plus" slim
               >成為房東</v-list-item
             >
+            <v-list-item to="/chat" prepend-icon="mdi-message-outline" slim
+              >聯絡我們</v-list-item
+            >
             <v-list-item prepend-icon="mdi-logout" slim @click="handleLogout"
               >登出</v-list-item
             >
@@ -98,12 +101,13 @@
   </v-app>
 </template>
 <script setup>
-import avaterImg from "@/assets/banner01.webp";
+// import avaterImg from "@/assets/banner01.webp";
 import { useElementSize } from "@vueuse/core";
 import { ref } from "vue";
 import { useUserViewStore } from "../stores/userViewStore";
 import { useUserStore } from "../stores/userStore";
 import { storeToRefs } from "pinia";
+import Swal from "sweetalert2";
 
 const userViewStore = useUserViewStore();
 const {
@@ -116,7 +120,7 @@ const {
 const { height: appbarHeight } = useElementSize(appbarRef);
 
 const userStore = useUserStore();
-const { user, jwtToken, logout } = userStore;
+const { user, jwtToken } = storeToRefs(userStore);
 
 let timeoutId = null; // 儲存定時器 ID
 function onResize() {
@@ -134,11 +138,19 @@ function onResize() {
 
 // 登出
 function handleLogout() {
-  const confirmLogout = window.confirm("請確認是否要登出");
-
-  if (confirmLogout) {
-    logout();
-  }
+  Swal.fire({
+    title: "請確認是否要登出?",
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "確定",
+    cancelButtonText: "取消",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      userStore.logout();
+    }
+  });
 }
 </script>
 <style scoped></style>

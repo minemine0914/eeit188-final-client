@@ -1,3 +1,5 @@
+import wuRouter from "./wu_host";
+
 const router = {
     path: '/lo',
     name: 'Lo',
@@ -44,6 +46,7 @@ const router = {
             component: () => import('@/components/lo/EditProperty.vue'),
             props: true
         },
+<<<<<<< HEAD
         {
             path: 'order-detail/:id',
             name: 'orderDetail',
@@ -51,6 +54,11 @@ const router = {
             props: true
         },
     ]
+=======
+        wuRouter,
+
+    ],
+>>>>>>> 1ebe8153e6c4dad3222cd968b33a0feb9b01d45a
 };
 
 export default router;

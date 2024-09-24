@@ -1,7 +1,38 @@
 import { defineStore } from "pinia";
 import { computed, reactive, ref, nextTick } from "vue";
+import isEqual from "lodash/isEqual"; // 可以使用 Lodash 進行深度比較
 import api from "../plugins/axios";
 import NotAvailableImage from "@/assets/ImageNotAvailable01.webp";
+
+const initialSearchParams = {
+    city: "",
+    postulateIds: [],
+    daterange: [],
+    adult: 0,
+    child: 0,
+    pet: false,
+    matchAllPostulates: false,
+    livingDiningRoom: 0,
+    bedroom: 0,
+    bathroom: 0,
+    restroom: 0,
+    minPrice: 0,
+    maxPrice: 99999,
+    minLatitudeX: null,
+    maxLatitudeX: null,
+    minLongitudeY: null,
+    maxLongitudeY: null,
+    name: "",
+};
+
+const initialInputValues = {
+    cityName: "",
+    dateRange: [],
+    postulates: "",
+    cityChipGroup: [],
+    postulateChipGroup: [],
+    housePriceRange: [0, 99999],
+};
 
 export const useHouseSearchStore = defineStore("HouseSearch", () => {
     // Default pageable limit
@@ -12,68 +43,46 @@ export const useHouseSearchStore = defineStore("HouseSearch", () => {
     const currentAllHousePage = ref(0);
     const renderInfinityScrollComponent = ref(true);
 
+    // const isSearchParams = ref(true);
+
     // Some input values
-    const inputValues = reactive({
-        cityName: "",
-        dateRange: [],
-    });
-    const postlateChipGroup = ref([]);
-    const housePriceRange = ref([0, 5000]);
+    const inputValues = reactive({ ...initialInputValues });
 
     // Postulate List
     const postulateList = reactive([]);
 
     // Filter House Search params
-    const searchParams = reactive({
-        city: "",
-        postulateIds: [],
-        daterange: [],
-        adult: 0,
-        child: 0,
-        pet: false,
-        matchAllPostulates: false,
-        livingDiningRoom: 0,
-        bedroom: 0,
-        bathroom: 0,
-        restroom: 0,
-        minPrice: 0,
-        maxPrice: 100000,
-    });
+    const searchParams = reactive({ ...initialSearchParams });
 
     // House List
     const filterHouseList = reactive([]);
     const allHouseList = reactive([]);
+    const newHouseList = reactive([]);
+    const hotHouseList = reactive([]);
 
-    function getFilterHouseImageUrlList(index) {
-        const records = filterHouseList[index].houseExternalResourceRecords;
-        let imageBaseUrl = import.meta.env.VITE_API_URL + "/house-external-resource/image/";
-        let imageSrcList = [];
-        if (records.length === 0) {
-            imageSrcList.push(NotAvailableImage);
-        } else {
-            for (let index = 0; index < records.length; index++) {
-                if (
-                    typeof records === "undefined" ||
-                    typeof records[index] === "undefined" ||
-                    records[index] === null ||
-                    records[index] === ""
-                ) {
-                    imageSrcList.push(NotAvailableImage);
-                } else {
-                    imageSrcList.push(imageBaseUrl + records[index].id);
-                }
-            }
-        }
-        return imageSrcList;
+    const isSearchParamsEqual = computed(() => {
+        return (
+            isEqual(searchParams, initialSearchParams) && isEqual(inputValues, initialInputValues)
+        );
+    });
+
+    function resetSearchParams() {
+        console.log("Reset search params");
+        Object.assign(searchParams, { ...initialSearchParams });
+        Object.assign(inputValues, { ...initialInputValues });
+        searchParams.postulateIds.splice(0, searchParams.postulateIds.length);
     }
 
-    function getAllHouseImageUrlList(index) {
-        const records = allHouseList[index].houseExternalResourceRecords;
+    function getHouseImageUrlList(records) {
         let imageBaseUrl = import.meta.env.VITE_API_URL + "/house-external-resource/image/";
         let imageSrcList = [];
         if (records.length === 0) {
             imageSrcList.push(NotAvailableImage);
         } else {
+            // Sort records by createdAt culomn
+            records.sort(
+                (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+            );
             for (let index = 0; index < records.length; index++) {
                 if (
                     typeof records === "undefined" ||
@@ -123,12 +132,11 @@ export const useHouseSearchStore = defineStore("HouseSearch", () => {
                 page: currentFilterHousePage.value,
             })
             .then((res) => {
-                console.log(res);
-                // Object.assign(filterHouseList, res.data);
+                console.log("取得FilterHouse成功");
                 resData = res.data;
             })
             .catch((err) => {
-                console.log("取得房源失敗");
+                console.log("取得FilterHouse失敗");
             });
         return resData;
     }
@@ -141,14 +149,49 @@ export const useHouseSearchStore = defineStore("HouseSearch", () => {
                 page: currentAllHousePage.value,
             })
             .then((res) => {
-                console.log(res);
-                // Object.assign(allHouseList, res.data);
+                console.log("取得AllHouse成功");
                 resData = res.data;
             })
             .catch((err) => {
-                console.log("取得房源失敗");
+                console.log("取得AllHouse失敗");
             });
         return resData;
+    }
+
+    async function getNewHouse() {
+        await api
+            .post("/house/search", {
+                limit: 10,
+                page: 0,
+                dir: true,
+                order: "createdAt",
+            })
+            .then((res) => {
+                console.log("取得NewHouse成功");
+                newHouseList.splice(0, newHouseList.length);
+                newHouseList.push(...res.data.content);
+            })
+            .catch((err) => {
+                console.log("取得NewHouse失敗");
+            });
+    }
+
+    async function getHotHouse() {
+        await api
+            .post("/house/search", {
+                limit: 10,
+                page: 0,
+                dir: true,
+                order: "createdAt",
+            })
+            .then((res) => {
+                console.log("取得HotHouse成功");
+                hotHouseList.splice(0, hotHouseList.length);
+                hotHouseList.push(...res.data.content);
+            })
+            .catch((err) => {
+                console.log("取得HotHouse失敗");
+            });
     }
 
     return {
@@ -159,16 +202,19 @@ export const useHouseSearchStore = defineStore("HouseSearch", () => {
         currentAllHousePage,
         inputValues,
         searchParams,
-        postlateChipGroup,
-        housePriceRange,
         postulateList,
         filterHouseList,
         allHouseList,
-        getFilterHouseImageUrlList,
-        getAllHouseImageUrlList,
+        newHouseList,
+        hotHouseList,
+        isSearchParamsEqual,
+        resetSearchParams,
+        getHouseImageUrlList,
         resetSearchResult,
         getPostulateList,
         getFilterHouse,
         getAllHouse,
+        getNewHouse,
+        getHotHouse,
     };
 });

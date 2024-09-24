@@ -4,7 +4,7 @@
     <div class="conetnt">
       <UserDetail v-if="selectedBtn === 1" />
       <ResetPassword class="resetPassword" v-if="selectedBtn === 2" />
-      <DeleteUser v-if="selectedBtn === 3" />
+      <DeleteAdmin v-if="selectedBtn === 3" />
     </div>
     <div class="avatar-container">
       <Avatar />
@@ -43,7 +43,7 @@ import Avatar from "@/components/user/Avatar.vue";
 import UserDetail from "@/components/user/UserDetail.vue";
 import About from "@/components/user/About.vue";
 import ResetPassword from "@/components/user/ResetPassword.vue";
-import DeleteUser from "@/components/user/DeleteUser.vue";
+import DeleteAdmin from "@/components/user/DeleteAdmin.vue";
 
 const selectedBtn = ref(1);
 

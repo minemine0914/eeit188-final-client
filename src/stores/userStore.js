@@ -3,17 +3,46 @@ import api from "@/plugins/axios";
 import { ref, reactive } from "vue";
 import * as jwtDecode from "jwt-decode";
 import { useRouter } from "vue-router";
+const initialUser = {
+  id: null,
+  name: null,
+  role: null,
+  gender: null,
+  birthday: null,
+  phone: null,
+  mobilePhone: null,
+  address: null,
+  email: null,
+  about: null,
+  createdAt: null,
+  updatedAt: null,
+  avatarBase64: null,
+};
 
 export const useUserStore = defineStore(
   "user",
   () => {
+    // use Router
+    const router = useRouter();
+
     // Data
     const jwtToken = ref(null);
     const passwordResetToken = ref(null);
-    const user = reactive({});
-    const router = useRouter();
+    const user = reactive({ ...initialUser });
 
     // Methods
+    function resetJWTTokenAndUser() {
+      console.log("Reset user info");
+      // remove axios auth header
+      api.defaults.headers.common["Authorization"] = null;
+      // reset pinia user state
+      jwtToken.value = null;
+      // Object.assign(user, initialUser);
+      for (const key in initialUser) {
+        user[key] = initialUser[key]; // 逐一設置 user 的屬性
+      }
+    }
+
     async function register(userData) {
       try {
         await api({
@@ -35,6 +64,23 @@ export const useUserStore = defineStore(
           data: loginData,
         });
         jwtToken.value = response.data.token;
+
+        await reloadUser();
+      } catch (error) {
+        console.error(error);
+        throw error;
+      }
+    }
+
+    async function adminLoginAuth(loginData) {
+      try {
+        const response = await api({
+          method: "post",
+          url: "/user/system/login",
+          data: loginData,
+        });
+        jwtToken.value = response.data.token;
+
         await reloadUser();
       } catch (error) {
         console.error(error);
@@ -43,38 +89,35 @@ export const useUserStore = defineStore(
     }
 
     function logout() {
-      localStorage.removeItem("jwtToken");
-      localStorage.removeItem("user");
-      router.push("/").then(() => {
-        window.location.reload();
-      });
+      resetJWTTokenAndUser();
+      router.push("/");
+    }
+
+    function adminLogout() {
+      resetJWTTokenAndUser();
+      router.push("/system/login");
     }
 
     function removePasswordResetToken() {
       passwordResetToken.value = null;
-      localStorage.removeItem("passwordResetToken");
-      router.push("/login").then(() => {
-        window.location.reload();
-      });
+      router.push("/login");
     }
 
     function adminRemovePasswordResetToken() {
       passwordResetToken.value = null;
-      localStorage.removeItem("passwordResetToken");
       router.push("/system/login").then(() => {
         window.location.reload();
       });
     }
 
     function adminLogout() {
-      localStorage.removeItem("jwtToken");
-      localStorage.removeItem("user");
-      router.push("/system").then(() => {
-        window.location.reload();
-      });
+      resetJWTTokenAndUser();
+      router.push("/system");
     }
 
     async function reloadUser() {
+      console.log("Reloading user info...");
+      api.defaults.headers.common["Authorization"] = `Bearer ${jwtToken.value}`;
       try {
         const userId = decodeToken(jwtToken.value).id;
         const response = await api({
@@ -90,9 +133,6 @@ export const useUserStore = defineStore(
     async function updateUser(request) {
       try {
         await api({
-          headers: {
-            Authorization: `Bearer ${jwtToken.value}`,
-          },
           method: "put",
           url: `/user/${user.id}`,
           data: request,
@@ -106,9 +146,6 @@ export const useUserStore = defineStore(
     async function uploadAvater(payload) {
       try {
         await api({
-          headers: {
-            Authorization: `Bearer ${jwtToken.value}`,
-          },
           method: "put",
           url: `/user/upload-avatar/${user.id}`,
           data: payload,
@@ -127,7 +164,6 @@ export const useUserStore = defineStore(
         try {
           await api.post(`/user/upload-background-image/${user.id}`, formData, {
             headers: {
-              Authorization: `Bearer ${jwtToken.value}`,
               "Content-Type": "multipart/form-data",
             },
           });
@@ -139,17 +175,14 @@ export const useUserStore = defineStore(
 
     async function downloadBackgroundImage() {
       try {
-        const response = await api({
-          headers: {
-            Authorization: `Bearer ${jwtToken.value}`,
-          },
-          method: "get",
-          url: `/user/download-background-image/${user.id}`,
-          responseType: "blob",
-        });
+        const response = await api.get(
+          `/user/download-background-image/${user.id}`,
+          {
+            responseType: "blob",
+          }
+        );
         return response.data;
       } catch (error) {
-        console.error(error);
         throw error;
       }
     }
@@ -157,9 +190,6 @@ export const useUserStore = defineStore(
     async function getChatRecord() {
       try {
         const response = await api({
-          headers: {
-            Authorization: `Bearer ${jwtToken.value}`,
-          },
           method: "get",
           url: `/chat-record/${user.id}`,
         });
@@ -173,9 +203,6 @@ export const useUserStore = defineStore(
     async function addChatRecord(request) {
       try {
         await api({
-          headers: {
-            Authorization: `Bearer ${jwtToken.value}`,
-          },
           method: "post",
           url: `/chat-record/`,
           data: request,
@@ -216,13 +243,19 @@ export const useUserStore = defineStore(
 
     async function resetPasswordFromEmailLink(request) {
       const userId = decodeToken(passwordResetToken.value).id;
-      console.log(userId);
+
+      api.defaults.headers.common[
+        "Authorization"
+      ] = `Bearer ${passwordResetToken.value}`;
+
       try {
         await api({
           method: "put",
           url: `/user/set-new-password/${userId}`,
           data: request,
         });
+
+        resetJWTTokenAndUser();
       } catch (error) {
         console.error(error);
         throw error;
@@ -259,9 +292,6 @@ export const useUserStore = defineStore(
     async function deleteUser() {
       try {
         await api({
-          headers: {
-            Authorization: `Bearer ${jwtToken.value}`,
-          },
           method: "delete",
           url: `/user/${user.id}`,
         });
@@ -289,8 +319,10 @@ export const useUserStore = defineStore(
       user,
       jwtToken,
       passwordResetToken,
+      resetJWTTokenAndUser,
       register,
       loginAuth,
+      adminLoginAuth,
       logout,
       removePasswordResetToken,
       adminRemovePasswordResetToken,

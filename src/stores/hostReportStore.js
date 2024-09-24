@@ -2,14 +2,20 @@
 
 import { defineStore } from 'pinia';
 import api from '@/plugins/axios';
+import { set } from 'ol/transform';
 
 export const useHostReportStore = defineStore('hostReport', {
     state: () => ({
         isLoading: false,
-        loginUser: 'e61abdb4-d054-4188-9e41-c2691792cf73',
+        loginUser: {
+            id: 'e61abdb4-d054-4188-9e41-c2691792cf73',
+            role: 'normal',
+            name: 'UserName123',
+        },
         // loginUser: 'f27a7b80-4d60-44cf-aa1c-9b44dd375698',
         selectedHouse: '',
-        selectedUser: '',
+        selectedUserId: '',
+        selectedUserIndex: 0,
 
         users: [{ "id": '' }],
         houses: [],
@@ -20,26 +26,66 @@ export const useHostReportStore = defineStore('hostReport', {
         maxCreatedAt: '',
 
         selectedPeriod: 'month',
-        labels: { name: '', values: [] },
+        allYear: false,
+        allMonth: true,
+        allQuarter: false,
+
         years: [],
         months: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
         quarters: ['Q1', 'Q2', 'Q3', 'Q4'],
         selectedYear: '',
-        selectedMonth: '',
-        selectedQuarter: '',
+        selectedMonth: '1',
+        selectedQuarter: '1',
 
+        labels: { name: '', values: [] },
+
+        pics: {
+            doge: {
+                title: 'doge',
+                src: 'https://m.media-amazon.com/images/I/41Bk064aTrL._AC_UF894,1000_QL80_.jpg',
+            },
+            cat: {
+                title: 'cat',
+                src: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTerRVtsqtqpRscjFIa4yKtVl5XheMoJSvCQA&s',
+            },
+            smoker: {
+                title: 'smoker',
+                src: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT8XvMeMgm-z6_XRI9StUPdeyQLrmVQ8Xmd1w&s',
+            },
+            toys: {
+                title: 'toys',
+                src: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdGzzG5LzcHNGjCKOg2gACv_8tT0ZN2lbcbw&s',
+            },
+            good: {
+                title: 'good',
+                src: 'https://memeprod.ap-south-1.linodeobjects.com/user-template/b3a4babd59ebb46530a7f7cca856d848.png',
+            },
+        }
     }),
-    getters: {},
+    getters: {
+        //依據查詢結果(records)處理資料(依照年份做篩選)
+        itemsSource: (state) => {
+            let output = state.records
+            if (!output) return
+            if (!state.allYear) {
+                output = output.filter(item => item.year === state.selectedYear);
+            }
+            if (!state.allMonth) {
+                output = output.filter(item => item.month === state.selectedMonth);
+            }
+            return output
+        },
+    },
     actions: {
         // 1.用host(user)找house
         async fetchHouses(userId) {
             try {
                 //如果有傳入userId，以傳入值搜尋。否則以登入者loginUser查詢
                 if (userId) {
-                    this.loginUser = userId
+                    this.loginUser.id = userId
                 }
                 const response = await api.post('/house/search', {
-                    userId: this.loginUser,
+                    userId: this.loginUser.id,
                     page: 0,
                     limit: 1000
                 });
@@ -140,8 +186,9 @@ export const useHostReportStore = defineStore('hostReport', {
                 // console.log('111111', body.maxCreatedAt)
                 const response = await api.post(`/transcation_record/search`, body);
                 console.log('response.data', response.data)
-                const transformedRecords = await this.searchRecordAgainByRecordId(response.data.content);
+                let transformedRecords = await this.searchRecordAgainByRecordId(response.data.content);
                 for (let item of transformedRecords) { item.house = await this.searchHouseAgainByRecordId(item.house); }
+                transformedRecords = await this.separateCreatedAt(transformedRecords)
                 console.log('transformedRecords', transformedRecords)
                 this.records = transformedRecords;
 
@@ -158,12 +205,21 @@ export const useHostReportStore = defineStore('hostReport', {
                 //    2024: [...], ...}
 
                 //Y={2023: $$$, 2024: $$$, ...}
+
+                // if (this.selectedPeriod === 'year') {
+                //     this.useTestYMDC('Y')
+                // } else if (this.selectedPeriod === 'month') {
+                //     this.useTestYMDC('YM')
+                // } else if (this.selectedPeriod === 'quarter') {
+                //     this.useTestYMDC('YQ')
+                // }
+
                 if (this.selectedPeriod === 'year') {
-                    this.useTestYMDC('Y')
+                    this.turnToY()
                 } else if (this.selectedPeriod === 'month') {
-                    this.useTestYMDC('YM')
+                    this.turnToYM()
                 } else if (this.selectedPeriod === 'quarter') {
-                    this.useTestYMDC('YQ')
+                    this.turnToYQ()
                 }
 
             } catch (error) {
@@ -190,7 +246,6 @@ export const useHostReportStore = defineStore('hostReport', {
 
         // 4.2 修正house只有ID的問題，House ID->House物件
         async searchHouseAgainByRecordId(element) {
-
             if (typeof element === 'object' && !Array.isArray(element)) {
                 return element;
             } else if (typeof element === 'string') {
@@ -201,10 +256,32 @@ export const useHostReportStore = defineStore('hostReport', {
                     console.error('Error fetching record by ID:', error);
                 }
             }
-
         },
 
-        async useTestYMDC(callWhich) {
+        // 4.3 把CreatedAt的時間拆開成不同object，方便篩選
+        async separateCreatedAt(contentArray) {
+            for (let i = 0; i < contentArray.length; i++) {
+                // Parse the date string
+                const date = new Date(contentArray[i].createdAt);
+
+                // Create the output object
+                const output = {
+                    year: date.getFullYear(),
+                    month: date.getMonth() + 1, // getMonth() returns 0-11
+                    date: date.getDate(),
+                    ...contentArray[i] // Spread the other properties
+                };
+                // Remove the original createdAt property if desired
+                // delete output.createdAt;
+                contentArray[i] = output
+            }
+            //log**************************
+            console.log(contentArray)
+            //log**************************
+            return contentArray
+        },
+
+        useTestYMDC(callWhich) {
             let testArr = [
                 {
                     "year": 2024,
@@ -358,25 +435,20 @@ export const useHostReportStore = defineStore('hostReport', {
                 }
             ]
             if (callWhich === 'YMD') {
-                this.turnToYMD(testArr)
+                return this.turnToYMD(testArr)
             } else if (callWhich === 'YM') {
-                this.turnToYM(testArr)
+                return this.turnToYM(testArr)
             } else if (callWhich === 'YQ') {
-                this.turnToYQ(testArr)
+                return this.turnToYQ(testArr)
             } else if (callWhich === 'Y') {
-                this.turnToY(testArr)
+                return this.turnToY(testArr)
             }
 
         },
 
-        async turnToYMD(YMDC) {
+        turnToYMD(YMDC) {
             if (!YMDC) {
-                YMDC = this.records.map(record => ({
-                    year: new Date(record.createdAt).getFullYear(),
-                    month: new Date(record.createdAt).getMonth() + 1,
-                    date: new Date(record.createdAt).getDate(),
-                    cashFlow: record.cashFlow
-                }))
+                YMDC = this.records
             }
             // Initialize the result object
             const result = {};
@@ -397,18 +469,13 @@ export const useHostReportStore = defineStore('hostReport', {
                 // Add the cash flow to the appropriate day (date - 1 because array is zero-indexed)
                 result[year][month][date - 1] += cashFlow;
             });
-            this.recordsPrapared = result
-            console.log('YMD', this.recordsPrapared);
+            // console.log('YMD', this.recordsPrapared);
+            return result
         },
 
-        async turnToYM(YMDC) {
+        turnToYM(YMDC) {
             if (!YMDC) {
-                YMDC = this.records.map(record => ({
-                    year: new Date(record.createdAt).getFullYear(),
-                    month: new Date(record.createdAt).getMonth() + 1,
-                    date: new Date(record.createdAt).getDate(),
-                    cashFlow: record.cashFlow
-                }))
+                YMDC = this.records
             }
             // Initialize the result object
             const result = {};
@@ -425,18 +492,13 @@ export const useHostReportStore = defineStore('hostReport', {
                 // Add the cash flow to the appropriate month (1-based index, so subtract 1)
                 result[year][month - 1] += cashFlow;
             });
-            this.recordsPrapared = result
             console.log('YM', this.recordsPrapared);
+            return result
         },
 
-        async turnToYQ(YMDC) {
+        turnToYQ(YMDC) {
             if (!YMDC) {
-                YMDC = this.records.map(record => ({
-                    year: new Date(record.createdAt).getFullYear(),
-                    month: new Date(record.createdAt).getMonth() + 1,
-                    date: new Date(record.createdAt).getDate(),
-                    cashFlow: record.cashFlow
-                }))
+                YMDC = this.records
             }
             // Initialize the result object
             const result = {};
@@ -462,18 +524,14 @@ export const useHostReportStore = defineStore('hostReport', {
                 // Add the cash flow to the appropriate quarter
                 result[year][quarter] += cashFlow;
             });
-            this.recordsPrapared = result
-            console.log('YQ', this.recordsPrapared);
+            // console.log('YQ', this.recordsPrapared);
+            return result
+
         },
 
-        async turnToY(YMDC) {
+        turnToY(YMDC) {
             if (!YMDC) {
-                YMDC = this.records.map(record => ({
-                    year: new Date(record.createdAt).getFullYear(),
-                    month: new Date(record.createdAt).getMonth() + 1,
-                    date: new Date(record.createdAt).getDate(),
-                    cashFlow: record.cashFlow
-                }))
+                YMDC = this.records
             }
             // Initialize the result object
             const result = {};
@@ -492,8 +550,32 @@ export const useHostReportStore = defineStore('hostReport', {
             // Convert the yearly cash flow object to an array of values
             const output = Object.values(result);
 
-            this.recordsPrapared = output
-            console.log('Y', this.recordsPrapared);
+            // console.log('Y', this.recordsPrapared);
+            return output
+
+        },
+
+        // Function to sum monthly data across all years
+        sumMonthlyData(data) {
+            const monthlySum = new Array(12).fill(0); // Initialize an array for 12 months
+
+            // Iterate over each year in the data
+            for (const year in data) {
+                const monthlyData = data[year];
+
+                // Sum each month's data
+                monthlyData.forEach((value, month) => {
+                    monthlySum[month] += value; // Add to the corresponding month
+                });
+            }
+
+            return monthlySum; // Returns an array of summed monthly data
+        },
+
+        getUserBySelectedUserId(userId) {
+            console.log(userId)
+            console.log(this.users)
+            return this.users.find(user => user.id === userId) || null;
         },
 
         async findAllUser() {
@@ -505,7 +587,6 @@ export const useHostReportStore = defineStore('hostReport', {
                 console.error('Error fetching users:', error);
             }
         },
-
 
 
     }

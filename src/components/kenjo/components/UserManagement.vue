@@ -147,7 +147,9 @@
 
 <script>
 import axios, { all } from 'axios';
-
+// import { decodeToken } from '../../../stores/userStore';
+// const token = localStorage.getItem('authToken'); 
+// const decoded = decodeToken(token);
 export default {
   data() {
     return {
@@ -228,7 +230,11 @@ export default {
   methods: {
     async fetchUsers() {
       try {
-        const response = await axios.get('http://localhost:8080/user/find-users', {
+        const response = await axios.get('http://localhost:8080/user/find-users'
+        , {
+          // headers: {
+          //   Authorization: `Bearer ${token}` // 添加授權標頭
+          // },
           params: {
             pageNo: 0,
             pageSize: 1000
@@ -238,7 +244,10 @@ export default {
           console.log('API response:', response.data); 
           // 確保 response.data 是包含 users 屬性的物件
           if (response.data && Array.isArray(response.data.users)) {
-            this.desserts = response.data.users; // 提取 users 陣列並設置為 desserts
+            this.desserts = response.data.users.map(user => ({
+            ...user,
+            birthday: this.formatDate(user.birthday) 
+          }));
           } else {
             console.error('API response is not in expected format:', response.data);
             this.desserts = []; // 初始化為空數組
@@ -250,7 +259,10 @@ export default {
         console.error('Error in fetchUsers:', error);
       }
     },
-
+    formatDate(dateString) {
+        if (!dateString) return '';
+        return dateString.split(' ')[0]; 
+      },
     editUser(item) {
       this.editedIndex = this.desserts.indexOf(item);
       this.editedUser = Object.assign({}, item);
@@ -265,7 +277,11 @@ export default {
 
     async deleteUserConfirm() {
       try {
-        await axios.delete(`http://localhost:8080/user/${this.editedUser.id}`);
+        await axios.delete(`http://localhost:8080/user/${this.editedUser.id}`,{
+          // headers: {
+          //   Authorization: `Bearer ${token}` // 添加授權標頭
+          // }
+        });
         this.desserts.splice(this.editedIndex, 1);
         this.closeDelete();
       } catch (error) {
@@ -290,24 +306,29 @@ export default {
     },
 
     async save() {
-      if (!this.editedUser.name || !this.editedUser.mobilePhone || !this.editedUser.address) {
-        alert('姓名、手機號碼和地址為必填項');
+      if (!this.editedUser.name || !this.editedUser.mobilePhone ) {
+        alert('姓名、手機號碼為必填項');
         return;
       }
 
       try {
         if (this.editedIndex > -1) {
           // 更新現有用戶
-          await axios.put(`http://localhost:8080/user/${this.editedUser.id}`, this.editedUser);
+          await axios.put(`http://localhost:8080/user/${this.editedUser.id}`, this.editedUser,
+          // {headers: {Authorization: `Bearer ${token}`}}
+          );
           Object.assign(this.desserts[this.editedIndex], this.editedUser);
         } else {
           // 創建新用戶
-          const response = await axios.post('http://localhost:8080/user/', this.editedUser);
+          const response = await axios.post('http://localhost:8080/user/createUser', this.editedUser,
+            // {headers: {Authorization: `Bearer ${token}`}}
+            );
           this.desserts.push(response.data);
         }
         this.close();
       } catch (error) {
         console.error('Error saving user:', error);
+        console.error('Error saving user:', error.response ? error.response.data : error);
       }
     },
   },

@@ -17,7 +17,7 @@ import { useUserStore } from "../../stores/userStore";
 import Swal from "sweetalert2";
 
 const userStore = useUserStore();
-const { deleteUser, logout } = userStore;
+const { deleteUser, adminLogout } = userStore;
 
 const handleClick = async () => {
   Swal.fire({
@@ -46,7 +46,7 @@ const handleClick = async () => {
               title: "帳號已刪除！",
               icon: "success",
             });
-            logout();
+            adminLogout();
           } catch (error) {
             Swal.fire({
               title: "帳號刪除失敗，請重新操作一次",

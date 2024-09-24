@@ -101,12 +101,12 @@
                             </div>
                             <div class="text-grey-darken-1">
                                 <span class="mr-2" v-if="!houseInfo.pet">
-                                    <span class="mdi mdi-paw-off mr-1"></span>
+                                    <span class="mdi mdi-paw-off mr-2"></span>
                                     <span>禁止寵物</span>
                                 </span>
 
                                 <span class="mr-2" v-if="!houseInfo.smoke">
-                                    <span class="mdi mdi-smoking-off mr-1"></span>
+                                    <span class="mdi mdi-smoking-off mr-2"></span>
                                     <span>禁止吸菸</span>
                                 </span>
                             </div>
@@ -142,7 +142,14 @@
                     <div class="text-h6 mb-3">設施</div>
                     <v-skeleton-loader type="chip, chip, chip" v-if="isLoading" />
                     <v-sheet class="d-flex flex-row flex-wrap w-100 ga-3" v-else>
+                        <v-sheet v-if="houseInfo.postulates.length === 0" class="w-100 text-center">
+                            <v-alert variant="plain">
+                                <v-icon icon="mdi-emoticon-cry-outline" size="x-large"></v-icon>
+                                <div class="mt-2">房東忘記添加設施</div>
+                            </v-alert>
+                        </v-sheet>
                         <v-sheet
+                            v-else
                             v-for="(postulaue, index) in houseInfo.postulates"
                             class="d-flex flex-column justufy-center align-center px-4 py-3"
                             rounded="lg"
@@ -180,7 +187,13 @@
                 <v-sheet min-height="180">
                     <div class="text-h6 mb-3">地理位置</div>
                     <v-skeleton-loader type="image" height="250" v-if="isLoading" />
-                    <v-sheet v-else class="overflow-hidden" rounded="lg">
+                    <v-sheet
+                        v-else
+                        class="overflow-hidden"
+                        rounded="lg"
+                        :border="true"
+                        :elevation="0"
+                    >
                         <!-- Map -->
                         <ol-map
                             style="height: 250px; width: 100%"
@@ -190,20 +203,21 @@
                         >
                             <ol-view
                                 :projection="`EPSG:4326`"
-                                :center="[houseInfo.latitudeX, houseInfo.longitudeY]"
+                                :center="[houseInfo.longitudeY, houseInfo.latitudeX]"
                                 :zoom="18"
                                 :rotation="0"
                             />
                             <ol-tile-layer :cacheSize="0">
-                                <ol-source-osm  />
+                                <ol-source-osm />
                             </ol-tile-layer>
                             <ol-vector-layer>
                                 <ol-source-vector>
                                     <ol-feature :properties="[]">
+                                        <!-- Long, Lat (經度,緯度) -->
                                         <ol-geom-point
                                             :coordinates="[
-                                                houseInfo.latitudeX,
                                                 houseInfo.longitudeY,
+                                                houseInfo.latitudeX,
                                             ]"
                                         ></ol-geom-point>
                                     </ol-feature>
@@ -235,22 +249,63 @@
                 </v-sheet>
                 <v-divider class="border-opacity-25 my-5"></v-divider>
                 <v-sheet min-height="100">
-                    <div class="text-h6 pa-0">房東</div>
+                    <div class="text-h6 pa-0">房東資訊</div>
                     <v-skeleton-loader type="avatar, list-item-three-line" v-if="isLoading" />
-                    <v-sheet v-else>
-                        <div>{{ houseInfo.userName }}</div>
-                    </v-sheet>
+                    <v-row v-else class="d-flex flex-row">
+                        <v-col class="flex-grow-1" cols="12" md="4">
+                            <v-card flat>
+                                <template v-slot:prepend>
+                                    <v-avatar size="100" class="mr-5" border>
+                                        <v-img :src="hostInfo.avatarBase64"></v-img>
+                                    </v-avatar>
+                                </template>
+                                <template v-slot:title>
+                                    <div>{{ hostInfo.name }}</div>
+                                </template>
+                                <template v-slot:subtitle>
+                                    <div>100 間房源</div>
+                                </template>
+                                <v-btn
+                                    v-if="jwtToken"
+                                    icon="mdi-message-outline"
+                                    elevation="3"
+                                    color="brown-darken-1"
+                                    rounded="pill"
+                                    size="large"
+                                    density="comfortable"
+                                    class="mr-2"
+                                    @click="handleChatClick"
+                                    to="/chat"
+                                ></v-btn>
+                            </v-card>
+                        </v-col>
+                        <v-col class="flex-grow-1" cols="12" md="8">
+                            <v-card class="py-0" flat>
+                                <v-card-item class="py-0">{{ hostInfo.about }}</v-card-item>
+                            </v-card>
+                        </v-col>
+                    </v-row>
                 </v-sheet>
                 <v-divider class="border-opacity-25 my-5"></v-divider>
                 <v-sheet min-height="100" flat>
                     <v-sheet class="d-flex flex-row align-top">
                         <div class="flex-grow-1 text-h6 mb-3">評價</div>
                         <div class="d-flex flex-grow-1 text-h6 mb-3 justify-end align-top">
-                            <v-btn variant="text" size="default" rounded="pill">
+                            <v-btn
+                                variant="text"
+                                size="default"
+                                rounded="pill"
+                                @click="onClickDiscuss"
+                            >
                                 <template v-slot:prepend>
                                     <v-icon icon="mdi-message-draw" color="brown"></v-icon>
                                 </template>
-                                立即評價
+                                {{
+                                    selfHouseDiscuss.houseId === null &&
+                                    selfHouseDiscuss.userId === null
+                                        ? "立即評價"
+                                        : "修改評價"
+                                }}
                             </v-btn>
                         </div>
                     </v-sheet>
@@ -258,13 +313,18 @@
                         type="avatar, list-item-three-line, avatar, list-item-three-line"
                         v-if="isLoading"
                     />
+                    <v-sheet v-else-if="previewDiscussList.length === 0" class="w-100 text-center">
+                        <v-alert variant="plain">
+                            <v-icon icon="mdi-emoticon-cry-outline" size="x-large"></v-icon>
+                            <div class="mt-2">目前沒有任何評價</div>
+                        </v-alert>
+                    </v-sheet>
                     <v-row v-else>
-                        <v-col cols="12" md="6" v-for="index in 4">
-                            <v-card>
+                        <v-col cols="12" md="6" v-for="previewDiscuss in previewDiscussList">
+                            <v-card color="brown-lighten-5" flat>
                                 <template v-slot:prepend>
-                                    <v-avatar size="large">
+                                    <v-avatar size="large" border>
                                         <v-img
-                                            alt="John"
                                             src="https://cdn.vuetifyjs.com/images/john.jpg"
                                         ></v-img>
                                     </v-avatar>
@@ -274,7 +334,7 @@
                                         hover
                                         :length="5"
                                         :size="23"
-                                        :model-value="4"
+                                        :model-value="previewDiscuss.score"
                                         color="warning"
                                         active-color="warning"
                                         readonly
@@ -286,14 +346,27 @@
                                 <template v-slot:subtitle>
                                     <div>共100則評論</div>
                                 </template>
-                                <v-card-text>
-                                    <p>
-                                        很棒很棒很棒很棒很棒很棒很棒很棒很棒很棒，很棒很棒很棒很棒很棒，很棒!!!!!
-                                        很棒很棒很棒，很棒!!!!!很棒很棒很棒，很棒!!!!!很棒很棒很棒，很棒!!!!!
-                                        很棒很棒很棒，很棒!!!!!很棒很棒很棒，很棒!!!!!很棒很棒很棒，很棒!!!!!
-                                        很棒很棒很棒，很棒!!!!!很棒很棒很棒，很棒!!!!!很棒很棒很棒，很棒!!!!!
-                                    </p>
-                                    <div class="text-caption text-end">評論日期: 2024-09-09</div>
+                                <v-card-text class="pb-1">
+                                    <v-sheet
+                                        height="80px"
+                                        class="overflow-auto"
+                                        color="transparent"
+                                    >
+                                        <p v-if="typeof previewDiscuss.discuss !== 'undefined'">
+                                            {{ previewDiscuss.discuss }}
+                                        </p>
+                                        <div
+                                            v-else
+                                            class="d-flex justify-center align-center h-100"
+                                        >
+                                            <div class="flex-grow-1 text-grey-darken-2 text-center">
+                                                無評論
+                                            </div>
+                                        </div>
+                                    </v-sheet>
+                                    <div class="text-caption text-end pt-3">
+                                        評論日期: 2024-09-09
+                                    </div>
                                 </v-card-text>
                             </v-card>
                         </v-col>
@@ -302,6 +375,7 @@
             </v-col>
         </v-row>
     </v-container>
+    <DiscussDialog />
     <ShareDialog />
 </template>
 
@@ -310,9 +384,19 @@ import { computed, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useHouseDetailStore } from "@/stores/houseDetailStore";
 import { storeToRefs } from "pinia";
+
+// User pinia
+import { useUserStore } from "../../stores/userStore";
+const userStore = useUserStore();
+const { jwtToken, user, addChatRecord } = userStore;
+
+// Components
 import ImageGrid from "@/components/home/ImageGrid.vue";
 import ShareDialog from "@/components/home/ShareDialog.vue";
+import DiscussDialog from "@/components/home/DiscussDialog.vue";
+// Assets
 import pointIcon from "@/assets/point01.svg";
+// Openlayers
 import { platformModifierKeyOnly } from "ol/events/condition";
 // Use route, router
 const router = useRouter();
@@ -322,11 +406,15 @@ const route = useRoute();
 const houseDetailStore = useHouseDetailStore();
 const {
     houseInfo,
+    hostInfo,
+    previewDiscussList,
+    selfHouseDiscuss,
     isErrorGetHouseInfo,
     isLoading,
     isLoadingCollection,
     isCollected,
     isShareDialogOpen,
+    isDiscussDialogOpen,
 } = storeToRefs(houseDetailStore);
 
 // Functions
@@ -340,6 +428,11 @@ function onClickCollect() {
 function onClickShare() {
     if (!isShareDialogOpen.value) {
         isShareDialogOpen.value = true;
+    }
+}
+function onClickDiscuss() {
+    if (!isDiscussDialogOpen.value) {
+        isDiscussDialogOpen.value = true;
     }
 }
 // Map event
@@ -365,6 +458,14 @@ function handleMapPointerMove(e) {
     const pixel = e.map.getEventPixel(e.originalEvent);
     const hit = e.map.hasFeatureAtPixel(pixel);
     e.map.getTarget().style.cursor = hit ? "pointer" : "";
+}
+
+async function handleChatClick() {
+    await addChatRecord({
+        chat: "請問有什麼能為您服務的地方嗎？",
+        senderId: houseDetailStore.hostInfo.id,
+        receiverId: user.id,
+    });
 }
 
 watch(

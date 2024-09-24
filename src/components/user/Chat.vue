@@ -1,16 +1,11 @@
 <template>
   <div class="container">
     <div class="list-container">
-      <v-card class="mx-auto" width="300">
-        <v-card
-          class="title"
-          color="blue-grey-lighten-4"
-          title="聊天紀錄"
-          width="500"
-        ></v-card>
+      <v-card class="mx-auto" color="#263238" width="300">
+        <v-card-title>聊天紀錄</v-card-title>
         <v-list class="chat-recored">
           <v-list-item
-            :class="{ 'selected-item': selectedItemId === item.id }"
+            :class="{ 'selected-item': selectedItemId === item.senderId }"
             v-for="item in itemSet?.items"
             :key="item.id"
             @click="handleClick(item)"
@@ -18,7 +13,18 @@
             <div class="chat-recored-part">
               <div class="chat-recored-title">
                 <v-list-item-avatar>
-                  <v-img :src="item?.avatar" width="50px" alt=""></v-img>
+                  <v-img
+                    v-if="!item?.avatar"
+                    src="src/assets/user.png"
+                    width="50px"
+                    alt=""
+                  ></v-img>
+                  <v-img
+                    v-if="item?.avatar"
+                    :src="item?.avatar"
+                    width="50px"
+                    alt=""
+                  ></v-img>
                 </v-list-item-avatar>
                 <v-list-item-content>
                   <v-list-item-title>{{ item?.title }}</v-list-item-title>
@@ -32,7 +38,7 @@
                 </v-list-item-content>
                 <v-list-item-content class="chat-recored-content">
                   <v-list-item-content id="item-subtitle-2">{{
-                    item?.createdAt
+                    formatDate(item?.createdAt)
                   }}</v-list-item-content>
                 </v-list-item-content>
               </div>
@@ -70,7 +76,7 @@
                 {{ chat?.chat }}
               </v-card-text>
               <v-card-text width="300">
-                {{ chat?.createdAt }}
+                {{ formatDate(chat?.createdAt) }}
               </v-card-text>
             </div>
             <div class="member">
@@ -88,7 +94,17 @@
           >
             <div class="member">
               <v-avatar class="avatar" color="surface-light" size="50">
-                <v-img :src="other?.avatarBase64" cover></v-img>
+                <v-img
+                  v-if="!chat?.senderAvatar"
+                  src="src/assets/user.png"
+                  width="50px"
+                  alt=""
+                ></v-img>
+                <v-img
+                  v-if="chat?.senderAvatar"
+                  :src="other?.avatarBase64"
+                  cover
+                ></v-img>
               </v-avatar>
               {{ other?.name }}
               <!-- <v-btn color="red-darken-4">收回</v-btn> -->
@@ -98,7 +114,7 @@
                 {{ chat?.chat }}
               </v-card-text>
               <v-card-text width="300">
-                {{ chat?.createdAt }}
+                {{ formatDate(chat?.createdAt) }}
               </v-card-text>
             </div>
           </v-card>
@@ -131,7 +147,9 @@ const { user, getChatRecord, addChatRecord } = userStore;
 const me = reactive({});
 const other = reactive({});
 const index = ref(0);
-const itemsMap = ref(new Map());
+const itemsMap = reactive({
+  map: new Map(),
+});
 const selectedItemId = ref(null);
 const socket = ref(null);
 const page = ref(0);
@@ -165,7 +183,7 @@ onMounted(async () => {
   getChatList();
 
   if (itemSet?.items.length !== 0) {
-    selectedItemId.value = itemSet?.items[0]?.id || null;
+    selectedItemId.value = itemSet?.items[0]?.senderId || null;
   }
 
   // Connect to WebSocket
@@ -189,7 +207,10 @@ onMounted(async () => {
   };
 
   socket.value.onclose = () => {
-    console.log("WebSocket connection closed");
+    console.log("WebSocket connection closed, attempting to reconnect...");
+    setTimeout(() => {
+      socket.value = new WebSocket("ws://localhost:3002");
+    }, 5000); // Retry after 5 seconds
   };
 
   socket.value.onerror = (error) => {
@@ -239,7 +260,7 @@ const submit = async () => {
     sender: me.name,
     receiverId: other.id,
     senderAvatar: me.avatarBase64,
-    createdAt: new Date().toISOString(),
+    createdAt: new Date(),
   };
 
   // Send message through WebSocket
@@ -260,7 +281,7 @@ const submit = async () => {
 
 function getChatList() {
   itemSet.items = [];
-  itemsMap.value.clear();
+  itemsMap.map.clear();
 
   let chat;
 
@@ -276,11 +297,11 @@ function getChatList() {
         createdAt: chat.createdAt,
       };
 
-      itemsMap.value.set(chat.senderId, newItem);
+      itemsMap.map.set(chat.senderId, newItem);
     }
   }
 
-  itemSet.items = Array.from(itemsMap.value.values());
+  itemSet.items = Array.from(itemsMap.map.values());
 
   // Sort items by createdAt in descending order (newest first)
   itemSet.items.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
@@ -289,11 +310,23 @@ function getChatList() {
 const handleClick = async (item) => {
   index.value = findIndexById(chatRecord.chatRecords, item.senderId);
   Object.assign(other, await getOther());
-  selectedItemId.value = item.id;
+  selectedItemId.value = item.senderId;
 };
 
 const findIndexById = (array, id) => {
   return array.findIndex((item) => item.senderId === id);
+};
+
+// Date formatting function
+const formatDate = (dateString) => {
+  const options = {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  };
+  return new Intl.DateTimeFormat("zh-TW", options).format(new Date(dateString));
 };
 
 // function handleScroll(event) {
@@ -342,7 +375,7 @@ const findIndexById = (array, id) => {
 }
 
 #item-subtitle-1 {
-  font-size: 25px;
+  font-size: 15px;
 }
 
 #item-subtitle-2 {

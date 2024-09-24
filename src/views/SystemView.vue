@@ -75,7 +75,7 @@
       <!-- <v-btn v-if="jwtToken" >登出</v-btn> -->
     </v-app-bar>
     <v-main>
-      <router-view></router-view>
+      <router-view />
     </v-main>
   </v-app>
 </template>
@@ -84,19 +84,29 @@
 import { storeToRefs } from "pinia";
 import { useUserStore } from "../stores/userStore";
 import { useUserViewStore } from "../stores/userViewStore";
+import Swal from "sweetalert2";
+// import Home from '../components/kenjo/Home.vue';
 
 const userStore = useUserStore();
-const { user, jwtToken, adminLogout } = userStore;
+const { user, jwtToken, adminLogout } = storeToRefs(userStore);
 const userViewStore = useUserViewStore();
 const { memberMenu } = storeToRefs(userViewStore);
 
 // 登出
 function handleLogout() {
-  const confirmLogout = window.confirm("請確認是否要登出");
-
-  if (confirmLogout) {
-    adminLogout();
-  }
+  Swal.fire({
+    title: "請確認是否要登出?",
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "確定",
+    cancelButtonText: "取消",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      userStore.adminLogout();
+    }
+  });
 }
 </script>
 <style scoped></style>

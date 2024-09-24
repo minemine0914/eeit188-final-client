@@ -1,42 +1,61 @@
 <template>
   <Line :data="data" :options="options" />
+  <!-- <p>{{ store.selectedMonth }}月營業額：</p> -->
 </template>
 
 <script setup>
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js'
 import { Line } from 'vue-chartjs'
-import { computed } from 'vue';
+import { computed, watch, onMounted } from 'vue';
 import { useHostReportStore } from '@/stores/hostReportStore';
-
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
 
 const store = useHostReportStore()
+
+
+
 // Create a computed property for the chart data
 const data = computed(() => {
   // Define an array of colors for each data point
-  let pointColors = store.records.map((record, index) =>
-    index === store.selectedMonth - 1 ? 'blue' : '#f87979' // Change color of the third point to red, others to black
-  )
+  let pointBackgroundColor = Array(store.records.length).fill('#f87979');
+  let pointRadius = Array(store.records.length).fill(3);
 
   if (store.selectedPeriod === 'year') {
-    store.labels.name = 'YEAR'
+    store.labels.name = '年度'
     store.labels.values = store.years
-    pointColors = store.records.map((record, index) =>
-      index === store.selectedYear - store.years[0] ? 'blue' : '#f87979' // Change color of the third point to red, others to black
-    )
+    if (!store.allYear) {
+      pointBackgroundColor[store.selectedYear - store.years[0]] = 'blue';
+      pointRadius[store.selectedYear - store.years[0]] = 8;
+    }
+
   } else if (store.selectedPeriod === 'month') {
-    store.labels.name = 'MONTH'
+    store.labels.name = '月份'
     store.labels.values = store.months
-    pointColors = store.records.map((record, index) =>
-      index === store.selectedMonth - 1 ? 'blue' : '#f87979' // Change color of the third point to red, others to black
-    )
+    if (!store.allMonth) {
+      pointBackgroundColor[store.selectedMonth - 1] = 'blue';
+      pointRadius[store.selectedMonth - 1] = 8;
+    }
   } else if (store.selectedPeriod === 'quarter') {
-    store.labels.name = 'QUARTER'
+    store.labels.name = '季'
     store.labels.values = store.quarters
-    pointColors = store.records.map((record, index) =>
-      index === store.selectedQuarter - 1 ? 'blue' : '#f87979' // Change color of the third point to red, others to black
-    )
+    if (!store.allQuarter) {
+      pointBackgroundColor[store.selectedQuarter - 1] = 'blue';
+      pointRadius[store.selectedQuarter - 1] = 8;
+    }
+  }
+
+  let lineData
+  if (store.selectedPeriod === 'year') {
+    lineData = store.recordsPrapared
+  } else {
+    lineData = store.recordsPrapared[store.selectedYear]
+    console.log("S.RP", store.recordsPrapared)
+    if (store.allYear === true) {
+      console.log("S.RPSUM", store.sumMonthlyData(store.recordsPrapared))
+      lineData = store.sumMonthlyData(store.recordsPrapared);
+
+    }
   }
 
   console.log(store.records.map(record => record.cashFlow || 0))
@@ -45,12 +64,12 @@ const data = computed(() => {
     labels: store.labels.values, // Convert months to strings for labels
     datasets: [
       {
-        label: 'Data',
+        label: '營業額',
         backgroundColor: '#f87979',
         borderColor: '#f87979',
-        pointBackgroundColor: pointColors, // Apply point colors here
-
-        data: store.selectedPeriod === 'year' ? store.recordsPrapared : store.recordsPrapared[store.selectedYear] // Adjust data mapping as needed
+        pointBackgroundColor, // Apply point colors here
+        pointRadius,
+        data: lineData // Adjust data mapping as needed
       }
     ]
   }
@@ -62,12 +81,12 @@ const options = computed(() => ({
   plugins: {
     legend: {
       position: '',
-      // position: 'top',
+      position: 'top',
     },
     tooltip: {
       callbacks: {
         label: function (tooltipItem) {
-          return `Value: ${tooltipItem.raw}`;
+          return `營業額：${tooltipItem.raw}`;
         }
       }
     }
@@ -81,12 +100,21 @@ const options = computed(() => ({
     },
     y: {
       title: {
-        display: true,
-        text: 'Value'
+        display: false,
+        text: '營業額'
       },
       beginAtZero: true
     }
   }
 }))
 
+onMounted(() => {
+  if (store.selectedPeriod === 'year') {
+    store.recordsPrapared = store.turnToY(store.records);
+  } else if (store.selectedPeriod === 'month') {
+    store.recordsPrapared = store.turnToYM(store.records);
+  } else if (store.selectedPeriod === 'quarter') {
+    store.recordsPrapared = store.turnToYQ(store.records);
+  }
+})
 </script>

@@ -2,66 +2,112 @@
     <div class="position-absolute w-100">
         <v-row justify="center" align="center" no-gutters>
             <v-col cols="12" xs="12" sm="9" md="8" lg="6" v-click-outside="onClickOutside">
-                <v-card elevation="3" rounded="pill" class="px-3 mb-3" border style="z-index: 100">
-                    <v-toolbar dense color="rgba(0,0,0,0)">
-                        <v-text-field
-                            v-model="inputValues.cityName"
-                            label="城市"
-                            variant="solo"
-                            hide-details
-                            flat
-                            @update:modelValue="onUpdateCity"
-                            @update:focused="onFocusSearchCity"
-                        />
-                        <v-divider class="border-opacity-50 my-3" vertical />
-                        <v-date-input
-                            v-model="inputValues.dateRange"
-                            label="入住 / 退房日期"
-                            multiple="range"
-                            prepend-icon=""
-                            variant="solo"
-                            hide-details
-                            flat
-                            readonly
-                            @update:focused="onFocusSearchDateRange"
-                        />
-                        <v-divider class="border-opacity-50 my-3" vertical />
-                        <v-text-field
-                            v-model="selectdPostulatesString"
-                            label="設施"
-                            variant="solo"
-                            hide-details
-                            flat
-                            readonly
-                            @update:focused="onFocusSearchPostulate"
-                        />
-                        <v-divider class="border-opacity-50 my-3" vertical />
-                        <v-text-field
-                            v-model="peopleInfoString"
-                            label="人數"
-                            variant="solo"
-                            hide-details
-                            flat
-                            readonly
-                            @update:focused="onFocusSearchPeople"
-                        />
-                        <v-divider class="border-opacity-50 my-3" vertical />
-                        <v-text-field
-                            label="進階搜尋"
-                            variant="solo"
-                            hide-details
-                            flat
-                            readonly
-                            @update:focused="onFocusSearchOther"
-                        />
-                        <v-btn
-                            icon="mdi-magnify"
-                            variant="flat"
-                            color="brown-lighten-1"
-                            @click.stop="onClickSearchBtn"
-                        />
-                    </v-toolbar>
-                </v-card>
+                <v-sheet class="position-relative" color="transparent" style="z-index: 100;">
+                    <v-slide-y-reverse-transition>
+                        <v-card
+                            v-if="!houseSearchStore.isSearchParamsEqual"
+                            :class="[
+                                'position-absolute',
+                                'mr-10',
+                                'px-3',
+                                'pb-3',
+                                'pt-1',
+                                'd-flex',
+                                'justify-center',
+                                'align-center',
+                                'cursor-pointer',
+                                'text-body-2',
+                            ]"
+                            style="right: 0; top: -25px;"
+                            rounded="lg"
+                            elevation="3"
+                            @click.stop="houseSearchStore.resetSearchParams()"
+                        >
+                            <span class="text-brown" style="user-select: none">X 清除條件</span>
+                        </v-card>
+                    </v-slide-y-reverse-transition>
+                    <v-card
+                        elevation="3"
+                        rounded="pill"
+                        class="px-1 mb-3"
+                        border
+                    >
+                        <v-toolbar dense color="rgba(0,0,0,0)">
+                            <v-text-field
+                                v-model="inputValues.cityName"
+                                label="城市"
+                                variant="solo"
+                                hide-details
+                                flat
+                                @update:modelValue="onUpdateCity"
+                                @update:focused="onFocusSearchCity"
+                            />
+                            <v-divider class="border-opacity-50 my-3" vertical />
+                            <v-date-input
+                                v-model="inputValues.dateRange"
+                                label="入住 / 退房日期"
+                                multiple="range"
+                                prepend-icon=""
+                                variant="solo"
+                                hide-details
+                                flat
+                                readonly
+                                @update:focused="onFocusSearchDateRange"
+                            />
+                            <v-divider class="border-opacity-50 my-3" vertical />
+                            <v-text-field
+                                v-model="selectdPostulatesString"
+                                label="設施"
+                                variant="solo"
+                                hide-details
+                                flat
+                                readonly
+                                @update:focused="onFocusSearchPostulate"
+                            />
+                            <v-divider class="border-opacity-50 my-3" vertical />
+                            <v-text-field
+                                v-model="peopleInfoString"
+                                label="人數"
+                                variant="solo"
+                                hide-details
+                                flat
+                                readonly
+                                @update:focused="onFocusSearchPeople"
+                            />
+                            <v-divider class="border-opacity-50 my-3" vertical />
+                            <v-text-field
+                                label="進階搜尋"
+                                variant="solo"
+                                hide-details
+                                flat
+                                readonly
+                                @update:focused="onFocusSearchOther"
+                            />
+                            <v-sheet
+                                rounded="pill"
+                                color="brown-lighten-4"
+                                class="pa-1 d-flex ga-1 justify-center align-center"
+                            >
+                                <v-btn
+                                    v-tooltip:bottom="'清單搜尋'"
+                                    icon="mdi-magnify"
+                                    variant="flat"
+                                    :color="$route.path === '/search' ? 'brown' : 'brown-lighten-2'"
+                                    @click.stop="onClickSearchBtn('list')"
+                                />
+                                <v-btn
+                                    v-tooltip:bottom="'地圖搜尋'"
+                                    icon="mdi-map-search"
+                                    variant="flat"
+                                    :color="
+                                        $route.path === '/search-map' ? 'brown' : 'brown-lighten-2'
+                                    "
+                                    @click.stop="onClickSearchBtn('map')"
+                                />
+                            </v-sheet>
+                        </v-toolbar>
+                    </v-card>
+                </v-sheet>
                 <v-slide-y-transition>
                     <v-card
                         v-show="isFocusSearchBar"
@@ -75,7 +121,11 @@
                             <v-window-item value="city">
                                 <v-card-item>
                                     <div class="text-h6 font-weight-black">選擇城市</div>
-                                    <v-chip-group column selected-class="text-brown">
+                                    <v-chip-group
+                                        column
+                                        selected-class="text-brown"
+                                        v-model="inputValues.cityChipGroup"
+                                    >
                                         <v-chip
                                             v-for="city in cities"
                                             :key="city.CityName"
@@ -130,7 +180,7 @@
                                         </v-col>
                                     </v-row>
                                     <v-chip-group
-                                        v-model="postlateChipGroup"
+                                        v-model="inputValues.postulateChipGroup"
                                         column
                                         multiple
                                         selected-class="text-brown"
@@ -238,10 +288,21 @@
                             </v-window-item>
                             <v-window-item value="other">
                                 <v-card-item>
+                                    <div class="text-h6 font-weight-black">房源名稱</div>
+                                    <v-sheet class="mt-3">
+                                        <v-text-field
+                                            v-model="searchParams.name"
+                                            variant="outlined"
+                                            rounded="pill"
+                                            label="依名稱關鍵字查詢"
+                                        ></v-text-field>
+                                    </v-sheet>
+                                </v-card-item>
+                                <v-card-item>
                                     <div class="text-h6 font-weight-black">價格範圍</div>
                                     <v-sheet class="mt-3">
                                         <v-range-slider
-                                            v-model="housePriceRange"
+                                            v-model="inputValues.housePriceRange"
                                             :max="100000"
                                             :min="0"
                                             :step="1"
@@ -252,7 +313,7 @@
                                         >
                                             <template v-slot:prepend>
                                                 <v-text-field
-                                                    v-model="housePriceRange[0]"
+                                                    v-model="inputValues.housePriceRange[0]"
                                                     prefix="$"
                                                     density="compact"
                                                     style="width: 100px"
@@ -266,7 +327,7 @@
                                             </template>
                                             <template v-slot:append>
                                                 <v-text-field
-                                                    v-model="housePriceRange[1]"
+                                                    v-model="inputValues.housePriceRange[1]"
                                                     prefix="$"
                                                     density="compact"
                                                     style="width: 100px"
@@ -292,13 +353,16 @@
                                                         fluid
                                                     >
                                                         <v-btn
-                                                            :disabled="searchParams.livingDiningRoom < 1"
+                                                            :disabled="
+                                                                searchParams.livingDiningRoom < 1
+                                                            "
                                                             icon="mdi-minus"
                                                             size="small"
                                                             density="comfortable"
                                                             @click.stop="
                                                                 () => {
-                                                                    searchParams.livingDiningRoom > 0
+                                                                    searchParams.livingDiningRoom >
+                                                                    0
                                                                         ? searchParams.livingDiningRoom--
                                                                         : 0;
                                                                 }
@@ -308,14 +372,17 @@
                                                             {{
                                                                 searchParams.livingDiningRoom == 0
                                                                     ? "任意"
-                                                                    : searchParams.livingDiningRoom + "+"
+                                                                    : searchParams.livingDiningRoom +
+                                                                      "+"
                                                             }}
                                                         </div>
                                                         <v-btn
                                                             icon="mdi-plus"
                                                             size="small"
                                                             density="comfortable"
-                                                            @click.stop="searchParams.livingDiningRoom++"
+                                                            @click.stop="
+                                                                searchParams.livingDiningRoom++
+                                                            "
                                                         ></v-btn>
                                                     </v-container>
                                                 </template>
@@ -444,23 +511,14 @@
 import taiwanCityData from "@/assets/CityCountyData.json";
 import Fuse from "fuse.js";
 import { computed, onMounted, reactive, ref } from "vue";
-import { useHouseSearchStore } from "@/stores/searchHouseStore";
+import { useHouseSearchStore } from "@/stores/houseSearchStore";
 import { storeToRefs } from "pinia";
 import { useRoute, useRouter } from "vue-router";
 const route = useRoute();
 const router = useRouter();
 const houseSearchStore = useHouseSearchStore();
-const {
-    inputValues,
-    searchParams,
-    postlateChipGroup,
-    housePriceRange,
-    postulateList,
-    filterHouseList,
-} = storeToRefs(houseSearchStore);
+const { inputValues, searchParams, postulateList } = storeToRefs(houseSearchStore);
 // State
-// const inputCityName = ref("");
-// const inputDateRange = ref(null);
 const searchBarInfoRef = ref(null);
 const searchBarTab = ref("city");
 const isFocusSearchBar = ref(false);
@@ -536,11 +594,11 @@ function onUpdateCity(value) {
 }
 
 function onUpdateHousePriceRange() {
-    searchParams.value.minPrice = housePriceRange.value[0];
-    if (housePriceRange[1] > 99999) {
+    searchParams.value.minPrice = inputValues.value.housePriceRange[0];
+    if (inputValues.value.housePriceRange[1] > 99999) {
         searchParams.value.maxPrice = null;
     } else {
-        searchParams.value.maxPrice = housePriceRange.value[1];
+        searchParams.value.maxPrice = inputValues.value.housePriceRange[1];
     }
 }
 
@@ -567,23 +625,33 @@ function onFocusSearchOther(value) {
     searchBarTab.value = "other";
 }
 
-function onClickSearchBtn() {
-    const searchPaths = ["/search", "/advanced-search"]; // 搜尋頁面的路由
+function onClickSearchBtn(mode) {
+    const searchPaths = ["/search", "/search-map"]; // 搜尋頁面的路由
     isFocusSearchBar.value = false;
-    if (searchPaths.includes(route.path)) {
-        // router.go(0); // 如果當前頁面在 searchPaths 中，重新整理頁面
+    if (mode === "list" && searchPaths[0] != route.path) {
+        // 如果點擊的mode是list 且不在/search 就路由到/search
+        searchParams.value.minLatitudeX = null;
+        searchParams.value.maxLatitudeX = null;
+        searchParams.value.minLongitudeY = null;
+        searchParams.value.maxLongitudeY = null;
+        router.push(searchPaths[0]);
         houseSearchStore.resetSearchResult();
+    } else if (mode === "map" && searchPaths[1] != route.path) {
+        // 如果點擊的mode是map 且不在/search-map 就路由到/search-map
+        router.push(searchPaths[1]);
     } else {
-        router.push(searchPaths[0]); // 如果不是 searchPaths 中的頁面，導航到第一個 searchPath
+        // 不管如何，點擊搜尋按鈕就重新搜尋結果
         houseSearchStore.resetSearchResult();
     }
+
+    // Change active mode
 }
 
 onMounted(() => {
     houseSearchStore.getPostulateList();
     // init search param values
-    searchParams.value.minPrice = housePriceRange.value[0];
-    searchParams.value.maxPrice = housePriceRange.value[1];
+    searchParams.value.minPrice = inputValues.value.housePriceRange[0];
+    searchParams.value.maxPrice = inputValues.value.housePriceRange[1];
 });
 </script>
 

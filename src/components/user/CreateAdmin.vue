@@ -114,9 +114,11 @@ import {
   maxLength,
   helpers,
   sameAs,
+  maxValue,
 } from "@vuelidate/validators";
 import { VDateInput } from "vuetify/labs/VDateInput";
 import { useRouter } from "vue-router";
+import Swal from "sweetalert2";
 
 const router = useRouter();
 
@@ -173,6 +175,7 @@ const rules = {
   },
   birthday: {
     required: helpers.withMessage("請選擇出生日期", required),
+    maxValue: helpers.withMessage("請選擇合理的出生日期", maxValue(new Date())),
   },
   phone: {
     integer: helpers.withMessage("市話必須為數字", integer),
@@ -204,6 +207,7 @@ const submit = async () => {
   if (!isValid) {
     return;
   }
+
   try {
     await register({
       name: state.name,
@@ -217,10 +221,17 @@ const submit = async () => {
       address: state.address,
       about: state.about,
     });
-    alert("註冊成功！ 請登入");
+    Swal.fire({
+      title: "註冊成功！ 請登入",
+      icon: "success",
+    });
     router.push("/system/login");
   } catch (error) {
-    console.error("Registration failed:", error);
+    Swal.fire({
+      title: "此email已經註冊過，請使用其他email，或直接登入",
+      icon: "warning",
+    });
+    console.error(error);
   }
 };
 
