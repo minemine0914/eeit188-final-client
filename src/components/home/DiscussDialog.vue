@@ -13,7 +13,7 @@
                         hover
                         :length="5"
                         :size="40"
-                        :model-value="4"
+                        v-model="selfHouseDiscuss.score"
                         color="warning"
                         active-color="warning"
                         class="text-h5"
@@ -21,12 +21,12 @@
                 </v-card-item>
                 <v-divider class="mb-1 mx-5"></v-divider>
                 <v-card-item>
-                    <v-textarea :label="`寫下您住宿體驗感想 (選填)`" variant="outlined" class="mt-3" rows="5"></v-textarea>
+                    <v-textarea v-model="selfHouseDiscuss.discuss" :label="`寫下您住宿體驗感想 (選填)`" variant="outlined" class="mt-3" rows="5"></v-textarea>
                 </v-card-item>
                 <v-divider class="mb-4"></v-divider>
                 <v-card-actions>
-                    <v-btn>取消</v-btn>
-                    <v-btn>送出</v-btn>
+                    <!-- <v-btn>取消</v-btn> -->
+                    <v-btn @click="onClickWriteDiscuss" :loading="isWritingDiscuss">送出</v-btn>
                 </v-card-actions>
             </v-card>
         </template>
@@ -38,8 +38,17 @@ import { useHouseDetailStore } from "@/stores/houseDetailStore";
 import { computed, ref } from "vue";
 
 const houseDetailStore = useHouseDetailStore();
-const { isDiscussDialogOpen, houseInfo } = storeToRefs(houseDetailStore);
+const { isDiscussDialogOpen, houseInfo, selfHouseDiscuss } = storeToRefs(houseDetailStore);
 
+const isWritingDiscuss = ref(false);
+
+
+async function onClickWriteDiscuss() {
+    isWritingDiscuss.value = true;
+    await houseDetailStore.writeSelfHouseDiscuss();
+    isWritingDiscuss.value = false;
+    isDiscussDialogOpen.value = false;
+}
 
 </script>
 <style scoped></style>

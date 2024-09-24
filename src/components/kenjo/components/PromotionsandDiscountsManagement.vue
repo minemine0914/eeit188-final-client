@@ -3,8 +3,7 @@
 	優惠碼:生成和管理優惠碼，用於促銷和使用者激勵。
 
   移除修改功能
-  userid不能是空值暫時無法新增
-  抓取資料部份資料會出現問題
+  219--  const defaultUserId = '4CDD827B-D94B-4AA4-9F55-338EBB4D1EE9';//預設使用者ID
 */ -->
 <template>
   <v-toolbar flat>
@@ -21,9 +20,10 @@
       :headers="promotionHeaders"
       :items="promotions"
       item-key="id"
+      :items-per-page="5"
     >
       <template v-slot:header.id>
-        <div class="text-center">名稱</div>
+        <div class="text-center">ID</div>
       </template>
       <template v-slot:item.image="{ item }">
         <div class="text-center">
@@ -75,9 +75,10 @@
       :headers="discountCodeHeaders"
       :items="discountCodes"
       item-key="id"
+      :items-per-page="5"
     >
       <template v-slot:header.id>
-        <div class="text-center">名稱</div>
+        <div class="text-center">ID</div>
       </template>
       <template v-slot:header.discount>
         <div class="text-center">折扣金額</div>
@@ -87,6 +88,9 @@
       </template>
       <template v-slot:header.createdAt>
         <div class="text-center">創建日期</div>
+      </template>
+      <template v-slot:item.expire="{ item }">
+        <div class="text-center">{{ item.expire }}</div>
       </template>
       <template v-slot:top>
         <v-text-field
@@ -118,7 +122,7 @@
           <span class="text-h5">{{ promotionDialogTitle }}</span>
         </v-card-title>
         <v-card-text>
-          <v-text-field v-model="currentPromotion.id" label="活動名稱"></v-text-field>
+          <!-- <v-text-field v-model="currentPromotion.id" label="活動名稱"></v-text-field> -->
           <v-text-field v-model="currentPromotion.discountRate" label="折扣百分比" type="number"></v-text-field>
           <v-menu v-model="promotionStartDateMenu" :close-on-content-click="false">
             <template v-slot:activator="{ on, attrs }">
@@ -131,7 +135,7 @@
             </template>
             <v-date-picker v-model="currentPromotion.startDate" @input="promotionStartDateMenu = false"></v-date-picker>
           </v-menu>
-          <v-menu v-model="promotionEndDateMenu" :close-on-content-click="false">
+          <!-- <v-menu v-model="promotionEndDateMenu" :close-on-content-click="false">
             <template v-slot:activator="{ on, attrs }">
               <v-text-field
                 v-model="currentPromotion.createdAt"
@@ -141,7 +145,7 @@
               ></v-text-field>
             </template>
             <v-date-picker v-model="currentPromotion.endDate" @input="promotionEndDateMenu = false"></v-date-picker>
-          </v-menu>
+          </v-menu> -->
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -158,7 +162,7 @@
           <span class="text-h5">{{ discountCodeDialogTitle }}</span>
         </v-card-title>
         <v-card-text>
-          <v-text-field v-model="currentDiscountCode.id" label="優惠碼"></v-text-field>
+          <!-- <v-text-field v-model="currentDiscountCode.id" label="優惠碼"></v-text-field> -->
           <v-text-field v-model="currentDiscountCode.discount" label="折扣金額" type="number"></v-text-field>
           <v-menu v-model="discountCodeStartDateMenu" :close-on-content-click="false">
             <template v-slot:activator="{ on, attrs }">
@@ -171,7 +175,7 @@
             </template>
             <v-date-picker v-model="currentDiscountCode.startDate" @input="discountCodeStartDateMenu = false"></v-date-picker>
           </v-menu>
-          <v-menu v-model="discountCodeEndDateMenu" :close-on-content-click="false">
+          <!-- <v-menu v-model="discountCodeEndDateMenu" :close-on-content-click="false">
             <template v-slot:activator="{ on, attrs }">
               <v-text-field
                 v-model="currentDiscountCode.createdAt"
@@ -181,7 +185,7 @@
               ></v-text-field>
             </template>
             <v-date-picker v-model="currentDiscountCode.endDate" @input="discountCodeEndDateMenu = false"></v-date-picker>
-          </v-menu>
+          </v-menu> -->
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -209,8 +213,10 @@ const promotionEndDateMenu = ref(false);
 const discountCodeStartDateMenu = ref(false);
 const discountCodeEndDateMenu = ref(false);
 const promotionDialogTitle = ref('');
-const currentPromotion = ref({ name: '', discount: '', startDate: '', endDate: '' });
-const currentDiscountCode = ref({ code: '', discount: '', startDate: '', endDate: '' });
+const currentPromotion = ref({ discountRate: '', expire: '' });
+const currentDiscountCode = ref({ discount: '', expire: '' });
+const defaultUserId = '4CDD827B-D94B-4AA4-9F55-338EBB4D1EE9';//預設ID
+
 
 const promotionHeaders = [
   { text: '活動名稱', value: 'id' },
@@ -228,6 +234,13 @@ const discountCodeHeaders = [
   { text: '操作', value: 'actions', sortable: false }
 ];
 
+const formatDate = (dateString) => {
+  if (typeof dateString === 'string') {
+    return dateString.split('T')[0]; 
+  }
+  return ''; 
+};
+
 // 從 API 獲取數據
 const fetchPromotions = async () => {
   try {
@@ -238,8 +251,13 @@ const fetchPromotions = async () => {
      promotions.value = allPromotions.filter(promotion => 
       promotion.discountRate !== null && 
       promotion.discountRate !== undefined &&
-      promotion.discountRate !== ''
-    );
+      promotion.discountRate !== '')
+      .map(promotion => ({
+        ...promotion,
+        createdAt: formatDate(promotion.createdAt),
+        expire: promotion.expire !== null ? promotion.expire : 60 // 給予預設值
+      }));
+    ;
     console.log(promotions.value );
   } catch (error) {
     console.error('Error fetching discountRate:', error);
@@ -256,8 +274,13 @@ const fetchDiscountCodes = async () => {
     discountCodes.value = allDiscountCodes.filter(discountCode => 
       discountCode.discount != null && 
       discountCode.discount != undefined &&
-      discountCode.discount !==''
-    );
+      discountCode.discount !=='' )
+      .map(discountCode => ({
+        ...discountCode,
+        createdAt: formatDate(discountCode.createdAt),
+      
+      }));
+      ;
 
     console.log(discountCodes.value);
   } catch (error) {
@@ -272,32 +295,46 @@ const openCreatePromotionDialog = () => {
   dialogPromotion.value = true;
 };
 
-const savePromotion = async () => {
-  if (!currentPromotion.value.id || !currentPromotion.value.discountRate) {
-    alert('促銷活動名稱和折扣百分比為必填項');
-    return;
-  }
+    const savePromotion = async () => {
+      try {
+        if (!currentPromotion.value.discountRate || !currentPromotion.value.expire) {
+          alert('折扣百分比和使用期限為必填項');
+          return;
+        }
 
-  try {
-    if (currentPromotion.value.id) {
-      // 編輯促銷活動
-      // const response = await axios.put(`http://localhost:8080/coupon/${currentPromotion.value.id}`, currentPromotion.value);
-      // console.log('促銷活動更新成功', response.data);
-      // const index = promotions.value.findIndex(p => p.id === currentPromotion.value.id);
-      // if (index !== -1) {
-      //   promotions.value[index] = { ...currentPromotion.value }; // 更新現有的促銷活動
-      // }
-    } else {
-      // 創建新促銷活動
-      const response = await axios.post('http://localhost:8080/coupon/', currentPromotion.value);
-      console.log('促銷活動創建成功', response.data);
-      promotions.value.push({ id: response.data.id, ...currentPromotion.value }); // 添加新促銷活動
-    }
-    closePromotionDialog(); // 關閉對話框
-  } catch (error) {
-    console.error('保存促銷活動時出錯:', error);
-  }
-};
+        const postData = {
+          discountRate: currentPromotion.value.discountRate,
+          expire: currentPromotion.value.expire,
+          userId: defaultUserId // 使用預設的 userId
+        };
+
+        const response = await axios.post('http://localhost:8080/coupon/', postData);
+        console.log('促銷活動創建成功', response.data);
+        // 更新促銷活動列表...
+      } catch (error) {
+        console.error('保存促銷活動時出錯:', error);
+      }
+    };
+    const saveDiscountCode = async () => {
+      if (!currentDiscountCode.value.discount) {
+        alert('折扣金額為必填項');
+        return;
+      }
+
+      try {
+        const postData = {
+          discount: currentDiscountCode.value.discount,
+          expire: currentDiscountCode.value.expire,
+          userId: defaultUserId // 使用預設的 userId
+        };
+
+        const response = await axios.post('http://localhost:8080/coupon/', postData);
+        console.log('優惠碼創建成功', response.data);
+        // 更新優惠碼列表...
+      } catch (error) {
+        console.error('保存優惠碼時出錯:', error);
+      }
+    };
 
 // const editPromotion = (promotion) => {
 //   currentPromotion.value = { ...promotion };
@@ -319,38 +356,6 @@ const closePromotionDialog = () => {
 // 創建和編輯優惠碼
 const openCreateDiscountCodeDialog = () => {
   currentDiscountCode.value = {  discount: '', expire: '', createdAt: '' };
-  dialogDiscountCode.value = true;
-};
-
-const saveDiscountCode = async () => {
-  if (!currentDiscountCode.value.id || !currentDiscountCode.value.discount) {
-    alert('優惠碼和折扣金額為必填項');
-    return;
-  }
-
-  try {
-    if (currentDiscountCode.value.id) {
-      // 編輯優惠碼
-      // const response = await axios.put(`http://localhost:8080/coupon/${currentDiscountCode.value.id}`, currentDiscountCode.value);
-      // console.log('優惠碼更新成功', response.data);
-      // const index = discountCodes.value.findIndex(d => d.id === currentDiscountCode.value.id);
-      // if (index !== -1) {
-      //   discountCodes.value[index] = { ...currentDiscountCode.value }; // 更新現有的優惠碼
-      // }
-    } else {
-      // 創建新優惠碼
-      const response = await axios.post('http://localhost:8080/coupon/', currentDiscountCode.value);
-      console.log('優惠碼創建成功', response.data);
-      discountCodes.value.push({ id: response.data.id, ...currentDiscountCode.value }); // 添加新優惠碼
-    }
-    closeDiscountCodeDialog(); // 關閉對話框
-  } catch (error) {
-    console.error('保存優惠碼時出錯:', error);
-  }
-};
-
-const editDiscountCode = (discountCode) => {
-  currentDiscountCode.value = { ...discountCode };
   dialogDiscountCode.value = true;
 };
 

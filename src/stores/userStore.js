@@ -93,6 +93,11 @@ export const useUserStore = defineStore(
       router.push("/");
     }
 
+    function adminLogout() {
+      resetJWTTokenAndUser();
+      router.push("/system/login");
+    }
+
     function removePasswordResetToken() {
       passwordResetToken.value = null;
       router.push("/login");
