@@ -92,8 +92,7 @@ const routes = [
       {
         path: "reset-password",
         name: "ResetPassword",
-        component: () =>
-          import("@/pages/user/ResetPasswordFromEmailLinkPage.vue"),
+        component: () => import("@/pages/user/ResetPasswordFromEmailLinkPage.vue"),
         meta: { title: "Nomad 重設密碼", requiresAuth: false, role: "normal" },
       },
     ],
@@ -166,8 +165,7 @@ const routes = [
       {
         path: "/system/reset-password",
         name: "AdminResetPassword",
-        component: () =>
-          import("@/pages/system/AdminResetPasswordFromEmailLinkPage.vue"),
+        component: () => import("@/pages/system/AdminResetPasswordFromEmailLinkPage.vue"),
         meta: {
           title: "Nomad 系統管理重設密碼",
           requiresAuth: false,
@@ -201,11 +199,7 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const userStore = useUserStore();
   const { jwtToken, user } = storeToRefs(userStore);
-  console.log(
-    "[Router beforeEach] path=" + to.path,
-    " requiresAuth=",
-    to.meta.requiresAuth
-  );
+  console.log("[Router beforeEach] path=" + to.path, " requiresAuth=", to.meta.requiresAuth);
   // 如果用戶已經登入，並且嘗試訪問 /login 或 /system/login，重定向到首頁
   if (
     jwtToken.value != null &&
@@ -218,14 +212,21 @@ router.beforeEach((to, from, next) => {
     // 檢查使用者是否已登入
     if (jwtToken.value == null) {
       console.log("[Router beforeEach] 你尚未登入，進行重定向...");
-
+      // 保存當前嘗試訪問的路由，並重定向到登入頁面
+      const redirectPath = to.fullPath;
       // 根據路徑決定重定向到哪個登入頁面
       if (to.path.startsWith("/system")) {
         console.log("[Router beforeEach] 重定向到 /system/login");
-        next("/system/login"); // 未登入用戶訪問 /system 時，重定向到 /system/login
+        next({
+          path: "/system/login",
+          query: { redirect: redirectPath },
+        }); // 未登入用戶訪問 /system 時，重定向到 /system/login
       } else {
         console.log("[Router beforeEach] 重定向到 /login");
-        next("/login"); // 其他情況下重定向到 /login
+        next({
+          path: "/login",
+          query: { redirect: redirectPath },
+        }); // 其他情況下重定向到 /login
       }
     } else {
       console.log("[Router beforeEach] 驗證成功");

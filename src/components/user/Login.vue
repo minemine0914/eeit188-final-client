@@ -27,7 +27,7 @@ import { reactive } from "vue";
 import { useVuelidate } from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
 import { useUserStore } from "../../stores/userStore";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import Swal from "sweetalert2";
 
 const initialState = {
@@ -52,6 +52,7 @@ const v$ = useVuelidate(rules, state);
 const userStore = useUserStore();
 const { loginAuth } = userStore;
 const router = useRouter();
+const route = useRoute();
 
 const submit = async () => {
   const isValid = await v$.value.$validate();
@@ -69,7 +70,7 @@ const submit = async () => {
       title: "登入成功!",
       icon: "success",
     });
-    router.push("/");
+    router.push(route.query.redirect || "/");
   } catch (error) {
     Swal.fire({
       title: "登入失敗，請確認email及密碼",
