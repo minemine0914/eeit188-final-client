@@ -186,10 +186,13 @@ export const useHostReportStore = defineStore('hostReport', {
                 // console.log('111111', body.maxCreatedAt)
                 const response = await api.post(`/transcation_record/search`, body);
                 console.log('response.data', response.data)
+
                 let transformedRecords = await this.searchRecordAgainByRecordId(response.data.content);
                 for (let item of transformedRecords) { item.house = await this.searchHouseAgainByRecordId(item.house); }
                 transformedRecords = await this.separateCreatedAt(transformedRecords)
+                transformedRecords = await this.getScore(transformedRecords)
                 console.log('transformedRecords', transformedRecords)
+
                 this.records = transformedRecords;
 
                 //YMDC={Year: yyyy, Month: MM, Date: dd, cashFlow: $$$}
@@ -279,6 +282,32 @@ export const useHostReportStore = defineStore('hostReport', {
             console.log(contentArray)
             //log**************************
             return contentArray
+        },
+
+        // 4.4
+        async getScore(contentArray) {
+            for (let i = 0; i < contentArray.length; i++) {
+                let score = 0
+                try {
+                    console.log('GOGO', contentArray[i].user.id, this.selectedHouse)
+                    const response = await api.get(`/house/mongo/find/${contentArray[i].user.id}/${this.selectedHouse}`);
+                    console.log('DDDDD', response)
+                    if (response.data?.score) {
+                        score = response.data.score
+                    }
+                } catch (error) {
+                    console.error('Error fetching users:', error);
+                }
+                contentArray[i].houseScore = score
+            }
+            return contentArray
+
+
+
+
+
+
+
         },
 
         useTestYMDC(callWhich) {
@@ -573,9 +602,18 @@ export const useHostReportStore = defineStore('hostReport', {
         },
 
         getUserBySelectedUserId(userId) {
-            console.log(userId)
-            console.log(this.users)
             return this.users.find(user => user.id === userId) || null;
+        },
+
+        async getHouseClick(houseId) {
+            try {
+                const response = await api.post(`/house/mongo/count/click`, { "houseId": houseId });
+                console.log('EEEE', response)
+                return response
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+            return 0
         },
 
         async findAllUser() {
