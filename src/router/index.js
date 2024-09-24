@@ -66,6 +66,12 @@ const routes = [
         meta: { title: "Nomad 會員中心", requiresAuth: true, role: "normal" },
       },
       {
+        path: "order",
+        name: "UserOrder",
+        component: () => import("@/pages/user/OrderPage.vue"),
+        meta: { title: "Nomad 會員中心", requiresAuth: true, role: "normal" },
+      },
+      {
         path: "chat",
         name: "Chat",
         component: () => import("@/pages/user/ChatPage.vue"),
@@ -92,7 +98,8 @@ const routes = [
       {
         path: "reset-password",
         name: "ResetPassword",
-        component: () => import("@/pages/user/ResetPasswordFromEmailLinkPage.vue"),
+        component: () =>
+          import("@/pages/user/ResetPasswordFromEmailLinkPage.vue"),
         meta: { title: "Nomad 重設密碼", requiresAuth: false, role: "normal" },
       },
     ],
@@ -103,53 +110,53 @@ const routes = [
     component: () => import("@/views/HostView.vue"),
     children: [
       {
-        path: '',
-        name: 'propertyManagement',
-        component: () => import('@/components/lo/PropertyManagement.vue')
-    },
-    {
-        path: 'property-management',
-        name: 'propertyManagement',
-        component: () => import('@/components/lo/PropertyManagement.vue')
-    },
-    {
-        path: 'reviews',
-        name: 'reviews',
-        component: () => import('@/components/lo/Reviews.vue')
-    },
-    {
-        path: 'reservation-management',
-        name: 'reservationManagement',
-        component: () => import('@/components/lo/Reservation.vue')
-    },
-    {
-        path: 'order-records',
-        name: 'orderRecords',
-        component: () => import('@/components/lo/OrderRecord.vue')
-    },
-    {
-        path: 'reports',
-        name: 'reports',
-        component: () => import('@/components/lo/Reports.vue')
-    },
-    {
-        path: 'add-property',
-        name: 'addProperty',
-        component: () => import('@/components/lo/AddProperty.vue')
-    },
-    {
-        path: 'edit-property/:id',
-        name: 'editProperty',
-        component: () => import('@/components/lo/EditProperty.vue'),
-        props: true
-    },
-    {
-        path: 'order-detail/:id',
-        name: 'orderDetail',
-        component: () => import('@/components/lo/OrderDetail.vue'),
-        props: true
-    },
-    wuRouter,
+        path: "",
+        name: "propertyManagement",
+        component: () => import("@/components/lo/PropertyManagement.vue"),
+      },
+      {
+        path: "property-management",
+        name: "propertyManagement",
+        component: () => import("@/components/lo/PropertyManagement.vue"),
+      },
+      {
+        path: "reviews",
+        name: "reviews",
+        component: () => import("@/components/lo/Reviews.vue"),
+      },
+      {
+        path: "reservation-management",
+        name: "reservationManagement",
+        component: () => import("@/components/lo/Reservation.vue"),
+      },
+      {
+        path: "order-records",
+        name: "orderRecords",
+        component: () => import("@/components/lo/OrderRecord.vue"),
+      },
+      {
+        path: "reports",
+        name: "reports",
+        component: () => import("@/components/lo/Reports.vue"),
+      },
+      {
+        path: "add-property",
+        name: "addProperty",
+        component: () => import("@/components/lo/AddProperty.vue"),
+      },
+      {
+        path: "edit-property/:id",
+        name: "editProperty",
+        component: () => import("@/components/lo/EditProperty.vue"),
+        props: true,
+      },
+      {
+        path: "order-detail/:id",
+        name: "orderDetail",
+        component: () => import("@/components/lo/OrderDetail.vue"),
+        props: true,
+      },
+      wuRouter,
     ],
   },
   {
@@ -203,7 +210,8 @@ const routes = [
       {
         path: "/system/reset-password",
         name: "AdminResetPassword",
-        component: () => import("@/pages/system/AdminResetPasswordFromEmailLinkPage.vue"),
+        component: () =>
+          import("@/pages/system/AdminResetPasswordFromEmailLinkPage.vue"),
         meta: {
           title: "Nomad 系統管理重設密碼",
           requiresAuth: false,
@@ -237,7 +245,11 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const userStore = useUserStore();
   const { jwtToken, user } = storeToRefs(userStore);
-  console.log("[Router beforeEach] path=" + to.path, " requiresAuth=", to.meta.requiresAuth);
+  console.log(
+    "[Router beforeEach] path=" + to.path,
+    " requiresAuth=",
+    to.meta.requiresAuth
+  );
   // 如果用戶已經登入，並且嘗試訪問 /login 或 /system/login，重定向到首頁
   if (
     jwtToken.value != null &&
