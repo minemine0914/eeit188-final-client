@@ -2,12 +2,12 @@ const router = {
     path: "/platform-report",
     name: "Wu_platform",
     children: [
-        {
-            path: "", // Default
-            name: "platform-report",
-            component: () => import("@/components/wu/components/PlatformReport.vue"),
-            meta: { title: "歷史紀錄", requiresAuth: false },
-        },
+        // {
+        //     path: "", // Default
+        //     name: "platform-report",
+        //     component: () => import("@/components/wu/components/PlatformReport.vue"),
+        //     meta: { title: "歷史紀錄", requiresAuth: false },
+        // },
         {
             path: "create", // Default
             name: "create",
