@@ -26,14 +26,24 @@
         </ol-tile-layer>
         <ol-vector-layer>
             <ol-source-vector>
-                <ol-feature v-for="house in filterHouseList" :properties="{}">
-                    <ol-geom-point :coordinates="[house.longitudeY, house.latitudeX]"></ol-geom-point>
-                </ol-feature>
+                <!-- <ol-feature v-for="house in filterHouseList" :properties="{ price: house.price }">
+                    <ol-geom-point
+                        :coordinates="[house.longitudeY, house.latitudeX]"
+                    ></ol-geom-point>
+                </ol-feature> -->
                 <ol-style>
                     <ol-style-icon :src="pointIcon" :scale="0.2"></ol-style-icon>
                 </ol-style>
             </ol-source-vector>
         </ol-vector-layer>
+        <ol-overlay
+            v-for="house in filterHouseList"
+            :position="[house.longitudeY, house.latitudeX]"
+            :autoPan="false"
+            positioning="top-center"
+        >
+            <v-sheet class="px-3 py-1 cursor-pointer" rounded="pill" border>NT ${{ house.price }}</v-sheet>
+        </ol-overlay>
         <ol-zoom-control
             ref="controlZoom"
             className="ol-custom-zoom-control"
@@ -119,7 +129,7 @@ function handleMapMoveEnd(e) {
             houseSearchStore.resetSearchResult();
         } else {
             console.log("移動範圍內:", currentCenter.value);
-            if ( center.value == lastFetchCenter.value && center.value == currentCenter.value ) {
+            if (center.value == lastFetchCenter.value && center.value == currentCenter.value) {
                 console.log("第一次FETCH");
                 houseSearchStore.resetSearchResult();
             }
