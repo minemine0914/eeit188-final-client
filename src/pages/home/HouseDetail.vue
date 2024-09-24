@@ -60,7 +60,7 @@
         <!-- Images Grid -->
         <ImageGrid />
         <!-- House details -->
-        <v-row class="px-1 mt-3" no-gutters>
+        <v-row class="px-1 mt-3 mb-15" no-gutters>
             <v-col cols="12" md="12">
                 <v-sheet>
                     <v-skeleton-loader v-if="isLoading" type="list-item-three-line" />
@@ -143,7 +143,7 @@
                     <v-skeleton-loader type="chip, chip, chip" v-if="isLoading" />
                     <v-sheet class="d-flex flex-row flex-wrap w-100 ga-3" v-else>
                         <v-sheet v-if="houseInfo.postulates.length === 0" class="w-100 text-center">
-                            <v-alert variant="plain">
+                            <v-alert variant="plain" color="brown">
                                 <v-icon icon="mdi-emoticon-cry-outline" size="x-large"></v-icon>
                                 <div class="mt-2">房東忘記添加設施</div>
                             </v-alert>
@@ -313,8 +313,8 @@
                         type="avatar, list-item-three-line, avatar, list-item-three-line"
                         v-if="isLoading"
                     />
-                    <v-sheet v-else-if="previewDiscussList.length === 0" class="w-100 text-center">
-                        <v-alert variant="plain">
+                    <v-sheet v-else-if="totalDiscussCount === 0" class="w-100 text-center">
+                        <v-alert variant="plain" color="brown">
                             <v-icon icon="mdi-emoticon-cry-outline" size="x-large"></v-icon>
                             <div class="mt-2">目前沒有任何評價</div>
                         </v-alert>
@@ -324,9 +324,7 @@
                             <v-card color="brown-lighten-5" flat>
                                 <template v-slot:prepend>
                                     <v-avatar size="large" border>
-                                        <v-img
-                                            src="https://cdn.vuetifyjs.com/images/john.jpg"
-                                        ></v-img>
+                                        <v-img :src="previewDiscuss.avatar"></v-img>
                                     </v-avatar>
                                 </template>
                                 <template v-slot:append>
@@ -341,18 +339,21 @@
                                     />
                                 </template>
                                 <template v-slot:title>
-                                    <div>HAHAHA</div>
+                                    <div>{{ previewDiscuss.user }}</div>
                                 </template>
                                 <template v-slot:subtitle>
-                                    <div>共100則評論</div>
+                                    <div>評論了 {{ previewDiscuss.totalDiscussCount }} 間房源</div>
                                 </template>
-                                <v-card-text class="pb-1">
+                                <v-card-text class="pb-2">
                                     <v-sheet
                                         height="80px"
-                                        class="overflow-auto"
-                                        color="transparent"
+                                        class="overflow-auto pa-1"
+                                        rounded
                                     >
-                                        <p v-if="typeof previewDiscuss.discuss !== 'undefined'">
+                                        <p
+                                            v-if="previewDiscuss.discuss.length != 0"
+                                            style="white-space: pre"
+                                        >
                                             {{ previewDiscuss.discuss }}
                                         </p>
                                         <div
@@ -364,11 +365,35 @@
                                             </div>
                                         </div>
                                     </v-sheet>
-                                    <div class="text-caption text-end pt-3">
-                                        評論日期: 2024-09-09
+                                    <div class="d-flex justify-space-between mt-3 mb-1">
+                                        <span class="text-caption pr-1">評論日期: {{new Date(previewDiscuss.createdAt).toLocaleDateString()}}</span>
+                                        <v-badge
+                                            color="light-green-lighten-3"
+                                            rounded="1"
+                                            :content="
+                                                timeAgo.format(new Date(previewDiscuss.createdAt))
+                                            "
+                                            inline
+                                        >
+                                        </v-badge>
                                     </div>
                                 </v-card-text>
                             </v-card>
+                        </v-col>
+                        <v-col cols="12">
+                            <v-sheet class="d-flex justify-center align-center">
+                                <v-alert
+                                    v-if="totalDiscussCount < 5"
+                                    variant="plain"
+                                    color="brown"
+                                    class="text-center"
+                                >
+                                    沒有更多評論了
+                                </v-alert>
+                                <v-btn v-else variant="outlined" size="large">
+                                    查看其他{{ totalDiscussCount }}則評價
+                                </v-btn>
+                            </v-sheet>
                         </v-col>
                     </v-row>
                 </v-sheet>
@@ -384,6 +409,8 @@ import { computed, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useHouseDetailStore } from "@/stores/houseDetailStore";
 import { storeToRefs } from "pinia";
+
+import timeAgo from "../../plugins/time-ago";
 
 // User pinia
 import { useUserStore } from "../../stores/userStore";
@@ -409,6 +436,7 @@ const {
     hostInfo,
     previewDiscussList,
     selfHouseDiscuss,
+    totalDiscussCount,
     isErrorGetHouseInfo,
     isLoading,
     isLoadingCollection,

@@ -76,6 +76,7 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
     const selfHouseDiscuss = reactive({ ...initialSelfHouseDiscuss });
     const previewDiscussList = reactive([]);
     const discussList = reactive([]);
+    const totalDiscussCount = ref(0);
     const currentDiscussPage = ref(0);
     const isErrorGetHouseInfo = ref(false);
     const isLoading = ref(true);
@@ -147,9 +148,10 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
         await api
             .get(`/discuss/house/${houseInfo.id}`, { params: { pageNo: 0, pageSize: 4 } })
             .then((res) => {
-                console.log("Get preview discuss success");
+                console.log("Get preview discuss success", res.data);
                 previewDiscussList.splice(0, previewDiscussList.length);
                 previewDiscussList.push(...res.data.discusses);
+                totalDiscussCount.value = res.data.totalElements;
             })
             .catch((err) => {
                 console.log("Get preview discuss failed");
@@ -313,6 +315,7 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
         discussList,
         previewDiscussList,
         currentDiscussPage,
+        totalDiscussCount,
         isErrorGetHouseInfo,
         isLoading,
         isLoadingCollection,
