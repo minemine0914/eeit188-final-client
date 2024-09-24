@@ -8,7 +8,6 @@
       <UserCollection v-if="selectedBtn === 5" />
       <Discuss v-if="selectedBtn === 6" />
       <DeleteUser v-if="selectedBtn === 7" />
-      <HostHome v-if="selectedBtn === 3" />
 
     </div>
     <div class="avatar-container">
@@ -88,7 +87,6 @@ import UserCollection from "@/components/user/UserCollection.vue";
 import Discuss from "@/components/user/Discuss.vue";
 import About from "@/components/user/About.vue";
 import ResetPassword from "@/components/user/ResetPassword.vue";
-import HostHome from '@/components/lo/HostHome.vue';
 import DeleteUser from "@/components/user/DeleteUser.vue";
 
 const selectedBtn = ref(1);

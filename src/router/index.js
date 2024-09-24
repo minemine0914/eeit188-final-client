@@ -85,16 +85,53 @@ const routes = [
   },
   {
     path: "/host",
-    name: "Host",
+    name: "HostHome",
     component: () => import("@/views/HostView.vue"),
     children: [
       {
         path: "", // Default
-        name: "Manage",
-        component: () => import("@/pages/host/Manage.vue"),
+        name: "hostHome",
+        component: () => import("@/components/lo/PropertyManagement.vue"),
         meta: { title: "Nomad 分享你的房源", requiresAuth: false },
       },
-    ],
+      {
+        path: 'property-management',
+        name: 'propertyManagement',
+        component: () => import('@/components/lo/PropertyManagement.vue')
+      },
+      {
+        path: 'reviews',
+        name: 'reviews',
+        component: () => import('@/components/lo/Reviews.vue')
+      },
+      {
+        path: 'reservation-management',
+        name: 'reservationManagement',
+        component: () => import('@/components/lo/Reservation.vue')
+      },
+      {
+        path: 'order-records',
+        name: 'orderRecords',
+        component: () => import('@/components/lo/OrderRecord.vue')
+      },
+      {
+        path: 'add-property',
+        name: 'addProperty',
+        component: () => import('@/components/lo/AddProperty.vue')
+      },
+      {
+        path: 'edit-property/:id',
+        name: 'editProperty',
+        component: () => import('@/components/lo/EditProperty.vue'),
+        props: true
+      },
+      {
+        path: 'order-detail/:id',
+        name: 'orderDetail',
+        component: () => import('@/components/lo/OrderDetail.vue'),
+        props: true
+      },
+    ]
   },
   {
     path: "/system",

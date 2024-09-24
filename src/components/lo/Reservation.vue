@@ -36,7 +36,6 @@
         <!-- 查看詳情的彈出視窗 -->
         <v-dialog v-model="showDialog" max-width="600px">
             <v-card>
-                <v-card-title>預約詳情</v-card-title>
                 <v-card-text>
                     <ReservationDetail :id="selectedReservationId" />
                 </v-card-text>

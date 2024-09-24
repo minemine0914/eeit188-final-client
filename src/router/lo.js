@@ -1,18 +1,12 @@
 const router = {
     path: '/lo',
     name: 'Lo',
-    component: () => import('@/pages/user/MemberPage.vue'), // 父級頁面
+    component: () => import("@/views/HostView.vue"),
     children: [
         {
             path: '',
-            name: 'hostHome',
+            name: 'propertyManagement',
             component: () => import('@/components/lo/PropertyManagement.vue')
-        },
-        {
-            path: 'order-detail/:id',
-            name: 'orderDetail',
-            component: () => import('@/components/lo/OrderDetail.vue'),
-            props: true
         },
         {
             path: 'property-management',
@@ -35,6 +29,11 @@ const router = {
             component: () => import('@/components/lo/OrderRecord.vue')
         },
         {
+            path: 'reports',
+            name: 'reports',
+            component: () => import('@/components/lo/Reports.vue')
+        },
+        {
             path: 'add-property',
             name: 'addProperty',
             component: () => import('@/components/lo/AddProperty.vue')
@@ -44,7 +43,13 @@ const router = {
             name: 'editProperty',
             component: () => import('@/components/lo/EditProperty.vue'),
             props: true
-        }
+        },
+        {
+            path: 'order-detail/:id',
+            name: 'orderDetail',
+            component: () => import('@/components/lo/OrderDetail.vue'),
+            props: true
+        },
     ]
 };
 
