@@ -70,6 +70,7 @@ const initialSelfHouseDiscuss = {
 
 const userStore = useUserStore();
 export const useHouseDetailStore = defineStore("HouseDetail", () => {
+    const router = useRouter();
     const houseInfo = reactive({ ...initialHouseInfo });
     const hostInfo = reactive({ ...initialHostInfo });
     const selfHouseDiscuss = reactive({ ...initialSelfHouseDiscuss });
@@ -172,7 +173,7 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
     }
 
     async function getSelfHouseDiscuss() {
-        if (typeof userStore.user.id !== "undefined") {
+        if (userStore.user.id !== null) {
             await api
                 .get(`/discuss/user/${userStore.user.id}/${houseInfo.id}`)
                 .then((res) => {
@@ -187,24 +188,26 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
     }
 
     async function writeSelfHouseDiscuss() {
-        if (typeof userStore.user.id !== "undefined") {
+        if (userStore.user.id !== null) {
             await api
                 .post(`/discuss/`, {
                     houseId: houseInfo.id,
                     userId: userStore.user.id,
                     score: selfHouseDiscuss.score,
                     show: true,
-                    discuss: selfHouseDiscuss.discuss
+                    discuss: selfHouseDiscuss.discuss,
                 })
                 .then((res) => {
                     console.log("評論成功");
-                    
                 })
                 .catch((err) => {
                     console.log("評論失敗");
                 });
-                getSelfHouseDiscuss();
-                getPreviewDiscussList();
+            getSelfHouseDiscuss();
+            getPreviewDiscussList();
+        } else {
+            console.log("尚未登入，登入後再評論");
+            router.push("/login");
         }
     }
 
@@ -254,7 +257,7 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
 
     async function checkIsCollectedHouse() {
         isLoadingCollection.value = true;
-        if (typeof userStore.user.id !== "undefined") {
+        if (userStore.user.id !== null) {
             await api
                 .get("/user-collection/", {
                     params: {
@@ -281,7 +284,7 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
     }
 
     async function checkIsDiscussHouse() {
-        if (typeof userStore.user.id !== "undefined") {
+        if (userStore.user.id !== null) {
             await api
                 .get(`/house/mongo/find/${userStore.user.id}/${houseInfo.id}`)
                 .then((res) => {
