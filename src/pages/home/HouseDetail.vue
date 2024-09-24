@@ -60,7 +60,7 @@
         <!-- Images Grid -->
         <ImageGrid />
         <!-- House details -->
-        <v-row class="px-1 mt-3" no-gutters>
+        <v-row class="px-1 mt-3 mb-15" no-gutters>
             <v-col cols="12" md="12">
                 <v-sheet>
                     <v-skeleton-loader v-if="isLoading" type="list-item-three-line" />
@@ -143,7 +143,7 @@
                     <v-skeleton-loader type="chip, chip, chip" v-if="isLoading" />
                     <v-sheet class="d-flex flex-row flex-wrap w-100 ga-3" v-else>
                         <v-sheet v-if="houseInfo.postulates.length === 0" class="w-100 text-center">
-                            <v-alert variant="plain">
+                            <v-alert variant="plain" color="brown">
                                 <v-icon icon="mdi-emoticon-cry-outline" size="x-large"></v-icon>
                                 <div class="mt-2">房東忘記添加設施</div>
                             </v-alert>
@@ -263,20 +263,24 @@
                                     <div>{{ hostInfo.name }}</div>
                                 </template>
                                 <template v-slot:subtitle>
-                                    <div>100 間房源</div>
+                                    <div>擁有 {{ houseInfo.userHouseCount }} 間房源</div>
+                                    <v-btn
+                                        v-if="jwtToken"
+                                        variant="outlined"
+                                        color="brown-darken-1"
+                                        density="compact"
+                                        class="mt-1 mr-2 px-1"
+                                        @click="handleChatClick"
+                                        to="/chat"
+                                    >
+                                        <template v-slot:prepend>
+                                            <v-icon icon="mdi-message-outline" class="pl-3" size="small"></v-icon>
+                                        </template>
+                                        <template v-slot:default>
+                                            <div class="text-caption">傳送訊息</div>
+                                        </template>
+                                    </v-btn>
                                 </template>
-                                <v-btn
-                                    v-if="jwtToken"
-                                    icon="mdi-message-outline"
-                                    elevation="3"
-                                    color="brown-darken-1"
-                                    rounded="pill"
-                                    size="large"
-                                    density="comfortable"
-                                    class="mr-2"
-                                    @click="handleChatClick"
-                                    to="/chat"
-                                ></v-btn>
                             </v-card>
                         </v-col>
                         <v-col class="flex-grow-1" cols="12" md="8">
@@ -289,7 +293,7 @@
                 <v-divider class="border-opacity-25 my-5"></v-divider>
                 <v-sheet min-height="100" flat>
                     <v-sheet class="d-flex flex-row align-top">
-                        <div class="flex-grow-1 text-h6 mb-3">評價</div>
+                        <div class="flex-grow-1 text-h6 mb-3">最新評論</div>
                         <div class="d-flex flex-grow-1 text-h6 mb-3 justify-end align-top">
                             <v-btn
                                 variant="text"
@@ -313,62 +317,36 @@
                         type="avatar, list-item-three-line, avatar, list-item-three-line"
                         v-if="isLoading"
                     />
-                    <v-sheet v-else-if="previewDiscussList.length === 0" class="w-100 text-center">
-                        <v-alert variant="plain">
+                    <v-sheet v-else-if="totalDiscussCount === 0" class="w-100 text-center">
+                        <v-alert variant="plain" color="brown">
                             <v-icon icon="mdi-emoticon-cry-outline" size="x-large"></v-icon>
                             <div class="mt-2">目前沒有任何評價</div>
                         </v-alert>
                     </v-sheet>
                     <v-row v-else>
                         <v-col cols="12" md="6" v-for="previewDiscuss in previewDiscussList">
-                            <v-card color="brown-lighten-5" flat>
-                                <template v-slot:prepend>
-                                    <v-avatar size="large" border>
-                                        <v-img
-                                            src="https://cdn.vuetifyjs.com/images/john.jpg"
-                                        ></v-img>
-                                    </v-avatar>
-                                </template>
-                                <template v-slot:append>
-                                    <v-rating
-                                        hover
-                                        :length="5"
-                                        :size="23"
-                                        :model-value="previewDiscuss.score"
-                                        color="warning"
-                                        active-color="warning"
-                                        readonly
-                                    />
-                                </template>
-                                <template v-slot:title>
-                                    <div>HAHAHA</div>
-                                </template>
-                                <template v-slot:subtitle>
-                                    <div>共100則評論</div>
-                                </template>
-                                <v-card-text class="pb-1">
-                                    <v-sheet
-                                        height="80px"
-                                        class="overflow-auto"
-                                        color="transparent"
-                                    >
-                                        <p v-if="typeof previewDiscuss.discuss !== 'undefined'">
-                                            {{ previewDiscuss.discuss }}
-                                        </p>
-                                        <div
-                                            v-else
-                                            class="d-flex justify-center align-center h-100"
-                                        >
-                                            <div class="flex-grow-1 text-grey-darken-2 text-center">
-                                                無評論
-                                            </div>
-                                        </div>
-                                    </v-sheet>
-                                    <div class="text-caption text-end pt-3">
-                                        評論日期: 2024-09-09
-                                    </div>
-                                </v-card-text>
-                            </v-card>
+                            <DiscussCard :discuss="previewDiscuss" />
+                        </v-col>
+                        <v-col cols="12">
+                            <v-sheet class="d-flex justify-center align-center">
+                                <v-alert
+                                    v-if="totalDiscussCount < 5"
+                                    variant="plain"
+                                    color="brown"
+                                    class="text-center"
+                                >
+                                    沒有更多評論了
+                                </v-alert>
+                                <v-btn
+                                    v-else
+                                    variant="outlined"
+                                    size="large"
+                                    color="brown"
+                                    @click="isMoreDiscussesDialogOpen = true"
+                                >
+                                    查看全部 {{ totalDiscussCount }} 則評價
+                                </v-btn>
+                            </v-sheet>
                         </v-col>
                     </v-row>
                 </v-sheet>
@@ -377,6 +355,7 @@
     </v-container>
     <DiscussDialog />
     <ShareDialog />
+    <MoreDiscussesDialog />
 </template>
 
 <script setup>
@@ -388,12 +367,14 @@ import { storeToRefs } from "pinia";
 // User pinia
 import { useUserStore } from "../../stores/userStore";
 const userStore = useUserStore();
-const { jwtToken, user, addChatRecord } = userStore;
+const { jwtToken, user } = storeToRefs(userStore);
 
 // Components
 import ImageGrid from "@/components/home/ImageGrid.vue";
 import ShareDialog from "@/components/home/ShareDialog.vue";
 import DiscussDialog from "@/components/home/DiscussDialog.vue";
+import MoreDiscussesDialog from "@/components/home/MoreDiscussesDialog.vue";
+import DiscussCard from "../../components/home/DiscussCard.vue";
 // Assets
 import pointIcon from "@/assets/point01.svg";
 // Openlayers
@@ -409,12 +390,14 @@ const {
     hostInfo,
     previewDiscussList,
     selfHouseDiscuss,
+    totalDiscussCount,
     isErrorGetHouseInfo,
     isLoading,
     isLoadingCollection,
     isCollected,
     isShareDialogOpen,
     isDiscussDialogOpen,
+    isMoreDiscussesDialogOpen,
 } = storeToRefs(houseDetailStore);
 
 // Functions
@@ -461,10 +444,10 @@ function handleMapPointerMove(e) {
 }
 
 async function handleChatClick() {
-    await addChatRecord({
+    await userStore.addChatRecord({
         chat: "請問有什麼能為您服務的地方嗎？",
-        senderId: houseDetailStore.hostInfo.id,
-        receiverId: user.id,
+        senderId: hostInfo.value.id,
+        receiverId: user.value.id,
     });
 }
 
