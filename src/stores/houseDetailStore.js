@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { computed, nextTick, reactive, ref } from "vue";
+import { nextTick, reactive, ref } from "vue";
 import api from "../plugins/axios";
 import { useRouter } from "vue-router";
 import { useUserStore } from "./userStore";
@@ -77,8 +77,8 @@ export const useHouseDetailStore = defineStore(
         const houseInfo = reactive({ ...initialHouseInfo });
         const hostInfo = reactive({ ...initialHostInfo });
         const selfHouseDiscuss = reactive({ ...initialSelfHouseDiscuss });
-        const previewDiscussList = reactive(new Array());
-        const discussList = reactive(new Array());
+        const previewDiscussList = reactive([]);
+        const discussList = reactive([]);
         const totalDiscussCount = ref(0);
         const currentDiscussPage = ref(0);
         const isErrorGetHouseInfo = ref(false);
@@ -91,7 +91,8 @@ export const useHouseDetailStore = defineStore(
         const renderDiscussList = ref(true);
 
         // Record booking list into localstorage
-        const bookingList = reactive(new Array());
+        // (pinia plugin persistedstate could not use reactive!!)
+        const bookingList = ref([]);
 
         function resetHouseInfo() {
             Object.assign(houseInfo, initialHouseInfo);
@@ -134,42 +135,74 @@ export const useHouseDetailStore = defineStore(
                     name: houseInfo.name,
                     resources: houseInfo.houseExternalResourceRecords,
                 };
-                let currentLength = bookingList.length;
-                let currentIndex = bookingList.findIndex((list) => list.userId === userStore.user.id);
-                if (currentIndex === -1) {
-                    bookingList.push({
+                let currentIndex = bookingList.value.findIndex(
+                    (list) => list.userId == userStore.user.id
+                );
+                if (currentIndex == -1) {
+                    bookingList.value.push({
                         userId: userStore.user.id,
-                        list: [],
+                        list: new Array(),
                     });
+                    // Using bookingList.length - 1 to always target the last added user
                     if (
-                        bookingList[currentLength].list.filter((house) => house.id === houseInfo.id)
-                            .length === 0
+                        bookingList.value[bookingList.value.length - 1].list.filter(
+                            (house) => house.id == houseInfo.id
+                        ).length == 0
                     ) {
-                        console.log("已紀錄房源", house);
-                        bookingList[currentLength].list.push(house);
+                        bookingList.value[bookingList.value.length - 1].list.push(house);
+                        console.log(
+                            `[HouseDetailStore] BookingList: 新增紀錄 房源(${house.name}) 使用者(${
+                                bookingList.value[bookingList.value.length - 1].userId
+                            })`
+                        );
                     }
                 } else {
                     if (
-                        bookingList[currentIndex].list.filter((house) => house.id === houseInfo.id)
-                            .length === 0
+                        bookingList.value[currentIndex].list.filter(
+                            (house) => house.id == houseInfo.id
+                        ).length == 0
                     ) {
-                        console.log("已紀錄房源", house);
-                        bookingList[currentIndex].list.push(house);
+                        bookingList.value[currentIndex].list.push(house);
+                        console.log(
+                            `[HouseDetailStore] BookingList: 新增紀錄 房源(${house.name}) 使用者(${
+                                bookingList.value[bookingList.value.length - 1].userId
+                            })`
+                        );
                     }
                 }
             }
         }
 
+        // 取得當前使用者的BookingList
+        function getBookingList() {
+            let list = [];
+            if (houseInfo.id != null && userStore.user.id != null) {
+                let currentIndex = bookingList.value.findIndex(
+                    (list) => list.userId == userStore.user.id
+                );
+                if (currentIndex != -1) {
+                    list.push(...bookingList.value[currentIndex].list);
+                }
+            }
+            return list;
+        }
+
         function removeBookingListById(id) {
-            if (houseInfo.id != null && userStore.user.id) {
-                let currentIndex = bookingList.findIndex((list) => list.userId === userStore.user.id);
-                if (currentIndex !== -1) {
+            if (houseInfo.id != null && userStore.user.id != null) {
+                let currentIndex = bookingList.value.findIndex(
+                    (list) => list.userId == userStore.user.id
+                );
+                if (currentIndex != -1) {
                     if (
-                        bookingList[currentIndex].list.filter((house) => house.id === houseInfo.id)
-                            .length === 0
+                        bookingList.value[currentIndex].list.filter(
+                            (house) => house.id == houseInfo.id
+                        ).length == 0
                     ) {
-                        let houseIndex = bookingList.findIndex((house) => house.id === id);
-                        bookingList[currentIndex].list.splice(houseIndex, 1);
+                        let houseIndex = bookingList.value.findIndex((house) => house.id == id);
+                        bookingList.value[currentIndex].list.splice(houseIndex, 1);
+                        console.log(
+                            `[HouseDetailStore] BookingList: 刪除紀錄 房源(${house.name}) 使用者(${bookingList.value[currentIndex].userId})`
+                        );
                     }
                 }
             }
@@ -177,13 +210,24 @@ export const useHouseDetailStore = defineStore(
 
         function cleanBookingList() {
             if (houseInfo.id != null && userStore.user.id) {
-                let currentIndex = bookingList.findIndex((list) => list.userId === userStore.user.id);
+                let currentIndex = bookingList.value.findIndex(
+                    (list) => list.userId === userStore.user.id
+                );
                 if (currentIndex !== -1) {
                     if (
-                        bookingList[currentIndex].list.filter((house) => house.id === houseInfo.id)
-                            .length === 0
+                        bookingList.value[currentIndex].list.filter(
+                            (house) => house.id === houseInfo.id
+                        ).length === 0
                     ) {
-                        bookingList[currentIndex].list.splice(0, bookingList[currentIndex].list.length);
+                        bookingList.value[currentIndex].list.splice(
+                            0,
+                            bookingList.value[currentIndex].list.length
+                        );
+                        console.log(
+                            `[HouseDetailStore] BookingList: 清除紀錄 使用者(${
+                                bookingList.value[bookingList.value.length - 1].userId
+                            })`
+                        );
                     }
                 }
             }
@@ -197,7 +241,7 @@ export const useHouseDetailStore = defineStore(
                     Object.assign(houseInfo, res.data);
                     isErrorGetHouseInfo.value = false;
                     isLoading.value = false;
-                    console.log("Get houseInfo from database sucessed!");
+                    console.log("[HouseDetailStore] Get houseInfo from database sucessed!");
                     checkIsCollectedHouse();
                     checkIsDiscussHouse();
                     getHostInfo();
@@ -208,7 +252,7 @@ export const useHouseDetailStore = defineStore(
                     Object.assign(houseInfo, initialHouseInfo);
                     isErrorGetHouseInfo.value = true;
                     isLoading.value = false;
-                    console.log("Get houseInfo from database failed! Take you to home page!");
+                    console.log("[HouseDetailStore] Get houseInfo from database failed! Take you to home page!");
                 });
         }
 
@@ -216,12 +260,12 @@ export const useHouseDetailStore = defineStore(
             await api
                 .get(`/user/find/${houseInfo.userId}`)
                 .then((res) => {
-                    console.log("Get host avater success");
+                    console.log("[HouseDetailStore] Get host avater success");
                     Object.assign(hostInfo, res.data);
                 })
                 .catch((err) => {
                     Object.assign(hostInfo, initialHostInfo);
-                    console.log("Get host avater failed");
+                    console.log("[HouseDetailStore] Get host avater failed");
                 });
         }
 
@@ -229,13 +273,13 @@ export const useHouseDetailStore = defineStore(
             await api
                 .get(`/discuss/house/${houseInfo.id}`, { params: { pageNo: 0, pageSize: 4 } })
                 .then((res) => {
-                    console.log("Get preview discuss success", res.data);
+                    console.log("[HouseDetailStore] Get preview discuss success", res.data);
                     previewDiscussList.splice(0, previewDiscussList.length);
                     previewDiscussList.push(...res.data.discusses);
                     totalDiscussCount.value = res.data.totalElements;
                 })
                 .catch((err) => {
-                    console.log("Get preview discuss failed");
+                    console.log("[HouseDetailStore] Get preview discuss failed");
                 });
         }
 
@@ -249,12 +293,12 @@ export const useHouseDetailStore = defineStore(
                     },
                 })
                 .then((res) => {
-                    console.log("Get house discuss success");
+                    console.log("[HouseDetailStore] Get house discuss success");
                     data = res.data;
                 })
                 .catch((err) => {
                     // Object.assign(houseDiscuss, initialHuseDiscuss);
-                    console.log("Get host avater failed");
+                    console.log("[HouseDetailStore] Get host discuss failed");
                 });
 
             return data;
@@ -265,12 +309,12 @@ export const useHouseDetailStore = defineStore(
                 await api
                     .get(`/discuss/user/${userStore.user.id}/${houseInfo.id}`)
                     .then((res) => {
-                        console.log("取得自己的評論成功", res.data.discuss, res.data.score);
+                        console.log("[HouseDetailStore] 取得自己的評論成功", res.data.score);
                         Object.assign(selfHouseDiscuss, res.data);
                     })
                     .catch((err) => {
+                        console.log("[HouseDetailStore] 取得自己的評論失敗，你沒有評論");
                         Object.assign(selfHouseDiscuss, initialSelfHouseDiscuss);
-                        console.log("取得自己的評論失敗，你沒有評論");
                     });
             }
         }
@@ -286,16 +330,16 @@ export const useHouseDetailStore = defineStore(
                         discuss: selfHouseDiscuss.discuss,
                     })
                     .then((res) => {
-                        console.log("評論成功");
+                        console.log("[HouseDetailStore] 評論成功");
                     })
                     .catch((err) => {
-                        console.log("評論失敗");
+                        console.log("[HouseDetailStore] 評論失敗");
                     });
                 getSelfHouseDiscuss();
                 getPreviewDiscussList();
                 reloadDiscussList();
             } else {
-                console.log("尚未登入，登入後再評論");
+                console.log("[HouseDetailStore] 尚未登入，登入後再評論");
                 router.push("/login");
             }
         }
@@ -309,16 +353,16 @@ export const useHouseDetailStore = defineStore(
                         houseId: houseInfo.id,
                     })
                     .then((res) => {
-                        console.log("Add house to collection success.", res);
+                        console.log("[HouseDetailStore] Add house to collection success.", res);
                         isCollected.value = true;
                         isLoadingCollection.value = false;
                     })
                     .catch((err) => {
-                        console.log("Add house to collection failed.");
+                        console.log("[HouseDetailStore] Add house to collection failed.");
                         isLoadingCollection.value = false;
                     });
             } else {
-                console.log("You are not login! can't collect house.");
+                console.log("[HouseDetailStore] You are not login! can't collect house.");
             }
         }
 
@@ -331,16 +375,16 @@ export const useHouseDetailStore = defineStore(
                         houseId: houseInfo.id,
                     })
                     .then((res) => {
-                        console.log("Remove house to collection success.", res);
+                        console.log("[HouseDetailStore] Remove house to collection success.", res);
                         isCollected.value = false;
                         isLoadingCollection.value = false;
                     })
                     .catch((err) => {
-                        console.log("Remove house to collection failed.");
+                        console.log("[HouseDetailStore] Remove house to collection failed.");
                         isLoadingCollection.value = false;
                     });
             } else {
-                console.log("You are not login! can't collect house.");
+                console.log("[HouseDetailStore] You are not login! can't collect house.");
             }
         }
 
@@ -355,7 +399,7 @@ export const useHouseDetailStore = defineStore(
                         },
                     })
                     .then((res) => {
-                        console.log("Check house collection success.");
+                        console.log("[HouseDetailStore] Check house collection success.");
                         if (res.data.isCollected) {
                             isCollected.value = true;
                         } else {
@@ -364,11 +408,11 @@ export const useHouseDetailStore = defineStore(
                         isLoadingCollection.value = false;
                     })
                     .catch((err) => {
-                        console.log("Check house collection failed.");
+                        console.log("[HouseDetailStore] Check house collection failed.");
                         isLoadingCollection.value = true;
                     });
             } else {
-                console.log("You are not login! can't check collection.");
+                console.log("[HouseDetailStore] You are not login! can't check collection.");
             }
         }
 
@@ -377,7 +421,7 @@ export const useHouseDetailStore = defineStore(
                 await api
                     .get(`/house/mongo/find/${userStore.user.id}/${houseInfo.id}`)
                     .then((res) => {
-                        console.log("Check house disscess success.");
+                        console.log("[HouseDetailStore] Check house disscess success.");
                         // if (res.data.isCollected) {
                         //     isCollected.value = true;
                         // } else {
@@ -387,11 +431,11 @@ export const useHouseDetailStore = defineStore(
                         // console.log(res.data);
                     })
                     .catch((err) => {
-                        console.log("Check house collection failed.");
+                        console.log("[HouseDetailStore] Check house collection failed.");
                         // isLoadingCollection.value = true;
                     });
             } else {
-                console.log("You are not login! can't check discuss.");
+                console.log("[HouseDetailStore] You are not login! can't check discuss.");
             }
         }
 
@@ -425,11 +469,15 @@ export const useHouseDetailStore = defineStore(
             checkIsCollectedHouse,
             checkIsDiscussHouse,
             addToBookingList,
+            getBookingList,
             removeBookingListById,
             cleanBookingList,
         };
     },
     {
-        persist: { pick: ["bookingList"] },
+        // persist: true,
+        persist: {
+            pick: ["bookingList"],
+        },
     }
 );
