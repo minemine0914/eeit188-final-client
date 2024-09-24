@@ -54,9 +54,9 @@ const router = {
             meta: { title: "SystemSettings", requiresAuth: true , requiresAdmin: true},
         },
         {
-            path: "test", 
-            name: "test",
-            component: () => import("@/components/kenjo/components/Test.vue"),
+            path: "PlatformReport", 
+            name: "PlatformReport",
+            component: () => import("@/components/wu/components/PlatformReport.vue"),
             meta: { title: "Test", requiresAuth: true , requiresAdmin: true},
         },
     ],
