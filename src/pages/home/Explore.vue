@@ -188,7 +188,6 @@ onMounted(() => {
 :deep(.v-skeleton-loader > *) {
     margin: 0;
 }
-
 :deep(.v-skeleton-loader .v-skeleton-loader__image) {
     display: flex;
     flex-grow: 1;

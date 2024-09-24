@@ -1,49 +1,58 @@
-import wuRouter from "./wu_host";
+import wuRouter from "./wu_platform";
 
 const router = {
-    path: "/lo",
-    name: "Lo",
-    component: () => import("@/components/lo/HostHome.vue"),
+    path: '/lo',
+    name: 'Lo',
+    component: () => import("@/views/HostView.vue"),
     children: [
         {
-            path: "order-detail/:id",
-            name: "OrderDetail",
-            component: () => import("@/components/lo/OrderDetail.vue"),
-            props: true,
-        },
-        {
-            path: '/property-management',
+            path: '',
             name: 'propertyManagement',
             component: () => import('@/components/lo/PropertyManagement.vue')
         },
         {
-            path: '/reviews',
+            path: 'property-management',
+            name: 'propertyManagement',
+            component: () => import('@/components/lo/PropertyManagement.vue')
+        },
+        {
+            path: 'reviews',
             name: 'reviews',
             component: () => import('@/components/lo/Reviews.vue')
         },
         {
-            path: '/reservation-management',
+            path: 'reservation-management',
             name: 'reservationManagement',
             component: () => import('@/components/lo/Reservation.vue')
         },
         {
-            path: '/order-records',
+            path: 'order-records',
             name: 'orderRecords',
             component: () => import('@/components/lo/OrderRecord.vue')
         },
         {
-            path: '/add-property',
-            name: 'AddProperty',
+            path: 'reports',
+            name: 'reports',
+            component: () => import('@/components/lo/Reports.vue')
+        },
+        {
+            path: 'add-property',
+            name: 'addProperty',
             component: () => import('@/components/lo/AddProperty.vue')
         },
         {
-            path: '/edit-property/:id',
-            name: 'EditProperty',
+            path: 'edit-property/:id',
+            name: 'editProperty',
             component: () => import('@/components/lo/EditProperty.vue'),
             props: true
         },
+        {
+            path: 'order-detail/:id',
+            name: 'orderDetail',
+            component: () => import('@/components/lo/OrderDetail.vue'),
+            props: true
+        },
         wuRouter,
-
     ],
 };
 

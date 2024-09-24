@@ -25,9 +25,9 @@
         <v-icon size="small" @click="editItem(item)">
           mdi-eye
         </v-icon>
-        <v-icon size="small" @click="deleteItem(item)">
+        <!-- <v-icon size="small" @click="deleteItem(item)">
           mdi-delete
-        </v-icon>
+        </v-icon> -->
       </template>
     </v-data-table>
 

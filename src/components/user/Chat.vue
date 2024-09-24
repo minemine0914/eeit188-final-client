@@ -47,7 +47,7 @@
         </v-list>
       </v-card>
     </div>
-    <div class="chat-container" @scroll="handleScroll">
+    <div class="chat-container">
       <v-card
         class="title"
         color="blue-grey-darken-4"
@@ -81,10 +81,22 @@
             </div>
             <div class="member">
               <v-avatar class="avatar" size="50">
-                <v-img :src="me?.avatarBase64" cover></v-img>
+                <v-img
+                  v-if="!chat?.senderAvatar"
+                  src="src/assets/user.png"
+                  width="50px"
+                  alt=""
+                ></v-img>
+                <v-img
+                  v-if="chat?.senderAvatar"
+                  :src="me?.avatarBase64"
+                  cover
+                ></v-img>
               </v-avatar>
               {{ me?.name }}
-              <!-- <v-btn color="red-darken-4">收回</v-btn> -->
+              <v-btn color="red-darken-4" @click="handleRetract(chat?.id)"
+                >收回</v-btn
+              >
             </div>
           </v-card>
           <v-card
@@ -140,6 +152,7 @@ import { useUserStore } from "../../stores/userStore";
 import api from "@/plugins/axios";
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
+import Swal from "sweetalert2";
 
 const userStore = useUserStore();
 const { user, getChatRecord, addChatRecord } = userStore;
@@ -152,7 +165,6 @@ const itemsMap = reactive({
 });
 const selectedItemId = ref(null);
 const socket = ref(null);
-const page = ref(0);
 
 const chatRecord = reactive({
   chatRecords: [],
@@ -206,11 +218,19 @@ onMounted(async () => {
     handleIncomingMessage(message);
   };
 
+  let retryCount = 0;
+  const maxRetries = 5;
+
   socket.value.onclose = () => {
-    console.log("WebSocket connection closed, attempting to reconnect...");
-    setTimeout(() => {
-      socket.value = new WebSocket("ws://localhost:3002");
-    }, 5000); // Retry after 5 seconds
+    if (retryCount < maxRetries) {
+      console.log("WebSocket connection closed, attempting to reconnect...");
+      setTimeout(() => {
+        socket.value = new WebSocket("ws://localhost:3002");
+        retryCount++;
+      }, 5000);
+    } else {
+      console.error("Max retries reached. Could not reconnect to WebSocket.");
+    }
   };
 
   socket.value.onerror = (error) => {
@@ -219,9 +239,22 @@ onMounted(async () => {
 });
 
 function handleIncomingMessage(message) {
-  if (message.chat !== "" && message.chat !== null) {
+  console.log("message comming");
+  if (message.type === "recall") {
+    removeMessageById(message.id);
+  } else if (message.chat && message.chat !== "" && message.chat !== null) {
     chatRecord.chatRecords.unshift(message);
     getChatList();
+  }
+}
+
+// 移除消息
+function removeMessageById(messageId) {
+  for (let i = 0; i < chatRecord.chatRecords.length; i++) {
+    if (chatRecord.chatRecords[i].id === messageId) {
+      chatRecord.chatRecords.splice(i, 1);
+      break;
+    }
   }
 }
 
@@ -276,7 +309,7 @@ const submit = async () => {
 
   await addChatRecord(persistData);
 
-  state.message = null; // Clear input after sending
+  state.message = null;
 };
 
 function getChatList() {
@@ -329,19 +362,47 @@ const formatDate = (dateString) => {
   return new Intl.DateTimeFormat("zh-TW", options).format(new Date(dateString));
 };
 
-// function handleScroll(event) {
-//   const container = event.target;
-//   if (container.scrollTop === 0) {
-//     loadMoreChats();
-//   }
-// }
+const handleRetract = async (chatId) => {
+  Swal.fire({
+    title: "請確認是否要收回此訊息?",
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "確定",
+    cancelButtonText: "取消",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      try {
+        const retractData = {
+          type: "recall",
+          id: chatId,
+          receiverId: other.id,
+        };
 
-// async function loadMoreChats() {
-//   page.value += 1;
-//   const newChatRecord = await getChatRecord(user.id, page.value);
-//   chatRecord.value.push(newChatRecord);
-//   getChatList();
-// }
+        socket.value.send(JSON.stringify(retractData));
+
+        api({
+          method: "put",
+          url: `/chat-record/retract/${chatId}`,
+        });
+
+        handleIncomingMessage(retractData);
+
+        Swal.fire({
+          title: "訊息已收回！",
+          icon: "success",
+        });
+      } catch (error) {
+        Swal.fire({
+          title: "訊息收回失敗，請重新操作一次！",
+          icon: "error",
+        });
+        console.log(error);
+      }
+    }
+  });
+};
 </script>
 
 <style scoped>

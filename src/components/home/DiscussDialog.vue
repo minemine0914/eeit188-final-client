@@ -26,7 +26,7 @@
                 <v-divider class="mb-4"></v-divider>
                 <v-card-actions>
                     <!-- <v-btn>取消</v-btn> -->
-                    <v-btn @click="onClickWriteDiscuss" :loading="isWritingDiscuss">送出</v-btn>
+                    <v-btn @click="onClickWriteDiscuss" :loading="isWritingDiscuss" :disabled="!canWriteDiscuss">送出</v-btn>
                 </v-card-actions>
             </v-card>
         </template>
@@ -37,17 +37,26 @@ import { storeToRefs } from "pinia";
 import { useHouseDetailStore } from "@/stores/houseDetailStore";
 import { computed, ref } from "vue";
 
+
+
 const houseDetailStore = useHouseDetailStore();
 const { isDiscussDialogOpen, houseInfo, selfHouseDiscuss } = storeToRefs(houseDetailStore);
 
 const isWritingDiscuss = ref(false);
-
+const canWriteDiscuss = computed(()=>{
+    return selfHouseDiscuss.value.score !== null || selfHouseDiscuss.value.score > 0;
+});
 
 async function onClickWriteDiscuss() {
-    isWritingDiscuss.value = true;
-    await houseDetailStore.writeSelfHouseDiscuss();
-    isWritingDiscuss.value = false;
-    isDiscussDialogOpen.value = false;
+    if ( canWriteDiscuss ) {
+        isWritingDiscuss.value = true;
+        await houseDetailStore.writeSelfHouseDiscuss();
+        isWritingDiscuss.value = false;
+        isDiscussDialogOpen.value = false;
+    } else {
+        console.log("score is empty or > 0");
+    }
+
 }
 
 </script>
