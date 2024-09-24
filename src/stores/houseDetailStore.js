@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { computed, reactive, ref } from "vue";
+import { computed, nextTick, reactive, ref } from "vue";
 import api from "../plugins/axios";
 import { useRouter } from "vue-router";
 import { useUserStore } from "./userStore";
@@ -38,6 +38,7 @@ const initialHouseInfo = {
     collectionCount: null,
     userId: null,
     userName: null,
+    userHouseCount: null,
     houseExternalResourceRecords: [],
 };
 
@@ -70,11 +71,13 @@ const initialSelfHouseDiscuss = {
 
 const userStore = useUserStore();
 export const useHouseDetailStore = defineStore("HouseDetail", () => {
+    const router = useRouter();
     const houseInfo = reactive({ ...initialHouseInfo });
     const hostInfo = reactive({ ...initialHostInfo });
     const selfHouseDiscuss = reactive({ ...initialSelfHouseDiscuss });
     const previewDiscussList = reactive([]);
     const discussList = reactive([]);
+    const totalDiscussCount = ref(0);
     const currentDiscussPage = ref(0);
     const isErrorGetHouseInfo = ref(false);
     const isLoading = ref(true);
@@ -82,9 +85,19 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
     const isCollected = ref(false);
     const isShareDialogOpen = ref(false);
     const isDiscussDialogOpen = ref(false);
+    const isMoreDiscussesDialogOpen = ref(false);
+    const renderDiscussList = ref(true);
 
     function resetHouseInfo() {
         Object.assign(houseInfo, initialHouseInfo);
+    }
+
+    function reloadDiscussList() {
+        currentDiscussPage.value = 0;
+        discussList.splice(0, discussList.length);
+        renderDiscussList.value = false;
+        nextTick();
+        renderDiscussList.value = true;
     }
 
     function getHouseDetailImage(index) {
@@ -146,9 +159,10 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
         await api
             .get(`/discuss/house/${houseInfo.id}`, { params: { pageNo: 0, pageSize: 4 } })
             .then((res) => {
-                console.log("Get preview discuss success");
+                console.log("Get preview discuss success", res.data);
                 previewDiscussList.splice(0, previewDiscussList.length);
                 previewDiscussList.push(...res.data.discusses);
+                totalDiscussCount.value = res.data.totalElements;
             })
             .catch((err) => {
                 console.log("Get preview discuss failed");
@@ -158,7 +172,12 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
     async function getHouseDiscuss() {
         let data = null;
         await api
-            .get(`/discuss/house/${houseInfo.id}`)
+            .get(`/discuss/house/${houseInfo.id}`, {
+                params: {
+                    pageNo: currentDiscussPage.value,
+                    pageSize: 10,
+                },
+            })
             .then((res) => {
                 console.log("Get house discuss success");
                 data = res.data;
@@ -172,7 +191,7 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
     }
 
     async function getSelfHouseDiscuss() {
-        if (typeof userStore.user.id !== "undefined") {
+        if (userStore.user.id !== null) {
             await api
                 .get(`/discuss/user/${userStore.user.id}/${houseInfo.id}`)
                 .then((res) => {
@@ -187,24 +206,27 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
     }
 
     async function writeSelfHouseDiscuss() {
-        if (typeof userStore.user.id !== "undefined") {
+        if (userStore.user.id !== null) {
             await api
                 .post(`/discuss/`, {
                     houseId: houseInfo.id,
                     userId: userStore.user.id,
                     score: selfHouseDiscuss.score,
                     show: true,
-                    discuss: selfHouseDiscuss.discuss
+                    discuss: selfHouseDiscuss.discuss,
                 })
                 .then((res) => {
                     console.log("評論成功");
-                    
                 })
                 .catch((err) => {
                     console.log("評論失敗");
                 });
-                getSelfHouseDiscuss();
-                getPreviewDiscussList();
+            getSelfHouseDiscuss();
+            getPreviewDiscussList();
+            reloadDiscussList();
+        } else {
+            console.log("尚未登入，登入後再評論");
+            router.push("/login");
         }
     }
 
@@ -254,7 +276,7 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
 
     async function checkIsCollectedHouse() {
         isLoadingCollection.value = true;
-        if (typeof userStore.user.id !== "undefined") {
+        if (userStore.user.id !== null) {
             await api
                 .get("/user-collection/", {
                     params: {
@@ -281,7 +303,7 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
     }
 
     async function checkIsDiscussHouse() {
-        if (typeof userStore.user.id !== "undefined") {
+        if (userStore.user.id !== null) {
             await api
                 .get(`/house/mongo/find/${userStore.user.id}/${houseInfo.id}`)
                 .then((res) => {
@@ -310,13 +332,17 @@ export const useHouseDetailStore = defineStore("HouseDetail", () => {
         discussList,
         previewDiscussList,
         currentDiscussPage,
+        totalDiscussCount,
         isErrorGetHouseInfo,
         isLoading,
         isLoadingCollection,
         isCollected,
         isShareDialogOpen,
         isDiscussDialogOpen,
+        isMoreDiscussesDialogOpen,
+        renderDiscussList,
         resetHouseInfo,
+        reloadDiscussList,
         getHouseDetailImage,
         getHouseInfo,
         getPreviewDiscussList,

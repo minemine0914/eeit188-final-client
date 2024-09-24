@@ -54,11 +54,7 @@
 
 
 
-        <div style="width:80vw;" v-if="store.records.length">
-            <DataTab />
-        </div>
 
-        <p v-else>No transaction records found.</p>
 
     </div>
 </template>

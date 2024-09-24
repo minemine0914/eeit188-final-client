@@ -1,5 +1,6 @@
 <template>
   <Line :data="data" :options="options" />
+  <!-- <p>{{ store.selectedMonth }}月營業額：</p> -->
 </template>
 
 <script setup>
@@ -23,19 +24,25 @@ const data = computed(() => {
   if (store.selectedPeriod === 'year') {
     store.labels.name = '年度'
     store.labels.values = store.years
-    pointBackgroundColor[store.selectedYear - store.years[0]] = 'blue';
-    pointRadius[store.selectedYear - store.years[0]] = 8;
+    if (!store.allYear) {
+      pointBackgroundColor[store.selectedYear - store.years[0]] = 'blue';
+      pointRadius[store.selectedYear - store.years[0]] = 8;
+    }
 
   } else if (store.selectedPeriod === 'month') {
     store.labels.name = '月份'
     store.labels.values = store.months
-    pointBackgroundColor[store.selectedMonth - 1] = 'blue';
-    pointRadius[store.selectedMonth - 1] = 8;
+    if (!store.allMonth) {
+      pointBackgroundColor[store.selectedMonth - 1] = 'blue';
+      pointRadius[store.selectedMonth - 1] = 8;
+    }
   } else if (store.selectedPeriod === 'quarter') {
     store.labels.name = '季'
     store.labels.values = store.quarters
-    pointBackgroundColor[store.selectedQuarter - 1] = 'blue';
-    pointRadius[store.selectedQuarter - 1] = 8;
+    if (!store.allQuarter) {
+      pointBackgroundColor[store.selectedQuarter - 1] = 'blue';
+      pointRadius[store.selectedQuarter - 1] = 8;
+    }
   }
 
   let lineData
@@ -57,7 +64,7 @@ const data = computed(() => {
     labels: store.labels.values, // Convert months to strings for labels
     datasets: [
       {
-        label: 'Data',
+        label: '營業額',
         backgroundColor: '#f87979',
         borderColor: '#f87979',
         pointBackgroundColor, // Apply point colors here
@@ -74,7 +81,7 @@ const options = computed(() => ({
   plugins: {
     legend: {
       position: '',
-      // position: 'top',
+      position: 'top',
     },
     tooltip: {
       callbacks: {
@@ -93,7 +100,7 @@ const options = computed(() => ({
     },
     y: {
       title: {
-        display: true,
+        display: false,
         text: '營業額'
       },
       beginAtZero: true

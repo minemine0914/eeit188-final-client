@@ -13,15 +13,18 @@ wss.on("connection", (ws) => {
       const data = JSON.parse(message);
 
       if (data.type === "register") {
-        // 註冊用戶 ID 與 WebSocket
+        // Register user ID with WebSocket
         clients.set(data.userId, ws);
         console.log(`User ${data.userId} registered`);
-      } else if (data.type === "private_message") {
-        // 發送私人訊息
+      }
+
+      if (data.type === "private_message") {
+        // Send a private message
         const recipientSocket = clients.get(data.receiverId);
         if (recipientSocket && recipientSocket.readyState === WebSocket.OPEN) {
           recipientSocket.send(
             JSON.stringify({
+              type: data.type,
               chat: data.chat,
               senderId: data.senderId,
               sender: data.sender,
@@ -37,14 +40,39 @@ wss.on("connection", (ws) => {
           );
         }
       }
+
+      if (data.type === "recall") {
+        const recipientSocket = clients.get(data.receiverId);
+        if (recipientSocket && recipientSocket.readyState === WebSocket.OPEN) {
+          recipientSocket.send(
+            JSON.stringify({
+              type: data.type,
+              id: data.id,
+              receiverId: data.receiverId,
+            })
+          );
+          console.log("Recall sent to:", data.receiverId);
+        } else {
+          console.log(
+            `User ${data.receiverId} not connected or WebSocket closed.`
+          );
+        }
+      }
     } catch (error) {
       console.error("Error processing message:", error);
     }
   });
 
   ws.on("close", () => {
-    console.log("Client disconnected");
+    // Remove the disconnected client from the clients map
+    for (const [userId, socket] of clients.entries()) {
+      if (socket === ws) {
+        clients.delete(userId);
+        console.log(`User ${userId} disconnected`);
+        break;
+      }
+    }
   });
 });
 
-console.log("WebSocket server running on ws://localhost:8081");
+console.log("WebSocket server running on ws://localhost:3002");

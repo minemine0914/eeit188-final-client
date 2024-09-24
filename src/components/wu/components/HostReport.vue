@@ -1,33 +1,61 @@
 <!-- src/views/HostReport.vue -->
 <template>
-    <div>
-        <h1>歷史紀錄與報表</h1>
-        <h2>您好，{{ store.loginUser.name }}，歡迎使用本系統</h2>
-        <Selector />
-
+    <v-container class="mainBox">
         <!-- Loading Spinner -->
         <div v-if="store.isLoading"
             style="position: fixed;left:80vw;top:30vh;transform: translate(-50%, -50%);z-index: 100;">
             <v-progress-circular indeterminate color="primary" class="ma-5" :size="400"
                 :width="50"></v-progress-circular>
         </div>
-        <!-- Data Table -->
-        <DataTable />
+        <!-- main content -->
+        <h1>歷史紀錄與報表</h1>
+        <v-spacer></v-spacer>
+        <v-card class="subBox">
+            <v-card-title>您好，{{ store.loginUser.name }}，歡迎使用本系統
+                <template v-if="store.houses[0]?.id !== '' && store.houses[0]?.name !== 'NO HOUSES'">
+                    <Selector />
+                </template>
+                <template v-else>
+                    <p>您沒有房源，馬上新增房源成為房東吧！</p>
+                </template>
+            </v-card-title>
 
-    </div>
+            <!-- Data Table -->
+            <template v-if="store.houses[0]?.id !== '' && store.houses[0]?.name !== 'NO HOUSES'">
+                <v-card-title>
+                    <DataTable />
+                </v-card-title>
+
+                <v-card-text>
+                    <template v-if="store.records.length">
+                        <DataTab />
+                    </template>
+
+                    <p v-else>查無資料</p>
+                </v-card-text>
+            </template>
+        </v-card>
+    </v-container>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useHostReportStore } from '@/stores/hostReportStore';
+import { useUserStore } from '@/stores/userStore';
 import Selector from '@/components/wu/components/Selector.vue';
 import DataTable from '@/components/wu/components/DataTable.vue';
 import SelectorUser from './SelectorUser.vue';
+import DataTab from './DataTab.vue';
 
 const store = useHostReportStore();
+const userStore = useUserStore();
 store.isLoading = ref(false)
 
 onMounted(async () => {
+
+    if (userStore.user) {
+        store.loginUser = userStore.user
+    }
     // Set loading state to true
     store.isLoading = true;
 
@@ -48,3 +76,15 @@ onMounted(async () => {
     }
 });
 </script>
+<style scoped>
+.mainBox {
+    width: 80vw;
+    position: relative;
+    left: -100px;
+}
+
+.subBox {
+    width: 70vw;
+
+}
+</style>

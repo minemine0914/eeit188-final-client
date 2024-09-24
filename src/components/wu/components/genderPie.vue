@@ -59,7 +59,7 @@ const genderData = computed(() => {
     return {
         labels: ['男', '女', '其他'],
         datasets: [{
-            label: '性別分布',
+            label: '比例(%)',
             backgroundColor: ['#f87979', '#d5cc4a', '#83d6ba'],
             data: [
                 total ? (maleCount.value / total) * 100 : 0,
