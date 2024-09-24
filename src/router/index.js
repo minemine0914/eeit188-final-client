@@ -14,6 +14,192 @@ import { storeToRefs } from "pinia";
 const DEFAULT_TITLE = "Nomad";
 
 const routes = [
+<<<<<<< HEAD
+  {
+    path: "/",
+    name: "User",
+    component: () => import("@/views/UserView.vue"),
+    children: [
+      {
+        path: "", // Default
+        name: "Explore",
+        component: () => import("@/pages/home/Explore.vue"),
+        meta: { title: "Nomad 探索", requiresAuth: false },
+      },
+      {
+        path: "search",
+        name: "Search",
+        component: () => import("@/pages/home/Search.vue"),
+        meta: { title: "Nomad 搜尋", requiresAuth: false },
+      },
+      {
+        path: "house",
+        name: "House",
+        component: () => import("@/pages/home/HouseDetail.vue"),
+        meta: { title: "Nomad 房源", requiresAuth: false },
+      },
+      {
+        path: "house/:houseId",
+        name: "HouseWithHouseId",
+        component: () => import("@/pages/home/HouseDetail.vue"),
+        meta: { title: "Nomad 房源", requiresAuth: false },
+      },
+      {
+        path: "booking/:houseId",
+        name: "BookingWithHouseId",
+        component: () => import("@/pages/home/Booking.vue"),
+        meta: { title: "Nomad 預定您的房源", requiresAuth: false },
+      },
+      {
+        path: "member",
+        name: "Member",
+        component: () => import("@/pages/user/MemberPage.vue"),
+        meta: { title: "Nomad 會員中心", requiresAuth: false },
+      },
+      {
+        path: "chat",
+        name: "Chat",
+        component: () => import("@/pages/user/ChatPage.vue"),
+        meta: { title: "Nomad 聊天", requiresAuth: false },
+      },
+      {
+        path: "login",
+        name: "Login",
+        component: () => import("@/pages/user/LoginPage.vue"),
+        meta: { title: "Nomad 登入", requiresAuth: false },
+      },
+      {
+        path: "signup",
+        name: "Signup",
+        component: () => import("@/pages/user/SignupPage.vue"),
+        meta: { title: "Nomad 註冊", requiresAuth: false },
+      },
+      {
+        path: "forgot-password",
+        name: "ForgotPassword",
+        component: () => import("@/pages/user/ForgotPasswordPage.vue"),
+        meta: { title: "Nomad 忘記密碼", requiresAuth: false },
+      },
+      {
+        path: "reset-password",
+        name: "ResetPassword",
+        component: () =>
+          import("@/pages/user/ResetPasswordFromEmailLinkPage.vue"),
+        meta: { title: "Nomad 重設密碼", requiresAuth: false },
+      },
+    ],
+  },
+  {
+    path: "/host",
+    name: "HostHome",
+    component: () => import("@/views/HostView.vue"),
+    children: [
+      {
+        path: "", // Default
+        name: "hostHome",
+        component: () => import("@/components/lo/PropertyManagement.vue"),
+        meta: { title: "Nomad 分享你的房源", requiresAuth: false },
+      },
+      {
+        path: 'property-management',
+        name: 'propertyManagement',
+        component: () => import('@/components/lo/PropertyManagement.vue')
+      },
+      {
+        path: 'reviews',
+        name: 'reviews',
+        component: () => import('@/components/lo/Reviews.vue')
+      },
+      {
+        path: 'reservation-management',
+        name: 'reservationManagement',
+        component: () => import('@/components/lo/Reservation.vue')
+      },
+      {
+        path: 'order-records',
+        name: 'orderRecords',
+        component: () => import('@/components/lo/OrderRecord.vue')
+      },
+      {
+        path: 'add-property',
+        name: 'addProperty',
+        component: () => import('@/components/lo/AddProperty.vue')
+      },
+      {
+        path: 'edit-property/:id',
+        name: 'editProperty',
+        component: () => import('@/components/lo/EditProperty.vue'),
+        props: true
+      },
+      {
+        path: 'order-detail/:id',
+        name: 'orderDetail',
+        component: () => import('@/components/lo/OrderDetail.vue'),
+        props: true
+      },
+    ]
+  },
+  {
+    path: "/system",
+    name: "System",
+    component: () => import("@/views/SystemView.vue"),
+    children: [
+      {
+        path: "", // Default
+        name: "Dashboard",
+        component: () => import("@/pages/system/Dashboard.vue"),
+        meta: { title: "Nomad 系統管理", requiresAuth: false },
+      },
+      {
+        path: "admin",
+        name: "Admin",
+        component: () => import("@/pages/system/AdminPage.vue"),
+        meta: { title: "Nomad 管理中心", requiresAuth: false },
+      },
+      {
+        path: "login",
+        name: "SystemLogin",
+        component: () => import("@/pages/system/AdminLoginPage.vue"),
+        meta: { title: "Nomad 系統管理登入", requiresAuth: false },
+      },
+      {
+        path: "createAdmin",
+        name: "CreateAdmin",
+        component: () => import("@/pages/system/CreateAdminPage.vue"),
+        meta: { title: "Nomad 系統管理註冊", requiresAuth: false },
+      },
+      {
+        path: "forgot-password",
+        name: "AdminForgotPassword",
+        component: () => import("@/pages/system/AdminForgotPasswordPage.vue"),
+        meta: { title: "Nomad 系統管理忘記密碼", requiresAuth: false },
+      },
+      {
+        path: "/system/reset-password",
+        name: "ResetPassword",
+        component: () =>
+          import("@/pages/system/AdminResetPasswordFromEmailLinkPage.vue"),
+        meta: { title: "Nomad 系統管理重設密碼", requiresAuth: false },
+      },
+      {
+        path: "admin-chat",
+        name: "AdminChat",
+        component: () => import("@/pages/system/AdminChatPage.vue"),
+        meta: { title: "Nomad 聊天", requiresAuth: false },
+      },
+    ],
+  },
+  {
+    path: "/:pathMatch(.*)*",
+    name: "NotFound",
+    component: () => import("@/views/NotFound.vue"),
+  },
+  minemineRouter,
+  wuRouter,
+  kenjoRouter,
+  leonRouter,
+  loRouter,
+=======
     {
         path: "/",
         name: "User",
@@ -165,6 +351,7 @@ const routes = [
     wuRouter,
     leonRouter,
     loRouter,
+>>>>>>> 1ebe8153e6c4dad3222cd968b33a0feb9b01d45a
 ];
 
 const router = createRouter({
