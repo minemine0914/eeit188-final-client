@@ -80,9 +80,9 @@
         </template>
         <!-- <v-btn v-if="jwtToken" >登出</v-btn> -->
       </v-app-bar>
+      
       <v-navigation-drawer app permanent>
       <v-list>
-        
         <v-list-item v-for="item in menuItems" :key="item.path">
           <v-btn text @click="navigateTo(item.path)">
             {{ item.title }}
