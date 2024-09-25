@@ -1,5 +1,6 @@
 <!-- 房東和平台共用此component，故顯示內容需判斷權限 -->
 <template>
+    {{ click }}
     <v-card flat>
         <v-card-title class="d-flex align-center pe-2">
             <!-- *******************admin額外顯示查看的user(房東)資訊********************* -->
@@ -90,7 +91,8 @@ if (store.loginUser.role === 'normal') {
         { title: '訂房者名稱', value: 'bookerName', sortable: true },
         { title: '性別', value: 'formattedBookerGender', sortable: true },
         { title: '金額', value: 'cashFlow', sortable: true },
-        { title: '圖片', value: 'pics', sortable: false, width: '200px' }, // Disable sorting for pics
+        { title: '評分', value: 'score', sortable: true },
+        // { title: '圖片', value: 'pics', sortable: false, width: '200px' }, // Disable sorting for pics
         { title: '', value: '', sortable: false, width: '100px' }, // 空白欄 調整排版用
     ];
 } else if (store.loginUser.role === 'admin') {
@@ -101,12 +103,16 @@ if (store.loginUser.role === 'normal') {
         { title: '性別', value: 'formattedBookerGender', sortable: true },
         { title: '平台收入', value: 'platformIncome', sortable: true },
         { title: '金額', value: 'cashFlow', sortable: true },
-        { title: '圖片', value: 'pics', sortable: false, width: '200px' }, // Disable sorting for pics
+        { title: '評分', value: 'score', sortable: true },
+        // { title: '圖片', value: 'pics', sortable: false, width: '200px' }, // Disable sorting for pics
         { title: '', value: 'postulate', sortable: false, width: '100px' }, // 空白欄 調整排版用
     ];
 }
 const itemsPerPage = 3 // Default items per page
 const itemsPerPageOptions = [3, 5, 10, 25, 50, 100, -1] // Options for per-page selector
+console.log('HHH', store.getHouseClick(store.selectedHouse))
+const click = computed(() => { store.getHouseClick(store.selectedHouse) })
+console.log('HHH', click)
 
 const currentUser = computed(() => {
     console.log('Fetching current user...');
@@ -114,8 +120,6 @@ const currentUser = computed(() => {
     console.log('Current user:', user);
     return user;
 });
-
-
 
 const items = computed(() => {
     console.log('is', store.itemsSource)
@@ -151,7 +155,6 @@ const items = computed(() => {
                     return '其他';
             }
         };
-
         return {
             'houseId': item.house?.id || item.house,
             'houseName': item.house?.name,
@@ -164,6 +167,7 @@ const items = computed(() => {
             'platformIncome': `$${item.platformIncome}`,
             'createdAt': new Date(item?.createdAt),
             'formattedCreatedAt': new Date(item?.createdAt).toLocaleString(),
+            'score': item?.houseScore,
             'pics': store.pics,
             'postulate': '',
         };

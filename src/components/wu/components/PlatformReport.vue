@@ -1,7 +1,7 @@
 <!-- src/views/HostReport.vue -->
 <template>
     <v-container class="mainBox">
-        <h1>歷史紀錄與報表[平台]</h1>
+        <h1>歷史紀錄</h1>
         <v-spacer></v-spacer>
         <v-card class="subBox">
             <v-card-title>
