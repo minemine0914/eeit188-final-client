@@ -15,11 +15,17 @@
             }}]
             <v-chip v-if="store.itemsSource[0]?.house?.bedroom" variant="outlined" prepend-icon="mdi-bed-outline">
                 臥房：{{ store.itemsSource[0]?.house?.bedroom }} </v-chip>
+            <v-chip v-if="store.itemsSource[0]?.house?.restroom" variant="outlined" prepend-icon="mdi-toilet">
+                洗手間：{{ store.itemsSource[0]?.house?.restroom }} </v-chip>
             <v-chip v-if="store.itemsSource[0]?.house?.bathroom" variant="outlined" prepend-icon="mdi-shower-head">
-                衛浴：{{ store.itemsSource[0]?.house?.bathroom }} </v-chip>
-            <v-chip v-if="store.itemsSource[0]?.house?.balcony" variant="outlined" prepend-icon="mdi-balcony"> 陽台
+                浴室：{{ store.itemsSource[0]?.house?.bathroom }} </v-chip>
+            <v-chip variant="outlined" prepend-icon="mdi-balcony"
+                :color="store.itemsSource[0]?.house?.balcony ? 'green' : 'red'">
+                {{ store.itemsSource[0]?.house?.balcony ? '附設陽台' : '無陽台' }}
             </v-chip>
-            <v-chip v-if="store.itemsSource[0]?.house?.kitchen" variant="outlined" prepend-icon="mdi-gas-burner"> 廚房
+            <v-chip variant="outlined" prepend-icon="mdi-gas-burner"
+                :color="store.itemsSource[0]?.house?.kitchen ? 'green' : 'red'">
+                {{ store.itemsSource[0]?.house?.kitchen ? '附設廚房' : '無廚房' }}
             </v-chip>
             <v-chip v-if="store.itemsSource[0]?.house?.pet" variant="outlined" prepend-icon="mdi-paw" color="green">
                 可攜帶寵物 </v-chip>
@@ -54,6 +60,12 @@
             <template v-slot:item.createdAt="{ item }">
                 {{ item.formattedCreatedAt }} <!-- Display formatted date -->
             </template>
+
+            <template v-slot:item.score="{ item }">
+                <v-rating :model-value="item.score" color="orange-darken-2" density="compact" size="small"
+                    readonly></v-rating>
+            </template>
+
             <template v-slot:item.pics="{ item }">
                 <div style="display:grid ;grid-template-columns: 1fr 1fr;">
                     <v-card v-if="Math.floor(Math.random() * 10) % 2" class="my-2" elevation="2" rounded>
@@ -102,7 +114,7 @@ let headers = []
 // 平台和房東共用此表格，先判定登入者權限，再決定顯示那些欄位
 if (store.loginUser.role === 'normal') {
     headers = [
-        { title: '付款時間', value: 'createdAt', sortable: true },
+        { title: '訂單成立時間', value: 'createdAt', sortable: true },
         { title: '訂房者名稱', value: 'bookerName', sortable: true },
         { title: '性別', value: 'formattedBookerGender', sortable: true },
         { title: '金額', value: 'cashFlow', sortable: true },
@@ -175,8 +187,8 @@ const items = computed(() => {
             'bookerName': item.user?.name,
             'bookerGender': item.userGender,
             'formattedBookerGender': formatBookerGender(item.userGender),
-            'cashFlow': `$${item?.cashFlow}`,
-            'platformIncome': `$${item.platformIncome}`,
+            'cashFlow': item?.cashFlow,
+            'platformIncome': item.platformIncome,
             'createdAt': new Date(item?.createdAt),
             'formattedCreatedAt': new Date(item?.createdAt).toLocaleString(),
             'score': item?.houseScore,
