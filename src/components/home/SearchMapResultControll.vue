@@ -10,12 +10,21 @@
                 class="h-100"
                 style="contain: size; padding-top: 110px"
             >
-                <v-card ref="infoCardRef" class="h-100" rounded="xl">
-                    <v-toolbar color="transparent" ref="infoCardToolbarRef" class="px-2 border-b-thin">
+                <v-card ref="infoCardRef" class="h-100" rounded="lg">
+                    <v-toolbar
+                        color="transparent"
+                        ref="infoCardToolbarRef"
+                        class="px-2 border-b-thin"
+                        density="compact"
+                    >
                         <template v-slot:prepend>
-                            <v-icon icon="mdi-map-search-outline" class="ml-3"></v-icon>
+                            <v-icon
+                                icon="mdi-map-search-outline"
+                                class="ml-3"
+                                color="grey-darken-3"
+                            ></v-icon>
+                            <div class="ml-3 text-h6 text-grey-darken-3">地圖範圍搜尋</div>
                         </template>
-                        <v-toolbar-title class="text-h6" text="搜尋結果"></v-toolbar-title>
                         <template v-slot:append>
                             <v-btn
                                 v-if="false"
@@ -32,7 +41,7 @@
                             class="w-100"
                         >
                             <template v-for="(scrollItem, index) in filterHouseList" :key="index">
-                                <v-sheet class="mb-2">
+                                <v-sheet class="mb-3">
                                     <v-card
                                         flat
                                         @click="$router.push(`/house/${scrollItem.id}`)"
@@ -41,6 +50,7 @@
                                         class="py-3 mx-3"
                                         color="brown-lighten-5"
                                         rounded="lg"
+                                        border
                                     >
                                         <v-row class="fill-height" no-gutters>
                                             <v-col cols="12" md="12">
@@ -105,124 +115,73 @@
                                                 </v-sheet>
                                             </v-col>
                                             <v-col cols="12" md="12">
-                                                <div class="d-flex flex-row mb-6 w-100 h-100 px-3">
-                                                    <!-- 房源名稱與資訊 -->
+                                                <!-- 房源名稱與資訊 -->
+                                                <v-card-item
+                                                    class="flex-grow-1 px-3 py-0"
+                                                    color="transparent"
+                                                >
                                                     <v-sheet
-                                                        class="flex-grow-1"
+                                                        class="d-flex flex-row justify-space-between"
                                                         color="transparent"
                                                     >
-                                                        <div
-                                                            class="text-h5 font-weight-medium text-brown-darken-4 pt-1 mb-1"
-                                                        >
+                                                        <div class="text-h6 text-brown-darken-1">
                                                             {{ scrollItem.name }}
                                                         </div>
-                                                        <div class="text-grey-darken-1">
-                                                            <span
-                                                                class="mdi mdi-map-marker mr-2"
-                                                            ></span>
-                                                            <span class="mr-2">{{
-                                                                `位於 ${scrollItem.city} ${scrollItem.region}`
-                                                            }}</span>
-                                                        </div>
-                                                        <div class="text-grey-darken-1">
-                                                            <span class="mdi mdi-sofa mr-2"></span>
-                                                            <span
-                                                                class="mr-1"
-                                                                v-if="
-                                                                    scrollItem.livingDiningRoom > 0
-                                                                "
-                                                            >
-                                                                {{
-                                                                    `${scrollItem.livingDiningRoom} 廳`
-                                                                }}
-                                                            </span>
-                                                            <span
-                                                                class="mr-1"
-                                                                v-if="scrollItem.bedroom > 0"
-                                                            >
-                                                                {{ `${scrollItem.bedroom} 房` }}
-                                                            </span>
-                                                            <span
-                                                                class="mr-1"
-                                                                v-if="scrollItem.bathroom > 0"
-                                                            >
-                                                                {{ `${scrollItem.bathroom} 淋浴` }}
-                                                            </span>
-                                                            <span
-                                                                class="mr-1"
-                                                                v-if="scrollItem.restroom > 0"
-                                                            >
-                                                                {{ `${scrollItem.restroom} 衛生` }}
-                                                            </span>
-                                                        </div>
-                                                        <div class="text-grey-darken-1">
-                                                            <span class="mdi mdi-bed mr-2"></span>
-                                                            <span>可住 </span>
-                                                            <span
-                                                                class="mr-1"
-                                                                v-if="scrollItem.adult > 0"
-                                                            >
-                                                                {{ `${scrollItem.adult} 位成人 ` }}
-                                                            </span>
-                                                            <span
-                                                                class="mr-1"
-                                                                v-if="scrollItem.child > 0"
-                                                            >
-                                                                {{ `${scrollItem.child} 位孩童 ` }}
-                                                            </span>
-                                                        </div>
-                                                        <div class="text-grey-darken-1">
-                                                            <span
-                                                                class="mr-2"
-                                                                v-if="!scrollItem.pet"
-                                                            >
-                                                                <span
-                                                                    class="mdi mdi-paw-off mr-2"
-                                                                ></span>
-                                                                <span>禁止寵物</span>
-                                                            </span>
-
-                                                            <span
-                                                                class="mr-2"
-                                                                v-if="!scrollItem.smoke"
-                                                            >
-                                                                <span
-                                                                    class="mdi mdi-smoking-off mr-2"
-                                                                ></span>
-                                                                <span>禁止吸菸</span>
-                                                            </span>
+                                                        <div class="text-h6 text-brown-darken-1">
+                                                            NT ${{ scrollItem.price }}
                                                         </div>
                                                     </v-sheet>
-                                                    <!-- 價錢與詳細按鈕 -->
-                                                    <v-sheet
-                                                        class="d-flex flex-column flex-grow-1 justify-end align-end"
-                                                        color="transparent"
-                                                    >
-                                                        <v-sheet color="transparent">
-                                                            <div
-                                                                class="text-h5 font-weight-medium text-brown-darken-4 mb-2 mr-1"
-                                                            >
-                                                                NT ${{ scrollItem.price }}
-                                                            </div>
-                                                        </v-sheet>
-                                                        <!-- <v-sheet color="transparent">
-                                                            <v-btn
-                                                                color="brown-lighten-1"
-                                                                min-width="130"
-                                                                size="large"
-                                                                :to="`/house/${scrollItem.id}`"
-                                                                >詳細資訊</v-btn
-                                                            >
-                                                        </v-sheet> -->
-                                                    </v-sheet>
-                                                </div>
+                                                    <div class="text-body-2 text-brown-darken-1">
+                                                        <span
+                                                            class="mdi mdi-map-marker mr-2"
+                                                        ></span>
+                                                        <span class="mr-2">{{
+                                                            `${scrollItem.city} ${scrollItem.region} ${scrollItem.address}`
+                                                        }}</span>
+                                                    </div>
+                                                    <div class="text-body-2 text-brown-darken-1">
+                                                        <span class="mdi mdi-sofa mr-2"></span>
+                                                        <span>共 </span>
+                                                        <span
+                                                            class="mr-1"
+                                                            v-if="scrollItem.livingDiningRoom > 0"
+                                                        >
+                                                            {{ `${scrollItem.livingDiningRoom} 廳` }}
+                                                        </span>
+                                                        <span class="mr-1" v-if="scrollItem.bedroom > 0">
+                                                            {{ `${scrollItem.bedroom} 房` }}
+                                                        </span>
+                                                        <span
+                                                            class="mr-1"
+                                                            v-if="scrollItem.bathroom > 0"
+                                                        >
+                                                            {{ `${scrollItem.bathroom} 淋浴` }}
+                                                        </span>
+                                                        <span
+                                                            class="mr-1"
+                                                            v-if="scrollItem.restroom > 0"
+                                                        >
+                                                            {{ `${scrollItem.restroom} 衛生` }}
+                                                        </span>
+                                                    </div>
+                                                    <div class="text-body-2 text-brown-darken-1">
+                                                        <span class="mdi mdi-bed mr-2"></span>
+                                                        <span>可住 </span>
+                                                        <span class="mr-1" v-if="scrollItem.adult > 0">
+                                                            {{ `${scrollItem.adult} 位成人 ` }}
+                                                        </span>
+                                                        <span class="mr-1" v-if="scrollItem.child > 0">
+                                                            {{ `${scrollItem.child} 位孩童 ` }}
+                                                        </span>
+                                                    </div>
+                                                </v-card-item>
                                             </v-col>
                                         </v-row>
                                     </v-card>
                                 </v-sheet>
                             </template>
                             <template v-slot:empty>
-                                <v-sheet class="mb-5">
+                                <v-sheet>
                                     <v-alert variant="plain"
                                         >房源搜尋完畢! 共找到
                                         {{ filterHouseList.length }} 個相符房源</v-alert

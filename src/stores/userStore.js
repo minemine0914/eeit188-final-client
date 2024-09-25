@@ -3,6 +3,7 @@ import api from "@/plugins/axios";
 import { ref, reactive } from "vue";
 import * as jwtDecode from "jwt-decode";
 import { useRouter } from "vue-router";
+
 const initialUser = {
   id: null,
   name: null,
@@ -17,6 +18,7 @@ const initialUser = {
   createdAt: null,
   updatedAt: null,
   avatarBase64: null,
+  houseCount: null,
 };
 
 export const useUserStore = defineStore(
