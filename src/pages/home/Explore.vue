@@ -40,7 +40,7 @@
             <!-- Hot Houses -->
             <v-container fluid class="pa-0 my-5">
                 <v-sheet class="mb-3">
-                    <div class="text-h5 font-weight-medium mx-15">熱門推薦</div>
+                    <div class="text-h5 font-weight-medium mx-9">熱門推薦</div>
                     <v-slide-group show-arrows>
                         <v-slide-group-item
                             v-if="hotHouseList.length === 0"
@@ -82,7 +82,7 @@
             <!-- Height rating houses -->
             <v-container fluid class="pa-0 my-5">
                 <v-sheet class="mb-3">
-                    <div class="text-h5 font-weight-medium mx-15">最新房源</div>
+                    <div class="text-h5 font-weight-medium mx-9">最新房源</div>
                     <v-slide-group show-arrows>
                         <v-slide-group-item
                             v-if="hotHouseList.length === 0"
@@ -114,7 +114,7 @@
                 </v-sheet>
             </v-container>
             <!-- Explore all houses -->
-            <v-container fluid class="my-5">
+            <v-container fluid class="mb-5">
                 <div class="text-h5 font-weight-medium mx-5">探索房源</div>
                 <v-row justify="start" align="start">
                     <template v-for="exploreHouse in allHouseList" :key="exploreHouse.id">
