@@ -101,6 +101,7 @@ export const useHostReportStore = defineStore('hostReport', {
                 console.log('tH', this.houses)
                 // House插入點擊數clicks
                 for (let i = 0; i < this.houses.length; i++) {
+                    if (!this.house[0].id) { break }
                     console.log('inininin')
 
                     this.houses[i].clicks = await this.getHouseClick(this.houses[i].id)
@@ -199,14 +200,21 @@ export const useHostReportStore = defineStore('hostReport', {
                 const response = await api.post(`/transcation_record/search`, body);
                 console.log('response.data', response.data)
 
+                // 4.1 修正回傳值TxRecord只有ID的問題，TxRecord ID->TxRecord物件
                 let transformedRecords = await this.searchRecordAgainByRecordId(response.data.content);
+                // 4.2.1 修正house只有ID的問題，House ID->House物件
                 for (let item of transformedRecords) { item.house = await this.searchHouseAgainByRecordId(item.house); }
+                // 4.2.2 修正user只有ID的問題，User ID->User物件
+                for (let item of transformedRecords) { item.user = await this.searchUserAgainByRecordId(item.user); }
+                // 4.3 把CreatedAt的時間拆開成不同object，方便篩選
                 transformedRecords = await this.separateCreatedAt(transformedRecords)
+                // 4.4 查詢評分
                 transformedRecords = await this.getScore(transformedRecords)
                 console.log('transformedRecords', transformedRecords)
 
                 this.records = transformedRecords;
 
+                // 資料輸出格式
                 //YMDC={Year: yyyy, Month: MM, Date: dd, cashFlow: $$$}
 
                 //YMD={yyyy:
@@ -220,14 +228,6 @@ export const useHostReportStore = defineStore('hostReport', {
                 //    2024: [...], ...}
 
                 //Y={2023: $$$, 2024: $$$, ...}
-
-                // if (this.selectedPeriod === 'year') {
-                //     this.useTestYMDC('Y')
-                // } else if (this.selectedPeriod === 'month') {
-                //     this.useTestYMDC('YM')
-                // } else if (this.selectedPeriod === 'quarter') {
-                //     this.useTestYMDC('YQ')
-                // }
 
                 if (this.selectedPeriod === 'year') {
                     this.turnToY()
@@ -259,13 +259,27 @@ export const useHostReportStore = defineStore('hostReport', {
             return transformedArray.filter(item => item); // Filter out undefined values
         },
 
-        // 4.2 修正house只有ID的問題，House ID->House物件
+        // 4.2.1 修正house只有ID的問題，House ID->House物件
         async searchHouseAgainByRecordId(element) {
             if (typeof element === 'object' && !Array.isArray(element)) {
                 return element;
             } else if (typeof element === 'string') {
                 try {
                     const response = await api.get(`/house/${element}`);
+                    return response.data;
+                } catch (error) {
+                    console.error('Error fetching record by ID:', error);
+                }
+            }
+        },
+
+        // 4.2.2 修正user只有ID的問題，House ID->House物件
+        async searchUserAgainByRecordId(element) {
+            if (typeof element === 'object' && !Array.isArray(element)) {
+                return element;
+            } else if (typeof element === 'string') {
+                try {
+                    const response = await api.get(`/user/find/${element}`);
                     return response.data;
                 } catch (error) {
                     console.error('Error fetching record by ID:', error);
@@ -296,7 +310,7 @@ export const useHostReportStore = defineStore('hostReport', {
             return contentArray
         },
 
-        // 4.4
+        // 4.4 查詢評分
         async getScore(contentArray) {
             for (let i = 0; i < contentArray.length; i++) {
                 let score = 0
@@ -313,13 +327,6 @@ export const useHostReportStore = defineStore('hostReport', {
                 contentArray[i].houseScore = score
             }
             return contentArray
-
-
-
-
-
-
-
         },
 
         turnToYMD(YMDC) {
@@ -463,7 +470,7 @@ export const useHostReportStore = defineStore('hostReport', {
             return 0
         },
 
-        // for click only
+        // get click only
         async getselectedHouseClick() {
 
             const response = await api.post(`house/mongo/count/click`, { houseId: this.selectedHouseId });
