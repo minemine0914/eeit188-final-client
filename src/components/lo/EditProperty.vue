@@ -56,7 +56,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useHouseDetailStore } from '@/stores/houseDetailStore'
+import { useHostManagementStore } from '@/stores/hostManagement'
 
 const propertyId = 1; // 這裡應該是從路由或其他方式取得的當前編輯的房源ID
 
@@ -91,18 +91,26 @@ const countries = ['台灣', '日本', '美國']
 const cities = ['台北', '東京', '紐約']
 const districts = ['大安區', '澀谷區', '曼哈頓區']
 
-const houseDetailStore = useHouseDetailStore()
+const hostManagementStore = useHostManagementStore()
 
 onMounted(async () => {
   // 獲取現有的房源資料，並將其顯示在表單上
-  const data = await houseDetailStore.fetchPropertyDetails(propertyId)
+  const data = await hostManagementStore.fetchPropertyDetails(propertyId)
   Object.assign(property.value, data)
 })
 
 const submitForm = async () => {
   try {
     // 更新房源資料
-    await houseDetailStore.updateProperty(propertyId, property.value)
+    await hostManagementStore.updateProperty(propertyId, property.value)
+
+    // 如果有新圖片，逐一上傳
+    if (property.value.newImages.length > 0) {
+      for (let image of property.value.newImages) {
+        await hostManagementStore.uploadPropertyImage(propertyId, image)
+      }
+    }
+
     alert('房源已成功更新！')
   } catch (error) {
     console.error('更新失敗', error)

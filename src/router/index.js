@@ -107,11 +107,11 @@ const routes = [
         name: 'propertyManagement',
         component: () => import('@/components/lo/PropertyManagement.vue')
     },
-    {
-        path: 'property-management',
-        name: 'propertyManagement',
-        component: () => import('@/components/lo/PropertyManagement.vue')
-    },
+      {
+          path: 'property-management',
+          name: 'propertyManagement',
+          component: () => import('@/components/lo/PropertyManagement.vue')
+      },
     {
         path: 'reviews',
         name: 'reviews',

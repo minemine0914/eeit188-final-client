@@ -3,12 +3,10 @@
     <!-- 排序和篩選 -->
     <v-row>
       <v-col cols="12" sm="4">
-        <v-select v-model="sortBy" :items="['最高金額', '最低金額']" label="排序方式" dense outlined
-          @change="sortOrders"></v-select>
+        <v-select v-model="sortBy" :items="['最高金額', '最低金額']" label="排序方式" dense outlined @change="sortOrders"></v-select>
       </v-col>
       <v-col cols="12" sm="4">
-        <v-select v-model="filterByStayStatus" :items="['全部', '已入住', '未入住']" label="入住狀態" dense outlined
-          @change="filterOrders"></v-select>
+        <v-select v-model="filterByStayStatus" :items="['全部', '已入住', '未入住']" label="入住狀態" dense outlined @change="filterOrders"></v-select>
       </v-col>
     </v-row>
 
@@ -47,67 +45,79 @@
   </v-container>
 </template>
 
-<script>
-import OrderDetail from './OrderDetail.vue';
+<script setup>
+import { ref, onMounted, computed } from 'vue'
+import { useHostManagementStore } from '@/stores/hostManagement'
+import OrderDetail from './OrderDetail.vue'
 
-export default {
-  data() {
-    return {
-      orders: [
-        { id: 1, name: '歷史訂單 1', stayDate: '2024-09-11', stayStatus: '已入住', amount: 1500 },
-        { id: 2, name: '歷史訂單 2', stayDate: '2024-09-12', stayStatus: '未入住', amount: 2000 },
-      ],
-      sortBy: '最高金額',
-      filterByStayStatus: '全部',
-      page: 1,
-      itemsPerPage: 5,
-      showDialog: false,
-      selectedOrderId: null,
-    };
-  },
-  computed: {
-    sortedAndFilteredOrders() {
-      let filtered = this.filterByStayStatus === '全部'
-        ? this.orders
-        : this.orders.filter(o => o.stayStatus === this.filterByStayStatus);
+const hostManagementStore = useHostManagementStore()
 
-      return filtered.sort((a, b) => {
-        return this.sortBy === '最高金額'
-          ? b.amount - a.amount
-          : a.amount - b.amount;
-      });
-    },
-    paginatedOrders() {
-      const start = (this.page - 1) * this.itemsPerPage;
-      const end = this.page * this.itemsPerPage;
-      return this.sortedAndFilteredOrders.slice(start, end);
-    },
-    totalPages() {
-      return Math.ceil(this.sortedAndFilteredOrders.length / this.itemsPerPage);
-    },
-  },
-  methods: {
-    sortOrders() {
-      // 排序邏輯已經處理
-    },
-    filterOrders() {
-      // 篩選邏輯已經處理
-    },
-    viewDetails(id) {
-      this.selectedOrderId = id;
-      this.showDialog = true;
-    },
-    closeDialog() {
-      this.showDialog = false;
-    },
+const orders = ref([])
+const sortBy = ref('最高金額')
+const filterByStayStatus = ref('全部')
+const page = ref(1)
+const itemsPerPage = ref(5)
+const showDialog = ref(false)
+const selectedOrderId = ref(null)
 
-    deleteOrder(id) {
-      // 刪除訂單邏輯
-      console.log('刪除訂單:', id);
-    },
-  },
-  components: {
-    OrderDetail,
-  },
-};
+const sortOrders = () => {
+  // 排序邏輯處理
+}
+
+const filterOrders = () => {
+  // 篩選邏輯處理
+}
+
+const viewDetails = (id) => {
+  selectedOrderId.value = id
+  showDialog.value = true
+}
+
+const closeDialog = () => {
+  showDialog.value = false
+}
+
+const deleteOrder = async (id) => {
+  try {
+    await hostManagementStore.deleteOrder(id) // 調用後端 API 刪除訂單
+    orders.value = orders.value.filter(order => order.id !== id) // 從本地移除已刪除的訂單
+  } catch (error) {
+    console.error('刪除失敗:', error)
+  }
+}
+
+// 計算排序與篩選後的訂單
+const sortedAndFilteredOrders = computed(() => {
+  let filtered = filterByStayStatus.value === '全部'
+    ? orders.value
+    : orders.value.filter(o => o.stayStatus === filterByStayStatus.value)
+
+  return filtered.sort((a, b) => {
+    return sortBy.value === '最高金額'
+      ? b.amount - a.amount
+      : a.amount - b.amount
+  })
+})
+
+// 計算分頁的訂單列表
+const paginatedOrders = computed(() => {
+  const start = (page.value - 1) * itemsPerPage.value
+  const end = page.value * itemsPerPage.value
+  return sortedAndFilteredOrders.value.slice(start, end)
+})
+
+// 計算總頁數
+const totalPages = computed(() => {
+  return Math.ceil(sortedAndFilteredOrders.value.length / itemsPerPage.value)
+})
+
+// 在組件掛載時獲取訂單列表
+onMounted(async () => {
+  try {
+    const data = await hostManagementStore.fetchOrders() // 從後端 API 獲取訂單列表
+    orders.value = data
+  } catch (error) {
+    console.error('獲取訂單失敗:', error)
+  }
+})
 </script>

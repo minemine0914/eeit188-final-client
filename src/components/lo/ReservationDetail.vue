@@ -39,37 +39,40 @@
     </v-container>
 </template>
 
-<script>
-export default {
-    data() {
-        return {
-            reservationRecord: {
-                id: '',
-                customerName: '張三',
-                stayDate: '2024-09-20',
-                paymentStatus: '已付款',
-                totalAmount: '1500',
-                roomName: '豪華房型',
-            },
-        };
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useHostManagementStore } from '@/stores/hostManagement'
+
+const props = defineProps({
+    id: {
+        type: String,
+        required: true,
     },
-    props: {
-        id: {
-            type: String,
-            required: true,
-        },
-    },
-    methods: {
-        getReservationDetail() {
-            // 模擬連接資料庫來獲取詳細資訊
-            console.log("Fetching reservation details for ID:", this.id);
-            // 實際上可以在此處調用 API 獲取數據，並更新 reservationRecord
-        },
-    },
-    mounted() {
-        this.getReservationDetail();
-    },
-};
+})
+
+const reservationRecord = ref({
+    id: '',
+    customerName: '',
+    stayDate: '',
+    paymentStatus: '',
+    totalAmount: '',
+    roomName: '',
+})
+
+const hostManagementStore = useHostManagementStore()
+
+const getReservationDetail = async () => {
+    try {
+        const data = await hostManagementStore.fetchReservationDetail(props.id) // 從後端 API 獲取預約詳細資料
+        Object.assign(reservationRecord.value, data) // 將數據綁定到 reservationRecord
+    } catch (error) {
+        console.error('獲取預約詳情失敗:', error)
+    }
+}
+
+onMounted(() => {
+    getReservationDetail() // 組件掛載時獲取預約詳細資料
+})
 </script>
 
 <style scoped>

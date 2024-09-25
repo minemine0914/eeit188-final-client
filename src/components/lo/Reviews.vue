@@ -2,7 +2,7 @@
     <v-container>
         <!-- 評價列表 -->
         <v-row>
-            <v-col v-for="review in reviews" :key="review.id" cols="12">
+            <v-col v-for="review in paginatedReviews" :key="review.id" cols="12">
                 <v-card>
                     <v-card-title>{{ review.guestName }}</v-card-title>
                     <v-card-subtitle>日期: {{ review.date }} | 評價: {{ review.rating }} 星</v-card-subtitle>
@@ -47,57 +47,8 @@
     </v-container>
 </template>
 
-<script>
-export default {
-    data() {
-        return {
-            reviews: [
-                {
-                    id: 1,
-                    guestName: '王五',
-                    date: '2024-09-15',
-                    rating: 5,
-                    comment: '非常棒的房東，房子乾淨整潔！',
-                },
-                {
-                    id: 2,
-                    guestName: '陳小明',
-                    date: '2024-09-10',
-                    rating: 4,
-                    comment: '整體不錯，但房間有些小問題。',
-                },
-            ],
-            page: 1,
-            itemsPerPage: 5,
-            showDialog: false,
-            selectedReview: {},
-        };
-    },
-    computed: {
-        paginatedReviews() {
-            const start = (this.page - 1) * this.itemsPerPage;
-            const end = this.page * this.itemsPerPage;
-            return this.reviews.slice(start, end);
-        },
-        totalPages() {
-            return Math.ceil(this.reviews.length / this.itemsPerPage);
-        },
-    },
-    methods: {
-        viewReviewDetails(id) {
-            const review = this.reviews.find((r) => r.id === id);
-            this.selectedReview = review || {};
-            this.showDialog = true;
-        },
-        closeDialog() {
-            this.showDialog = false;
-        },
-    },
-};
-</script>
+<script setup>
+import { ref, computed, onMounted } from 'vue'
+import { useHostManagementStore } from '@/stores/hostManagement'
 
-<style scoped>
-.v-card-title {
-    font-weight: bold;
-}
-</style>
+const hostManagementStore = useHostManag

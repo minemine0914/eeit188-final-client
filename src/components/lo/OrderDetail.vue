@@ -39,37 +39,40 @@
     </v-container>
 </template>
 
-<script>
-export default {
-    data() {
-        return {
-            orderRecord: {
-                id: '',
-                customerName: '李四',
-                stayDate: '2024-09-22',
-                paymentStatus: '已付款',
-                totalAmount: '2000',
-                roomName: '標準房型',
-            },
-        };
-    },
-    props: {
-        id: {
-            type: String,
-            required: true,
-        },
-    },
-    methods: {
-        getOrderDetail() {
-            // 模擬連接資料庫來獲取詳細資訊
-            console.log("Fetching order details for ID:", this.id);
-            // 實際上可以在此處調用 API 獲取數據，並更新 orderRecord
-        },
-    },
-    mounted() {
-        this.getOrderDetail();
-    },
-};
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useHostManagementStore } from '@/stores/hostManagement'
+
+const orderRecord = ref({
+  id: '',
+  customerName: '',
+  stayDate: '',
+  paymentStatus: '',
+  totalAmount: 0,
+  roomName: '',
+})
+
+const props = defineProps({
+  id: {
+    type: String,
+    required: true,
+  },
+})
+
+const hostManagementStore = useHostManagementStore()
+
+const getOrderDetail = async () => {
+  try {
+    const data = await hostManagementStore.fetchOrderDetail(props.id) // 從 API 獲取訂單詳細資料
+    Object.assign(orderRecord.value, data) // 將獲取的數據綁定到 orderRecord
+  } catch (error) {
+    console.error('無法獲取訂單詳情', error)
+  }
+}
+
+onMounted(() => {
+  getOrderDetail() // 在組件掛載時獲取訂單詳細資料
+})
 </script>
 
 <style scoped>
