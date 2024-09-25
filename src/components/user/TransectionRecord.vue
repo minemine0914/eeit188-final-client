@@ -13,7 +13,7 @@
       class="mx-auto mb-5 custom-card"
       color="grey-lighten-3"
       width="450"
-      min-height="150"
+      min-height="140"
     >
       <div class="content">
         <v-card-subtitle class="custom-subtitle">{{
