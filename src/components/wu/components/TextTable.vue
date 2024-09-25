@@ -1,6 +1,6 @@
 <!-- 房東和平台共用此component，故顯示內容需判斷權限 -->
 <template>
-    {{ click }}
+
     <v-card flat>
         <v-card-title class="d-flex align-center pe-2">
             <!-- *******************admin額外顯示查看的user(房東)資訊********************* -->
@@ -28,9 +28,10 @@
                 color="green"> 可吸菸
             </v-chip>
             <v-chip v-else variant="outlined" prepend-icon="mdi-smoking-off" color="red"> 禁止吸菸 </v-chip>
-
             <v-spacer />
         </v-card-title>
+
+        <v-card-subtitle>有{{ click }}人看過這間房源</v-card-subtitle>
 
         <v-card-title class="d-flex align-center pe-2">
             <v-text-field v-model="search" density="compact" label="Search" prepend-inner-icon="mdi-magnify"
@@ -77,10 +78,24 @@
 </template>
 <script setup>
 import { useHostReportStore } from '@/stores/hostReportStore';
-import { computed, ref } from 'vue';
+import { computed, ref, watch, onMounted } from 'vue';
 
 const store = useHostReportStore();
 const search = ref(''); // Using ref for reactivity in Vue 3 setup function
+// Function to fetch click count
+const click = ref(null)
+const fetchClickCount = async () => {
+    if (store.selectedHouseId) {
+        click.value = await store.getselectedHouseClick();
+    }
+};
+
+// Fetch click count on component mount
+onMounted(fetchClickCount);
+
+// Watch for changes in selectedHouseId
+watch(() => store.selectedHouseId, fetchClickCount);
+
 
 // Define the headers for the data table
 let headers = []
@@ -110,9 +125,6 @@ if (store.loginUser.role === 'normal') {
 }
 const itemsPerPage = 3 // Default items per page
 const itemsPerPageOptions = [3, 5, 10, 25, 50, 100, -1] // Options for per-page selector
-console.log('HHH', store.getHouseClick(store.selectedHouse))
-const click = computed(() => { store.getHouseClick(store.selectedHouse) })
-console.log('HHH', click)
 
 const currentUser = computed(() => {
     console.log('Fetching current user...');
