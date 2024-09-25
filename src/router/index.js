@@ -2,7 +2,8 @@ import { createWebHistory, createRouter, useRouter } from "vue-router";
 
 // Import your router
 import minemineRouter from "./minemine";
-import wuRouter from "./wu_host";
+import wuRouter_host from "./wu_host";
+// import wuRouter_platform from "./wu_platform";
 import kenjoRouter from "./kenjo";
 import leonRouter from "./leon";
 import loRouter from "./lo";
@@ -156,7 +157,7 @@ const routes = [
         component: () => import("@/components/lo/OrderDetail.vue"),
         props: true,
       },
-      wuRouter,
+      wuRouter_host,
     ],
   },
   {

@@ -1,10 +1,7 @@
 <!-- src/components/DataTable.vue -->
 <template>
     <div>
-
         <h2>查詢結果</h2>
-
-
         <div>
             <!-- Radio Buttons for selecting Month or Quarter -->
             <div>
@@ -52,17 +49,12 @@
             </div>
         </div>
 
-
-
-
-
     </div>
 </template>
 
 <script setup>
 import { watch } from 'vue';
 import { useHostReportStore } from '@/stores/hostReportStore';
-import DataTab from './DataTab.vue';
 
 const store = useHostReportStore()
 
