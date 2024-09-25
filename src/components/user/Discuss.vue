@@ -23,7 +23,7 @@
         }}</v-card-subtitle>
         <v-img
           class="main-img"
-          height="300"
+          height="280"
           :src="fetchImage(d?.externalResourceId)"
           @click="handleClick(d)"
         ></v-img>
@@ -37,6 +37,7 @@
         <v-rating
           v-model="score.scores[index]"
           class="ma-2"
+          color="warning"
           density="default"
         ></v-rating>
         <v-textarea v-model="d.discuss" label="評論"></v-textarea>
@@ -77,6 +78,7 @@ import { onMounted, reactive, ref } from "vue";
 import { useUserStore } from "../../stores/userStore";
 import api from "@/plugins/axios";
 import Swal from "sweetalert2";
+import notFoundImg from "@/assets/ImageNotAvailable02.webp";
 
 const userStore = useUserStore();
 const { user } = userStore;
@@ -165,7 +167,13 @@ const fetchScore = async () => {
 };
 
 const fetchImage = (id) => {
-  return import.meta.env.VITE_API_URL + `/house-external-resource/image/${id}`;
+  if (id) {
+    return (
+      import.meta.env.VITE_API_URL + `/house-external-resource/image/${id}`
+    );
+  } else {
+    return notFoundImg;
+  }
 };
 
 const updateDiscuss = async (discussId, discuss, houseId, score) => {
