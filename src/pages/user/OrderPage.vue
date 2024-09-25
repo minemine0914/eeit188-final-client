@@ -1,13 +1,19 @@
 <template>
   <div class="container">
-    <div class="login-container">
+    <div class="order-list">
+      <h1>未結帳</h1>
       <Order />
+    </div>
+    <div class="record-list">
+      <h1>已結帳</h1>
+      <TransectionRecord />
     </div>
   </div>
 </template>
 
 <script setup>
 import Order from "@/components/user/Order.vue";
+import TransectionRecord from "@/components/user/TransectionRecord.vue";
 </script>
 
 <style scoped>
@@ -17,8 +23,23 @@ import Order from "@/components/user/Order.vue";
   margin-top: 50px;
 }
 
-.login-container {
+.order-list {
+  display: flex;
+  flex-direction: column;
   text-align: center;
-  width: 40%;
+}
+
+.record-list {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+.record-list {
+  margin-left: 100px;
+}
+
+h1 {
+  margin-bottom: 30px;
 }
 </style>
