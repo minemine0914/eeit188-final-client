@@ -13,12 +13,20 @@
         single-line
         :style="{ width: '200px' }"
       ></v-text-field>
-      <!-- <v-btn color="primary" @click="openDialog">新增</v-btn> -->
+      <v-select
+        v-model="selectedMonth"
+        :items="months"
+        label="選擇月份"
+        @change="filterByMonth"
+        :style="{ width: '200px' }"
+      ></v-select><!-- <v-btn color="primary" @click="openDialog">新增</v-btn> -->
+
+
     </v-toolbar>
 
     <v-data-table
       :headers="headers"
-      :items="desserts"
+      :items="filteredDesserts"
       :search="search"
       :sort-by="[{ key: 'date', order: 'desc' }]">
       <template v-slot:item.actions="{ item }">
@@ -75,6 +83,8 @@ export default {
         { title: '訂單數量', value: 'orderQuantity' },
         { title: '總金額', value: 'totalAmount' },
         { title: '折扣金額', value: 'discountAmount' },
+        { title: '應付帳款', value: '' },
+        { title: '收益', value: '' },
         { text: '操作', value: 'actions', sortable: false },
       ],
       desserts: [],
@@ -85,10 +95,19 @@ export default {
         discountAmount: 0,
       },
       editedIndex: -1,
+      months: Array.from({ length: 12 }, (v, k) => k + 1), 
+      selectedMonth: null,
     };
   },
 
   computed: {
+    filteredDesserts() {
+      if (!this.selectedMonth) return this.desserts;
+      return this.desserts.filter(item => {
+        const itemDate = new Date(item.date);
+        return itemDate.getMonth() + 1 === this.selectedMonth; // 月份從0開始
+      });
+    },
     formTitle() {
       return this.editedIndex === -1 ? '新增訂單' : '編輯訂單';
     },
@@ -188,13 +207,18 @@ export default {
       this.close();
     },
   },
+  filterByMonth() {
+      
+    },
+
 
   mounted() {
+    
     this.fetchOrders();
   },
 };
 </script>
 
 <style scoped>
-/* Add any custom styles here */
+
 </style>

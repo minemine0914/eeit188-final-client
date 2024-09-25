@@ -23,7 +23,7 @@
       :items-per-page="5"
     >
       <template v-slot:header.id>
-        <div class="text-center">ID</div>
+        <div class="text-center">折扣碼</div>
       </template>
       <template v-slot:item.image="{ item }">
         <div class="text-center">
@@ -36,6 +36,9 @@
             ></v-img>
           </v-card>
         </div>
+      </template>
+      <template v-slot:header.name>
+        <div class="text-center">活動名稱</div>
       </template>
       <template v-slot:header.discountRate>
         <div class="text-center">折扣比率</div>
@@ -78,7 +81,10 @@
       :items-per-page="5"
     >
       <template v-slot:header.id>
-        <div class="text-center">ID</div>
+        <div class="text-center">優惠碼</div>
+      </template>
+      <template v-slot:header.name>
+        <div class="text-center">活動名稱</div>
       </template>
       <template v-slot:header.discount>
         <div class="text-center">折扣金額</div>
@@ -219,7 +225,8 @@ const defaultUserId = '4CDD827B-D94B-4AA4-9F55-338EBB4D1EE9';//預設ID
 
 
 const promotionHeaders = [
-  { text: '活動名稱', value: 'id' },
+  { text: '折扣碼', value: 'id' },
+  { text: '活動名稱', value: 'name' },
   { text: '折扣百分比', value: 'discountRate' },
   { text: '使用期限', value: 'expire' },
   { text: '創建日期', value: 'createdAt' },
@@ -228,6 +235,7 @@ const promotionHeaders = [
 
 const discountCodeHeaders = [
   { text: '優惠碼', value: 'id' },
+  { text: '活動名稱', value: 'name' },
   { text: '折扣金額', value: 'discount' },
   { text: '使用期限', value: 'expire' },
   { text: '創建日期', value: 'createdAt' },
