@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { computed, nextTick, reactive, ref } from "vue";
+import { nextTick, reactive, ref } from "vue";
 import api from "../plugins/axios";
 import { useRouter } from "vue-router";
 import { useUserStore } from "./userStore";
@@ -70,288 +70,414 @@ const initialSelfHouseDiscuss = {
 };
 
 const userStore = useUserStore();
-export const useHouseDetailStore = defineStore("HouseDetail", () => {
-    const router = useRouter();
-    const houseInfo = reactive({ ...initialHouseInfo });
-    const hostInfo = reactive({ ...initialHostInfo });
-    const selfHouseDiscuss = reactive({ ...initialSelfHouseDiscuss });
-    const previewDiscussList = reactive([]);
-    const discussList = reactive([]);
-    const totalDiscussCount = ref(0);
-    const currentDiscussPage = ref(0);
-    const isErrorGetHouseInfo = ref(false);
-    const isLoading = ref(true);
-    const isLoadingCollection = ref(false);
-    const isCollected = ref(false);
-    const isShareDialogOpen = ref(false);
-    const isDiscussDialogOpen = ref(false);
-    const isMoreDiscussesDialogOpen = ref(false);
-    const renderDiscussList = ref(true);
+export const useHouseDetailStore = defineStore(
+    "HouseDetail",
+    () => {
+        const router = useRouter();
+        const houseInfo = reactive({ ...initialHouseInfo });
+        const hostInfo = reactive({ ...initialHostInfo });
+        const selfHouseDiscuss = reactive({ ...initialSelfHouseDiscuss });
+        const previewDiscussList = reactive([]);
+        const discussList = reactive([]);
+        const totalDiscussCount = ref(0);
+        const currentDiscussPage = ref(0);
+        const isErrorGetHouseInfo = ref(false);
+        const isLoading = ref(true);
+        const isLoadingCollection = ref(false);
+        const isCollected = ref(false);
+        const isShareDialogOpen = ref(false);
+        const isDiscussDialogOpen = ref(false);
+        const isMoreDiscussesDialogOpen = ref(false);
+        const renderDiscussList = ref(true);
 
-    function resetHouseInfo() {
-        Object.assign(houseInfo, initialHouseInfo);
-    }
+        // Record booking list into localstorage
+        // (pinia plugin persistedstate could not use reactive!!)
+        const bookingList = ref([]);
 
-    function reloadDiscussList() {
-        currentDiscussPage.value = 0;
-        discussList.splice(0, discussList.length);
-        renderDiscussList.value = false;
-        nextTick();
-        renderDiscussList.value = true;
-    }
-
-    function getHouseDetailImage(index) {
-        const records = houseInfo.houseExternalResourceRecords;
-        // Sort records by createdAt culomn
-        records.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
-        let imageBaseUrl = import.meta.env.VITE_API_URL + "/house-external-resource/image/";
-        let imageSrc = null;
-        if (
-            typeof records === "undefined" ||
-            typeof records[index] === "undefined" ||
-            records[index] === null ||
-            records[index] === ""
-        ) {
-            imageSrc = NotAvailableImage;
-        } else {
-            imageSrc = imageBaseUrl + records[index].id;
+        function resetHouseInfo() {
+            Object.assign(houseInfo, initialHouseInfo);
         }
-        return imageSrc;
-    }
 
-    async function getHouseInfo(id) {
-        isLoading.value = true;
-        await api
-            .get(`/house/${id}`)
-            .then((res) => {
-                Object.assign(houseInfo, res.data);
-                isErrorGetHouseInfo.value = false;
-                isLoading.value = false;
-                console.log("Get houseInfo from database sucessed!");
-                checkIsCollectedHouse();
-                checkIsDiscussHouse();
-                getHostInfo();
-                getPreviewDiscussList();
-                getSelfHouseDiscuss();
-            })
-            .catch((err) => {
-                Object.assign(houseInfo, initialHouseInfo);
-                isErrorGetHouseInfo.value = true;
-                isLoading.value = false;
-                console.log("Get houseInfo from database failed! Take you to home page!");
-            });
-    }
-
-    async function getHostInfo() {
-        await api
-            .get(`/user/find/${houseInfo.userId}`)
-            .then((res) => {
-                console.log("Get host avater success");
-                Object.assign(hostInfo, res.data);
-            })
-            .catch((err) => {
-                Object.assign(hostInfo, initialHostInfo);
-                console.log("Get host avater failed");
-            });
-    }
-
-    async function getPreviewDiscussList() {
-        await api
-            .get(`/discuss/house/${houseInfo.id}`, { params: { pageNo: 0, pageSize: 4 } })
-            .then((res) => {
-                console.log("Get preview discuss success", res.data);
-                previewDiscussList.splice(0, previewDiscussList.length);
-                previewDiscussList.push(...res.data.discusses);
-                totalDiscussCount.value = res.data.totalElements;
-            })
-            .catch((err) => {
-                console.log("Get preview discuss failed");
-            });
-    }
-
-    async function getHouseDiscuss() {
-        let data = null;
-        await api
-            .get(`/discuss/house/${houseInfo.id}`, {
-                params: {
-                    pageNo: currentDiscussPage.value,
-                    pageSize: 10,
-                },
-            })
-            .then((res) => {
-                console.log("Get house discuss success");
-                data = res.data;
-            })
-            .catch((err) => {
-                // Object.assign(houseDiscuss, initialHuseDiscuss);
-                console.log("Get host avater failed");
-            });
-
-        return data;
-    }
-
-    async function getSelfHouseDiscuss() {
-        if (userStore.user.id !== null) {
-            await api
-                .get(`/discuss/user/${userStore.user.id}/${houseInfo.id}`)
-                .then((res) => {
-                    console.log("取得自己的評論成功", res.data.discuss, res.data.score);
-                    Object.assign(selfHouseDiscuss, res.data);
-                })
-                .catch((err) => {
-                    Object.assign(selfHouseDiscuss, initialSelfHouseDiscuss);
-                    console.log("取得自己的評論失敗，你沒有評論");
-                });
+        function reloadDiscussList() {
+            currentDiscussPage.value = 0;
+            discussList.splice(0, discussList.length);
+            renderDiscussList.value = false;
+            nextTick();
+            renderDiscussList.value = true;
         }
-    }
 
-    async function writeSelfHouseDiscuss() {
-        if (userStore.user.id !== null) {
-            await api
-                .post(`/discuss/`, {
-                    houseId: houseInfo.id,
-                    userId: userStore.user.id,
-                    score: selfHouseDiscuss.score,
-                    show: true,
-                    discuss: selfHouseDiscuss.discuss,
-                })
-                .then((res) => {
-                    console.log("評論成功");
-                })
-                .catch((err) => {
-                    console.log("評論失敗");
-                });
-            getSelfHouseDiscuss();
-            getPreviewDiscussList();
-            reloadDiscussList();
-        } else {
-            console.log("尚未登入，登入後再評論");
-            router.push("/login");
+        function getHouseDetailImage(index) {
+            const records = houseInfo.houseExternalResourceRecords;
+            // Sort records by createdAt culomn
+            records.sort(
+                (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+            );
+            let imageBaseUrl = import.meta.env.VITE_API_URL + "/house-external-resource/image/";
+            let imageSrc = null;
+            if (
+                typeof records === "undefined" ||
+                typeof records[index] === "undefined" ||
+                records[index] === null ||
+                records[index] === ""
+            ) {
+                imageSrc = NotAvailableImage;
+            } else {
+                imageSrc = imageBaseUrl + records[index].id;
+            }
+            return imageSrc;
         }
-    }
 
-    async function addHouseToCollection() {
-        isLoadingCollection.value = true;
-        if (typeof userStore.user.id !== "undefined") {
-            await api
-                .post("/user-collection/", {
-                    userId: userStore.user.id,
-                    houseId: houseInfo.id,
-                })
-                .then((res) => {
-                    console.log("Add house to collection success.", res);
-                    isCollected.value = true;
-                    isLoadingCollection.value = false;
-                })
-                .catch((err) => {
-                    console.log("Add house to collection failed.");
-                    isLoadingCollection.value = false;
-                });
-        } else {
-            console.log("You are not login! can't collect house.");
-        }
-    }
-
-    async function removeHouseToCollection() {
-        isLoadingCollection.value = true;
-        if (typeof userStore.user.id !== "undefined") {
-            await api
-                .post("/user-collection/delete", {
-                    userId: userStore.user.id,
-                    houseId: houseInfo.id,
-                })
-                .then((res) => {
-                    console.log("Remove house to collection success.", res);
-                    isCollected.value = false;
-                    isLoadingCollection.value = false;
-                })
-                .catch((err) => {
-                    console.log("Remove house to collection failed.");
-                    isLoadingCollection.value = false;
-                });
-        } else {
-            console.log("You are not login! can't collect house.");
-        }
-    }
-
-    async function checkIsCollectedHouse() {
-        isLoadingCollection.value = true;
-        if (userStore.user.id !== null) {
-            await api
-                .get("/user-collection/", {
-                    params: {
+        function addToBookingList() {
+            // check exists in list
+            if (houseInfo.id != null && userStore.user.id != null) {
+                let house = {
+                    id: houseInfo.id,
+                    name: houseInfo.name,
+                    resources: houseInfo.houseExternalResourceRecords,
+                };
+                let currentIndex = bookingList.value.findIndex(
+                    (list) => list.userId == userStore.user.id
+                );
+                if (currentIndex == -1) {
+                    bookingList.value.push({
                         userId: userStore.user.id,
-                        houseId: houseInfo.id,
+                        list: new Array(),
+                    });
+                    // Using bookingList.length - 1 to always target the last added user
+                    if (
+                        bookingList.value[bookingList.value.length - 1].list.filter(
+                            (house) => house.id == houseInfo.id
+                        ).length == 0
+                    ) {
+                        bookingList.value[bookingList.value.length - 1].list.push(house);
+                        console.log(
+                            `[HouseDetailStore] BookingList: 新增紀錄 房源(${house.name}) 使用者(${
+                                bookingList.value[bookingList.value.length - 1].userId
+                            })`
+                        );
+                    }
+                } else {
+                    if (
+                        bookingList.value[currentIndex].list.filter(
+                            (house) => house.id == houseInfo.id
+                        ).length == 0
+                    ) {
+                        bookingList.value[currentIndex].list.push(house);
+                        console.log(
+                            `[HouseDetailStore] BookingList: 新增紀錄 房源(${house.name}) 使用者(${
+                                bookingList.value[bookingList.value.length - 1].userId
+                            })`
+                        );
+                    }
+                }
+            }
+        }
+
+        // 取得當前使用者的BookingList
+        function getBookingList() {
+            let list = [];
+            if (houseInfo.id != null && userStore.user.id != null) {
+                let currentIndex = bookingList.value.findIndex(
+                    (list) => list.userId == userStore.user.id
+                );
+                if (currentIndex != -1) {
+                    list.push(...bookingList.value[currentIndex].list);
+                }
+            }
+            return list;
+        }
+
+        function removeBookingListById(id) {
+            if (houseInfo.id != null && userStore.user.id != null) {
+                let currentIndex = bookingList.value.findIndex(
+                    (list) => list.userId == userStore.user.id
+                );
+                if (currentIndex != -1) {
+                    if (
+                        bookingList.value[currentIndex].list.filter(
+                            (house) => house.id == houseInfo.id
+                        ).length == 0
+                    ) {
+                        let houseIndex = bookingList.value.findIndex((house) => house.id == id);
+                        bookingList.value[currentIndex].list.splice(houseIndex, 1);
+                        console.log(
+                            `[HouseDetailStore] BookingList: 刪除紀錄 房源(${house.name}) 使用者(${bookingList.value[currentIndex].userId})`
+                        );
+                    }
+                }
+            }
+        }
+
+        function cleanBookingList() {
+            if (houseInfo.id != null && userStore.user.id) {
+                let currentIndex = bookingList.value.findIndex(
+                    (list) => list.userId === userStore.user.id
+                );
+                if (currentIndex !== -1) {
+                    if (
+                        bookingList.value[currentIndex].list.filter(
+                            (house) => house.id === houseInfo.id
+                        ).length === 0
+                    ) {
+                        bookingList.value[currentIndex].list.splice(
+                            0,
+                            bookingList.value[currentIndex].list.length
+                        );
+                        console.log(
+                            `[HouseDetailStore] BookingList: 清除紀錄 使用者(${
+                                bookingList.value[bookingList.value.length - 1].userId
+                            })`
+                        );
+                    }
+                }
+            }
+        }
+
+        async function getHouseInfo(id) {
+            isLoading.value = true;
+            await api
+                .get(`/house/${id}`)
+                .then((res) => {
+                    Object.assign(houseInfo, res.data);
+                    isErrorGetHouseInfo.value = false;
+                    isLoading.value = false;
+                    console.log("[HouseDetailStore] Get houseInfo from database sucessed!");
+                    checkIsCollectedHouse();
+                    checkIsDiscussHouse();
+                    getHostInfo();
+                    getPreviewDiscussList();
+                    getSelfHouseDiscuss();
+                })
+                .catch((err) => {
+                    Object.assign(houseInfo, initialHouseInfo);
+                    isErrorGetHouseInfo.value = true;
+                    isLoading.value = false;
+                    console.log("[HouseDetailStore] Get houseInfo from database failed! Take you to home page!");
+                });
+        }
+
+        async function getHostInfo() {
+            await api
+                .get(`/user/find/${houseInfo.userId}`)
+                .then((res) => {
+                    console.log("[HouseDetailStore] Get host avater success");
+                    Object.assign(hostInfo, res.data);
+                })
+                .catch((err) => {
+                    Object.assign(hostInfo, initialHostInfo);
+                    console.log("[HouseDetailStore] Get host avater failed");
+                });
+        }
+
+        async function getPreviewDiscussList() {
+            await api
+                .get(`/discuss/house/${houseInfo.id}`, { params: { pageNo: 0, pageSize: 4 } })
+                .then((res) => {
+                    console.log("[HouseDetailStore] Get preview discuss success", res.data);
+                    previewDiscussList.splice(0, previewDiscussList.length);
+                    previewDiscussList.push(...res.data.discusses);
+                    totalDiscussCount.value = res.data.totalElements;
+                })
+                .catch((err) => {
+                    console.log("[HouseDetailStore] Get preview discuss failed");
+                });
+        }
+
+        async function getHouseDiscuss() {
+            let data = null;
+            await api
+                .get(`/discuss/house/${houseInfo.id}`, {
+                    params: {
+                        pageNo: currentDiscussPage.value,
+                        pageSize: 10,
                     },
                 })
                 .then((res) => {
-                    console.log("Check house collection success.");
-                    if (res.data.isCollected) {
+                    console.log("[HouseDetailStore] Get house discuss success");
+                    data = res.data;
+                })
+                .catch((err) => {
+                    // Object.assign(houseDiscuss, initialHuseDiscuss);
+                    console.log("[HouseDetailStore] Get host discuss failed");
+                });
+
+            return data;
+        }
+
+        async function getSelfHouseDiscuss() {
+            if (userStore.user.id !== null) {
+                await api
+                    .get(`/discuss/user/${userStore.user.id}/${houseInfo.id}`)
+                    .then((res) => {
+                        console.log("[HouseDetailStore] 取得自己的評論成功", res.data.score);
+                        Object.assign(selfHouseDiscuss, res.data);
+                    })
+                    .catch((err) => {
+                        console.log("[HouseDetailStore] 取得自己的評論失敗，你沒有評論");
+                        Object.assign(selfHouseDiscuss, initialSelfHouseDiscuss);
+                    });
+            }
+        }
+
+        async function writeSelfHouseDiscuss() {
+            if (userStore.user.id !== null) {
+                await api
+                    .post(`/discuss/`, {
+                        houseId: houseInfo.id,
+                        userId: userStore.user.id,
+                        score: selfHouseDiscuss.score,
+                        show: true,
+                        discuss: selfHouseDiscuss.discuss,
+                    })
+                    .then((res) => {
+                        console.log("[HouseDetailStore] 評論成功");
+                    })
+                    .catch((err) => {
+                        console.log("[HouseDetailStore] 評論失敗");
+                    });
+                getSelfHouseDiscuss();
+                getPreviewDiscussList();
+                reloadDiscussList();
+            } else {
+                console.log("[HouseDetailStore] 尚未登入，登入後再評論");
+                router.push("/login");
+            }
+        }
+
+        async function addHouseToCollection() {
+            isLoadingCollection.value = true;
+            if (typeof userStore.user.id !== "undefined") {
+                await api
+                    .post("/user-collection/", {
+                        userId: userStore.user.id,
+                        houseId: houseInfo.id,
+                    })
+                    .then((res) => {
+                        console.log("[HouseDetailStore] Add house to collection success.", res);
                         isCollected.value = true;
-                    } else {
+                        isLoadingCollection.value = false;
+                    })
+                    .catch((err) => {
+                        console.log("[HouseDetailStore] Add house to collection failed.");
+                        isLoadingCollection.value = false;
+                    });
+            } else {
+                console.log("[HouseDetailStore] You are not login! can't collect house.");
+            }
+        }
+
+        async function removeHouseToCollection() {
+            isLoadingCollection.value = true;
+            if (typeof userStore.user.id !== "undefined") {
+                await api
+                    .post("/user-collection/delete", {
+                        userId: userStore.user.id,
+                        houseId: houseInfo.id,
+                    })
+                    .then((res) => {
+                        console.log("[HouseDetailStore] Remove house to collection success.", res);
                         isCollected.value = false;
-                    }
-                    isLoadingCollection.value = false;
-                })
-                .catch((err) => {
-                    console.log("Check house collection failed.");
-                    isLoadingCollection.value = true;
-                });
-        } else {
-            console.log("You are not login! can't check collection.");
+                        isLoadingCollection.value = false;
+                    })
+                    .catch((err) => {
+                        console.log("[HouseDetailStore] Remove house to collection failed.");
+                        isLoadingCollection.value = false;
+                    });
+            } else {
+                console.log("[HouseDetailStore] You are not login! can't collect house.");
+            }
         }
-    }
 
-    async function checkIsDiscussHouse() {
-        if (userStore.user.id !== null) {
-            await api
-                .get(`/house/mongo/find/${userStore.user.id}/${houseInfo.id}`)
-                .then((res) => {
-                    console.log("Check house disscess success.");
-                    // if (res.data.isCollected) {
-                    //     isCollected.value = true;
-                    // } else {
-                    //     isCollected.value = false;
-                    // }
-                    // isLoadingCollection.value = false;
-                    // console.log(res.data);
-                })
-                .catch((err) => {
-                    console.log("Check house collection failed.");
-                    // isLoadingCollection.value = true;
-                });
-        } else {
-            console.log("You are not login! can't check discuss.");
+        async function checkIsCollectedHouse() {
+            isLoadingCollection.value = true;
+            if (userStore.user.id !== null) {
+                await api
+                    .get("/user-collection/", {
+                        params: {
+                            userId: userStore.user.id,
+                            houseId: houseInfo.id,
+                        },
+                    })
+                    .then((res) => {
+                        console.log("[HouseDetailStore] Check house collection success.");
+                        if (res.data.isCollected) {
+                            isCollected.value = true;
+                        } else {
+                            isCollected.value = false;
+                        }
+                        isLoadingCollection.value = false;
+                    })
+                    .catch((err) => {
+                        console.log("[HouseDetailStore] Check house collection failed.");
+                        isLoadingCollection.value = true;
+                    });
+            } else {
+                console.log("[HouseDetailStore] You are not login! can't check collection.");
+            }
         }
-    }
 
-    return {
-        houseInfo,
-        hostInfo,
-        selfHouseDiscuss,
-        discussList,
-        previewDiscussList,
-        currentDiscussPage,
-        totalDiscussCount,
-        isErrorGetHouseInfo,
-        isLoading,
-        isLoadingCollection,
-        isCollected,
-        isShareDialogOpen,
-        isDiscussDialogOpen,
-        isMoreDiscussesDialogOpen,
-        renderDiscussList,
-        resetHouseInfo,
-        reloadDiscussList,
-        getHouseDetailImage,
-        getHouseInfo,
-        getPreviewDiscussList,
-        getHouseDiscuss,
-        getSelfHouseDiscuss,
-        writeSelfHouseDiscuss,
-        addHouseToCollection,
-        removeHouseToCollection,
-        checkIsCollectedHouse,
-        checkIsDiscussHouse,
-    };
-});
+        async function checkIsDiscussHouse() {
+            if (userStore.user.id !== null) {
+                await api
+                    .get(`/house/mongo/find/${userStore.user.id}/${houseInfo.id}`)
+                    .then((res) => {
+                        console.log("[HouseDetailStore] Check house disscess success.");
+                        // if (res.data.isCollected) {
+                        //     isCollected.value = true;
+                        // } else {
+                        //     isCollected.value = false;
+                        // }
+                        // isLoadingCollection.value = false;
+                        // console.log(res.data);
+                    })
+                    .catch((err) => {
+                        console.log("[HouseDetailStore] Check house collection failed.");
+                        // isLoadingCollection.value = true;
+                    });
+            } else {
+                console.log("[HouseDetailStore] You are not login! can't check discuss.");
+            }
+        }
+
+        return {
+            houseInfo,
+            hostInfo,
+            selfHouseDiscuss,
+            discussList,
+            previewDiscussList,
+            currentDiscussPage,
+            totalDiscussCount,
+            isErrorGetHouseInfo,
+            isLoading,
+            isLoadingCollection,
+            isCollected,
+            isShareDialogOpen,
+            isDiscussDialogOpen,
+            isMoreDiscussesDialogOpen,
+            renderDiscussList,
+            bookingList,
+            resetHouseInfo,
+            reloadDiscussList,
+            getHouseDetailImage,
+            getHouseInfo,
+            getPreviewDiscussList,
+            getHouseDiscuss,
+            getSelfHouseDiscuss,
+            writeSelfHouseDiscuss,
+            addHouseToCollection,
+            removeHouseToCollection,
+            checkIsCollectedHouse,
+            checkIsDiscussHouse,
+            addToBookingList,
+            getBookingList,
+            removeBookingListById,
+            cleanBookingList,
+        };
+    },
+    {
+        // persist: true,
+        persist: {
+            pick: ["bookingList"],
+        },
+    }
+);

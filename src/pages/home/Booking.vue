@@ -435,6 +435,9 @@ onMounted(async () => {
         await houseDetailStore.getHouseInfo(route.params.houseId);
         if (isErrorGetHouseInfo.value) {
             router.push("/");
+        } else {
+            houseDetailStore.addToBookingList();
+            console.log("[Booking.vue] 當前User BookingList: ", houseDetailStore.getBookingList());
         }
     } else {
         // If Route params houseId not found

@@ -8,7 +8,6 @@
       <UserCollection v-if="selectedBtn === 5" />
       <Discuss v-if="selectedBtn === 6" />
       <DeleteUser v-if="selectedBtn === 7" />
-
     </div>
     <div class="avatar-container">
       <Avatar />
@@ -36,10 +35,10 @@
           :color="selectedBtn === 3 ? 'blue-grey-lighten-2' : ''"
           class="btn"
           @click="handleClick(3)"
+          to="/host"
         >
           管理房源
         </v-btn>
-
 
         <v-btn
           :color="selectedBtn === 4 ? 'blue-grey-lighten-2' : ''"
