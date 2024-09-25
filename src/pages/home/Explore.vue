@@ -38,7 +38,7 @@
                 <SearchHouseBar style="top: -100px" />
             </v-sheet>
             <!-- Hot Houses -->
-            <v-container fluid class="pa-0 my-5">
+            <v-container fluid class="px-0">
                 <v-sheet class="mb-3">
                     <div class="text-h5 font-weight-medium mx-9">熱門推薦</div>
                     <v-slide-group show-arrows>
@@ -47,7 +47,7 @@
                             v-for="n in 8"
                             :key="n"
                         >
-                            <v-card class="ma-2" height="360" min-width="320" elevation="0">
+                            <v-card height="360" min-width="320" elevation="0">
                                 <v-card-item class="pt-4">
                                     <v-sheet
                                         color="transparent"
@@ -80,7 +80,7 @@
                 </div>
             </v-parallax>
             <!-- Height rating houses -->
-            <v-container fluid class="pa-0 my-5">
+            <v-container fluid class="px-0">
                 <v-sheet class="mb-3">
                     <div class="text-h5 font-weight-medium mx-9">最新房源</div>
                     <v-slide-group show-arrows>
@@ -89,7 +89,7 @@
                             v-for="n in 8"
                             :key="n"
                         >
-                            <v-card class="ma-2" height="360" min-width="320" elevation="0">
+                            <v-card height="360" min-width="320" elevation="0">
                                 <v-card-item class="pt-4">
                                     <v-sheet
                                         color="transparent"
