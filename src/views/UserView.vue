@@ -70,7 +70,7 @@
               >查詢訂單</v-list-item
             >
             <v-list-item to="/host" prepend-icon="mdi-home-group-plus" slim
-              >成為房東</v-list-item
+              >{{user.houseCount > 0 ? "管理房源" : "成為房東"}}</v-list-item
             >
             <v-list-item to="/chat" prepend-icon="mdi-message-outline" slim
               >聯絡我們</v-list-item
