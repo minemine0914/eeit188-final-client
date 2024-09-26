@@ -4,7 +4,6 @@
       <!-- 房源名稱 -->
       <v-text-field label="房源名稱" v-model="property.name" required></v-text-field>
 
-      
       <!-- 房源類別 -->
       <v-select :items="categories" label="房源類別" v-model="property.category" required></v-select>
 
@@ -35,7 +34,6 @@
       <v-text-field label="每週價格" v-model="property.pricePerWeek" type="number"></v-text-field>
       <v-text-field label="每月價格" v-model="property.pricePerMonth" type="number"></v-text-field>
 
-
       <!-- 額外設置 -->
       <v-checkbox label="允許寵物" v-model="property.pet"></v-checkbox>
       <v-checkbox label="允許吸煙" v-model="property.smoke"></v-checkbox>
@@ -50,7 +48,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import { useHouseDetailStore } from '@/stores/houseDetailStore'
+import { useHostManagementStore } from '@/stores/hostManagementStore'
 
 const property = ref({
   name: '',
@@ -81,7 +79,7 @@ const countries = ['台灣', '日本', '美國']
 const cities = ['台北', '東京', '紐約']
 const districts = ['大安區', '澀谷區', '曼哈頓區']
 
-const houseDetailStore = useHouseDetailStore()
+const hostManagementStore = useHostManagementStore()
 
 const submitForm = async () => {
   try {
@@ -91,7 +89,16 @@ const submitForm = async () => {
     property.value.longitudeY = 121.5654
 
     // 發送表單資料到後端
-    await houseDetailStore.createProperty(property.value)
+    await hostManagementStore.addProperty(property.value)
+
+    // 處理圖片上傳
+    if (property.value.images.length > 0) {
+      const propertyId = hostManagementStore.properties[hostManagementStore.properties.length - 1].id
+      for (let image of property.value.images) {
+        await hostManagementStore.uploadPropertyImage(propertyId, image)
+      }
+    }
+    
     alert('房源已成功提交！')
   } catch (error) {
     console.error('提交失敗', error)

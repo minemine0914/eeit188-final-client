@@ -2,7 +2,7 @@
     <v-container>
         <!-- 評價列表 -->
         <v-row>
-            <v-col v-for="review in reviews" :key="review.id" cols="12">
+            <v-col v-for="review in paginatedReviews" :key="review.id" cols="12">
                 <v-card>
                     <v-card-title>{{ review.guestName }}</v-card-title>
                     <v-card-subtitle>日期: {{ review.date }} | 評價: {{ review.rating }} 星</v-card-subtitle>
@@ -47,53 +47,56 @@
     </v-container>
 </template>
 
-<script>
-export default {
-    data() {
-        return {
-            reviews: [
-                {
-                    id: 1,
-                    guestName: '王五',
-                    date: '2024-09-15',
-                    rating: 5,
-                    comment: '非常棒的房東，房子乾淨整潔！',
-                },
-                {
-                    id: 2,
-                    guestName: '陳小明',
-                    date: '2024-09-10',
-                    rating: 4,
-                    comment: '整體不錯，但房間有些小問題。',
-                },
-            ],
-            page: 1,
-            itemsPerPage: 5,
-            showDialog: false,
-            selectedReview: {},
-        };
-    },
-    computed: {
-        paginatedReviews() {
-            const start = (this.page - 1) * this.itemsPerPage;
-            const end = this.page * this.itemsPerPage;
-            return this.reviews.slice(start, end);
-        },
-        totalPages() {
-            return Math.ceil(this.reviews.length / this.itemsPerPage);
-        },
-    },
-    methods: {
-        viewReviewDetails(id) {
-            const review = this.reviews.find((r) => r.id === id);
-            this.selectedReview = review || {};
-            this.showDialog = true;
-        },
-        closeDialog() {
-            this.showDialog = false;
-        },
-    },
-};
+<script setup>
+import { ref, computed, onMounted } from 'vue'
+import { useHostManagementStore } from '@/stores/hostManagementStore'
+
+const hostManagementStore = useHostManagementStore()
+
+const reviews = ref([])
+const page = ref(1)
+const itemsPerPage = ref(5)
+const showDialog = ref(false)
+const selectedReview = ref({})
+
+// 計算分頁的評價
+const paginatedReviews = computed(() => {
+    const start = (page.value - 1) * itemsPerPage.value
+    const end = page.value * itemsPerPage.value
+    return reviews.value.slice(start, end)
+})
+
+// 計算總頁數
+const totalPages = computed(() => {
+    return Math.ceil(reviews.value.length / itemsPerPage.value)
+})
+
+// 獲取評價資料
+const fetchReviews = async () => {
+    try {
+        const data = await hostManagementStore.fetchReviews() // 從後端 API 獲取評價資料
+        reviews.value = data
+    } catch (error) {
+        console.error('獲取評價失敗:', error)
+    }
+}
+
+// 查看評價詳情
+const viewReviewDetails = (id) => {
+    const review = reviews.value.find(r => r.id === id)
+    selectedReview.value = review || {}
+    showDialog.value = true
+}
+
+// 關閉詳情彈窗
+const closeDialog = () => {
+    showDialog.value = false
+}
+
+// 在組件掛載時獲取評價資料
+onMounted(() => {
+    fetchReviews()
+})
 </script>
 
 <style scoped>
