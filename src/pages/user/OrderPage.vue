@@ -5,7 +5,7 @@
       <Order />
     </div>
     <div class="record-list">
-      <h1>已結帳</h1>
+      <h1>已結帳（歷史訂單）</h1>
       <TransectionRecord />
     </div>
   </div>
@@ -36,7 +36,7 @@ import TransectionRecord from "@/components/user/TransectionRecord.vue";
 }
 
 .record-list {
-  margin-left: 100px;
+  margin-left: 200px;
 }
 
 h1 {

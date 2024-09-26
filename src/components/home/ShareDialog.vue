@@ -3,7 +3,10 @@
         <template v-slot:default="{ isActive }">
             <v-card rounded="lg" min-width="500">
                 <v-card-title class="d-flex justify-space-between align-center">
-                    <div class="text-h5 text-medium-emphasis ps-2">分享房源</div>
+                    <div class="d-flex flex-row align-top">
+                        <v-icon icon="mdi-share-variant" color="light-green-darken-3"></v-icon>
+                        <div class="text-h6 text-medium-emphasis pl-2">分享房源</div>
+                    </div>
                     <v-btn icon="mdi-close" variant="text" @click="isActive.value = false"></v-btn>
                 </v-card-title>
                 <v-divider class="mb-4"></v-divider>

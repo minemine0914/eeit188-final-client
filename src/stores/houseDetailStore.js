@@ -234,11 +234,11 @@ export const useHouseDetailStore = defineStore(
                     isErrorGetHouseInfo.value = false;
                     isLoading.value = false;
                     console.log("[HouseDetailStore] Get houseInfo from database sucessed!");
-                    checkIsCollectedHouse();
-                    checkIsDiscussHouse();
-                    getHostInfo();
-                    getPreviewDiscussList();
-                    getSelfHouseDiscuss();
+                    // checkIsCollectedHouse();
+                    // checkIsDiscussHouse();
+                    // getHostInfo();
+                    // getPreviewDiscussList();
+                    // getSelfHouseDiscuss();
                 })
                 .catch((err) => {
                     Object.assign(houseInfo, initialHouseInfo);
@@ -454,6 +454,7 @@ export const useHouseDetailStore = defineStore(
             reloadDiscussList,
             getHouseDetailImage,
             getHouseInfo,
+            getHostInfo,
             getPreviewDiscussList,
             getHouseDiscuss,
             getSelfHouseDiscuss,
