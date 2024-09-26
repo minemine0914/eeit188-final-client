@@ -78,6 +78,17 @@ export const useHostReportStore = defineStore('hostReport', {
 
     },
     actions: {
+        // 0.找出所有host
+        async findAllHost() {
+            try {
+                const response = await api.get(`/user/find-hosts`);
+                this.users = response.data;
+                console.log('this.users', this.users)
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        },
+
         // 1.用host(user)找house
         async fetchHouses(userId) {
             try {
@@ -101,6 +112,44 @@ export const useHostReportStore = defineStore('hostReport', {
                     };
                 });
 
+                // House插入點擊數click
+                const click = await api.post('/house/mongo/count/all/click', {
+                    page: 0,
+                    limit: 1000,
+                    dir: true,
+                    order: "counts"
+                });
+
+                // Combine the arrays
+                const combinedClick = this.houses.map(item1 => {
+                    const item2 = click.data.content.find(item => item.houseId === item1.id);
+                    return {
+                        ...item1,
+                        click: item2 ? item2.counts : 0 // Add counts if found, otherwise default to 0
+                    };
+                });
+
+                this.houses = combinedClick
+
+                // House插入分享數share
+                const share = await api.post('/house/mongo/count/all/share', {
+                    page: 0,
+                    limit: 1000,
+                    dir: true,
+                    order: "counts"
+                });
+
+                // Combine the arrays
+                const combinedShare = this.houses.map(item1 => {
+                    const item2 = share.data.content.find(item => item.houseId === item1.id);
+                    return {
+                        ...item1,
+                        share: item2 ? item2.counts : 0 // Add counts if found, otherwise default to 0
+                    };
+                });
+
+                this.houses = combinedShare
+
                 console.log('tH1', this.houses)
                 //如果查詢結果為空，產生一個NO HOUSE結果
                 if (Object.keys(this.houses).length === 0) {
@@ -110,15 +159,10 @@ export const useHostReportStore = defineStore('hostReport', {
                 this.selectedHouseId = this.houses[0].id
 
                 console.log('tH', this.houses)
-                // House插入點擊數clicks
-                for (let i = 0; i < this.houses.length; i++) {
-                    if (!this.house[0].id) { break }
-                    console.log('inininin')
 
-                    this.houses[i].clicks = await this.getHouseClick(this.houses[i].id)
-                    console.log(this.houses[i].clicks)
-                    console.log(this.houses[i])
-                }
+
+
+                console.log('DDDD', click.data.content)
                 console.log('GGGGG', this.houses)
             } catch (error) {
                 console.error('Error fetching houses:', error);
@@ -326,9 +370,9 @@ export const useHostReportStore = defineStore('hostReport', {
             for (let i = 0; i < contentArray.length; i++) {
                 let score = 0
                 try {
-                    console.log('GOGO', contentArray[i].user.id, this.selectedHouseId)
+                    console.log('getScore(userId,HoouseId)', contentArray[i].user.id, this.selectedHouseId)
                     const response = await api.get(`/house/mongo/find/${contentArray[i].user.id}/${this.selectedHouseId}`);
-                    console.log('DDDDD', response)
+                    console.log('score', response)
                     if (response.data?.score) {
                         score = response.data.score
                     }
@@ -490,15 +534,7 @@ export const useHostReportStore = defineStore('hostReport', {
 
         },
 
-        async findAllUser() {
-            try {
-                const response = await api.get(`/user/find-users`);
-                this.users = response.data.users;
-                console.log('this.users', this.users)
-            } catch (error) {
-                console.error('Error fetching users:', error);
-            }
-        },
+
 
 
 

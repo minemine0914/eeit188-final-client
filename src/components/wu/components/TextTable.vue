@@ -10,9 +10,14 @@
             </template>
 
             <v-icon icon="mdi-home" />
-            房源名稱：{{ store.itemsSource[0]?.house.name }}[{{
-                `${store.itemsSource[0]?.house?.country}${store.itemsSource[0]?.house?.city}${store.itemsSource[0]?.house?.region}`
+            房源名稱：{{ store.itemsSource[0]?.house.name }}
+            <v-icon icon="mdi-home" />
+            位置：[{{
+                `${store.itemsSource[0]?.house?.country}${store.itemsSource[0]?.house?.city}${store.itemsSource[0]?.house?.region}${store.itemsSource[0]?.house?.address}`
             }}]
+        </v-card-title>
+
+        <v-card-title>
             <v-chip v-if="store.itemsSource[0]?.house?.bedroom" variant="outlined" prepend-icon="mdi-bed-outline">
                 臥房：{{ store.itemsSource[0]?.house?.bedroom }} </v-chip>
             <v-chip v-if="store.itemsSource[0]?.house?.restroom" variant="outlined" prepend-icon="mdi-toilet">
@@ -34,10 +39,11 @@
                 color="green"> 可吸菸
             </v-chip>
             <v-chip v-else variant="outlined" prepend-icon="mdi-smoking-off" color="red"> 禁止吸菸 </v-chip>
-            <v-spacer />
         </v-card-title>
 
         <v-card-subtitle>有{{ click }}人看過這間房源</v-card-subtitle>
+
+        <v-spacer />
 
         <v-card-title class="d-flex align-center pe-2">
             <v-text-field v-model="search" density="compact" label="Search" prepend-inner-icon="mdi-magnify"
@@ -62,8 +68,13 @@
             </template>
 
             <template v-slot:item.score="{ item }">
-                <v-rating :model-value="item.score" color="orange-darken-2" density="compact" size="small"
-                    readonly></v-rating>
+                <template v-if="item.score">
+                    <v-rating :model-value="item.score" color="orange-darken-2" density="compact" size="small"
+                        readonly></v-rating>
+                </template>
+                <template v-else>
+                    該用戶尚未評分
+                </template>
             </template>
 
             <template v-slot:item.pics="{ item }">
@@ -116,26 +127,26 @@ if (store.loginUser.role === 'normal') {
     headers = [
         { title: '訂單成立時間', value: 'createdAt', sortable: true },
         { title: '訂房者名稱', value: 'bookerName', sortable: true },
-        { title: '性別', value: 'formattedBookerGender', sortable: true },
-        { title: '金額', value: 'cashFlow', sortable: true },
+        { title: '性別', value: 'bookerGender', sortable: true },
+        { title: '金額', value: 'cashFlow', sortable: true, align: "end" },
         { title: '評分', value: 'score', sortable: true },
         // { title: '圖片', value: 'pics', sortable: false, width: '200px' }, // Disable sorting for pics
-        { title: '', value: '', sortable: false, width: '100px' }, // 空白欄 調整排版用
+        // { title: '', value: '', sortable: false, width: '100px' }, // 空白欄 調整排版用
     ];
 } else if (store.loginUser.role === 'admin') {
     headers = [
-        { title: '訂房者ID', value: 'bookerId', sortable: true },
-        { title: '付款時間', value: 'createdAt', sortable: true },
-        { title: '訂房者名稱', value: 'bookerName', sortable: true },
-        { title: '性別', value: 'formattedBookerGender', sortable: true },
-        { title: '平台收入', value: 'platformIncome', sortable: true },
-        { title: '金額', value: 'cashFlow', sortable: true },
-        { title: '評分', value: 'score', sortable: true },
+        { title: '訂房者ID', value: 'bookerId', sortable: true, width: '80px' },
+        { title: '訂單成立時間', value: 'createdAt', sortable: true, width: '210px' },
+        { title: '訂房者名稱', value: 'bookerName', sortable: true, width: '150px' },
+        { title: '性別', value: 'bookerGender', sortable: true, width: '100px' },
+        { title: '平台收入', value: 'platformIncome', sortable: true, width: '300px' },
+        { title: '金額', value: 'cashFlow', sortable: true, width: '100px' },
+        { title: '評分', value: 'score', sortable: true, width: '200px' },
         // { title: '圖片', value: 'pics', sortable: false, width: '200px' }, // Disable sorting for pics
-        { title: '', value: 'postulate', sortable: false, width: '100px' }, // 空白欄 調整排版用
+        // { title: '', value: 'postulate', sortable: false, width: '100px' }, // 空白欄 調整排版用
     ];
 }
-const itemsPerPage = 3 // Default items per page
+const itemsPerPage = 10 // Default items per page
 const itemsPerPageOptions = [3, 5, 10, 25, 50, 100, -1] // Options for per-page selector
 
 const currentUser = computed(() => {
@@ -161,7 +172,7 @@ const items = computed(() => {
             (item.user?.id && item.user.id.toLowerCase().includes(searchLower)) ||
             (item.cashFlow.toString().includes(searchLower)) ||
             (item.createdAt.includes(searchLower)) ||
-            (item.userGender && item.userGender.toLowerCase().includes(searchLower)) // Add other fields as needed
+            (item.userGender && item.userGender.includes(searchLower)) // Add other fields as needed
         );
     }
 
@@ -190,7 +201,11 @@ const items = computed(() => {
             'cashFlow': item?.cashFlow,
             'platformIncome': item.platformIncome,
             'createdAt': new Date(item?.createdAt),
-            'formattedCreatedAt': new Date(item?.createdAt).toLocaleString(),
+            'formattedCreatedAt': `${new Date(item.createdAt).getFullYear()}年${String(new Date(item.createdAt).getMonth() + 1).padStart(2,
+                '0')}月${String(new Date(item.createdAt).getDate()).padStart(2, '0')}日 ${String(new
+                    Date(item.createdAt).getHours()).padStart(2, '0')}:${String(new
+                        Date(item.createdAt).getMinutes()).padStart(2, '0')}:${String(new
+                            Date(item.createdAt).getSeconds()).padStart(2, '0')}`,
             'score': item?.houseScore,
             'pics': store.pics,
             'postulate': '',
