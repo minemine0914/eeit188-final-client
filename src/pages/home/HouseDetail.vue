@@ -139,7 +139,7 @@
                 </v-sheet>
                 <v-divider class="border-opacity-25 my-5"></v-divider>
                 <v-sheet min-height="100">
-                    <div class="text-h6 mb-3">設施</div>
+                    <div class="text-h6 mb-3">房源設施</div>
                     <v-skeleton-loader type="chip, chip, chip" v-if="isLoading" />
                     <v-sheet class="d-flex flex-row flex-wrap w-100 ga-3" v-else>
                         <v-sheet v-if="houseInfo.postulates.length === 0" class="w-100 text-center">
@@ -274,7 +274,11 @@
                                         to="/chat"
                                     >
                                         <template v-slot:prepend>
-                                            <v-icon icon="mdi-message-outline" class="pl-3" size="small"></v-icon>
+                                            <v-icon
+                                                icon="mdi-message-outline"
+                                                class="pl-3"
+                                                size="small"
+                                            ></v-icon>
                                         </template>
                                         <template v-slot:default>
                                             <div class="text-caption">傳送訊息</div>
@@ -297,19 +301,22 @@
                         <div class="d-flex flex-grow-1 text-h6 mb-3 justify-end align-top">
                             <v-btn
                                 variant="text"
-                                size="default"
+                                size="large"
                                 rounded="pill"
+                                density="compact"
                                 @click="onClickDiscuss"
                             >
                                 <template v-slot:prepend>
                                     <v-icon icon="mdi-message-draw" color="brown"></v-icon>
                                 </template>
-                                {{
-                                    selfHouseDiscuss.houseId === null &&
-                                    selfHouseDiscuss.userId === null
-                                        ? "立即評價"
-                                        : "修改評價"
-                                }}
+                                <span>
+                                    {{
+                                        selfHouseDiscuss.houseId === null &&
+                                        selfHouseDiscuss.userId === null
+                                            ? "立即評價"
+                                            : "修改評價"
+                                    }}
+                                </span>
                             </v-btn>
                         </div>
                     </v-sheet>
@@ -465,6 +472,14 @@ onMounted(async () => {
         // If Route params houseId found
         console.log("Found houseId in url param: " + route.params.houseId);
         await houseDetailStore.getHouseInfo(route.params.houseId);
+        // when houseInfo loaded, then get something need houseId...
+        await Promise.all([
+            houseDetailStore.checkIsCollectedHouse(),
+            houseDetailStore.checkIsDiscussHouse(),
+            houseDetailStore.getHostInfo(),
+            houseDetailStore.getPreviewDiscussList(),
+            houseDetailStore.getSelfHouseDiscuss(),
+        ]);
         if (isErrorGetHouseInfo.value) {
             router.push("/");
         }
