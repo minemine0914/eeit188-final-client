@@ -76,7 +76,7 @@
                 <div class="d-flex flex-column fill-height justify-center align-center text-white">
                     <h1 class="text-h4 font-weight-black mb-4 opacity-80">分享您的空間</h1>
                     <h4 class="subheading font-weight-regular">為大家提供舒適的住宿體驗</h4>
-                    <v-btn variant="outlined" class="mt-5">立即加入</v-btn>
+                    <v-btn variant="outlined" class="mt-5" to="/host">立即加入</v-btn>
                 </div>
             </v-parallax>
             <!-- Height rating houses -->
