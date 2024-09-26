@@ -52,10 +52,10 @@
         </template>
 
         <!-- ****************should get individual scores******************* -->
-        <template v-slot:item.score="{ item }">
-            <v-rating :model-value="calculateAverageScore()" color="orange-darken-2" density="compact" size="small"
+        <template v-slot:item.averageScore="{ item }">
+            <v-rating :model-value="item.averageScore" color="orange-darken-2" density="compact" size="small"
                 readonly></v-rating>
-            {{ calculateAverageScore() }}
+            {{ item.averageScore }}
         </template>
     </v-data-table>
 
@@ -94,7 +94,7 @@ const headers = [
     { title: '', value: 'review', sortable: true },
     { title: '建立時間', value: 'createdAt', sortable: true },
     { title: '最後修改時間', value: 'updatedAt', sortable: true },
-    { title: '平均評分', value: 'score', sortable: true },
+    { title: '平均評分', value: 'averageScore', sortable: true },
     { title: '', value: '', sortable: false, width: '100px' }, // 空白欄 調整排版用
 ];
 
@@ -119,18 +119,6 @@ const getStatusText = (review) => {
             return '確認中';
     }
 }
-
-const calculateAverageScore = () => {
-    if (store.records.length === 0) return 0; // Avoid division by zero
-
-    const totalScore = store.records.reduce((sum, entry) => sum + entry.houseScore, 0);
-    const averageScore = totalScore / store.records.length;
-
-    return averageScore;
-}
-
-const average = calculateAverageScore(store.records);
-console.log("Average House Score:", average);
 
 const update = async () => {
     store.selectedHouseId = store.selectedHouseId[0]

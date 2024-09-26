@@ -85,12 +85,23 @@ export const useHostReportStore = defineStore('hostReport', {
                 if (userId) {
                     this.loginUser.id = userId
                 }
-                const response = await api.post('/house/search', {
+                const response = await api.post('/house/mongo/scores/average-of-user', {
                     userId: this.loginUser.id,
                     page: 0,
-                    limit: 1000
+                    limit: 1000,
+                    dir: true,
+                    order: "averageScore"
                 });
-                this.houses = response.data.content;
+
+                this.houses = response.data.content.map(item => {
+                    const { houseDetails, averageScore } = item;
+                    return {
+                        ...houseDetails,
+                        averageScore: averageScore
+                    };
+                });
+
+                console.log('tH1', this.houses)
                 //如果查詢結果為空，產生一個NO HOUSE結果
                 if (Object.keys(this.houses).length === 0) {
                     this.houses = [{ id: '', name: 'NO HOUSES' }]
