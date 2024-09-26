@@ -13,15 +13,23 @@
         single-line
         :style="{ width: '200px' }"
       ></v-text-field>
+    </v-toolbar>
+    <v-toolbar>
+      <v-select
+        v-model="selectedYear"
+        :items="years"
+        label="選擇年份"
+        @change="filterByYear"
+        :style="{ width: '200px' }"
+      ></v-select>
       <v-select
         v-model="selectedMonth"
         :items="months"
         label="選擇月份"
         @change="filterByMonth"
         :style="{ width: '200px' }"
-      ></v-select><!-- <v-btn color="primary" @click="openDialog">新增</v-btn> -->
-
-
+      ></v-select>
+      <v-btn color="primary" @click="clearFilters">查詢全部訂單</v-btn>
     </v-toolbar>
 
     <v-data-table
@@ -33,9 +41,6 @@
         <v-icon size="small" @click="editItem(item)">
           mdi-eye
         </v-icon>
-        <!-- <v-icon size="small" @click="deleteItem(item)">
-          mdi-delete
-        </v-icon> -->
       </template>
     </v-data-table>
 
@@ -47,17 +52,23 @@
         <v-card-text>
           <v-container>
             <v-row>
-              <v-col cols="12" md="6">
+              <v-col cols="12">
                 <v-text-field v-model="editedItem.date" label="日期"></v-text-field>
               </v-col>
-              <v-col cols="12" md="6">
+              <v-col cols="12">
                 <v-text-field v-model="editedItem.orderQuantity" label="訂單數量" readonly></v-text-field>
               </v-col>
-              <v-col cols="12" md="6">
+              <v-col cols="12">
                 <v-text-field v-model="editedItem.totalAmount" label="總金額" readonly></v-text-field>
               </v-col>
-              <v-col cols="12" md="6">
+              <v-col cols="12">
                 <v-text-field v-model="editedItem.discountAmount" label="折扣金額" readonly></v-text-field>
+              </v-col>
+              <v-col cols="12">
+                <v-text-field v-model="editedItem.AP" label="應付帳款" readonly></v-text-field>
+              </v-col>
+              <v-col cols="12">
+                <v-text-field v-model="editedItem.R" label="收益" readonly></v-text-field>
               </v-col>
             </v-row>
           </v-container>
@@ -73,6 +84,8 @@
 </template>
 
 <script>
+const currentYear = new Date().getFullYear(); // 獲取當前年份
+const currentMonth = new Date().getMonth() + 1; // 獲取當前月份 
 export default {
   data() {
     return {
@@ -83,8 +96,8 @@ export default {
         { title: '訂單數量', value: 'orderQuantity' },
         { title: '總金額', value: 'totalAmount' },
         { title: '折扣金額', value: 'discountAmount' },
-        { title: '應付帳款', value: '' },
-        { title: '收益', value: '' },
+        { title: '應付帳款', value: 'AP' },
+        { title: '收益', value: 'R' },
         { text: '操作', value: 'actions', sortable: false },
       ],
       desserts: [],
@@ -96,16 +109,19 @@ export default {
       },
       editedIndex: -1,
       months: Array.from({ length: 12 }, (v, k) => k + 1), 
-      selectedMonth: null,
+      years: Array.from({ length: 10 }, (v, k) => new Date().getFullYear() -5 + k),//區間為getFullYear-5  ~  getFullYear+5
+      selectedMonth: currentMonth, // 預設為當前月份
+      selectedYear: currentYear,// 預設為當前年份
     };
   },
 
   computed: {
     filteredDesserts() {
-      if (!this.selectedMonth) return this.desserts;
       return this.desserts.filter(item => {
         const itemDate = new Date(item.date);
-        return itemDate.getMonth() + 1 === this.selectedMonth; // 月份從0開始
+        const yearMatch = this.selectedYear ? (itemDate.getFullYear() === this.selectedYear) : true;
+        const monthMatch = this.selectedMonth ? (itemDate.getMonth() + 1 === this.selectedMonth) : true;
+        return yearMatch && monthMatch;
       });
     },
     formTitle() {
@@ -114,62 +130,53 @@ export default {
   },
 
   methods: {
-    fetchOrders() {
-      fetch('http://localhost:8080/transcation_record/all')
-        .then(response => response.json())
-        .then(data => {
-          const combinedData = {};
-          data.content.forEach(item => {
-            console.log('Item createdAt:', item.createdAt); // 日誌輸出
+    async fetchOrders() {
+      try {
+        const response = await fetch('http://localhost:8080/transcation_record/all');
+        const data = await response.json();
+        const combinedData = {};
+        data.content.forEach(item => {
+          const date = new Date(item.createdAt);
+          if (isNaN(date)) {
+            console.error('Invalid date:', item.createdAt);
+            return;
+          }
 
-            const date = new Date(item.createdAt);
-            if (isNaN(date)) {
-              console.error('Invalid date:', item.createdAt); // 如果日期無效，輸出錯誤
-              return;
-            }
+          const formattedDate = date.toISOString().split('T')[0];
+          const cashFlow = parseFloat(item.cashFlow) || 0;
 
-            const formattedDate = date.toISOString().split('T')[0];
-            const cashFlow = parseFloat(item.cashFlow) || 0;
+          let discount = 0;
+          if (item.user && item.user.coupons) {
+            item.user.coupons.forEach(coupon => {
+              if (coupon.discount) {
+                discount += coupon.discount;
+              }
+              if (coupon.discountRate) {
+                discount += (cashFlow * coupon.discountRate) / 100;
+              }
+            });
+          }
 
-            // 計算折扣金額
-            let discount = 0;
-            if (item.user && item.user.coupons) {
-              console.log('Coupons for this item:', item.user.coupons);
-              item.user.coupons.forEach(coupon => {
-                console.log(`Processing coupon: ${JSON.stringify(coupon)}`);
-                if (coupon.discount) {
-                  discount += coupon.discount; // 添加固定折扣
-                  console.log(`Added fixed discount: ${coupon.discount}`);
-                }
-                if (coupon.discountRate) {
-                  const rateDiscount = (cashFlow * coupon.discountRate) / 100;
-                  discount += rateDiscount; // 添加折扣率
-                  console.log(`Added percentage discount: ${rateDiscount}`);
-                }
-              });
-            } else {
-              console.log('No coupons found for this item.');
-            }
-
-            console.log(`Total discount for this item: ${discount}`);
-
-            if (!combinedData[formattedDate]) {
-              combinedData[formattedDate] = {
-                date: formattedDate,
-                orderQuantity: 0,
-                totalAmount: 0,
-                discountAmount: 0,
-              };
-            }
-            combinedData[formattedDate].orderQuantity += 1; // 計算每個日期的訂單數量
-            combinedData[formattedDate].totalAmount += cashFlow; // 計算每個日期的總金額
-            combinedData[formattedDate].discountAmount += discount; // 計算每個日期的折扣金額
-          });
-          this.desserts = Object.values(combinedData);
-        })
-        .catch(error => {
-          console.error('Error fetching orders:', error);
+          if (!combinedData[formattedDate]) {
+            combinedData[formattedDate] = {
+              date: formattedDate,
+              orderQuantity: 0,
+              totalAmount: 0,
+              discountAmount: 0,
+              AP: 0,
+              R: 0
+            };
+          }
+          combinedData[formattedDate].orderQuantity += 1;
+          combinedData[formattedDate].totalAmount += (cashFlow * 1.1);
+          combinedData[formattedDate].discountAmount += discount;
+          combinedData[formattedDate].AP += cashFlow;
+          combinedData[formattedDate].R += ((cashFlow * 0.1) - discount); 
         });
+        this.desserts = Object.values(combinedData);
+      } catch (error) {
+        console.error('Error fetching orders:', error);
+      }
     },
 
     openDialog() {
@@ -206,19 +213,25 @@ export default {
       }
       this.close();
     },
-  },
-  filterByMonth() {
-      
+
+    filterByMonth() {
+      this.filteredDesserts;
     },
 
-
+    filterByYear() {
+      this.filteredDesserts;
+    },
+  
+    clearFilters() {
+      this.selectedYear = new Date().getFullYear(); // 重置為當前年份
+      this.selectedMonth = new Date().getMonth() + 1; // 重置為當前月份
+    },
+  },  
   mounted() {
-    
     this.fetchOrders();
   },
 };
 </script>
 
 <style scoped>
-
 </style>
