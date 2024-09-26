@@ -1,6 +1,6 @@
 <!-- 房東和平台共用此component，故顯示內容需判斷權限 -->
 <template>
-    {{ click }}
+
     <v-card flat>
         <v-card-title class="d-flex align-center pe-2">
             <!-- *******************admin額外顯示查看的user(房東)資訊********************* -->
@@ -10,16 +10,27 @@
             </template>
 
             <v-icon icon="mdi-home" />
-            房源名稱：{{ store.itemsSource[0]?.house.name }}[{{
-                `${store.itemsSource[0]?.house?.country}${store.itemsSource[0]?.house?.city}${store.itemsSource[0]?.house?.region}`
+            房源名稱：{{ store.itemsSource[0]?.house.name }}
+            <v-icon icon="mdi-home" />
+            位置：[{{
+                `${store.itemsSource[0]?.house?.country}${store.itemsSource[0]?.house?.city}${store.itemsSource[0]?.house?.region}${store.itemsSource[0]?.house?.address}`
             }}]
+        </v-card-title>
+
+        <v-card-title>
             <v-chip v-if="store.itemsSource[0]?.house?.bedroom" variant="outlined" prepend-icon="mdi-bed-outline">
                 臥房：{{ store.itemsSource[0]?.house?.bedroom }} </v-chip>
+            <v-chip v-if="store.itemsSource[0]?.house?.restroom" variant="outlined" prepend-icon="mdi-toilet">
+                洗手間：{{ store.itemsSource[0]?.house?.restroom }} </v-chip>
             <v-chip v-if="store.itemsSource[0]?.house?.bathroom" variant="outlined" prepend-icon="mdi-shower-head">
-                衛浴：{{ store.itemsSource[0]?.house?.bathroom }} </v-chip>
-            <v-chip v-if="store.itemsSource[0]?.house?.balcony" variant="outlined" prepend-icon="mdi-balcony"> 陽台
+                浴室：{{ store.itemsSource[0]?.house?.bathroom }} </v-chip>
+            <v-chip variant="outlined" prepend-icon="mdi-balcony"
+                :color="store.itemsSource[0]?.house?.balcony ? 'green' : 'red'">
+                {{ store.itemsSource[0]?.house?.balcony ? '附設陽台' : '無陽台' }}
             </v-chip>
-            <v-chip v-if="store.itemsSource[0]?.house?.kitchen" variant="outlined" prepend-icon="mdi-gas-burner"> 廚房
+            <v-chip variant="outlined" prepend-icon="mdi-gas-burner"
+                :color="store.itemsSource[0]?.house?.kitchen ? 'green' : 'red'">
+                {{ store.itemsSource[0]?.house?.kitchen ? '附設廚房' : '無廚房' }}
             </v-chip>
             <v-chip v-if="store.itemsSource[0]?.house?.pet" variant="outlined" prepend-icon="mdi-paw" color="green">
                 可攜帶寵物 </v-chip>
@@ -28,9 +39,11 @@
                 color="green"> 可吸菸
             </v-chip>
             <v-chip v-else variant="outlined" prepend-icon="mdi-smoking-off" color="red"> 禁止吸菸 </v-chip>
-
-            <v-spacer />
         </v-card-title>
+
+        <v-card-subtitle>有{{ click }}人看過這間房源</v-card-subtitle>
+
+        <v-spacer />
 
         <v-card-title class="d-flex align-center pe-2">
             <v-text-field v-model="search" density="compact" label="Search" prepend-inner-icon="mdi-magnify"
@@ -53,6 +66,17 @@
             <template v-slot:item.createdAt="{ item }">
                 {{ item.formattedCreatedAt }} <!-- Display formatted date -->
             </template>
+
+            <template v-slot:item.score="{ item }">
+                <template v-if="item.score">
+                    <v-rating :model-value="item.score" color="orange-darken-2" density="compact" size="small"
+                        readonly></v-rating>
+                </template>
+                <template v-else>
+                    該用戶尚未評分
+                </template>
+            </template>
+
             <template v-slot:item.pics="{ item }">
                 <div style="display:grid ;grid-template-columns: 1fr 1fr;">
                     <v-card v-if="Math.floor(Math.random() * 10) % 2" class="my-2" elevation="2" rounded>
@@ -77,42 +101,53 @@
 </template>
 <script setup>
 import { useHostReportStore } from '@/stores/hostReportStore';
-import { computed, ref } from 'vue';
+import { computed, ref, watch, onMounted } from 'vue';
 
 const store = useHostReportStore();
 const search = ref(''); // Using ref for reactivity in Vue 3 setup function
+// Function to fetch click count
+const click = ref(null)
+const fetchClickCount = async () => {
+    if (store.selectedHouseId) {
+        click.value = await store.getselectedHouseClick();
+    }
+};
+
+// Fetch click count on component mount
+onMounted(fetchClickCount);
+
+// Watch for changes in selectedHouseId
+watch(() => store.selectedHouseId, fetchClickCount);
+
 
 // Define the headers for the data table
 let headers = []
 // 平台和房東共用此表格，先判定登入者權限，再決定顯示那些欄位
 if (store.loginUser.role === 'normal') {
     headers = [
-        { title: '付款時間', value: 'createdAt', sortable: true },
+        { title: '訂單成立時間', value: 'createdAt', sortable: true },
         { title: '訂房者名稱', value: 'bookerName', sortable: true },
-        { title: '性別', value: 'formattedBookerGender', sortable: true },
-        { title: '金額', value: 'cashFlow', sortable: true },
+        { title: '性別', value: 'bookerGender', sortable: true },
+        { title: '金額', value: 'cashFlow', sortable: true, align: "end" },
         { title: '評分', value: 'score', sortable: true },
         // { title: '圖片', value: 'pics', sortable: false, width: '200px' }, // Disable sorting for pics
-        { title: '', value: '', sortable: false, width: '100px' }, // 空白欄 調整排版用
+        // { title: '', value: '', sortable: false, width: '100px' }, // 空白欄 調整排版用
     ];
 } else if (store.loginUser.role === 'admin') {
     headers = [
-        { title: '訂房者ID', value: 'bookerId', sortable: true },
-        { title: '付款時間', value: 'createdAt', sortable: true },
-        { title: '訂房者名稱', value: 'bookerName', sortable: true },
-        { title: '性別', value: 'formattedBookerGender', sortable: true },
-        { title: '平台收入', value: 'platformIncome', sortable: true },
-        { title: '金額', value: 'cashFlow', sortable: true },
-        { title: '評分', value: 'score', sortable: true },
+        { title: '訂房者ID', value: 'bookerId', sortable: true, width: '80px' },
+        { title: '訂單成立時間', value: 'createdAt', sortable: true, width: '210px' },
+        { title: '訂房者名稱', value: 'bookerName', sortable: true, width: '150px' },
+        { title: '性別', value: 'bookerGender', sortable: true, width: '100px' },
+        { title: '平台收入', value: 'platformIncome', sortable: true, width: '300px' },
+        { title: '金額', value: 'cashFlow', sortable: true, width: '100px' },
+        { title: '評分', value: 'score', sortable: true, width: '200px' },
         // { title: '圖片', value: 'pics', sortable: false, width: '200px' }, // Disable sorting for pics
-        { title: '', value: 'postulate', sortable: false, width: '100px' }, // 空白欄 調整排版用
+        // { title: '', value: 'postulate', sortable: false, width: '100px' }, // 空白欄 調整排版用
     ];
 }
-const itemsPerPage = 3 // Default items per page
+const itemsPerPage = 10 // Default items per page
 const itemsPerPageOptions = [3, 5, 10, 25, 50, 100, -1] // Options for per-page selector
-console.log('HHH', store.getHouseClick(store.selectedHouse))
-const click = computed(() => { store.getHouseClick(store.selectedHouse) })
-console.log('HHH', click)
 
 const currentUser = computed(() => {
     console.log('Fetching current user...');
@@ -137,7 +172,7 @@ const items = computed(() => {
             (item.user?.id && item.user.id.toLowerCase().includes(searchLower)) ||
             (item.cashFlow.toString().includes(searchLower)) ||
             (item.createdAt.includes(searchLower)) ||
-            (item.userGender && item.userGender.toLowerCase().includes(searchLower)) // Add other fields as needed
+            (item.userGender && item.userGender.includes(searchLower)) // Add other fields as needed
         );
     }
 
@@ -163,10 +198,14 @@ const items = computed(() => {
             'bookerName': item.user?.name,
             'bookerGender': item.userGender,
             'formattedBookerGender': formatBookerGender(item.userGender),
-            'cashFlow': `$${item?.cashFlow}`,
-            'platformIncome': `$${item.platformIncome}`,
+            'cashFlow': item?.cashFlow,
+            'platformIncome': item.platformIncome,
             'createdAt': new Date(item?.createdAt),
-            'formattedCreatedAt': new Date(item?.createdAt).toLocaleString(),
+            'formattedCreatedAt': `${new Date(item.createdAt).getFullYear()}年${String(new Date(item.createdAt).getMonth() + 1).padStart(2,
+                '0')}月${String(new Date(item.createdAt).getDate()).padStart(2, '0')}日 ${String(new
+                    Date(item.createdAt).getHours()).padStart(2, '0')}:${String(new
+                        Date(item.createdAt).getMinutes()).padStart(2, '0')}:${String(new
+                            Date(item.createdAt).getSeconds()).padStart(2, '0')}`,
             'score': item?.houseScore,
             'pics': store.pics,
             'postulate': '',

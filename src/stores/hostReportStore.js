@@ -13,7 +13,7 @@ export const useHostReportStore = defineStore('hostReport', {
             name: 'UserName123',
         },
         // loginUser: 'f27a7b80-4d60-44cf-aa1c-9b44dd375698',
-        selectedHouse: '',
+        selectedHouseId: '',
         selectedUserId: '',
         selectedUserIndex: 0,
 
@@ -75,8 +75,20 @@ export const useHostReportStore = defineStore('hostReport', {
             }
             return output
         },
+
     },
     actions: {
+        // 0.找出所有host
+        async findAllHost() {
+            try {
+                const response = await api.get(`/user/find-hosts`);
+                this.users = response.data;
+                console.log('this.users', this.users)
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        },
+
         // 1.用host(user)找house
         async fetchHouses(userId) {
             try {
@@ -84,19 +96,74 @@ export const useHostReportStore = defineStore('hostReport', {
                 if (userId) {
                     this.loginUser.id = userId
                 }
-                const response = await api.post('/house/search', {
+                const response = await api.post('/house/mongo/scores/average-of-user', {
                     userId: this.loginUser.id,
                     page: 0,
-                    limit: 1000
+                    limit: 1000,
+                    dir: true,
+                    order: "averageScore"
                 });
-                this.houses = response.data.content;
+
+                this.houses = response.data.content.map(item => {
+                    const { houseDetails, averageScore } = item;
+                    return {
+                        ...houseDetails,
+                        averageScore: averageScore
+                    };
+                });
+
+                // House插入點擊數click
+                const click = await api.post('/house/mongo/count/all/click', {
+                    page: 0,
+                    limit: 1000,
+                    dir: true,
+                    order: "counts"
+                });
+
+                // Combine the arrays
+                const combinedClick = this.houses.map(item1 => {
+                    const item2 = click.data.content.find(item => item.houseId === item1.id);
+                    return {
+                        ...item1,
+                        click: item2 ? item2.counts : 0 // Add counts if found, otherwise default to 0
+                    };
+                });
+
+                this.houses = combinedClick
+
+                // House插入分享數share
+                const share = await api.post('/house/mongo/count/all/share', {
+                    page: 0,
+                    limit: 1000,
+                    dir: true,
+                    order: "counts"
+                });
+
+                // Combine the arrays
+                const combinedShare = this.houses.map(item1 => {
+                    const item2 = share.data.content.find(item => item.houseId === item1.id);
+                    return {
+                        ...item1,
+                        share: item2 ? item2.counts : 0 // Add counts if found, otherwise default to 0
+                    };
+                });
+
+                this.houses = combinedShare
+
+                console.log('tH1', this.houses)
                 //如果查詢結果為空，產生一個NO HOUSE結果
                 if (Object.keys(this.houses).length === 0) {
                     this.houses = [{ id: '', name: 'NO HOUSES' }]
                 }
                 //指定第一筆資料做顯示
-                this.selectedHouse = this.houses[0].id
+                this.selectedHouseId = this.houses[0].id
 
+                console.log('tH', this.houses)
+
+
+
+                console.log('DDDD', click.data.content)
+                console.log('GGGGG', this.houses)
             } catch (error) {
                 console.error('Error fetching houses:', error);
             }
@@ -104,16 +171,17 @@ export const useHostReportStore = defineStore('hostReport', {
 
         // 2.列出找到的house，找出有資料的頭尾年分
         async fetchTransactionRecordsStartingValue(year, month, quarter) {
-            if (!this.selectedHouse) {
+            if (!this.selectedHouseId) {
                 this.records = []
                 return
             }
 
             try {
+                console.log('currentHouseID', this.selectedHouseId)
                 //default
                 let minCreatedAt = new Date(0)
                 let maxCreatedAt = new Date()
-                const houseId = this.selectedHouse
+                const houseId = this.selectedHouseId
 
                 let body = {
                     houseId,
@@ -147,17 +215,17 @@ export const useHostReportStore = defineStore('hostReport', {
                     this.selectedYear = this.years[this.years.length - 1]
                 }
             } catch (error) {
-                console.error('Error fetching users:', error);
+                console.error('Error fetching tx-records:', error);
             }
         },
 
         // 3.找出所有交易紀錄(和交易過的user)
         async fetchTransactionRecords(year, month, quarter) {
             //log*******************
-            console.log('this.selectedHouse', this.selectedHouse)
+            console.log('this.selectedHouseId', this.selectedHouseId)
             //log*******************
-            if (!this.selectedHouse) {
-                console.log('NO selectedHouse')
+            if (!this.selectedHouseId) {
+                console.log('NO selectedHouseId')
                 this.records = []
                 return
             }
@@ -167,7 +235,7 @@ export const useHostReportStore = defineStore('hostReport', {
                 console.log('year', year)
                 let minCreatedAt = year ? new Date(year, 0, 1) : new Date(0)
                 let maxCreatedAt = year ? new Date(parseInt(year) + 1, 0, 1) : new Date()
-                const houseId = this.selectedHouse
+                const houseId = this.selectedHouseId
                 //log**********
                 console.log('minCA:', minCreatedAt)
                 //log***************
@@ -187,14 +255,21 @@ export const useHostReportStore = defineStore('hostReport', {
                 const response = await api.post(`/transcation_record/search`, body);
                 console.log('response.data', response.data)
 
+                // 4.1 修正回傳值TxRecord只有ID的問題，TxRecord ID->TxRecord物件
                 let transformedRecords = await this.searchRecordAgainByRecordId(response.data.content);
+                // 4.2.1 修正house只有ID的問題，House ID->House物件
                 for (let item of transformedRecords) { item.house = await this.searchHouseAgainByRecordId(item.house); }
+                // 4.2.2 修正user只有ID的問題，User ID->User物件
+                for (let item of transformedRecords) { item.user = await this.searchUserAgainByRecordId(item.user); }
+                // 4.3 把CreatedAt的時間拆開成不同object，方便篩選
                 transformedRecords = await this.separateCreatedAt(transformedRecords)
+                // 4.4 查詢評分
                 transformedRecords = await this.getScore(transformedRecords)
                 console.log('transformedRecords', transformedRecords)
 
                 this.records = transformedRecords;
 
+                // 資料輸出格式
                 //YMDC={Year: yyyy, Month: MM, Date: dd, cashFlow: $$$}
 
                 //YMD={yyyy:
@@ -208,14 +283,6 @@ export const useHostReportStore = defineStore('hostReport', {
                 //    2024: [...], ...}
 
                 //Y={2023: $$$, 2024: $$$, ...}
-
-                // if (this.selectedPeriod === 'year') {
-                //     this.useTestYMDC('Y')
-                // } else if (this.selectedPeriod === 'month') {
-                //     this.useTestYMDC('YM')
-                // } else if (this.selectedPeriod === 'quarter') {
-                //     this.useTestYMDC('YQ')
-                // }
 
                 if (this.selectedPeriod === 'year') {
                     this.turnToY()
@@ -247,13 +314,27 @@ export const useHostReportStore = defineStore('hostReport', {
             return transformedArray.filter(item => item); // Filter out undefined values
         },
 
-        // 4.2 修正house只有ID的問題，House ID->House物件
+        // 4.2.1 修正house只有ID的問題，House ID->House物件
         async searchHouseAgainByRecordId(element) {
             if (typeof element === 'object' && !Array.isArray(element)) {
                 return element;
             } else if (typeof element === 'string') {
                 try {
                     const response = await api.get(`/house/${element}`);
+                    return response.data;
+                } catch (error) {
+                    console.error('Error fetching record by ID:', error);
+                }
+            }
+        },
+
+        // 4.2.2 修正user只有ID的問題，House ID->House物件
+        async searchUserAgainByRecordId(element) {
+            if (typeof element === 'object' && !Array.isArray(element)) {
+                return element;
+            } else if (typeof element === 'string') {
+                try {
+                    const response = await api.get(`/user/find/${element}`);
                     return response.data;
                 } catch (error) {
                     console.error('Error fetching record by ID:', error);
@@ -284,14 +365,14 @@ export const useHostReportStore = defineStore('hostReport', {
             return contentArray
         },
 
-        // 4.4
+        // 4.4 查詢評分
         async getScore(contentArray) {
             for (let i = 0; i < contentArray.length; i++) {
                 let score = 0
                 try {
-                    console.log('GOGO', contentArray[i].user.id, this.selectedHouse)
-                    const response = await api.get(`/house/mongo/find/${contentArray[i].user.id}/${this.selectedHouse}`);
-                    console.log('DDDDD', response)
+                    console.log('getScore(userId,HoouseId)', contentArray[i].user.id, this.selectedHouseId)
+                    const response = await api.get(`/house/mongo/find/${contentArray[i].user.id}/${this.selectedHouseId}`);
+                    console.log('score', response)
                     if (response.data?.score) {
                         score = response.data.score
                     }
@@ -301,178 +382,6 @@ export const useHostReportStore = defineStore('hostReport', {
                 contentArray[i].houseScore = score
             }
             return contentArray
-
-
-
-
-
-
-
-        },
-
-        useTestYMDC(callWhich) {
-            let testArr = [
-                {
-                    "year": 2024,
-                    "month": 3,
-                    'date': 2,
-                    "cashFlow": 100
-                },
-                {
-                    "year": 2024,
-                    "month": 3,
-                    'date': 12,
-                    "cashFlow": 100
-                },
-                {
-                    "year": 2024,
-                    "month": 9,
-                    'date': 2,
-                    "cashFlow": 10
-                },
-                {
-                    "year": 2024,
-                    "month": 9,
-                    'date': 22,
-                    "cashFlow": 10
-                },
-                {
-                    "year": 2024,
-                    "month": 9,
-                    'date': 13,
-                    "cashFlow": 1
-                },
-                {
-                    "year": 2024,
-                    "month": 9,
-                    'date': 5,
-                    "cashFlow": 100
-                },
-                {
-                    "year": 2024,
-                    "month": 9,
-                    'date': 8,
-                    "cashFlow": 100
-                },
-                {
-                    "year": 2024,
-                    "month": 9,
-                    'date': 27,
-                    "cashFlow": 1000
-                },
-                {
-                    "year": 2024,
-                    "month": 9,
-                    'date': 10,
-                    "cashFlow": 1
-                },
-                {
-                    "year": 2024,
-                    "month": 9,
-                    'date': 26,
-                    "cashFlow": 1000
-                },
-                {
-                    "year": 2024,
-                    "month": 9,
-                    'date': 2,
-                    "cashFlow": 100
-                },
-                {
-                    "year": 2024,
-                    "month": 9,
-                    'date': 4,
-                    "cashFlow": 10
-                },
-                {
-                    "year": 2024,
-                    "month": 9,
-                    'date': 4,
-                    "cashFlow": 100
-                },
-                {
-                    "year": 2024,
-                    "month": 9,
-                    'date': 6,
-                    "cashFlow": 1000
-                },
-                {
-                    "year": 2024,
-                    "month": 9,
-                    'date': 29,
-                    "cashFlow": 1000
-                },
-                {
-                    "year": 2024,
-                    "month": 9,
-                    'date': 2,
-                    "cashFlow": 100
-                },
-                {
-                    "year": 2024,
-                    "month": 9,
-                    'date': 2,
-                    "cashFlow": 1000
-                },
-                {
-                    "year": 2024,
-                    "month": 9,
-                    'date': 2,
-                    "cashFlow": 10
-                },
-                {
-                    "year": 2024,
-                    "month": 4,
-                    'date': 2,
-                    "cashFlow": 100
-                },
-                {
-                    "year": 2023,
-                    "month": 6,
-                    'date': 2,
-                    "cashFlow": 100
-                },
-                {
-                    "year": 2023,
-                    "month": 9,
-                    'date': 2,
-                    "cashFlow": 100
-                },
-                {
-                    "year": 2024,
-                    "month": 8,
-                    'date': 2,
-                    "cashFlow": 10
-                },
-                {
-                    "year": 2023,
-                    "month": 5,
-                    'date': 2,
-                    "cashFlow": 1
-                },
-                {
-                    "year": 2023,
-                    "month": 6,
-                    'date': 2,
-                    "cashFlow": 10
-                },
-                {
-                    "year": 2024,
-                    "month": 8,
-                    'date': 2,
-                    "cashFlow": 1
-                }
-            ]
-            if (callWhich === 'YMD') {
-                return this.turnToYMD(testArr)
-            } else if (callWhich === 'YM') {
-                return this.turnToYM(testArr)
-            } else if (callWhich === 'YQ') {
-                return this.turnToYQ(testArr)
-            } else if (callWhich === 'Y') {
-                return this.turnToY(testArr)
-            }
-
         },
 
         turnToYMD(YMDC) {
@@ -555,7 +464,6 @@ export const useHostReportStore = defineStore('hostReport', {
             });
             // console.log('YQ', this.recordsPrapared);
             return result
-
         },
 
         turnToY(YMDC) {
@@ -605,27 +513,195 @@ export const useHostReportStore = defineStore('hostReport', {
             return this.users.find(user => user.id === userId) || null;
         },
 
+        // for houses
         async getHouseClick(houseId) {
             try {
                 const response = await api.post(`/house/mongo/count/click`, { "houseId": houseId });
-                console.log('EEEE', response)
-                return response
+                console.log('gethouseclickresponse', response.data)
+                return response.data
             } catch (error) {
                 console.error('Error fetching users:', error);
             }
             return 0
         },
 
-        async findAllUser() {
-            try {
-                const response = await api.get(`/user/find-users`);
-                this.users = response.data.users;
-                console.log('this.users', this.users)
-            } catch (error) {
-                console.error('Error fetching users:', error);
-            }
+        // get click only
+        async getselectedHouseClick() {
+
+            const response = await api.post(`house/mongo/count/click`, { houseId: this.selectedHouseId });
+            console.log('HGGHHGHGHGH', response.data)
+            return response.data
+
         },
 
+
+
+
+
+        // useTestYMDC(callWhich) {
+        //     let testArr = [
+        //         {
+        //             "year": 2024,
+        //             "month": 3,
+        //             'date': 2,
+        //             "cashFlow": 100
+        //         },
+        //         {
+        //             "year": 2024,
+        //             "month": 3,
+        //             'date': 12,
+        //             "cashFlow": 100
+        //         },
+        //         {
+        //             "year": 2024,
+        //             "month": 9,
+        //             'date': 2,
+        //             "cashFlow": 10
+        //         },
+        //         {
+        //             "year": 2024,
+        //             "month": 9,
+        //             'date': 22,
+        //             "cashFlow": 10
+        //         },
+        //         {
+        //             "year": 2024,
+        //             "month": 9,
+        //             'date': 13,
+        //             "cashFlow": 1
+        //         },
+        //         {
+        //             "year": 2024,
+        //             "month": 9,
+        //             'date': 5,
+        //             "cashFlow": 100
+        //         },
+        //         {
+        //             "year": 2024,
+        //             "month": 9,
+        //             'date': 8,
+        //             "cashFlow": 100
+        //         },
+        //         {
+        //             "year": 2024,
+        //             "month": 9,
+        //             'date': 27,
+        //             "cashFlow": 1000
+        //         },
+        //         {
+        //             "year": 2024,
+        //             "month": 9,
+        //             'date': 10,
+        //             "cashFlow": 1
+        //         },
+        //         {
+        //             "year": 2024,
+        //             "month": 9,
+        //             'date': 26,
+        //             "cashFlow": 1000
+        //         },
+        //         {
+        //             "year": 2024,
+        //             "month": 9,
+        //             'date': 2,
+        //             "cashFlow": 100
+        //         },
+        //         {
+        //             "year": 2024,
+        //             "month": 9,
+        //             'date': 4,
+        //             "cashFlow": 10
+        //         },
+        //         {
+        //             "year": 2024,
+        //             "month": 9,
+        //             'date': 4,
+        //             "cashFlow": 100
+        //         },
+        //         {
+        //             "year": 2024,
+        //             "month": 9,
+        //             'date': 6,
+        //             "cashFlow": 1000
+        //         },
+        //         {
+        //             "year": 2024,
+        //             "month": 9,
+        //             'date': 29,
+        //             "cashFlow": 1000
+        //         },
+        //         {
+        //             "year": 2024,
+        //             "month": 9,
+        //             'date': 2,
+        //             "cashFlow": 100
+        //         },
+        //         {
+        //             "year": 2024,
+        //             "month": 9,
+        //             'date': 2,
+        //             "cashFlow": 1000
+        //         },
+        //         {
+        //             "year": 2024,
+        //             "month": 9,
+        //             'date': 2,
+        //             "cashFlow": 10
+        //         },
+        //         {
+        //             "year": 2024,
+        //             "month": 4,
+        //             'date': 2,
+        //             "cashFlow": 100
+        //         },
+        //         {
+        //             "year": 2023,
+        //             "month": 6,
+        //             'date': 2,
+        //             "cashFlow": 100
+        //         },
+        //         {
+        //             "year": 2023,
+        //             "month": 9,
+        //             'date': 2,
+        //             "cashFlow": 100
+        //         },
+        //         {
+        //             "year": 2024,
+        //             "month": 8,
+        //             'date': 2,
+        //             "cashFlow": 10
+        //         },
+        //         {
+        //             "year": 2023,
+        //             "month": 5,
+        //             'date': 2,
+        //             "cashFlow": 1
+        //         },
+        //         {
+        //             "year": 2023,
+        //             "month": 6,
+        //             'date': 2,
+        //             "cashFlow": 10
+        //         },
+        //         {
+        //             "year": 2024,
+        //             "month": 8,
+        //             'date': 2,
+        //             "cashFlow": 1
+        //         }
+        //     ]
+        //     if (callWhich === 'YMD') {
+        //         return this.turnToYMD(testArr)
+        //     } else if (callWhich === 'YM') {
+        //         return this.turnToYM(testArr)
+        //     } else if (callWhich === 'YQ') {
+        //         return this.turnToYQ(testArr)
+        //     } else if (callWhich === 'Y') {
+        //         return this.turnToY(testArr)
+        //     }
+
+        // },
 
     }
 });

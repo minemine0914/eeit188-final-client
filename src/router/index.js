@@ -3,7 +3,6 @@ import { createWebHistory, createRouter, useRouter } from "vue-router";
 // Import your router
 import minemineRouter from "./minemine";
 import wuRouter_host from "./wu_host";
-// import wuRouter_platform from "./wu_platform";
 import kenjoRouter from "./kenjo";
 import leonRouter from "./leon";
 import loRouter from "./lo";
@@ -157,7 +156,7 @@ const routes = [
         component: () => import("@/components/lo/OrderDetail.vue"),
         props: true,
       },
-      wuRouter_host,
+      // wuRouter_host,
     ],
   },
   {
@@ -233,7 +232,7 @@ const routes = [
     component: () => import("@/views/NotFound.vue"),
   },
   minemineRouter,
-
+  wuRouter_host,
   leonRouter,
   loRouter,
 ];

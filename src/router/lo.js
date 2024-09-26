@@ -52,7 +52,7 @@ const router = {
             component: () => import('@/components/lo/OrderDetail.vue'),
             props: true
         },
-        wuRouter,
+        // wuRouter,
     ],
 };
 
