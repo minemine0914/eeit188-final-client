@@ -232,7 +232,7 @@ const routes = [
     component: () => import("@/views/NotFound.vue"),
   },
   minemineRouter,
-  wuRouter_host,
+  // wuRouter_host,
   leonRouter,
   loRouter,
 ];
