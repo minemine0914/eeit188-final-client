@@ -1,4 +1,4 @@
-import wuRouter from "./wu_platform";
+import wuRouter from "./wu_host";
 
 const router = {
     path: '/lo',

@@ -38,16 +38,16 @@
                 <SearchHouseBar style="top: -100px" />
             </v-sheet>
             <!-- Hot Houses -->
-            <v-container fluid class="pa-0 my-5">
+            <v-container fluid class="px-0">
                 <v-sheet class="mb-3">
-                    <div class="text-h5 font-weight-medium mx-15">熱門推薦</div>
+                    <div class="text-h5 font-weight-medium mx-9">熱門推薦</div>
                     <v-slide-group show-arrows>
                         <v-slide-group-item
                             v-if="hotHouseList.length === 0"
                             v-for="n in 8"
                             :key="n"
                         >
-                            <v-card class="ma-2" height="360" min-width="320" elevation="0">
+                            <v-card height="360" min-width="320" elevation="0">
                                 <v-card-item class="pt-4">
                                     <v-sheet
                                         color="transparent"
@@ -80,16 +80,16 @@
                 </div>
             </v-parallax>
             <!-- Height rating houses -->
-            <v-container fluid class="pa-0 my-5">
+            <v-container fluid class="px-0">
                 <v-sheet class="mb-3">
-                    <div class="text-h5 font-weight-medium mx-15">最新房源</div>
+                    <div class="text-h5 font-weight-medium mx-9">最新房源</div>
                     <v-slide-group show-arrows>
                         <v-slide-group-item
                             v-if="hotHouseList.length === 0"
                             v-for="n in 8"
                             :key="n"
                         >
-                            <v-card class="ma-2" height="360" min-width="320" elevation="0">
+                            <v-card height="360" min-width="320" elevation="0">
                                 <v-card-item class="pt-4">
                                     <v-sheet
                                         color="transparent"
@@ -114,7 +114,7 @@
                 </v-sheet>
             </v-container>
             <!-- Explore all houses -->
-            <v-container fluid class="my-5">
+            <v-container fluid class="mb-5">
                 <div class="text-h5 font-weight-medium mx-5">探索房源</div>
                 <v-row justify="start" align="start">
                     <template v-for="exploreHouse in allHouseList" :key="exploreHouse.id">

@@ -1,7 +1,7 @@
 <template>
   <v-container>
+    <!-- 統計卡片 -->
     <v-row>
-      <!-- 統計卡片 -->
       <v-col cols="12" md="4">
         <v-card>
           <v-card-title>可用房源</v-card-title>
@@ -45,11 +45,11 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useHouseDetailStore } from '@/stores/houseDetailStore'
+import { useHostManagementStore } from '@/stores/hostManagementStore'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
-const houseDetailStore = useHouseDetailStore()
+const hostManagementStore = useHostManagementStore()
 
 // 統計數據
 const availableProperties = ref(0)
@@ -68,11 +68,15 @@ const headers = [
 
 // 取得房源列表並更新統計數據
 onMounted(async () => {
-  const propertyList = await houseDetailStore.fetchAllProperties()
-  properties.value = propertyList
-  availableProperties.value = propertyList.filter(p => p.status === 'available').length
-  bookedProperties.value = propertyList.filter(p => p.status === 'booked').length
-  totalProperties.value = propertyList.length
+  try {
+    const propertyList = await hostManagementStore.fetchAllProperties()
+    properties.value = propertyList
+    availableProperties.value = propertyList.filter(p => p.status === 'available').length
+    bookedProperties.value = propertyList.filter(p => p.status === 'booked').length
+    totalProperties.value = propertyList.length
+  } catch (error) {
+    console.error('獲取房源失敗:', error)
+  }
 })
 
 // 編輯房源
@@ -83,8 +87,8 @@ const editItem = (item) => {
 // 刪除房源
 const deleteItem = async (item) => {
   try {
-    await houseDetailStore.deleteProperty(item.id)
-    const propertyList = await houseDetailStore.fetchAllProperties()
+    await hostManagementStore.deleteProperty(item.id)
+    const propertyList = await hostManagementStore.fetchAllProperties()
     properties.value = propertyList
     availableProperties.value = propertyList.filter(p => p.status === 'available').length
     bookedProperties.value = propertyList.filter(p => p.status === 'booked').length
@@ -93,11 +97,6 @@ const deleteItem = async (item) => {
     console.error('刪除失敗:', error)
     alert('刪除失敗，請稍後再試')
   }
-}
-
-// 新增房源導航
-const navigateToAddProperty = () => {
-  router.push({ name: 'AddProperty' })
 }
 </script>
 

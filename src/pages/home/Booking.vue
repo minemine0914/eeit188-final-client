@@ -377,6 +377,8 @@ async function checkPayment() {
                     checkDetail(true); // 視窗關閉後執行
                 }
             }, 500); // 每0.5秒檢查一次
+            // 移除待結帳清單 (BookingList)
+            houseDetailStore.removeBookingList();
         })
         .catch((error) => {
             console.error("Error creating order:", error);

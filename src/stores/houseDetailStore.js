@@ -187,21 +187,19 @@ export const useHouseDetailStore = defineStore(
             return list;
         }
 
-        function removeBookingListById(id) {
+        function removeBookingList() {
             if (houseInfo.id != null && userStore.user.id != null) {
                 let currentIndex = bookingList.value.findIndex(
                     (list) => list.userId == userStore.user.id
                 );
                 if (currentIndex != -1) {
-                    if (
-                        bookingList.value[currentIndex].list.filter(
-                            (house) => house.id == houseInfo.id
-                        ).length == 0
-                    ) {
-                        let houseIndex = bookingList.value.findIndex((house) => house.id == id);
+                    let houseIndex = bookingList.value[currentIndex].list.findIndex(
+                        (house) => house.id == houseInfo.id
+                    );
+                    if (houseIndex != -1) {
                         bookingList.value[currentIndex].list.splice(houseIndex, 1);
                         console.log(
-                            `[HouseDetailStore] BookingList: 刪除紀錄 房源(${house.name}) 使用者(${bookingList.value[currentIndex].userId})`
+                            `[HouseDetailStore] BookingList: 刪除紀錄 房源(${houseInfo.name}) 使用者(${bookingList.value[currentIndex].userId})`
                         );
                     }
                 }
@@ -214,21 +212,15 @@ export const useHouseDetailStore = defineStore(
                     (list) => list.userId === userStore.user.id
                 );
                 if (currentIndex !== -1) {
-                    if (
-                        bookingList.value[currentIndex].list.filter(
-                            (house) => house.id === houseInfo.id
-                        ).length === 0
-                    ) {
-                        bookingList.value[currentIndex].list.splice(
-                            0,
-                            bookingList.value[currentIndex].list.length
-                        );
-                        console.log(
-                            `[HouseDetailStore] BookingList: 清除紀錄 使用者(${
-                                bookingList.value[bookingList.value.length - 1].userId
-                            })`
-                        );
-                    }
+                    bookingList.value[currentIndex].list.splice(
+                        0,
+                        bookingList.value[currentIndex].list.length
+                    );
+                    console.log(
+                        `[HouseDetailStore] BookingList: 清除紀錄 使用者(${
+                            bookingList.value[bookingList.value.length - 1].userId
+                        })`
+                    );
                 }
             }
         }
@@ -252,7 +244,9 @@ export const useHouseDetailStore = defineStore(
                     Object.assign(houseInfo, initialHouseInfo);
                     isErrorGetHouseInfo.value = true;
                     isLoading.value = false;
-                    console.log("[HouseDetailStore] Get houseInfo from database failed! Take you to home page!");
+                    console.log(
+                        "[HouseDetailStore] Get houseInfo from database failed! Take you to home page!"
+                    );
                 });
         }
 
@@ -470,7 +464,7 @@ export const useHouseDetailStore = defineStore(
             checkIsDiscussHouse,
             addToBookingList,
             getBookingList,
-            removeBookingListById,
+            removeBookingList,
             cleanBookingList,
         };
     },

@@ -42,7 +42,126 @@
             :autoPan="false"
             positioning="top-center"
         >
-            <v-sheet class="px-3 py-1 cursor-pointer" rounded="pill" border>NT ${{ house.price }}</v-sheet>
+            <v-menu open-on-click location="center">
+                <template v-slot:activator="{ props }">
+                    <v-hover v-slot="{ isHovering, props: hoverProps }">
+                        <v-btn
+                            v-bind="{...props, ...hoverProps}"
+                            color="white"
+                            rounded="pill"
+                            :border="true"
+                            :elevation="isHovering ? 8 : 2"
+                            class="text-brown text-body-1"
+                        >
+                            ${{ house.price }}
+                        </v-btn>
+                    </v-hover>
+                </template>
+                <v-hover v-slot="{ isHovering, props: hoverProps }">
+                    <v-card
+                        :class="{ 'on-hover': isHovering }"
+                        v-bind="hoverProps"
+                        width="320"
+                        class="px-4 pt-4 pb-3 cursor-pointer"
+                        rounded="xl"
+                        @click="onClickOverlay(house.id)"
+                        :elevation="isHovering ? 8 : 2"
+                    >
+                        <!-- 圖片 -->
+                        <v-sheet color="transparent" rounded="lg" class="overflow-hidden">
+                            <v-carousel
+                                height="150"
+                                show-arrows="hover"
+                                hide-delimiter-background
+                                hide-delimiters
+                            >
+                                <template v-slot:prev="{ props: carouselProps }">
+                                    <v-btn
+                                        v-if="house.houseExternalResourceRecords.length > 1"
+                                        :class="carouselProps.class"
+                                        color="rgba(255,255,255,0.5)"
+                                        size="small"
+                                        density="compact"
+                                        icon="mdi-chevron-left"
+                                        variant="elevated"
+                                        @click.stop="carouselProps.onClick"
+                                    ></v-btn>
+                                </template>
+                                <template v-slot:next="{ props: carouselProps }">
+                                    <v-btn
+                                        v-if="house.houseExternalResourceRecords.length > 1"
+                                        :class="carouselProps.class"
+                                        color="rgba(255,255,255,0.5)"
+                                        size="small"
+                                        density="compact"
+                                        icon="mdi-chevron-right"
+                                        variant="elevated"
+                                        @click.stop="carouselProps.onClick"
+                                    ></v-btn>
+                                </template>
+                                <v-carousel-item
+                                    v-for="imageSrc in houseSearchStore.getHouseImageUrlList(
+                                        house.houseExternalResourceRecords
+                                    )"
+                                >
+                                    <v-img
+                                        :aspect-ratio="1"
+                                        :height="200"
+                                        :src="imageSrc"
+                                        cover
+                                        class="cursor-pointer"
+                                    ></v-img>
+                                </v-carousel-item>
+                            </v-carousel>
+                        </v-sheet>
+                        <v-sheet class="mt-1">
+                            <v-sheet class="d-flex flex-row justify-space-between">
+                                <div class="text-h6 text-brown-darken-1">{{ house.name }}</div>
+                                <div class="text-h6 text-brown-darken-1">NT ${{ house.price }}</div>
+                            </v-sheet>
+                            <div class="text-body-2 text-brown-darken-1">
+                                <span class="mdi mdi-map-marker mr-2"></span>
+                                <span class="mr-2">{{
+                                    `${house.city} ${house.region} ${house.address}`
+                                }}</span>
+                            </div>
+                            <div class="text-body-2 text-brown-darken-1">
+                                <span class="mdi mdi-sofa mr-2"></span>
+                                <span>共 </span>
+                                <span class="mr-1" v-if="house.livingDiningRoom > 0">
+                                    {{ `${house.livingDiningRoom} 廳` }}
+                                </span>
+                                <span class="mr-1" v-if="house.bedroom > 0">
+                                    {{ `${house.bedroom} 房` }}
+                                </span>
+                                <span class="mr-1" v-if="house.bathroom > 0">
+                                    {{ `${house.bathroom} 淋浴` }}
+                                </span>
+                                <span class="mr-1" v-if="house.restroom > 0">
+                                    {{ `${house.restroom} 衛生` }}
+                                </span>
+                            </div>
+                            <div class="text-body-2 text-brown-darken-1">
+                                <span class="mdi mdi-bed mr-2"></span>
+                                <span>可住 </span>
+                                <span class="mr-1" v-if="house.adult > 0">
+                                    {{ `${house.adult} 位成人 ` }}
+                                </span>
+                                <span class="mr-1" v-if="house.child > 0">
+                                    {{ `${house.child} 位孩童 ` }}
+                                </span>
+                            </div>
+                        </v-sheet>
+                    </v-card>
+                </v-hover>
+            </v-menu>
+            <!-- <v-sheet
+                class="px-3 py-1 cursor-pointer"
+                rounded="pill"
+                border
+                @click.stop="onClickOverlay(house.id)"
+                >NT ${{ house.price }}</v-sheet
+            > -->
         </ol-overlay>
         <ol-zoom-control
             ref="controlZoom"
@@ -160,6 +279,9 @@ function rotationChanged(event) {
 function zoomChanged(event) {
     currentZoom.value = event.target.getZoom();
     console.log("ZZZZZOM");
+}
+function onClickOverlay(id) {
+    window.open(`/house/${id}`, "_blank");
 }
 </script>
 <style scoped></style>
