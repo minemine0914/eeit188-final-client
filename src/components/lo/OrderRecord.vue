@@ -47,7 +47,7 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import { useHostManagementStore } from '@/stores/hostManagement'
+import { useHostManagementStore } from '@/stores/hostManagementStore'
 import OrderDetail from './OrderDetail.vue'
 
 const hostManagementStore = useHostManagementStore()

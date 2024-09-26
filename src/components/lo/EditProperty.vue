@@ -56,7 +56,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useHostManagementStore } from '@/stores/hostManagement'
+import { useHostManagementStore } from '@/stores/hostManagementStore'
 
 const propertyId = 1; // 這裡應該是從路由或其他方式取得的當前編輯的房源ID
 

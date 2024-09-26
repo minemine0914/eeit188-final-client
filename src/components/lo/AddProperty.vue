@@ -48,7 +48,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import { useHostManagementStore } from '@/stores/hostManagement'
+import { useHostManagementStore } from '@/stores/hostManagementStore'
 
 const property = ref({
   name: '',

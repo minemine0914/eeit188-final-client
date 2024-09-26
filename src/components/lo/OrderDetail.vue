@@ -41,7 +41,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useHostManagementStore } from '@/stores/hostManagement'
+import { useHostManagementStore } from '@/stores/hostManagementStore'
 
 const orderRecord = ref({
   id: '',
