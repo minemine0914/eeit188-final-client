@@ -64,9 +64,14 @@
                         <v-slide-group-item
                             v-else
                             v-for="hotHouse in hotHouseList"
-                            :key="hotHouse.id"
+                            :key="hotHouse.houseDetails.id"
                         >
-                            <HouseCard :house="hotHouse" min-width="320" />
+                            <HouseCard
+                                :house="hotHouse.houseDetails"
+                                :avg-score="hotHouse.averageScore"
+                                :total-scores="hotHouse.totalScores"
+                                min-width="320"
+                            />
                         </v-slide-group-item>
                     </v-slide-group>
                 </v-sheet>
@@ -76,7 +81,9 @@
                 <div class="d-flex flex-column fill-height justify-center align-center text-white">
                     <h1 class="text-h4 font-weight-black mb-4 opacity-80">分享您的空間</h1>
                     <h4 class="subheading font-weight-regular">為大家提供舒適的住宿體驗</h4>
-                    <v-btn variant="outlined" class="mt-5" to="/host">立即加入</v-btn>
+                    <v-btn variant="outlined" class="mt-5" to="/host">{{
+                        user.id != null ? "管理房源" : "立即加入"
+                    }}</v-btn>
                 </div>
             </v-parallax>
             <!-- Height rating houses -->
@@ -108,7 +115,12 @@
                             v-for="newHouse in newHouseList"
                             :key="newHouse.id"
                         >
-                            <HouseCard :house="newHouse" min-width="320" />
+                            <HouseCard
+                                :house="newHouse.houseDetails"
+                                :avg-score="newHouse.averageScore"
+                                :total-scores="newHouse.totalScores"
+                                min-width="320"
+                            />
                         </v-slide-group-item>
                     </v-slide-group>
                 </v-sheet>
@@ -117,9 +129,16 @@
             <v-container fluid class="mb-5">
                 <div class="text-h5 font-weight-medium mx-5">探索房源</div>
                 <v-row justify="start" align="start">
-                    <template v-for="exploreHouse in allHouseList" :key="exploreHouse.id">
+                    <template
+                        v-for="exploreHouse in allHouseList"
+                        :key="exploreHouse.houseDetails.id"
+                    >
                         <v-col cols="12" lg="3" md="4" sm="6" xs="12">
-                            <HouseCard :house="exploreHouse" />
+                            <HouseCard
+                                :house="exploreHouse.houseDetails"
+                                :avg-score="exploreHouse.averageScore"
+                                :total-scores="exploreHouse.totalScores"
+                            />
                         </v-col>
                     </template>
                 </v-row>
@@ -133,12 +152,15 @@ import secondaryBannerImg from "@/assets/banner06.webp";
 import SearchHouseBar from "@/components/home/SearchHouseBar.vue";
 import { useHouseSearchStore } from "@/stores/houseSearchStore";
 import { useUserViewStore } from "@/stores/userViewStore";
+import { useUserStore } from "../../stores/userStore";
 import { useResizeObserver } from "@vueuse/core";
 import { storeToRefs } from "pinia";
 import { onMounted, reactive, ref } from "vue";
 import HouseCard from "../../components/home/HouseCard.vue";
 const houseSearchStore = useHouseSearchStore();
 const userViewStore = useUserViewStore();
+const userStore = useUserStore();
+const { user } = storeToRefs(userStore);
 const { allHouseList, hotHouseList, newHouseList, currentAllHousePage } =
     storeToRefs(houseSearchStore);
 const { containerHeight } = storeToRefs(userViewStore);

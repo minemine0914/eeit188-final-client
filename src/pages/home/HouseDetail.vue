@@ -265,7 +265,7 @@
                                 <template v-slot:subtitle>
                                     <div>擁有 {{ houseInfo.userHouseCount }} 間房源</div>
                                     <v-btn
-                                        v-if="jwtToken"
+                                        v-if="jwtToken != null && houseInfo.userId != user.id"
                                         variant="outlined"
                                         color="brown-darken-1"
                                         density="compact"
@@ -293,6 +293,69 @@
                             </v-card>
                         </v-col>
                     </v-row>
+                </v-sheet>
+                <v-divider class="border-opacity-25 my-5"></v-divider>
+                <v-sheet min-height="100">
+                    <v-sheet class="d-flex flex-row justify-center aligh-center ga-5 mb-3">
+                        <v-sheet
+                            class="flex-grow-0 d-flex flex-column justify-centr align-center px-5"
+                        >
+                            <div class="flex-grow-1 text-h5 d-flex align-end font-weight-bold">評分總覽</div>
+
+                            <div class="flex-grow-1 d-flex align-center flex-column">
+                                <div class="text-h2 mt-5">
+                                    {{ scoreDetail.averageScore.toFixed(1) }}
+                                    <span class="text-h6 ml-n3">/5</span>
+                                </div>
+                                <v-rating
+                                    :model-value="scoreDetail.averageScore"
+                                    size="30"
+                                    color="warning"
+                                    half-increments
+                                    readonly
+                                ></v-rating>
+                                <div class="px-3">{{ scoreDetail.totalReviews }} 個評價</div>
+                            </div>
+                        </v-sheet>
+                        <v-sheet class="flex-grow-1">
+                            <v-list
+                                bg-color="transparent"
+                                class="d-flex flex-column-reverse"
+                                density="compact"
+                            >
+                                <v-list-item
+                                    v-for="(key, index) in [
+                                        'scoresInRange0To1',
+                                        'scoresInRange1To2',
+                                        'scoresInRange2To3',
+                                        'scoresInRange3To4',
+                                        'scoresInRange4To5',
+                                    ]"
+                                    :key="key"
+                                >
+                                    <template v-slot:prepend>
+                                        <span>{{ index + 1 }}</span>
+                                        <v-icon class="mx-2" icon="mdi-star"></v-icon>
+                                    </template>
+
+                                    <v-progress-linear
+                                        :model-value="scoreDetail[key] * 15"
+                                        color="yellow-darken-3"
+                                        height="15"
+                                        rounded
+                                    ></v-progress-linear>
+
+                                    <template v-slot:append>
+                                        <div style="min-width: 35px">
+                                            <span class="d-flex justify-end">
+                                                {{ scoreDetail[key] }}
+                                            </span>
+                                        </div>
+                                    </template>
+                                </v-list-item>
+                            </v-list>
+                        </v-sheet>
+                    </v-sheet>
                 </v-sheet>
                 <v-divider class="border-opacity-25 my-5"></v-divider>
                 <v-sheet min-height="100" flat>
@@ -395,6 +458,7 @@ const houseDetailStore = useHouseDetailStore();
 const {
     houseInfo,
     hostInfo,
+    scoreDetail,
     previewDiscussList,
     selfHouseDiscuss,
     totalDiscussCount,
@@ -477,6 +541,7 @@ onMounted(async () => {
             houseDetailStore.checkIsCollectedHouse(),
             houseDetailStore.checkIsDiscussHouse(),
             houseDetailStore.getHostInfo(),
+            houseDetailStore.getScoreDetail(),
             houseDetailStore.getPreviewDiscussList(),
             houseDetailStore.getSelfHouseDiscuss(),
         ]);

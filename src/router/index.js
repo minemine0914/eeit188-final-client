@@ -134,11 +134,11 @@ const routes = [
         name: "orderRecords",
         component: () => import("@/components/lo/OrderRecord.vue"),
       },
-      {
-        path: "reports",
-        name: "reports",
-        component: () => import("@/components/lo/Reports.vue"),
-      },
+      // {
+      //   path: "reports",
+      //   name: "reports",
+      //   component: () => import("@/components/lo/Reports.vue"),
+      // },
       {
         path: "add-property",
         name: "addProperty",
