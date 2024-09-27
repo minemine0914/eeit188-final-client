@@ -247,7 +247,7 @@
                                         >
                                             <div class="text-subtitle-1">優惠券</div>
                                             <div class="text-body-1 text-green-darken-1">
-                                                折扣 - NT ${{ selectedCoupon?.discount }}
+                                                折扣 - NT ${{ discountPrice }}
                                             </div>
                                         </v-sheet>
                                     </v-sheet>
@@ -257,13 +257,7 @@
                                     class="d-flex flex-row justify-space-between align-center px-4"
                                 >
                                     <div class="text-h6">稅前總價</div>
-                                    <div class="text-h6">
-                                        NT ${{
-                                            houseInfo.price * 1 +
-                                            houseInfo.price * 0.05 -
-                                            (selectedCoupon != null ? selectedCoupon.discount : 0)
-                                        }}
-                                    </div>
+                                    <div class="text-h6">NT ${{ totalPrice }}</div>
                                 </v-card-actions>
                             </v-card>
                         </v-col>
@@ -379,11 +373,36 @@ const renderStepNextBtn = ref(true);
 const isLoadingStepBtn = ref(false);
 const paymentResult = ref(false);
 
-const selectedCouponIndex = ref(null);
+// Coupon
 const currentCouponListPage = ref(0);
 const couponList = reactive([]);
-const selectedCoupon = computed(() => {
-    return selectedCouponIndex.value != null ? couponList.at(selectedCouponIndex.value) : null;
+const selectedCouponIndex = ref(null);
+
+const selectedCoupon = computed(() =>
+    selectedCouponIndex.value != null ? couponList.at(selectedCouponIndex.value) : null
+);
+
+const discountPrice = computed(() => {
+    const coupon = selectedCoupon.value;
+    if (coupon) {
+        if (coupon.discount != null) {
+            // 固定折扣
+            return coupon.discount;
+        } else if (coupon.discountRate != null) {
+            // 折扣率
+            const price = houseInfo.value?.price || 0;
+            const day = 1; // 如果天數固定，則設為1
+            return (price * day * coupon.discountRate).toFixed(0); // 四捨五入至整數
+        }
+    }
+    return 0;
+});
+
+const totalPrice = computed(() => {
+    const day = 1;
+    const price = houseInfo.value?.price || 0;
+    const platformDeal = price * 0.05; // 平台手續費 5%
+    return price * day + platformDeal - discountPrice.value;
 });
 
 // Funcions

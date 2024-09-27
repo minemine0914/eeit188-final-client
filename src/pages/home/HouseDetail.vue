@@ -339,7 +339,7 @@
                                     </template>
 
                                     <v-progress-linear
-                                        :model-value="scoreDetail[key] * 15"
+                                        :model-value="scoreDetail[key]/scoreDetail.totalReviews*100"
                                         color="yellow-darken-3"
                                         height="15"
                                         rounded

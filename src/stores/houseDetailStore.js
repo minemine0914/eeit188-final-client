@@ -350,6 +350,7 @@ export const useHouseDetailStore = defineStore(
                     });
                 getSelfHouseDiscuss();
                 getPreviewDiscussList();
+                getScoreDetail();
                 reloadDiscussList();
             } else {
                 console.log("[HouseDetailStore] 尚未登入，登入後再評論");
