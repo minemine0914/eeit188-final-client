@@ -314,7 +314,7 @@
                                     half-increments
                                     readonly
                                 ></v-rating>
-                                <div class="px-3">{{ scoreDetail.totalReviews }} 個評價</div>
+                                <div class="px-3">{{ scoreDetail.totalReviews }} 則評價</div>
                             </div>
                         </v-sheet>
                         <v-sheet class="flex-grow-1">
@@ -339,7 +339,7 @@
                                     </template>
 
                                     <v-progress-linear
-                                        :model-value="scoreDetail[key]/scoreDetail.totalReviews*100"
+                                        :model-value="scoreDetail[key] ? scoreDetail[key] / scoreDetail.totalReviews * 100 : 0"
                                         color="yellow-darken-3"
                                         height="15"
                                         rounded
@@ -400,7 +400,7 @@
                         <v-col cols="12">
                             <v-sheet class="d-flex justify-center align-center">
                                 <v-alert
-                                    v-if="totalDiscussCount < 5"
+                                    v-if="scoreDetail.totalReviews < 5"
                                     variant="plain"
                                     color="brown"
                                     class="text-center"
@@ -414,7 +414,7 @@
                                     color="brown"
                                     @click="isMoreDiscussesDialogOpen = true"
                                 >
-                                    查看全部 {{ totalDiscussCount }} 則評價
+                                    查看全部 {{ scoreDetail.totalReviews }} 則評價
                                 </v-btn>
                             </v-sheet>
                         </v-col>

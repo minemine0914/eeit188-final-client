@@ -89,7 +89,6 @@ export const useHouseDetailStore = defineStore(
         const selfHouseDiscuss = reactive({ ...initialSelfHouseDiscuss });
         const previewDiscussList = reactive([]);
         const discussList = reactive([]);
-        const totalDiscussCount = ref(0);
         const currentDiscussPage = ref(0);
         const scoreDetail = reactive({ ...initalScoreDetail });
         const isErrorGetHouseInfo = ref(false);
@@ -276,7 +275,6 @@ export const useHouseDetailStore = defineStore(
                     console.log("[HouseDetailStore] Get preview discuss success", res.data);
                     previewDiscussList.splice(0, previewDiscussList.length);
                     previewDiscussList.push(...res.data.discusses);
-                    totalDiscussCount.value = res.data.totalElements;
                 })
                 .catch((err) => {
                     console.log("[HouseDetailStore] Get preview discuss failed");
@@ -309,6 +307,7 @@ export const useHouseDetailStore = defineStore(
             .get(`/house/mongo/scores/${houseInfo.id}`)
             .then((res) => {
                 console.log("[HouseDetailStore] Get score detail success", res.data);
+                Object.assign(scoreDetail, initalScoreDetail);
                 Object.assign(scoreDetail, res.data);
             })
             .catch((err) => {
@@ -461,7 +460,6 @@ export const useHouseDetailStore = defineStore(
             scoreDetail,
             previewDiscussList,
             currentDiscussPage,
-            totalDiscussCount,
             isErrorGetHouseInfo,
             isLoading,
             isLoadingCollection,
