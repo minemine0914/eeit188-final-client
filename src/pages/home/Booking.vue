@@ -192,7 +192,7 @@
                                                 :key="index"
                                             >
                                                 <v-item v-slot="{ isSelected, toggle }">
-                                                    <div class="flex-grow-1 px-3">
+                                                    <div class="flex-grow-1">
                                                         <CouponCard
                                                             :selected="isSelected"
                                                             :coupon="coupon"

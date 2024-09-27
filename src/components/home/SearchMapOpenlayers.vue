@@ -41,6 +41,7 @@
             :position="[house.longitudeY, house.latitudeX]"
             :autoPan="false"
             positioning="top-center"
+            :stopEvent="false"
         >
             <v-menu open-on-click location="center">
                 <template v-slot:activator="{ props }">
@@ -70,7 +71,7 @@
                         <!-- 圖片 -->
                         <v-sheet color="transparent" rounded="lg" class="overflow-hidden">
                             <v-carousel
-                                height="150"
+                                height="200"
                                 show-arrows="hover"
                                 hide-delimiter-background
                                 hide-delimiters
@@ -106,7 +107,6 @@
                                 >
                                     <v-img
                                         :aspect-ratio="1"
-                                        :height="200"
                                         :src="imageSrc"
                                         cover
                                         class="cursor-pointer"
@@ -155,13 +155,6 @@
                     </v-card>
                 </v-hover>
             </v-menu>
-            <!-- <v-sheet
-                class="px-3 py-1 cursor-pointer"
-                rounded="pill"
-                border
-                @click.stop="onClickOverlay(house.id)"
-                >NT ${{ house.price }}</v-sheet
-            > -->
         </ol-overlay>
         <ol-zoom-control
             ref="controlZoom"
