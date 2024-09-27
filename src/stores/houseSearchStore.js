@@ -130,6 +130,8 @@ export const useHouseSearchStore = defineStore("HouseSearch", () => {
                 ...searchParams,
                 limit: currentFilterHouseLimit.value,
                 page: currentFilterHousePage.value,
+                show: true,
+                review: true,
             })
             .then((res) => {
                 console.log("取得FilterHouse成功");
@@ -143,24 +145,12 @@ export const useHouseSearchStore = defineStore("HouseSearch", () => {
 
     async function getAllHouse() {
         let resData = null;
-        // await api
-        //     .post("/house/mongo/scores/average-grouped-by-house", {
-        //         limit: currentAllHouseLimit.value,
-        //         page: currentAllHousePage.value,
-        //         dir: true,
-        //         order: "averageScoreModified",
-        //         randomFactor: 100,
-        //     })
-        //     .then((res) => {
-        //         console.log("取得AllHouse成功");
-        //         resData = res.data;
-        //     })
-        //     .catch((err) => {
-        //         console.log("取得AllHouse失敗");
-        //     });
         await api
-            .get("/house/all", {
-                params: { limit: currentAllHouseLimit.value, page: currentAllHousePage.value },
+            .post("/house/search-with-score", {
+                limit: currentAllHouseLimit.value,
+                page: currentAllHousePage.value,
+                show: true,
+                review: true,
             })
             .then((res) => {
                 console.log("取得AllHouse成功");
@@ -174,7 +164,7 @@ export const useHouseSearchStore = defineStore("HouseSearch", () => {
 
     async function getNewHouse() {
         await api
-            .post("/house/search", {
+            .post("/house/search-with-score", {
                 limit: 10,
                 page: 0,
                 dir: true,
