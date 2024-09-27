@@ -59,7 +59,7 @@
             <div class="flex-grow-1">{{ house.name }}</div>
             <div class="d-flex flex-grow-1 text-body-2 justify-end align-top">
                 <v-icon icon="mdi-star-outline" size="small"></v-icon>
-                <span>4.9</span>
+                <span>{{ (avgScore).toFixed(1) }}</span>
             </div>
         </v-card-title>
         <v-card-subtitle class="pb-2">
@@ -100,6 +100,15 @@
 <script setup>
 import { useHouseSearchStore } from "@/stores/houseSearchStore";
 const houseSearchStore = useHouseSearchStore();
-defineProps(['house']);
+defineProps({
+    house: {
+        type: Object,
+        default: null,
+    },
+    avgScore: {
+        type: Number,
+        default: 0
+    }
+});
 </script>
 <style></style>

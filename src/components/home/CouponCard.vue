@@ -3,18 +3,39 @@
         :border="true"
         rounded="sm"
         elevation="0"
-        class="d-flex flex-row ga-3"
-        color="brown-lighten-5"
+        class="d-flex flex-row ga-3 mx-3"
+        :color="isExpired ? 'grey-lighten-3' : 'brown-lighten-5'"
     >
-        <v-sheet :border="false" class="pa-5" color="brown-darken-1">
-            <v-icon icon="mdi-ticket-percent-outline" size="60"></v-icon>
+        <v-sheet
+            :border="false"
+            class="d-flex justify-center align-center text-center position-relative"
+            :color="isExpired ? 'grey-darken-1' : 'brown-darken-1'"
+            height="100"
+            width="100"
+            :class="[isExpired ? 'opacity-80' : '']"
+        >
+
+            <v-icon icon="mdi-ticket-percent-outline" size="45" class="mb-3" :class="[isExpired ? 'opacity-30' : '']"></v-icon>
+
+            <div v-if="coupon.discount != null" class="text-caption position-absolute left-0 bottom-0 w-100 mb-4" :class="[isExpired ? 'opacity-30' : '']">
+                NT ${{ coupon.discount }}
+            </div>
+            <div v-else class="text-caption position-absolute left-0 bottom-0 w-100 mb-4" :class="[isExpired ? 'opacity-30' : '']">
+                {{ 100 - (coupon.discountRate * 100).toFixed(0) }} 折
+            </div>
         </v-sheet>
         <v-sheet
             class="flex-grow-1 d-flex flex-column justify-space-between py-2"
             color="transparent"
         >
-            <div class="font-weight-regular text-h6">NT ${{ coupon.discount }}元</div>
-            <div class="text-caption">使用期限: {{ expireDate.toLocaleDateString() }}</div>
+            <div class="font-weight-regular text-h6 font-weight-bold" :class="[isExpired ? 'opacity-30' : '']">
+                {{ coupon.name != null ? coupon.name : "折價券" }}
+            </div>
+            <div v-if="coupon.discount != null" class="text-caption" :class="[isExpired ? 'opacity-30' : '']">折抵 NT ${{ coupon.discount }} 元</div>
+            <div v-else class="text-caption" :class="[isExpired ? 'opacity-30' : '']">折抵 {{ 100 - (coupon.discountRate * 100).toFixed(0) }} 折</div>
+            <div class="text-caption" :class="[isExpired ? 'text-red' : '']">
+                使用期限: {{ expireDate.toLocaleDateString() }} {{ isExpired ? "(已過期)" : "" }}
+            </div>
         </v-sheet>
         <v-sheet class="d-flex align-center px-3" color="transparent">
             <v-btn
@@ -42,6 +63,7 @@ const props = defineProps({
             expire: 0,
             createdAt: null,
             userName: null,
+            name: null,
         },
     },
     selected: {
@@ -75,12 +97,13 @@ const isExpired = computed(() => {
 });
 </script>
 <style scoped>
-.content-card {
-    background: radial-gradient(8px at left, #0000 98%, #fff) left,
-        radial-gradient(8px at right, #0000 98%, #fff) right;
-    background-size: 50.5% 25px;
-    background-repeat: repeat-y;
-    filter: drop-shadow(4px 8px 12px rgba(0, 0, 0, 0.12));
-    border-radius: 8px;
+.text-ring {
+    --character-width: 1; /* In "ch" units */
+    --inner-angle: calc((360 / var(--total)) * 1deg);
+    --radius: calc((var(--character-width, 1) / sin(var(--inner-angle))) * -1ch);
+}
+.text-ring [style*="--index"] {
+    transform: translate(-50%, -50%) rotate(calc(var(--inner-angle) * var(--index)))
+        translateY(var(--radius, -5ch));
 }
 </style>

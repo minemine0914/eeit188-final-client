@@ -44,7 +44,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useHostManagementStore } from '@/stores/hostManagementStore'
 import { useRouter } from 'vue-router'
 
@@ -56,8 +56,8 @@ const availableProperties = ref(0)
 const bookedProperties = ref(0)
 const totalProperties = ref(0)
 
-// 房源列表
-const properties = ref([])
+// 房源列表 (從 store 中取得)
+const properties = computed(() => hostManagementStore.state.properties);
 
 // 表格標題
 const headers = [
@@ -66,38 +66,43 @@ const headers = [
   { text: '操作', value: 'actions', sortable: false }
 ]
 
+// 更新統計數據
+const updateStatistics = (propertyList) => {
+  availableProperties.value = propertyList.filter(p => p.status === 'available').length
+  bookedProperties.value = propertyList.filter(p => p.status === 'booked').length
+  totalProperties.value = propertyList.length
+}
+
 // 取得房源列表並更新統計數據
-onMounted(async () => {
+const fetchProperties = async () => {
   try {
-    const propertyList = await hostManagementStore.fetchAllProperties()
-    properties.value = propertyList
-    availableProperties.value = propertyList.filter(p => p.status === 'available').length
-    bookedProperties.value = propertyList.filter(p => p.status === 'booked').length
-    totalProperties.value = propertyList.length
+    await hostManagementStore.fetchAllProperties();
+    updateStatistics(hostManagementStore.state.properties);
   } catch (error) {
-    console.error('獲取房源失敗:', error)
+    console.error('獲取房源失敗:', error);
   }
-})
+}
 
 // 編輯房源
 const editItem = (item) => {
-  router.push({ name: 'EditProperty', params: { id: item.id } })
+  router.push({ name: 'EditProperty', params: { id: item.id } });
 }
 
 // 刪除房源
 const deleteItem = async (item) => {
   try {
-    await hostManagementStore.deleteProperty(item.id)
-    const propertyList = await hostManagementStore.fetchAllProperties()
-    properties.value = propertyList
-    availableProperties.value = propertyList.filter(p => p.status === 'available').length
-    bookedProperties.value = propertyList.filter(p => p.status === 'booked').length
-    totalProperties.value = propertyList.length
+    await hostManagementStore.deleteProperty(item.id);
+    await fetchProperties();  // 刪除後重新取得資料並更新統計數據
   } catch (error) {
-    console.error('刪除失敗:', error)
-    alert('刪除失敗，請稍後再試')
+    console.error('刪除失敗:', error);
+    alert('刪除失敗，請稍後再試');
   }
 }
+
+// 組件掛載後取得房源資料
+onMounted(() => {
+  fetchProperties();
+});
 </script>
 
 <style scoped>

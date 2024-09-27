@@ -1,147 +1,200 @@
 import { defineStore } from "pinia";
 import api from "@/plugins/axios";
 import { ref, reactive } from "vue";
+import { useUserStore } from "./userStore";
 
-export const useHostManagementStore = defineStore(
-  "hostManagement",
-  () => {
-    // 狀態
-    const properties = ref([]); // 房源
-    const reviews = ref([]);    // 評價
-    const orders = ref([]);     // 訂單
-    const selectedProperty = ref(null);  // 當前選中的房源
-    const selectedReview = ref(null);    // 當前選中的評價
+export const useHostManagementStore = defineStore("hostManagement", () => {
+  const userStore = useUserStore();
+  // 狀態
+  const state = reactive({
+    properties: [],  // 房源
+    reviews: [],     // 評價
+    orders: [],      // 訂單
+    selectedProperty: null,  // 當前選中的房源
+    selectedReview: null,    // 當前選中的評價
+    loading: false,          // 加載狀態
+    error: null,             // 錯誤訊息
+  });
 
-    // 方法
-
-    // 1. 獲取所有房源，對應於 HouseController 的 API
-    async function fetchProperties() {
-      try {
-        const response = await api.get("/houses"); // 假設路徑
-        properties.value = response.data;
-      } catch (error) {
-        console.error("Error fetching properties:", error);
-        throw error;
-      }
+  // 錯誤處理方法
+  function handleError(error) {
+    state.loading = false;
+    if (error.response) {
+      // 確保 error.response 存在，避免 undefined 錯誤
+      console.error("Error response:", error.response.status, error.response.data);
+      state.error = error.response.data.message || "Unknown error occurred";
+    } else if (error.request) {
+      // 請求發出但沒有收到回應
+      console.error("No response from server:", error.request);
+      state.error = "No response received from server";
+    } else {
+      // 其他錯誤
+      console.error("Error:", error.message);
+      state.error = error.message || "An unknown error occurred";
     }
-
-    // 2. 添加房源，對應於 HouseController 的 API
-    async function addProperty(propertyData) {
-      try {
-        const response = await api.post("/houses", propertyData); // 假設路徑
-        properties.value.push(response.data);
-      } catch (error) {
-        console.error("Error adding property:", error);
-        throw error;
-      }
-    }
-
-    // 3. 更新房源，對應於 HouseController 的 API
-    async function updateProperty(propertyId, propertyData) {
-      try {
-        const response = await api.put(`/houses/${propertyId}`, propertyData); // 假設路徑
-        const index = properties.value.findIndex((p) => p.id === propertyId);
-        if (index !== -1) {
-          properties.value[index] = { ...properties.value[index], ...propertyData };
-        }
-      } catch (error) {
-        console.error("Error updating property:", error);
-        throw error;
-      }
-    }
-
-    // 4. 刪除房源，對應於 HouseController 的 API
-    async function deleteProperty(propertyId) {
-      try {
-        await api.delete(`/houses/${propertyId}`); // 假設路徑
-        properties.value = properties.value.filter((p) => p.id !== propertyId);
-      } catch (error) {
-        console.error("Error deleting property:", error);
-        throw error;
-      }
-    }
-
-    // 5. 獲取訂單，對應於 TranscationRecordController 的 API
-    async function fetchOrders() {
-      try {
-        const response = await api.get("/transactions"); // 假設路徑
-        orders.value = response.data;
-      } catch (error) {
-        console.error("Error fetching orders:", error);
-        throw error;
-      }
-    }
-
-    // 6. 獲取特定房源的評價，對應於 HouseController 的 API
-    async function fetchReviews(propertyId) {
-      try {
-        const response = await api.get(`/houses/${propertyId}/reviews`); // 假設路徑
-        reviews.value = response.data;
-      } catch (error) {
-        console.error("Error fetching reviews:", error);
-        throw error;
-      }
-    }
-
-    // 7. 上傳房源圖片，對應於 HouseExternalResourceController 的 API
-    async function uploadPropertyImage(propertyId, file) {
-      try {
-        const formData = new FormData();
-        formData.append("file", file);
-        await api.post(`/houses/${propertyId}/images`, formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
-      } catch (error) {
-        console.error("Error uploading property image:", error);
-        throw error;
-      }
-    }
-
-    // 8. 獲取房源背景圖片，對應於 HouseExternalResourceController 的 API
-    async function fetchPropertyBackgroundImage(propertyId) {
-      try {
-        const response = await api.get(`/houses/${propertyId}/background`, {
-          responseType: "blob",
-        });
-        return response.data;
-      } catch (error) {
-        throw error;
-      }
-    }
-
-    // 9. 從 MongoDB 獲取房源資料，對應於 HouseMongoController 的 API
-    async function fetchMongoProperty(propertyId) {
-      try {
-        const response = await api.get(`/houses/mongo/${propertyId}`); // 假設路徑
-        selectedProperty.value = response.data;
-      } catch (error) {
-        console.error("Error fetching MongoDB property:", error);
-        throw error;
-      }
-    }
-
-    return {
-      properties,
-      reviews,
-      orders,
-      selectedProperty,
-      selectedReview,
-      fetchProperties,
-      addProperty,
-      updateProperty,
-      deleteProperty,
-      fetchOrders,
-      fetchReviews,
-      uploadPropertyImage,
-      fetchPropertyBackgroundImage,
-      fetchMongoProperty,
-    };
-  },
-  {
-    persist: true,
   }
-);
+
+  // 清空錯誤訊息
+  function clearError() {
+    state.error = null;
+  }
+
+  // API 請求函數
+  //獲取該房東所有房源
+  async function fetchAllProperties() {
+    clearError();
+    state.loading = true;
+    try {
+      const userId = userStore.user.id;
+      const response = await api.post("/house/search", { userId: userId });
+      this.properties = response.data;
+      console.log(response.data);
+    } catch (error) {
+      handleError(error);
+    } finally {
+      state.loading = false;
+    }
+  }
 
 
+  async function fetchPropertyDetails(propertyId) {
+    clearError();
+    state.loading = true;
+    try {
+      const response = await api.get(`/house/${propertyId}`);
+      state.selectedProperty = response.data;
+      state.loading = false;
+    } catch (error) {
+      handleError(error);
+    }
+  }
+  // 新增房源
+  async function addProperty(propertyData) {
+    let data = { ...propertyData, userId: userStore.user.id }
+    clearError();
+    state.loading = true;
+    api.get("https://nominatim.openstreetmap.org/search.php",
+      { params: { q: propertyData.city + propertyData.region, format: "jsonv2" } })
+      .then((res) => {
+        console.log("OpenStreetMap search long lat:", res.data);
+        if (res.data.length !== 0) {
+          data.latitudeX = res.data[0].lat;
+          data.longitudeY = res.data[0].lon;
+        }
+      })
+      .catch((err) => {
+        // console.log();
+      });
+    try {
+      const response = await api.post("/house/", data);
+      state.properties.push(response.data);
+      state.loading = false;
+    } catch (error) {
+      handleError(error);
+    }
+  }
+
+  // 上傳房源圖片
+  async function uploadPropertyImage(propertyId, file) {
+    clearError();
+    state.loading = true;
+    try {
+      const formData = new FormData();
+      formData.append("files", file);
+      formData.append("houseId", propertyId);
+      await api.post(`/house-external-resource/`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      state.loading = false;
+    } catch (error) {
+      handleError(error);
+      state.loading = false;
+    }
+  }
+
+
+
+  // 更新房源
+  async function updateProperty(id, propertyData) {
+    clearError();
+    state.loading = true;
+    try {
+      const response = await api.put(`/house/${id}`, propertyData);
+      const index = state.properties.findIndex((p) => p.id === id);
+      if (index !== -1) {
+        state.properties[index] = { ...state.properties[index], ...propertyData };
+      }
+      state.loading = false;
+    } catch (error) {
+      handleError(error);
+    }
+  }
+
+  // 刪除房源
+  async function deleteProperty(id) {
+    clearError();
+    state.loading = true;
+    try {
+      await api.delete(`/house/${id}`);
+      state.properties = state.properties.filter((p) => p.id !== id); // 移除房源
+      state.loading = false;
+    } catch (error) {
+      handleError(error);
+    }
+  }
+
+  // 獲取訂單
+  async function fetchOrders() {
+    clearError();
+    state.loading = true;
+    try {
+      const response = await api.get("/transcation_record/all");
+      state.orders = response.data;
+      state.loading = false;
+    } catch (error) {
+      handleError(error);
+    }
+  }
+  // 獲取單筆訂單詳情
+  async function fetchOrderDetail(orderId) {
+    clearError();
+    state.loading = true;
+    try {
+      const response = await api.get(`/transcation_record/${orderId}`);
+      state.selectedOrder = response.data;
+      state.loading = false;
+    } catch (error) {
+      handleError(error);
+    }
+  }
+  // 獲取房源評價
+  async function fetchReviews(propertyId) {
+    clearError();
+    state.loading = true;
+    try {
+      const response = await api.get(`/house/${propertyId}/reviews`);
+      state.reviews = response.data;
+      state.loading = false;
+    } catch (error) {
+      handleError(error);
+    }
+  }
+
+  return {
+    state,
+    fetchAllProperties,
+    fetchPropertyDetails,
+    addProperty,
+    updateProperty,
+    deleteProperty,
+    fetchOrders,
+    fetchOrderDetail,
+    fetchReviews,
+    uploadPropertyImage,
+
+  };
+}, {
+  // persist: true, // 持久化狀態
+});

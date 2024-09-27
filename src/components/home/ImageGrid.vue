@@ -83,6 +83,7 @@
                                 cover
                             >
                                 <v-overlay
+                                    v-if="houseInfo.houseExternalResourceRecords.length > 5"
                                     :model-value="isHovering"
                                     class="align-center justify-center cursor-pointer text-center text-white"
                                     scrim="rgba(0,0,0,1)"
@@ -109,7 +110,7 @@ import { useResizeObserver } from "@vueuse/core";
 import MorePhotosDialog from "./MorePhotosDialog.vue";
 // Use pinia store
 const houseDetailStore = useHouseDetailStore();
-const { isLoading } = storeToRefs(houseDetailStore);
+const { isLoading, houseInfo } = storeToRefs(houseDetailStore);
 
 // Detect image box v-responsive height
 const imageBoxRef = ref(null);

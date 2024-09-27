@@ -13,13 +13,6 @@
                                     <v-list-item-subtitle>入住日期: {{ reservationRecord.stayDate }}</v-list-item-subtitle>
                                 </v-list-item-content>
                             </v-list-item>
-
-                            <v-list-item>
-                                <v-list-item-content>
-                                    <v-list-item-title>付款狀態: {{ reservationRecord.paymentStatus }}</v-list-item-title>
-                                </v-list-item-content>
-                            </v-list-item>
-
                             <v-list-item>
                                 <v-list-item-content>
                                     <v-list-item-title>總金額: {{ reservationRecord.totalAmount }} 元</v-list-item-title>

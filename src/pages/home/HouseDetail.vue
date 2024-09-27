@@ -265,7 +265,7 @@
                                 <template v-slot:subtitle>
                                     <div>擁有 {{ houseInfo.userHouseCount }} 間房源</div>
                                     <v-btn
-                                        v-if="jwtToken"
+                                        v-if="jwtToken != null && houseInfo.userId != user.id"
                                         variant="outlined"
                                         color="brown-darken-1"
                                         density="compact"
