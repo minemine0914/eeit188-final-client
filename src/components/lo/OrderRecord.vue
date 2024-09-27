@@ -6,7 +6,7 @@
         <v-select v-model="sortBy" :items="['最高金額', '最低金額']" label="排序方式" dense outlined @change="sortOrders"></v-select>
       </v-col>
       <v-col cols="12" sm="4">
-        <v-select v-model="filterByStayStatus" :items="['全部', '已入住', '未入住']" label="入住狀態" dense outlined @change="filterOrders"></v-select>
+        <v-select v-model="filterByStayStatus" :items="['全部', '已完成', '未入住']" label="入住狀態" dense outlined @change="filterOrders"></v-select>
       </v-col>
     </v-row>
 
@@ -16,7 +16,7 @@
         <v-card>
           <v-card-title>{{ order.name }}</v-card-title>
           <v-card-subtitle>
-            入住日期: {{ order.stayDate }} | 金額: {{ order.amount }} | 入住狀態: {{ order.stayStatus }}
+            入住日期: {{ order.stayDate }} | 金額: {{ order.amount }} | 入住狀態: {{ order.stayStatus }} |
           </v-card-subtitle>
           <v-card-actions>
             <v-btn color="primary" @click="viewDetails(order.id)">查看詳情</v-btn>

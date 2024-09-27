@@ -44,7 +44,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useHostManagementStore } from '@/stores/hostManagementStore'
 import { useRouter } from 'vue-router'
 
@@ -57,7 +57,7 @@ const bookedProperties = ref(0)
 const totalProperties = ref(0)
 
 // 房源列表
-const properties = ref([])
+const properties = computed(() => hostManagementStore.state.properties);
 
 // 表格標題
 const headers = [
@@ -74,8 +74,8 @@ onMounted(async () => {
     availableProperties.value = propertyList.filter(p => p.status === 'available').length
     bookedProperties.value = propertyList.filter(p => p.status === 'booked').length
     totalProperties.value = propertyList.length
-  } catch (error) {
-    console.error('獲取房源失敗:', error)
+   } catch (error) {
+     console.error('獲取房源失敗:', error)
   }
 })
 

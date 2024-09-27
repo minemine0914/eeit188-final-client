@@ -114,7 +114,7 @@
       <v-row>
         <v-col cols="12" md="4">
           <v-text-field
-            label="客廳數量 (選填)"
+            label="客廳數量"
             v-model="property.livingDiningRoom"
             type="number"
             :error-messages="$v.property.livingDiningRoom.$error ? ['數值必須大於或等於 0'] : []"
@@ -123,7 +123,7 @@
         </v-col>
         <v-col cols="12" md="4">
           <v-text-field
-            label="臥室數量 *"
+            label="臥室(床位)數量 *"
             v-model="property.bedroom"
             type="number"
             :error-messages="$v.property.bedroom.$error ? ['不可小於一間'] : []"
@@ -139,28 +139,55 @@
             outlined
           ></v-text-field>
         </v-col>
-      </v-row>
-
-      <v-row>
-        <v-col cols="12" md="6">
+          <v-col cols="12" md="4">
+          <v-text-field
+            label="廁所數量 *"
+            v-model="property.restroom"
+            type="number"
+            :error-messages="$v.property.restroom.$error ? ['不可小於一間'] : []"
+            outlined
+          ></v-text-field>
+        </v-col>
+        <v-col cols="12" md="2">
           <v-checkbox label="廚房" v-model="property.kitchen"></v-checkbox>
         </v-col>
-
-        <v-col cols="12" md="6">
+        <v-col cols="12" md="2">
           <v-checkbox label="陽台" v-model="property.balcony"></v-checkbox>
         </v-col>
       </v-row>
-
+      <v-row>
+       
+      </v-row>
+      <v-row>
+        <v-col cols="12" md="4">
+        <v-text-field
+            label="建議成人數 *"
+            v-model="property.adult"
+            type="number"
+            :error-messages="$v.property.adult.$error ? ['不可小於一位'] : []"
+            outlined
+          ></v-text-field>
+        </v-col>
+          <v-col cols="12" md="4">
+          <v-text-field
+            label="建議幼童數"
+            v-model="property.child"
+            type="number"
+            outlined
+          ></v-text-field>
+        </v-col>
+      </v-row>
       <v-divider></v-divider>
 
       <!-- 價格設置 -->
       <v-row>
+
         <v-col cols="12" md="4">
           <v-text-field
             label="每晚價格/元(NTD) *"
             v-model="property.pricePerDay"
-            type="number"
             :error-messages="!$v.property.pricePerDay.required && $v.property.pricePerDay.$error ? ['每日價格為必填項'] : []"
+            type="number"
             required
             outlined
           ></v-text-field>
@@ -206,7 +233,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref , watch } from 'vue'
 import useVuelidate from '@vuelidate/core'
 import { required, minValue } from '@vuelidate/validators'
 import { useHostManagementStore } from '@/stores/hostManagementStore'
@@ -222,12 +249,15 @@ const property = ref({
   address: '',
   latitudeX: null,
   longitudeY: null,
-  pricePerDay: 0,
+  pricePerDay: 1000,
   pricePerWeek: 0,
   pricePerMonth: 0,
   livingDiningRoom: 0,
   bedroom: 1,
   bathroom: 1,
+  restroom: 1,
+  adult:1,
+  child:0,
   pet: false,
   smoke: false,
   kitchen: false,
@@ -238,8 +268,6 @@ const property = ref({
 // 定義下拉選單的選項
 const categories = ['公寓', '度假別墅', '包棟民宿','旅店','露營地','酒店式公寓','其他']
 const countries = ['臺灣']
-const cities = ['台北', '東京', '紐約']
-const districts = ['大安區', '澀谷區', '曼哈頓區']
 
 // 定義驗證規則
 const rules = {
@@ -257,6 +285,9 @@ const rules = {
     livingDiningRoom: { minValue: minValue(0) },
     bedroom: { minValue: minValue(1) },
     bathroom: { minValue: minValue(1) },
+    restroom: { minValue: minValue(1) },
+    adult: { required, minValue: minValue(1) },
+    child: { minValue: minValue(0) },
     images: { required }
   },
 }
@@ -265,6 +296,20 @@ const rules = {
 const $v = useVuelidate(rules, { property })
 
 const hostManagementStore = useHostManagementStore()
+
+import cityData from '@/assets/CityCountyData.json'
+
+const cities = ref(cityData.map(city => city.CityName))
+
+const districts = ref([])
+
+watch(() => property.value.city, (newCity) => {
+  const selectedCity = cityData.find(city => city.CityName === newCity)
+  districts.value = selectedCity ? selectedCity.AreaList.map(area => area.AreaName) : []
+  if (!districts.value.includes(property.value.region)) {
+    property.value.region = ''
+  }
+})
 
 // 表單提交處理
 const submitForm = async () => {
@@ -277,8 +322,8 @@ const submitForm = async () => {
 
   try {
     // 假設經緯度生成完成
-    property.value.latitudeX = 25.0330
-    property.value.longitudeY = 121.5654
+    // property.value.latitudeX = 25.0330
+    // property.value.longitudeY = 121.5654
 
     // 發送表單資料到後端
     await hostManagementStore.addProperty(property.value)

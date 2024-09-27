@@ -40,19 +40,22 @@ export const useHostManagementStore = defineStore("hostManagement", () => {
   }
 
   // API 請求函數
-
-  // 獲取所有房源
+  //獲取該房東所有房源
   async function fetchAllProperties() {
     clearError();
     state.loading = true;
     try {
-      const response = await api.get("/house/all");
+      const userId = userStore.user.id;
+      const response = await api.post("/house/search", { userId: userId });
       state.properties = response.data;
-      state.loading = false;
+      console.log(response.data);
     } catch (error) {
       handleError(error);
+    } finally {
+      state.loading = false;
     }
   }
+
 
   async function fetchPropertyDetails(propertyId) {
     clearError();
@@ -67,21 +70,21 @@ export const useHostManagementStore = defineStore("hostManagement", () => {
   }
   // 新增房源
   async function addProperty(propertyData) {
-    let data = {...propertyData, userId: userStore.user.id}
+    let data = { ...propertyData, userId: userStore.user.id }
     clearError();
     state.loading = true;
     api.get("https://nominatim.openstreetmap.org/search.php",
-       { params: { q: propertyData.city + propertyData.region, format: "jsonv2"  } })
-       .then((res)=>{
+      { params: { q: propertyData.city + propertyData.region, format: "jsonv2" } })
+      .then((res) => {
         console.log("OpenStreetMap search long lat:", res.data);
         if (res.data.length !== 0) {
           data.latitudeX = res.data[0].lat;
           data.longitudeY = res.data[0].lon;
         }
-       })
-       .catch((err)=>{
+      })
+      .catch((err) => {
         // console.log();
-       });
+      });
     try {
       const response = await api.post("/house/", data);
       state.properties.push(response.data);
@@ -178,31 +181,6 @@ export const useHostManagementStore = defineStore("hostManagement", () => {
       handleError(error);
     }
   }
-  // 獲取所有預約訂單
-  async function fetchReservations() {
-    clearError();
-    state.loading = true;
-    try {
-      const response = await api.get("/reservation/all");
-      state.reservations = response.data;
-      state.loading = false;
-    } catch (error) {
-      handleError(error);
-    }
-  }
-
-  // 獲取單筆預約訂單詳情
-  async function fetchReservationDetail(reservationId) {
-    clearError();
-    state.loading = true;
-    try {
-      const response = await api.get(`/reservation/${reservationId}`);
-      state.selectedReservation = response.data;
-      state.loading = false;
-    } catch (error) {
-      handleError(error);
-    }
-  }
 
   return {
     state,
@@ -213,8 +191,6 @@ export const useHostManagementStore = defineStore("hostManagement", () => {
     deleteProperty,
     fetchOrders,
     fetchOrderDetail,
-    fetchReservations,
-    fetchReservationDetail,
     fetchReviews,
     uploadPropertyImage,
 

@@ -5,9 +5,6 @@
             <v-col cols="12" sm="4">
                 <v-select v-model="sortBy" :items="['最新', '最舊']" label="排序方式" dense outlined @change="sortReservations"></v-select>
             </v-col>
-            <v-col cols="12" sm="4">
-                <v-select v-model="filterByPaymentStatus" :items="['全部', '已付款', '未付款']" label="付款狀態" dense outlined @change="filterReservations"></v-select>
-            </v-col>
         </v-row>
 
         <!-- 預約列表 -->
@@ -16,7 +13,7 @@
                 <v-card>
                     <v-card-title>{{ reservation.name }}</v-card-title>
                     <v-card-subtitle>
-                        日期: {{ reservation.date }} | 付款狀態: {{ reservation.paymentStatus }}
+                        日期: {{ reservation.date }} 
                     </v-card-subtitle>
                     <v-card-actions>
                         <v-btn color="primary" @click="viewDetails(reservation.id)">查看詳情</v-btn>
@@ -61,10 +58,6 @@ const selectedReservationId = ref(null)
 
 const sortReservations = () => {
   // 排序邏輯處理
-}
-
-const filterReservations = () => {
-  // 篩選邏輯處理
 }
 
 const viewDetails = (id) => {
