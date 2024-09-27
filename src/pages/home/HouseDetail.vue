@@ -295,38 +295,16 @@
                     </v-row>
                 </v-sheet>
                 <v-divider class="border-opacity-25 my-5"></v-divider>
-                <v-sheet min-height="100" flat>
-                    <v-sheet class="d-flex flex-row align-top">
-                        <div class="flex-grow-1 text-h6 mb-3">最新評論</div>
-                        <div class="d-flex flex-grow-1 text-h6 mb-3 justify-end align-top">
-                            <v-btn
-                                variant="text"
-                                size="large"
-                                rounded="pill"
-                                density="compact"
-                                @click="onClickDiscuss"
-                            >
-                                <template v-slot:prepend>
-                                    <v-icon icon="mdi-message-draw" color="brown"></v-icon>
-                                </template>
-                                <span>
-                                    {{
-                                        selfHouseDiscuss.houseId === null &&
-                                        selfHouseDiscuss.userId === null
-                                            ? "立即評價"
-                                            : "修改評價"
-                                    }}
-                                </span>
-                            </v-btn>
-                        </div>
-                    </v-sheet>
+                <v-sheet min-height="100">
                     <v-sheet class="d-flex flex-row justify-center aligh-center ga-5 mb-3">
-                        <v-sheet class="flex-grow-0 d-flex flex-column justify-centr align-center px-5">
-                            <div class="flex-grow-1 text-h5 d-flex align-end">評分總覽</div>
+                        <v-sheet
+                            class="flex-grow-0 d-flex flex-column justify-centr align-center px-5"
+                        >
+                            <div class="flex-grow-1 text-h5 d-flex align-end font-weight-bold">評分總覽</div>
 
                             <div class="flex-grow-1 d-flex align-center flex-column">
                                 <div class="text-h2 mt-5">
-                                    {{ (scoreDetail.averageScore).toFixed(1) }}
+                                    {{ scoreDetail.averageScore.toFixed(1) }}
                                     <span class="text-h6 ml-n3">/5</span>
                                 </div>
                                 <v-rating
@@ -368,7 +346,7 @@
                                     ></v-progress-linear>
 
                                     <template v-slot:append>
-                                        <div style="min-width: 35px;">
+                                        <div style="min-width: 35px">
                                             <span class="d-flex justify-end">
                                                 {{ scoreDetail[key] }}
                                             </span>
@@ -377,6 +355,33 @@
                                 </v-list-item>
                             </v-list>
                         </v-sheet>
+                    </v-sheet>
+                </v-sheet>
+                <v-divider class="border-opacity-25 my-5"></v-divider>
+                <v-sheet min-height="100" flat>
+                    <v-sheet class="d-flex flex-row align-top">
+                        <div class="flex-grow-1 text-h6 mb-3">最新評論</div>
+                        <div class="d-flex flex-grow-1 text-h6 mb-3 justify-end align-top">
+                            <v-btn
+                                variant="text"
+                                size="large"
+                                rounded="pill"
+                                density="compact"
+                                @click="onClickDiscuss"
+                            >
+                                <template v-slot:prepend>
+                                    <v-icon icon="mdi-message-draw" color="brown"></v-icon>
+                                </template>
+                                <span>
+                                    {{
+                                        selfHouseDiscuss.houseId === null &&
+                                        selfHouseDiscuss.userId === null
+                                            ? "立即評價"
+                                            : "修改評價"
+                                    }}
+                                </span>
+                            </v-btn>
+                        </div>
                     </v-sheet>
                     <v-skeleton-loader
                         type="avatar, list-item-three-line, avatar, list-item-three-line"
