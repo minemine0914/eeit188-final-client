@@ -326,7 +326,7 @@
 
                             <div class="flex-grow-1 d-flex align-center flex-column">
                                 <div class="text-h2 mt-5">
-                                    {{ scoreDetail.averageScore }}
+                                    {{ (scoreDetail.averageScore).toFixed(1) }}
                                     <span class="text-h6 ml-n3">/5</span>
                                 </div>
                                 <v-rating
