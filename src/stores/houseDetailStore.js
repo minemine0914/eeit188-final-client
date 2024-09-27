@@ -69,6 +69,16 @@ const initialSelfHouseDiscuss = {
     score: null,
 };
 
+const initalScoreDetail = {
+    totalReviews: 0,
+    scoresInRange4To5: 0,
+    scoresInRange2To3: 0,
+    scoresInRange3To4: 0,
+    scoresInRange0To1: 0,
+    scoresInRange1To2: 0,
+    averageScore: 0,
+};
+
 const userStore = useUserStore();
 export const useHouseDetailStore = defineStore(
     "HouseDetail",
@@ -81,6 +91,7 @@ export const useHouseDetailStore = defineStore(
         const discussList = reactive([]);
         const totalDiscussCount = ref(0);
         const currentDiscussPage = ref(0);
+        const scoreDetail = reactive({ ...initalScoreDetail });
         const isErrorGetHouseInfo = ref(false);
         const isLoading = ref(true);
         const isLoadingCollection = ref(false);
@@ -293,6 +304,19 @@ export const useHouseDetailStore = defineStore(
             return data;
         }
 
+        async function getScoreDetail() {
+            await api
+            .get(`/house/mongo/scores/${houseInfo.id}`)
+            .then((res) => {
+                console.log("[HouseDetailStore] Get score detail success", res.data);
+                Object.assign(scoreDetail, res.data);
+            })
+            .catch((err) => {
+                Object.assign(scoreDetail, initalScoreDetail);
+                console.log("[HouseDetailStore] Get score detail failed");
+            });
+        }
+
         async function getSelfHouseDiscuss() {
             if (userStore.user.id !== null) {
                 await api
@@ -433,6 +457,7 @@ export const useHouseDetailStore = defineStore(
             hostInfo,
             selfHouseDiscuss,
             discussList,
+            scoreDetail,
             previewDiscussList,
             currentDiscussPage,
             totalDiscussCount,
@@ -452,6 +477,7 @@ export const useHouseDetailStore = defineStore(
             getHostInfo,
             getPreviewDiscussList,
             getHouseDiscuss,
+            getScoreDetail,
             getSelfHouseDiscuss,
             writeSelfHouseDiscuss,
             addHouseToCollection,
