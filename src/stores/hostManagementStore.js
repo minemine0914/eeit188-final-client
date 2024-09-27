@@ -47,7 +47,7 @@ export const useHostManagementStore = defineStore("hostManagement", () => {
     try {
       const userId = userStore.user.id;
       const response = await api.post("/house/search", { userId: userId });
-      state.properties = response.data;
+      this.properties = response.data;
       console.log(response.data);
     } catch (error) {
       handleError(error);
