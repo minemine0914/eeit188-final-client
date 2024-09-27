@@ -1,15 +1,15 @@
 <template>
+    <!-- <div v-if="totalUsers"> -->
+    <Pie :data="genderData" />
     <div v-if="totalUsers">
-        <Pie :data="genderData" />
-        <div>
-            <p>男：{{ maleCount }}人，佔{{ (maleCount / totalUsers * 100).toFixed(2) }}%</p>
-            <p>女：{{ femaleCount }}人，佔{{ (femaleCount / totalUsers * 100).toFixed(2) }}%</p>
-            <p>其他：{{ otherCount }}人，佔{{ (otherCount / totalUsers * 100).toFixed(2) }}%</p>
-        </div>
+        <p>男：{{ maleCount }}人，佔{{ (maleCount / totalUsers * 100).toFixed(2) }}%</p>
+        <p>女：{{ femaleCount }}人，佔{{ (femaleCount / totalUsers * 100).toFixed(2) }}%</p>
+        <p>其他：{{ otherCount }}人，佔{{ (otherCount / totalUsers * 100).toFixed(2) }}%</p>
     </div>
+    <!-- </div>
     <div v-else>
         <p>此區間無性別資料</p>
-    </div>
+    </div> -->
 </template>
 
 <script setup>
@@ -56,6 +56,16 @@ const totalUsers = computed(() => {
 
 const genderData = computed(() => {
     const total = totalUsers.value;
+    if (!total) {
+        return {
+            labels: ['此區間無性別資料'],
+            datasets: [{
+                label: '',
+                backgroundColor: ['#dddddd'],
+                data: [100]
+            }]
+        }
+    }
     return {
         labels: ['男', '女', '其他'],
         datasets: [{
