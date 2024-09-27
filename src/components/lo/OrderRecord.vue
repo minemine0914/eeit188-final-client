@@ -20,7 +20,6 @@
           </v-card-subtitle>
           <v-card-actions>
             <v-btn color="primary" @click="viewDetails(order.id)">查看詳情</v-btn>
-            <v-btn color="error" @click="deleteOrder(order.id)">刪除</v-btn>
           </v-card-actions>
         </v-card>
       </v-col>
@@ -75,15 +74,6 @@ const viewDetails = (id) => {
 
 const closeDialog = () => {
   showDialog.value = false
-}
-
-const deleteOrder = async (id) => {
-  try {
-    await hostManagementStore.deleteOrder(id) // 調用後端 API 刪除訂單
-    orders.value = orders.value.filter(order => order.id !== id) // 從本地移除已刪除的訂單
-  } catch (error) {
-    console.error('刪除失敗:', error)
-  }
 }
 
 // 計算排序與篩選後的訂單

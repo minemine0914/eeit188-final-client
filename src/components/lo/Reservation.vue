@@ -20,7 +20,6 @@
                     </v-card-subtitle>
                     <v-card-actions>
                         <v-btn color="primary" @click="viewDetails(reservation.id)">查看詳情</v-btn>
-                        <v-btn color="error" @click="deleteReservation(reservation.id)">刪除</v-btn>
                     </v-card-actions>
                 </v-card>
             </v-col>
@@ -75,15 +74,6 @@ const viewDetails = (id) => {
 
 const closeDialog = () => {
   showDialog.value = false
-}
-
-const deleteReservation = async (id) => {
-  try {
-    await hostManagementStore.deleteReservation(id) // 調用後端 API 刪除預約
-    reservations.value = reservations.value.filter(reservation => reservation.id !== id) // 刪除後更新本地資料
-  } catch (error) {
-    console.error('刪除失敗:', error)
-  }
 }
 
 // 計算排序與篩選後的預約
