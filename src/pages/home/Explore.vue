@@ -64,9 +64,9 @@
                         <v-slide-group-item
                             v-else
                             v-for="hotHouse in hotHouseList"
-                            :key="hotHouse.id"
+                            :key="hotHouse.houseDetails.id"
                         >
-                            <HouseCard :house="hotHouse" min-width="320" />
+                            <HouseCard :house="hotHouse.houseDetails" :avg-score="hotHouse.averageScore" min-width="320" />
                         </v-slide-group-item>
                     </v-slide-group>
                 </v-sheet>
@@ -119,6 +119,7 @@
                 <v-row justify="start" align="start">
                     <template v-for="exploreHouse in allHouseList" :key="exploreHouse.id">
                         <v-col cols="12" lg="3" md="4" sm="6" xs="12">
+                            <!-- <HouseCard :house="exploreHouse.houseDetails" :avg-score="exploreHouse.averageScore" /> -->
                             <HouseCard :house="exploreHouse" />
                         </v-col>
                     </template>

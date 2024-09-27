@@ -283,9 +283,10 @@ const submitForm = async () => {
     // 發送表單資料到後端
     await hostManagementStore.addProperty(property.value)
 
+    console.log(property.value.images);
     // 圖片上傳處理
     if (property.value.images.length > 0) {
-      const propertyId = hostManagementStore.properties[hostManagementStore.properties.length - 1].id
+      const propertyId = hostManagementStore.state.properties[hostManagementStore.state.properties.length - 1].id
       for (let image of property.value.images) {
         await hostManagementStore.uploadPropertyImage(propertyId, image)
       }

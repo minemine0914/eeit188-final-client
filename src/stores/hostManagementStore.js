@@ -1,8 +1,10 @@
 import { defineStore } from "pinia";
 import api from "@/plugins/axios";
 import { ref, reactive } from "vue";
+import { useUserStore } from "./userStore";
 
 export const useHostManagementStore = defineStore("hostManagement", () => {
+  const userStore = useUserStore();
   // 狀態
   const state = reactive({
     properties: [],  // 房源
@@ -65,10 +67,23 @@ export const useHostManagementStore = defineStore("hostManagement", () => {
   }
   // 新增房源
   async function addProperty(propertyData) {
+    let data = {...propertyData, userId: userStore.user.id}
     clearError();
     state.loading = true;
+    api.get("https://nominatim.openstreetmap.org/search.php",
+       { params: { q: propertyData.city + propertyData.region, format: "jsonv2"  } })
+       .then((res)=>{
+        console.log("OpenStreetMap search long lat:", res.data);
+        if (res.data.length !== 0) {
+          data.latitudeX = res.data[0].lat;
+          data.longitudeY = res.data[0].lon;
+        }
+       })
+       .catch((err)=>{
+        // console.log();
+       });
     try {
-      const response = await api.post("/house", propertyData);
+      const response = await api.post("/house/", data);
       state.properties.push(response.data);
       state.loading = false;
     } catch (error) {
@@ -205,5 +220,5 @@ export const useHostManagementStore = defineStore("hostManagement", () => {
 
   };
 }, {
-  persist: true, // 持久化狀態
+  // persist: true, // 持久化狀態
 });

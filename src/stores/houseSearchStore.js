@@ -143,10 +143,24 @@ export const useHouseSearchStore = defineStore("HouseSearch", () => {
 
     async function getAllHouse() {
         let resData = null;
+        // await api
+        //     .post("/house/mongo/scores/average-grouped-by-house", {
+        //         limit: currentAllHouseLimit.value,
+        //         page: currentAllHousePage.value,
+        //         dir: true,
+        //         order: "averageScoreModified",
+        //         randomFactor: 100,
+        //     })
+        //     .then((res) => {
+        //         console.log("取得AllHouse成功");
+        //         resData = res.data;
+        //     })
+        //     .catch((err) => {
+        //         console.log("取得AllHouse失敗");
+        //     });
         await api
-            .post("/house/search", {
-                limit: currentAllHouseLimit.value,
-                page: currentAllHousePage.value,
+            .get("/house/all", {
+                params: { limit: currentAllHouseLimit.value, page: currentAllHousePage.value },
             })
             .then((res) => {
                 console.log("取得AllHouse成功");
@@ -178,11 +192,12 @@ export const useHouseSearchStore = defineStore("HouseSearch", () => {
 
     async function getHotHouse() {
         await api
-            .post("/house/search", {
-                limit: 10,
+            .post("/house/mongo/scores/average-grouped-by-house", {
+                limit: 15,
                 page: 0,
                 dir: true,
-                order: "createdAt",
+                order: "averageScoreModified",
+                randomFactor: 0,
             })
             .then((res) => {
                 console.log("取得HotHouse成功");
