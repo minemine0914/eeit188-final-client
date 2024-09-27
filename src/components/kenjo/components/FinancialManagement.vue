@@ -95,9 +95,9 @@ export default {
         { title: '日期', value: 'date' },
         { title: '訂單數量', value: 'orderQuantity' },
         { title: '總金額', value: 'totalAmount' },
-        { title: '折扣金額', value: 'discountAmount' },
+        //{ title: '折扣金額', value: 'discountAmount' },
         { title: '應付帳款', value: 'AP' },
-        { title: '收益', value: 'R' },
+        { title: '平台收益', value: 'R' },
         { text: '操作', value: 'actions', sortable: false },
       ],
       desserts: [],
@@ -169,7 +169,7 @@ export default {
           }
           combinedData[formattedDate].orderQuantity += 1;
           combinedData[formattedDate].totalAmount += (cashFlow * 1.1);
-          combinedData[formattedDate].discountAmount += discount;
+          //combinedData[formattedDate].discountAmount += discount;
           combinedData[formattedDate].AP += cashFlow;
           combinedData[formattedDate].R += ((cashFlow * 0.1) - discount); 
         });
