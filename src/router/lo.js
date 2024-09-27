@@ -1,5 +1,3 @@
-import wuRouter from "./wu_host";
-
 const router = {
     path: '/lo',
     name: 'Lo',
@@ -33,7 +31,8 @@ const router = {
         {
             path: 'reports',
             name: 'reports',
-            component: () => import('@/components/lo/Reports.vue')
+            component: () => import("@/components/wu/components/HostReport.vue"),
+            meta: { title: "歷史紀錄與報表[房東]", requiresAuth: false },
         },
         {
             path: 'add-property',
@@ -52,7 +51,6 @@ const router = {
             component: () => import('@/components/lo/OrderDetail.vue'),
             props: true
         },
-        wuRouter,
     ],
 };
 

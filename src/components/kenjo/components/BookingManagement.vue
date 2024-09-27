@@ -286,14 +286,14 @@ export default {
       try {
         const response = await axios.get('http://localhost:8080/transcation_record/all', {
           params: {
-            pageNo: 0,
-            pageSize: 1000
+            page: 0,
+            limit: 1000
           }
         });
 
         if (response.status === 200) {
-          //console.log('API response:', response.data);
-
+          console.log('API response:', response.data);
+          
           if (response.data && Array.isArray(response.data.content)) {
             this.orders = response.data.content
             ;

@@ -3,12 +3,15 @@
         <template v-slot:default="{ isActive }">
             <v-card rounded="lg" min-width="500">
                 <v-card-title class="d-flex justify-space-between align-center">
-                    <div class="text-h5 text-medium-emphasis ps-2">評論 {{ houseInfo.name }}</div>
+                    <div class="d-flex flex-row align-top">
+                        <v-icon icon="mdi-message-draw" color="brown-darken-1"></v-icon>
+                        <div class="text-h6 text-medium-emphasis pl-2">評價 {{ houseInfo.name }}</div>
+                    </div>
                     <v-btn icon="mdi-close" variant="text" @click="isActive.value = false"></v-btn>
                 </v-card-title>
                 <v-divider class="mb-4"></v-divider>
                 <v-card-item class="text-center">
-                    <div>您覺得 {{ houseInfo.name }} 值幾顆星</div>
+                    <div class="text-subtitle-1">您覺得 {{ houseInfo.name }} 值幾顆星</div>
                     <v-rating
                         hover
                         :length="5"

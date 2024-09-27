@@ -3,7 +3,10 @@
         <template v-slot:default="{ isActive }">
             <v-card rounded="lg" min-width="500" min-height="300">
                 <v-card-title class="d-flex justify-space-between align-center">
-                    <div class="text-h5 text-medium-emphasis ps-2">更多相片</div>
+                    <div class="d-flex flex-row align-top">
+                        <v-icon icon="mdi-image-multiple-outline" color="brown-darken-1"></v-icon>
+                        <div class="text-h6 text-medium-emphasis pl-2">更多相片</div>
+                    </div>
                     <v-btn icon="mdi-close" variant="text" @click="isActive.value = false"></v-btn>
                 </v-card-title>
                 <v-divider class="mb-0"></v-divider>

@@ -20,86 +20,77 @@
                 v-model="bookingStep"
                 alt-labels
                 flat
-                color="brown"
-                :items="['確認資訊', '付款方式', '進行付款', '訂房結果']"
+                :items="['住房資訊', '確認價格', '進行付款', '訂房結果']"
             >
                 <template v-slot:item.1>
-                    <v-card title="房源資訊" flat>
-                        <v-sheet
-                            class="d-flex align-center justify-center border mb-5 elevation-0"
-                            color="brown-lighten-5"
-                            rounded="xl"
-                        >
-                            <v-row class="fill-height" no-gutters>
-                                <v-col class="pa-5" cols="12" sm="5" md="4" lg="3" xl="3">
-                                    <!-- 圖片 -->
-                                    <v-sheet
-                                        color="transparent"
-                                        rounded="lg"
-                                        class="overflow-hidden"
-                                    >
-                                        <v-carousel
-                                            height="200"
-                                            show-arrows="hover"
-                                            hide-delimiter-background
-                                            hide-delimiters
+                    <v-row>
+                        <v-col cols="12" md="6">
+                            <v-card title="房源資訊" flat>
+                                <v-row class="fill-height" no-gutters>
+                                    <v-col class="pa-5" cols="12">
+                                        <!-- 圖片 -->
+                                        <v-sheet
+                                            color="transparent"
+                                            rounded="lg"
+                                            class="overflow-hidden"
                                         >
-                                            <template v-slot:prev="{ props }">
-                                                <v-btn
-                                                    v-if="
-                                                        houseInfo.houseExternalResourceRecords
-                                                            .length > 1
-                                                    "
-                                                    :class="props.class"
-                                                    color="rgba(255,255,255,0.5)"
-                                                    size="small"
-                                                    density="compact"
-                                                    icon="mdi-chevron-left"
-                                                    variant="elevated"
-                                                    @click="props.onClick"
-                                                ></v-btn>
-                                            </template>
-                                            <template v-slot:next="{ props }">
-                                                <v-btn
-                                                    v-if="
-                                                        houseInfo.houseExternalResourceRecords
-                                                            .length > 1
-                                                    "
-                                                    :class="props.class"
-                                                    color="rgba(255,255,255,0.5)"
-                                                    size="small"
-                                                    density="compact"
-                                                    icon="mdi-chevron-right"
-                                                    variant="elevated"
-                                                    @click="props.onClick"
-                                                ></v-btn>
-                                            </template>
-                                            <v-carousel-item
-                                                v-for="imageSrc in houseSearchStore.getHouseImageUrlList(
-                                                    houseInfo.houseExternalResourceRecords
-                                                )"
+                                            <v-carousel
+                                                height="200"
+                                                show-arrows="hover"
+                                                hide-delimiter-background
+                                                hide-delimiters
                                             >
-                                                <v-img
-                                                    :aspect-ratio="1"
-                                                    :height="200"
-                                                    :src="imageSrc"
-                                                    cover
-                                                ></v-img>
-                                            </v-carousel-item>
-                                        </v-carousel>
-                                    </v-sheet>
-                                </v-col>
-                                <v-col
-                                    class="d-flex justify-start align-start pa-5"
-                                    cols="12"
-                                    sm="7"
-                                    md="8"
-                                    lg="9"
-                                    xl="9"
-                                >
-                                    <div class="d-flex flex-row mb-6 w-100 h-100">
+                                                <template v-slot:prev="{ props }">
+                                                    <v-btn
+                                                        v-if="
+                                                            houseInfo.houseExternalResourceRecords
+                                                                .length > 1
+                                                        "
+                                                        :class="props.class"
+                                                        color="rgba(255,255,255,0.5)"
+                                                        size="small"
+                                                        density="compact"
+                                                        icon="mdi-chevron-left"
+                                                        variant="elevated"
+                                                        @click="props.onClick"
+                                                    ></v-btn>
+                                                </template>
+                                                <template v-slot:next="{ props }">
+                                                    <v-btn
+                                                        v-if="
+                                                            houseInfo.houseExternalResourceRecords
+                                                                .length > 1
+                                                        "
+                                                        :class="props.class"
+                                                        color="rgba(255,255,255,0.5)"
+                                                        size="small"
+                                                        density="compact"
+                                                        icon="mdi-chevron-right"
+                                                        variant="elevated"
+                                                        @click="props.onClick"
+                                                    ></v-btn>
+                                                </template>
+                                                <v-carousel-item
+                                                    v-for="imageSrc in houseSearchStore.getHouseImageUrlList(
+                                                        houseInfo.houseExternalResourceRecords
+                                                    )"
+                                                >
+                                                    <v-img
+                                                        :aspect-ratio="1"
+                                                        :height="200"
+                                                        :src="imageSrc"
+                                                        cover
+                                                    ></v-img>
+                                                </v-carousel-item>
+                                            </v-carousel>
+                                        </v-sheet>
+                                    </v-col>
+                                    <v-col
+                                        class="d-flex flex-column justify-start align-start"
+                                        cols="12"
+                                    >
                                         <!-- 房源名稱與資訊 -->
-                                        <v-sheet class="flex-grow-1" color="transparent">
+                                        <v-sheet class="flex-grow-1 px-5" color="transparent">
                                             <div
                                                 class="text-h5 font-weight-medium text-brown-darken-4 pt-1 mb-1"
                                             >
@@ -153,7 +144,7 @@
                                         </v-sheet>
                                         <!-- 價錢與詳細按鈕 -->
                                         <v-sheet
-                                            class="d-flex flex-column flex-grow-1 justify-end align-end"
+                                            class="d-flex flex-column flex-grow-1 justify-end align-end px-5"
                                             color="transparent"
                                         >
                                             <v-sheet color="transparent">
@@ -163,37 +154,120 @@
                                                     NT ${{ houseInfo.price }}
                                                 </div>
                                             </v-sheet>
-                                            <!-- <v-sheet color="transparent">
-                                                <v-btn
-                                                    color="brown-lighten-1"
-                                                    min-width="130"
-                                                    size="large"
-                                                    :to="`/house/${item.id}`"
-                                                    >詳細資訊</v-btn
-                                                >
-                                            </v-sheet> -->
                                         </v-sheet>
-                                    </div>
-                                </v-col>
-                            </v-row>
-                        </v-sheet>
-                    </v-card>
-                    <v-card title="入住期間" flat>
-                        <v-row>
-                            <v-col cols="12" md="5">
+                                    </v-col>
+                                </v-row>
+                            </v-card>
+                        </v-col>
+                        <v-col cols="12" md="6">
+                            <v-card title="入住期間" flat>
                                 <v-date-input
                                     multiple="range"
                                     variant="outlined"
                                     label="入住期間"
                                 ></v-date-input>
-                            </v-col>
-                        </v-row>
-                    </v-card>
+                            </v-card>
+                        </v-col>
+                    </v-row>
                 </template>
 
                 <template v-slot:item.2>
-                    <v-card title="付款方式" flat>...</v-card>
-                    <v-card title="優惠券" flat>...</v-card>
+                    <v-row class="d-flex flex-row">
+                        <v-col cols="12" md="7">
+                            <v-card title="優惠券" :border="true" flat rounded="lg" class="h-100">
+                                <v-divider class="border-opacity-25"></v-divider>
+                                <v-sheet min-height="300">
+                                    <v-infinite-scroll
+                                        max-height="480"
+                                        :items="couponList"
+                                        @load="loadCouponList"
+                                        class="w-100"
+                                    >
+                                        <v-item-group
+                                            v-model="selectedCouponIndex"
+                                            class="d-flex flex-column ga-3"
+                                        >
+                                            <template
+                                                v-for="(coupon, index) in couponList"
+                                                :key="index"
+                                            >
+                                                <v-item v-slot="{ isSelected, toggle }">
+                                                    <div class="flex-grow-1">
+                                                        <CouponCard
+                                                            :selected="isSelected"
+                                                            :coupon="coupon"
+                                                            :toggle="toggle"
+                                                        />
+                                                    </div>
+                                                </v-item>
+                                            </template>
+                                        </v-item-group>
+                                        <!-- Scroll empty component -->
+                                        <template v-slot:empty>
+                                            <v-sheet>
+                                                <v-alert variant="plain">
+                                                    <span>{{
+                                                        couponList.length > 0
+                                                            ? "沒有更多優惠券了"
+                                                            : "尚無優惠券"
+                                                    }}</span>
+                                                </v-alert>
+                                            </v-sheet>
+                                        </template>
+                                    </v-infinite-scroll>
+                                </v-sheet>
+                            </v-card>
+                        </v-col>
+                        <v-col cols="12" md="5">
+                            <v-card title="價格詳情" :border="true" flat rounded="lg">
+                                <v-divider class="border-opacity-25"></v-divider>
+                                <v-card-item>
+                                    <v-sheet class="d-flex flex-column ga-1 my-2">
+                                        <v-sheet
+                                            class="flex-grow-1 d-flex flex-row justify-space-between align-center"
+                                        >
+                                            <div class="text-subtitle-1">
+                                                NT ${{ houseInfo.price }} x 1晚
+                                            </div>
+                                            <div class="text-body-1">
+                                                NT ${{ houseInfo.price * 1 }}
+                                            </div>
+                                        </v-sheet>
+                                        <v-sheet
+                                            class="flex-grow-1 d-flex flex-row justify-space-between align-center"
+                                        >
+                                            <div class="text-subtitle-1">平台抽成(5%)</div>
+                                            <div class="text-body-1">
+                                                NT ${{ houseInfo.price * 0.05 }}
+                                            </div>
+                                        </v-sheet>
+                                        <v-sheet
+                                            v-if="selectedCoupon != null"
+                                            class="flex-grow-1 d-flex flex-row justify-space-between align-center"
+                                        >
+                                            <div class="text-subtitle-1">優惠券</div>
+                                            <div class="text-body-1 text-green-darken-1">
+                                                折扣 - NT ${{ selectedCoupon?.discount }}
+                                            </div>
+                                        </v-sheet>
+                                    </v-sheet>
+                                </v-card-item>
+                                <v-divider class="border-opacity-25 mx-3"></v-divider>
+                                <v-card-actions
+                                    class="d-flex flex-row justify-space-between align-center px-4"
+                                >
+                                    <div class="text-h6">稅前總價</div>
+                                    <div class="text-h6">
+                                        NT ${{
+                                            houseInfo.price * 1 +
+                                            houseInfo.price * 0.05 -
+                                            (selectedCoupon != null ? selectedCoupon.discount : 0)
+                                        }}
+                                    </div>
+                                </v-card-actions>
+                            </v-card>
+                        </v-col>
+                    </v-row>
                 </template>
 
                 <template v-slot:item.3>
@@ -279,14 +353,14 @@
     </v-container>
 </template>
 <script setup>
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, onMounted, reactive, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useHouseDetailStore } from "@/stores/houseDetailStore";
 import { useHouseSearchStore } from "@/stores/houseSearchStore";
 import { useUserStore } from "@/stores/userStore";
 import { storeToRefs } from "pinia";
-import ImageGrid from "@/components/home/ImageGrid.vue";
-import api from "@/plugins/axios.js";
+import CouponCard from "@/components/home/CouponCard.vue";
+import { useHouseBookingStore } from "@/stores/houseBookingStore";
 // Use route, router
 const router = useRouter();
 const route = useRoute();
@@ -294,32 +368,30 @@ const route = useRoute();
 // Use pinia store
 const houseDetailStore = useHouseDetailStore();
 const houseSearchStore = useHouseSearchStore();
+const houseBookingStore = useHouseBookingStore();
 const userStore = useUserStore();
-const { houseInfo, isErrorGetHouseInfo, isLoading, isLoadingCollection, isCollected } =
-    storeToRefs(houseDetailStore);
-//
+const { houseInfo, isErrorGetHouseInfo, isLoading } = storeToRefs(houseDetailStore);
+
+// Step state
 const bookingStep = ref(1);
 const renderStepPrevBtn = ref(false);
 const renderStepNextBtn = ref(true);
 const isLoadingStepBtn = ref(false);
 const paymentResult = ref(false);
 
-// Funcions
+const selectedCouponIndex = ref(null);
+const currentCouponListPage = ref(0);
+const couponList = reactive([]);
+const selectedCoupon = computed(() => {
+    return selectedCouponIndex.value != null ? couponList.at(selectedCouponIndex.value) : null;
+});
 
+// Funcions
 async function checkStepPrev() {
-    switch (bookingStep.value) {
-        case 1:
-            break;
-        case 2:
-            renderStepPrevBtn.value = false;
-            bookingStep.value--;
-            break;
-        case 3:
-            renderStepPrevBtn.value = true;
-            bookingStep.value--;
-            break;
-        default:
-            break;
+    if (bookingStep.value > 1) {
+        bookingStep.value--;
+        renderStepPrevBtn.value = bookingStep.value > 1;
+        renderStepNextBtn.value = true; // Enable next button after going back
     }
 }
 async function checkStepNext() {
@@ -331,12 +403,10 @@ async function checkStepNext() {
             await checkPayment();
             break;
         case 3:
-            break;
-        default:
+            // Perform any action needed in step 3
             break;
     }
 }
-
 async function checkBookingDate() {
     isLoadingStepBtn.value = true;
     return new Promise(function (resolve, reject) {
@@ -348,7 +418,6 @@ async function checkBookingDate() {
         }, 1000);
     });
 }
-
 async function checkPayment() {
     // 創建新視窗
     const paymentWindow = window.open(
@@ -356,35 +425,37 @@ async function checkPayment() {
         "_blank",
         "location=yes,height=570,width=520,scrollbars=yes,status=yes"
     );
+    // 更新 UI 狀態
     renderStepPrevBtn.value = false;
     renderStepNextBtn.value = false;
     bookingStep.value = 3;
-    await api
-        .post("/payment/booking-house", {
-            houseId: houseInfo.value.id,
-            userId: userStore.user.id,
-        })
-        .then((response) => {
-            const formHtml = response.data;
-            // 將返回的表單寫入新視窗並提交
-            paymentWindow.document.open();
-            paymentWindow.document.write(formHtml);
-            paymentWindow.document.close();
-            // 監聽新視窗關閉狀態
-            const timer = setInterval(() => {
-                if (paymentWindow.closed) {
-                    clearInterval(timer); // 清除定時器
-                    checkDetail(true); // 視窗關閉後執行
-                }
-            }, 500); // 每0.5秒檢查一次
-            // 移除待結帳清單 (BookingList)
-            houseDetailStore.removeBookingList();
-        })
-        .catch((error) => {
-            console.error("Error creating order:", error);
-            // 將返回的表單寫入新視窗並提交
-            paymentWindow.document.open();
-            paymentWindow.document.write(`
+    try {
+        // 调用 Pinia 中的处理支付的函数
+        const formHtml = await houseBookingStore.processBookingPayment(
+            houseDetailStore.houseInfo.id,
+            userStore.user.id,
+            couponList[selectedCouponIndex.value]?.id
+        );
+
+        // 将返回的表单写入新窗口并提交
+        paymentWindow.document.open();
+        paymentWindow.document.write(formHtml);
+        paymentWindow.document.close();
+
+        // 監控窗口關閉狀態
+        const timer = setInterval(() => {
+            if (paymentWindow.closed) {
+                clearInterval(timer); // 清除定時器
+                checkDetail(true); // 窗口關閉後執行
+            }
+        }, 500); // 每0.5秒檢查一次
+
+        // 移除待結帳清單
+        houseDetailStore.removeBookingList();
+    } catch (error) {
+        // 如果 API 请求失败，显示错误信息
+        paymentWindow.document.open();
+        paymentWindow.document.write(`
 <html>
     <head>
         <meta charset="UTF-8">
@@ -397,37 +468,60 @@ async function checkPayment() {
         </div>
     </body>
 </html>
-                        `);
-            paymentWindow.document.close();
-            // 監聽新視窗關閉狀態
-            const timer = setInterval(() => {
-                if (paymentWindow.closed) {
-                    clearInterval(timer); // 清除定時器
-                    checkDetail(false); // 視窗關閉後執行
-                }
-            }, 500); // 每0.5秒檢查一次
-        });
-}
+        `);
+        paymentWindow.document.close();
 
+        // 監控窗口關閉狀態
+        const timer = setInterval(() => {
+            if (paymentWindow.closed) {
+                clearInterval(timer); // 清除定時器
+                checkDetail(false); // 窗口關閉後執行
+            }
+        }, 500); // 每0.5秒檢查一次
+    }
+}
 async function checkDetail(result) {
-    result ? (paymentResult.value = true) : (paymentResult.value = false);
+    paymentResult.value = result;
     renderStepPrevBtn.value = false;
     renderStepNextBtn.value = false;
-    bookingStep.value = 4;
+    bookingStep.value = 4; // 假設步驟 4 是顯示結果
 }
-
 function resetStep() {
     bookingStep.value = 1;
     renderStepPrevBtn.value = false;
     renderStepNextBtn.value = true;
 }
 
+async function loadCouponList({ done }) {
+    console.log("Get CouponList data...");
+    try {
+        let data = await houseBookingStore.getCouponList(
+            userStore.user.id,
+            currentCouponListPage.value,
+            10
+        );
+        if (!data.empty) {
+            couponList.push(...data.content);
+            currentCouponListPage.value++;
+            console.log(`Read CouponList ok! Page: ${currentCouponListPage.value}`);
+            done("ok");
+        } else {
+            console.log(`Read CouponList empty! Page: ${currentCouponListPage.value}`);
+            done("empty");
+        }
+    } catch (err) {
+        console.log(`Read CouponList error! Page: ${currentCouponListPage.value}`);
+        done("error");
+    }
+}
+
 watch(
     // Watch Route params houseId change
     () => route.params.houseId,
-    (newId, oldId) => {
-        console.log(newId, oldId);
-        houseDetailStore.getHouseInfo(newId);
+    async (newId, oldId) => {
+        if (newId !== oldId) {
+            await houseDetailStore.getHouseInfo(newId);
+        }
     }
 );
 onMounted(async () => {
