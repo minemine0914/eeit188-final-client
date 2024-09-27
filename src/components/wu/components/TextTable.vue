@@ -139,8 +139,8 @@ if (store.loginUser.role === 'normal') {
         { title: '訂單成立時間', value: 'createdAt', sortable: true, width: '210px' },
         { title: '訂房者名稱', value: 'bookerName', sortable: true, width: '150px' },
         { title: '性別', value: 'bookerGender', sortable: true, width: '100px' },
-        { title: '平台收入', value: 'platformIncome', sortable: true, width: '300px' },
-        { title: '金額', value: 'cashFlow', sortable: true, width: '100px' },
+        { title: '平台收入', value: 'platformIncome', sortable: true, width: '300px', align: "end" },
+        { title: '交易金額', value: 'cashFlow', sortable: true, width: '100px', align: "end" },
         { title: '評分', value: 'score', sortable: true, width: '200px' },
         // { title: '圖片', value: 'pics', sortable: false, width: '200px' }, // Disable sorting for pics
         // { title: '', value: 'postulate', sortable: false, width: '100px' }, // 空白欄 調整排版用
@@ -150,14 +150,14 @@ const itemsPerPage = 10 // Default items per page
 const itemsPerPageOptions = [3, 5, 10, 25, 50, 100, -1] // Options for per-page selector
 
 const currentUser = computed(() => {
-    console.log('Fetching current user...');
+    // console.log('Fetching current user...');
     const user = store.getUserBySelectedUserId(store.selectedUserId);
-    console.log('Current user:', user);
+    // console.log('Current user:', user);
     return user;
 });
 
 const items = computed(() => {
-    console.log('is', store.itemsSource)
+    // console.log('is', store.itemsSource)
     let filtered = ''
     if (!search.value) { filtered = store.itemsSource; }
     else {

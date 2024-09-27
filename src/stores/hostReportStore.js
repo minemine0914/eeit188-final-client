@@ -2,16 +2,11 @@
 
 import { defineStore } from 'pinia';
 import api from '@/plugins/axios';
-import { set } from 'ol/transform';
 
 export const useHostReportStore = defineStore('hostReport', {
     state: () => ({
         isLoading: false,
-        loginUser: {
-            id: 'e61abdb4-d054-4188-9e41-c2691792cf73',
-            role: 'normal',
-            name: 'UserName123',
-        },
+        loginUser: {},
         // loginUser: 'f27a7b80-4d60-44cf-aa1c-9b44dd375698',
         selectedHouseId: '',
         selectedUserId: '',
@@ -83,6 +78,8 @@ export const useHostReportStore = defineStore('hostReport', {
             try {
                 const response = await api.get(`/user/find-hosts`);
                 this.users = response.data;
+                // 0.1 修正user只有ID的問題，User ID->User物件
+                for (let i = 0; i < this.users.length; i++) { this.users[i] = await this.searchUserAgainByRecordId(this.users[i]); }
                 console.log('this.users', this.users)
             } catch (error) {
                 console.error('Error fetching users:', error);
@@ -159,11 +156,6 @@ export const useHostReportStore = defineStore('hostReport', {
                 this.selectedHouseId = this.houses[0].id
 
                 console.log('tH', this.houses)
-
-
-
-                console.log('DDDD', click.data.content)
-                console.log('GGGGG', this.houses)
             } catch (error) {
                 console.error('Error fetching houses:', error);
             }
@@ -199,13 +191,13 @@ export const useHostReportStore = defineStore('hostReport', {
                 //啥都沒傳，初始化years陣列(資料內容的頭~尾年分)
                 if (!year && !month && !quarter) {
                     const first = await api.post(`/transcation_record/search`, body);
-                    console.log('fetch 1st', new Date(first.data.content[0].createdAt).getFullYear())
                     let startYear = new Date(first.data.content[0].createdAt).getFullYear()
+                    console.log('fetch 1st', startYear)
 
                     body.dir = true //desc
                     const last = await api.post(`/transcation_record/search`, body);
-                    console.log('fetch last', new Date(last.data.content[0].createdAt).getFullYear())
                     let endYear = new Date(last.data.content[0].createdAt).getFullYear()
+                    console.log('fetch last', endYear)
 
                     this.years = []
                     for (let i = startYear; i <= endYear; i++) {
@@ -253,7 +245,7 @@ export const useHostReportStore = defineStore('hostReport', {
                 // body.maxCreatedAt = new Date(parseInt(this.selectedYear) + 1, 0, 1)
                 // console.log('111111', body.maxCreatedAt)
                 const response = await api.post(`/transcation_record/search`, body);
-                console.log('response.data', response.data)
+                console.log('All Records response.data', response.data)
 
                 // 4.1 修正回傳值TxRecord只有ID的問題，TxRecord ID->TxRecord物件
                 let transformedRecords = await this.searchRecordAgainByRecordId(response.data.content);
@@ -360,7 +352,7 @@ export const useHostReportStore = defineStore('hostReport', {
                 contentArray[i] = output
             }
             //log**************************
-            console.log(contentArray)
+            // console.log(contentArray)
             //log**************************
             return contentArray
         },
@@ -370,9 +362,9 @@ export const useHostReportStore = defineStore('hostReport', {
             for (let i = 0; i < contentArray.length; i++) {
                 let score = 0
                 try {
-                    console.log('getScore(userId,HoouseId)', contentArray[i].user.id, this.selectedHouseId)
+                    // console.log('getScore(userId,HoouseId)', contentArray[i].user.id, this.selectedHouseId)
                     const response = await api.get(`/house/mongo/find/${contentArray[i].user.id}/${this.selectedHouseId}`);
-                    console.log('score', response)
+                    // console.log('score', response)
                     if (response.data?.score) {
                         score = response.data.score
                     }
@@ -430,7 +422,7 @@ export const useHostReportStore = defineStore('hostReport', {
                 // Add the cash flow to the appropriate month (1-based index, so subtract 1)
                 result[year][month - 1] += cashFlow;
             });
-            console.log('YM', this.recordsPrapared);
+            // console.log('YM', this.recordsPrapared);
             return result
         },
 
@@ -517,7 +509,7 @@ export const useHostReportStore = defineStore('hostReport', {
         async getHouseClick(houseId) {
             try {
                 const response = await api.post(`/house/mongo/count/click`, { "houseId": houseId });
-                console.log('gethouseclickresponse', response.data)
+                // console.log('gethouseclickresponse', response.data)
                 return response.data
             } catch (error) {
                 console.error('Error fetching users:', error);
@@ -529,7 +521,7 @@ export const useHostReportStore = defineStore('hostReport', {
         async getselectedHouseClick() {
 
             const response = await api.post(`house/mongo/count/click`, { houseId: this.selectedHouseId });
-            console.log('HGGHHGHGHGH', response.data)
+            // console.log('HGGHHGHGHGH', response.data)
             return response.data
 
         },
@@ -703,5 +695,5 @@ export const useHostReportStore = defineStore('hostReport', {
 
         // },
 
-    }
+    },
 });
