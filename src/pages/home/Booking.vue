@@ -232,10 +232,10 @@
                                             class="flex-grow-1 d-flex flex-row justify-space-between align-center"
                                         >
                                             <div class="text-subtitle-1">
-                                                NT ${{ houseInfo.price }} x 1晚
+                                                NT ${{ houseInfo.price }} x {{ liveDays }}晚
                                             </div>
                                             <div class="text-body-1">
-                                                NT ${{ houseInfo.price * 1 }}
+                                                NT ${{ houseInfo.price * liveDays }}
                                             </div>
                                         </v-sheet>
                                         <v-sheet
@@ -243,7 +243,7 @@
                                         >
                                             <div class="text-subtitle-1">平台抽成(5%)</div>
                                             <div class="text-body-1">
-                                                NT ${{ houseInfo.price * 0.05 }}
+                                                NT ${{ platformIncome }}
                                             </div>
                                         </v-sheet>
                                         <v-sheet
@@ -262,7 +262,7 @@
                                     class="d-flex flex-row justify-space-between align-center px-4"
                                 >
                                     <div class="text-h6">稅前總價</div>
-                                    <div class="text-h6">NT ${{ totalPrice }}</div>
+                                    <div class="text-h6">NT ${{ finalPrice }}</div>
                                 </v-card-actions>
                             </v-card>
                         </v-col>
@@ -378,11 +378,34 @@ const dateRange = computed(() => {
     }
 
     let start = inputDateRange.value[0];
-    let end = inputDateRange.value.length > 1 
-        ? inputDateRange.value[inputDateRange.value.length - 1] 
-        : inputDateRange.value[0];
+    let end =
+        inputDateRange.value.length > 1
+            ? inputDateRange.value[inputDateRange.value.length - 1]
+            : inputDateRange.value[0];
 
     return [start, end];
+});
+
+const liveDays = computed(() => {
+    const [start, end] = dateRange.value;
+
+    if (!start || !end) {
+        return 0; // 如果日期範圍無效，返回0天
+    }
+
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+
+    // 如果 start 和 end 是同一天，返回 1 天
+    if (startDate.getTime() === endDate.getTime()) {
+        return 1;
+    }
+
+    // 計算兩個日期之間的天數
+    const diffTime = Math.abs(endDate - startDate);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // 每天的毫秒數
+
+    return diffDays; // 返回日期範圍內的天數
 });
 
 // Step state
@@ -404,24 +427,30 @@ const selectedCoupon = computed(() =>
 const discountPrice = computed(() => {
     const coupon = selectedCoupon.value;
     if (coupon) {
+        const price = houseInfo.value?.price || 0;
+        const day = liveDays.value; // 使用實際天數
         if (coupon.discount != null) {
             // 固定折扣
             return coupon.discount;
         } else if (coupon.discountRate != null) {
             // 折扣率
-            const price = houseInfo.value?.price || 0;
-            const day = 1; // 如果天數固定，則設為1
-            return (price * day * coupon.discountRate).toFixed(0); // 四捨五入至整數
+            return (price * day * (coupon.discountRate)).toFixed(0); // 四捨五入至整數
         }
     }
     return 0;
 });
 
-const totalPrice = computed(() => {
-    const day = 1;
+const totalPrice = computed(()=>{
     const price = houseInfo.value?.price || 0;
-    const platformDeal = price * 0.05; // 平台手續費 5%
-    return price * day + platformDeal - discountPrice.value;
+    return price * liveDays.value - discountPrice.value;
+});
+
+const platformIncome = computed(()=>{
+    return parseInt((totalPrice.value * 0.05).toFixed(0));
+});
+
+const finalPrice = computed(() => {
+    return totalPrice.value + platformIncome.value;
 });
 
 // Funcions
