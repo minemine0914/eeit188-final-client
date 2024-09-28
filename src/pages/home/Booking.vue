@@ -162,10 +162,15 @@
                         <v-col cols="12" md="6">
                             <v-card title="入住期間" flat>
                                 <v-date-input
+                                    v-model="inputDateRange"
+                                    label="入住 / 退房日期"
                                     multiple="range"
-                                    variant="outlined"
-                                    label="入住期間"
-                                ></v-date-input>
+                                    prepend-icon=""
+                                    variant="solo"
+                                    hide-details
+                                    flat
+                                    @update:focused="onFocusDateRange"
+                                />
                             </v-card>
                         </v-col>
                     </v-row>
@@ -366,6 +371,8 @@ const houseBookingStore = useHouseBookingStore();
 const userStore = useUserStore();
 const { houseInfo, isErrorGetHouseInfo, isLoading } = storeToRefs(houseDetailStore);
 
+const inputDateRange = ref(null);
+
 // Step state
 const bookingStep = ref(1);
 const renderStepPrevBtn = ref(false);
@@ -453,7 +460,8 @@ async function checkPayment() {
         const formHtml = await houseBookingStore.processBookingPayment(
             houseDetailStore.houseInfo.id,
             userStore.user.id,
-            couponList[selectedCouponIndex.value]?.id
+            couponList[selectedCouponIndex.value]?.id,
+            [inputDateRange.value[0], inputDateRange.value[inputDateRange.value.length - 1]]
         );
 
         // 将返回的表单写入新窗口并提交
@@ -472,6 +480,7 @@ async function checkPayment() {
         // 移除待結帳清單
         houseDetailStore.removeBookingList();
     } catch (error) {
+        console.log(error)
         // 如果 API 请求失败，显示错误信息
         paymentWindow.document.open();
         paymentWindow.document.write(`
@@ -532,6 +541,10 @@ async function loadCouponList({ done }) {
         console.log(`Read CouponList error! Page: ${currentCouponListPage.value}`);
         done("error");
     }
+}
+
+function onFocusDateRange(e) {
+    console.log(e);
 }
 
 watch(

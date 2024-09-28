@@ -16,12 +16,13 @@ export const useHouseBookingStore = defineStore("HouseBooking", () => {
         }
     }
 
-    async function processBookingPayment(houseId, userId, couponId) {
+    async function processBookingPayment(houseId, userId, couponId, dateRange) {
         try {
             const response = await api.post("/payment/booking-house", {
                 houseId: houseId,
                 userId: userId,
                 couponId: couponId,
+                dateRange: dateRange
             });
             return response.data;
         } catch (error) {
