@@ -290,6 +290,7 @@ import useVuelidate from "@vuelidate/core";
 import { required, minValue } from "@vuelidate/validators";
 import { useHostManagementStore } from "@/stores/hostManagementStore";
 import { useUserStore } from "../../stores/userStore";
+import api from "@/plugins/axios";
 
 const userStore = useUserStore();
 
@@ -397,15 +398,27 @@ const submitForm = async () => {
     // 發送表單資料到後端
     await hostManagementStore.addProperty(property.value);
 
-    console.log(property.value.images);
     // 圖片上傳處理
     if (property.value.images.length > 0) {
-      const propertyId =
-        hostManagementStore.state.properties[
-          hostManagementStore.state.properties.length - 1
-        ].id;
-      for (let image of property.value.images) {
-        await hostManagementStore.uploadPropertyImage(propertyId, image);
+      try {
+        const response = await api({
+          method: "post",
+          url: `/house/search`,
+          data: {
+            userId: userStore.user.id,
+            page: 0,
+            limit: 1,
+            order: "createdAt",
+            dir: true,
+          },
+        });
+
+        const propertyId = response.data.content[0].id;
+        for (let image of property.value.images) {
+          await hostManagementStore.uploadPropertyImage(propertyId, image);
+        }
+      } catch (error) {
+        throw error;
       }
     }
 
