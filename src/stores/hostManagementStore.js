@@ -4,6 +4,45 @@ import { ref, reactive } from "vue";
 import { useUserStore } from "./userStore";
 
 export const useHostManagementStore = defineStore("hostManagement", () => {
+  const userStore = useUserStore();
+  // 狀態
+  const state = reactive({
+    properties: [], // 房源
+    reviews: [], // 評價
+    orders: [], // 訂單
+    selectedProperty: null, // 當前選中的房源
+    selectedReview: null, // 當前選中的評價
+    loading: false, // 加載狀態
+    error: null, // 錯誤訊息
+  });
+
+  // 錯誤處理方法
+  function handleError(error) {
+    state.loading = false;
+    if (error.response) {
+      // 確保 error.response 存在，避免 undefined 錯誤
+      console.error(
+        "Error response:",
+        error.response.status,
+        error.response.data
+      );
+      state.error = error.response.data.message || "Unknown error occurred";
+    } else if (error.request) {
+      // 請求發出但沒有收到回應
+      console.error("No response from server:", error.request);
+      state.error = "No response received from server";
+    } else {
+      // 其他錯誤
+      console.error("Error:", error.message);
+      state.error = error.message || "An unknown error occurred";
+    }
+  }
+
+  // 清空錯誤訊息
+  function clearError() {
+    state.error = null;
+  }
+
   // 狀態
   const properties = ref([]); // 房源
   const reviews = ref([]); // 評價
@@ -16,8 +55,8 @@ export const useHostManagementStore = defineStore("hostManagement", () => {
   // 1. 獲取所有房源，對應於 HouseController 的 API
   async function fetchProperties() {
     try {
-      const response = await api.get("/houses"); // 假設路徑
-      properties.value = response.data;
+      const response = await api.get("/house"); // 假設路徑
+      state.properties.value = response.data;
     } catch (error) {
       console.error("Error fetching properties:", error);
       throw error;
@@ -27,7 +66,7 @@ export const useHostManagementStore = defineStore("hostManagement", () => {
   // 2. 添加房源，對應於 HouseController 的 API
   async function addProperty(propertyData) {
     try {
-      const response = await api.post("/houses", propertyData); // 假設路徑
+      const response = await api.post("/house/", propertyData); // 假設路徑
       properties.value.push(response.data);
     } catch (error) {
       console.error("Error adding property:", error);
@@ -92,7 +131,7 @@ export const useHostManagementStore = defineStore("hostManagement", () => {
     try {
       const formData = new FormData();
       formData.append("file", file);
-      await api.post(`/houses/${propertyId}/images`, formData, {
+      await api.post(`/house/${propertyId}/images`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -106,7 +145,7 @@ export const useHostManagementStore = defineStore("hostManagement", () => {
   // 8. 獲取房源背景圖片，對應於 HouseExternalResourceController 的 API
   async function fetchPropertyBackgroundImage(propertyId) {
     try {
-      const response = await api.get(`/houses/${propertyId}/background`, {
+      const response = await api.get(`/house/${propertyId}/background`, {
         responseType: "blob",
       });
       return response.data;
@@ -118,7 +157,7 @@ export const useHostManagementStore = defineStore("hostManagement", () => {
   // 9. 從 MongoDB 獲取房源資料，對應於 HouseMongoController 的 API
   async function fetchMongoProperty(propertyId) {
     try {
-      const response = await api.get(`/houses/mongo/${propertyId}`); // 假設路徑
+      const response = await api.get(`/house/mongo/${propertyId}`); // 假設路徑
       selectedProperty.value = response.data;
     } catch (error) {
       console.error("Error fetching MongoDB property:", error);

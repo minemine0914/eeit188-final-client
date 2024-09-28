@@ -19,6 +19,16 @@
           item-value="name"
           class="elevation-1"
         >
+          <template v-slot:item.review="{ item }">
+            <!--狀態欄位-->
+            <v-chip
+              :color="getReviewColor(item.review)"
+              size="small"
+              class="text-uppercase"
+            >
+              {{ getReviewText(item.review) }}
+            </v-chip>
+          </template>
           <template v-slot:item.show="{ item }">
             <!--狀態欄位-->
             <v-chip
@@ -225,6 +235,7 @@ const districts = ["大安區", "澀谷區", "曼哈頓區"];
 // 表格標題
 const headers = [
   { title: "名稱", key: "name" },
+  { title: "審核", key: "review" },
   { title: "狀態", key: "show" },
   { title: "操作", key: "actions", sortable: false },
 ];
@@ -309,6 +320,32 @@ function getStatusText(show) {
       return "下架中";
     default:
       return "刊登中";
+  }
+}
+
+function getReviewColor(review) {
+  switch (review) {
+    case null:
+      return "orange"; // 待審核
+    case true:
+      return "green"; // 審核通過
+    case false:
+      return "red"; // 審核失敗
+    default:
+      return "grey"; // 未知狀態
+  }
+}
+
+function getReviewText(review) {
+  switch (review) {
+    case null:
+      return "待審核";
+    case true:
+      return "審核通過";
+    case false:
+      return "審核失敗";
+    default:
+      return "確認中";
   }
 }
 
