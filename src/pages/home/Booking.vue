@@ -372,6 +372,18 @@ const userStore = useUserStore();
 const { houseInfo, isErrorGetHouseInfo, isLoading } = storeToRefs(houseDetailStore);
 
 const inputDateRange = ref(null);
+const dateRange = computed(() => {
+    if (!inputDateRange.value || inputDateRange.value.length === 0) {
+        return [null, null]; // 或者根據需求返回其他預設值
+    }
+
+    let start = inputDateRange.value[0];
+    let end = inputDateRange.value.length > 1 
+        ? inputDateRange.value[inputDateRange.value.length - 1] 
+        : inputDateRange.value[0];
+
+    return [start, end];
+});
 
 // Step state
 const bookingStep = ref(1);
@@ -461,7 +473,7 @@ async function checkPayment() {
             houseDetailStore.houseInfo.id,
             userStore.user.id,
             couponList[selectedCouponIndex.value]?.id,
-            [inputDateRange.value[0], inputDateRange.value[inputDateRange.value.length - 1]]
+            dateRange.value
         );
 
         // 将返回的表单写入新窗口并提交
@@ -480,7 +492,7 @@ async function checkPayment() {
         // 移除待結帳清單
         houseDetailStore.removeBookingList();
     } catch (error) {
-        console.log(error)
+        console.log(error);
         // 如果 API 请求失败，显示错误信息
         paymentWindow.document.open();
         paymentWindow.document.write(`
@@ -492,6 +504,7 @@ async function checkPayment() {
     <body>
         <div style="text-align: center; width: 100%;">
             <p>交易失敗，請關閉視窗重新預定房源!</p>
+            <p>原因: ${error?.response?.data}</p>
             <button onclick="window.close();">關閉視窗</button>
         </div>
     </body>
