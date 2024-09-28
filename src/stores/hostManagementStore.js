@@ -5,6 +5,7 @@ import { useUserStore } from "./userStore";
 
 export const useHostManagementStore = defineStore("hostManagement", () => {
   const userStore = useUserStore();
+
   // 狀態
   const state = reactive({
     properties: [], // 房源
@@ -65,12 +66,32 @@ export const useHostManagementStore = defineStore("hostManagement", () => {
 
   // 2. 添加房源，對應於 HouseController 的 API
   async function addProperty(propertyData) {
+    let data = { ...propertyData, userId: userStore.user.id };
+    clearError();
+    state.loading = true;
+    api
+      .get("https://nominatim.openstreetmap.org/search.php", {
+        params: {
+          q: propertyData.city + propertyData.region,
+          format: "jsonv2",
+        },
+      })
+      .then((res) => {
+        console.log("OpenStreetMap search long lat:", res.data);
+        if (res.data.length !== 0) {
+          data.latitudeX = res.data[0].lat;
+          data.longitudeY = res.data[0].lon;
+        }
+      })
+      .catch((err) => {
+        // console.log();
+      });
     try {
-      const response = await api.post("/house/", propertyData); // 假設路徑
-      properties.value.push(response.data);
+      const response = await api.post("/house/", data);
+      state.properties.push(response.data);
+      state.loading = false;
     } catch (error) {
-      console.error("Error adding property:", error);
-      throw error;
+      handleError(error);
     }
   }
 
@@ -126,19 +147,23 @@ export const useHostManagementStore = defineStore("hostManagement", () => {
     }
   }
 
-  // 7. 上傳房源圖片，對應於 HouseExternalResourceController 的 API
+  // 7. 上傳房源圖片
   async function uploadPropertyImage(propertyId, file) {
+    clearError();
+    state.loading = true;
     try {
       const formData = new FormData();
-      formData.append("file", file);
-      await api.post(`/house/${propertyId}/images`, formData, {
+      formData.append("files", file);
+      formData.append("houseId", propertyId);
+      await api.post(`/house-external-resource/`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
+      state.loading = false;
     } catch (error) {
-      console.error("Error uploading property image:", error);
-      throw error;
+      handleError(error);
+      state.loading = false;
     }
   }
 
