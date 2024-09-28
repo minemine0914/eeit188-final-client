@@ -2,7 +2,7 @@
     <div class="position-absolute w-100">
         <v-row justify="center" align="center" no-gutters>
             <v-col cols="12" xs="12" sm="9" md="8" lg="6" v-click-outside="onClickOutside">
-                <v-sheet class="position-relative" color="transparent" style="z-index: 100;">
+                <v-sheet class="position-relative" color="transparent" style="z-index: 100">
                     <v-slide-y-reverse-transition>
                         <v-card
                             v-if="!houseSearchStore.isSearchParamsEqual"
@@ -18,7 +18,7 @@
                                 'cursor-pointer',
                                 'text-body-2',
                             ]"
-                            style="right: 0; top: -25px;"
+                            style="right: 0; top: -25px"
                             rounded="lg"
                             elevation="3"
                             @click.stop="houseSearchStore.resetSearchParams()"
@@ -26,12 +26,7 @@
                             <span class="text-brown" style="user-select: none">X 清除條件</span>
                         </v-card>
                     </v-slide-y-reverse-transition>
-                    <v-card
-                        elevation="3"
-                        rounded="pill"
-                        class="px-1 mb-3"
-                        border
-                    >
+                    <v-card elevation="3" rounded="pill" class="px-1 mb-3" border>
                         <v-toolbar dense color="rgba(0,0,0,0)">
                             <v-text-field
                                 v-model="inputValues.cityName"
@@ -628,23 +623,14 @@ function onFocusSearchOther(value) {
 function onClickSearchBtn(mode) {
     const searchPaths = ["/search", "/search-map"]; // 搜尋頁面的路由
     isFocusSearchBar.value = false;
+    houseSearchStore.resetSearchResult();
     if (mode === "list" && searchPaths[0] != route.path) {
         // 如果點擊的mode是list 且不在/search 就路由到/search
-        searchParams.value.minLatitudeX = null;
-        searchParams.value.maxLatitudeX = null;
-        searchParams.value.minLongitudeY = null;
-        searchParams.value.maxLongitudeY = null;
         router.push(searchPaths[0]);
-        houseSearchStore.resetSearchResult();
     } else if (mode === "map" && searchPaths[1] != route.path) {
         // 如果點擊的mode是map 且不在/search-map 就路由到/search-map
         router.push(searchPaths[1]);
-    } else {
-        // 不管如何，點擊搜尋按鈕就重新搜尋結果
-        houseSearchStore.resetSearchResult();
     }
-
-    // Change active mode
 }
 
 onMounted(() => {
