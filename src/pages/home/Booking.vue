@@ -223,6 +223,7 @@
                                                 multiple="range"
                                                 show-adjacent-months
                                                 hide-header
+                                                :min="new Date().toDateString()"
                                             ></v-date-picker>
                                         </v-sheet>
                                     </v-sheet>

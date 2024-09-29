@@ -37,7 +37,7 @@
                                 @update:modelValue="onUpdateCity"
                                 @update:focused="onFocusSearchCity"
                             />
-                            <v-divider class="border-opacity-50 my-3" vertical />
+                            <!-- <v-divider class="border-opacity-50 my-3" vertical />
                             <v-date-input
                                 v-model="inputValues.dateRange"
                                 label="入住 / 退房日期"
@@ -48,7 +48,7 @@
                                 flat
                                 readonly
                                 @update:focused="onFocusSearchDateRange"
-                            />
+                            /> -->
                             <v-divider class="border-opacity-50 my-3" vertical />
                             <v-text-field
                                 v-model="selectdPostulatesString"
@@ -562,7 +562,8 @@ function onClickOutside(value) {
 function onClickCityChip(name) {
     inputValues.value.cityName = name;
     searchParams.value.city = name;
-    searchBarTab.value = "daterange";
+    // searchBarTab.value = "daterange";
+    searchBarTab.value = "postulate";
 }
 
 function onUpdateDatePicker(value) {
