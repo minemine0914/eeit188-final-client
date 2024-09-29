@@ -20,14 +20,34 @@
                 v-model="bookingStep"
                 alt-labels
                 flat
+                :border="true"
+                rounded="lg"
                 :items="['住房資訊', '確認價格', '進行付款', '訂房結果']"
             >
                 <template v-slot:item.1>
                     <v-row>
                         <v-col cols="12" md="6">
-                            <v-card title="房源資訊" flat>
-                                <v-row class="fill-height" no-gutters>
-                                    <v-col class="pa-5" cols="12">
+                            <v-card
+                                :border="true"
+                                rounded="lg"
+                                flat
+                                class="h-100"
+                                color="brown-lighten-5"
+                            >
+                                <v-card-item class="bg-brown-lighten-2">
+                                    <v-card-title>房源資訊</v-card-title>
+                                </v-card-item>
+                                <v-divider class="border-opacity-25"></v-divider>
+                                <v-card-item class="pb-0">
+                                    <v-sheet class="d-flex flex-column ga-3" color="transparent">
+                                        <!-- 房源名稱 -->
+                                        <v-sheet color="transparent">
+                                            <div
+                                                class="text-h6 font-weight-medium text-brown-darken-4"
+                                            >
+                                                {{ houseInfo.name }}
+                                            </div>
+                                        </v-sheet>
                                         <!-- 圖片 -->
                                         <v-sheet
                                             color="transparent"
@@ -84,18 +104,8 @@
                                                 </v-carousel-item>
                                             </v-carousel>
                                         </v-sheet>
-                                    </v-col>
-                                    <v-col
-                                        class="d-flex flex-column justify-start align-start"
-                                        cols="12"
-                                    >
                                         <!-- 房源名稱與資訊 -->
-                                        <v-sheet class="flex-grow-1 px-5" color="transparent">
-                                            <div
-                                                class="text-h5 font-weight-medium text-brown-darken-4 pt-1 mb-1"
-                                            >
-                                                {{ houseInfo.name }}
-                                            </div>
+                                        <v-sheet class="flex-grow-1" color="transparent">
                                             <div class="text-grey-darken-1">
                                                 <span class="mdi mdi-map-marker mr-2"></span>
                                                 <span class="mr-2">{{
@@ -142,35 +152,81 @@
                                                 </span>
                                             </div>
                                         </v-sheet>
-                                        <!-- 價錢與詳細按鈕 -->
+                                        <!-- 價錢 -->
                                         <v-sheet
-                                            class="d-flex flex-column flex-grow-1 justify-end align-end px-5"
+                                            class="d-flex flex-column flex-grow-1 justify-end align-end"
                                             color="transparent"
                                         >
                                             <v-sheet color="transparent">
                                                 <div
-                                                    class="text-h5 font-weight-medium text-brown-darken-4 mb-2 mr-1"
+                                                    class="text-h6 font-weight-medium text-brown-darken-4"
                                                 >
-                                                    NT ${{ houseInfo.price }}
+                                                    NT ${{ houseInfo.price }} / 晚
                                                 </div>
                                             </v-sheet>
                                         </v-sheet>
-                                    </v-col>
-                                </v-row>
+                                    </v-sheet>
+                                </v-card-item>
                             </v-card>
                         </v-col>
                         <v-col cols="12" md="6">
-                            <v-card title="入住期間" flat>
-                                <v-date-input
-                                    v-model="inputDateRange"
-                                    label="入住 / 退房日期"
-                                    multiple="range"
-                                    prepend-icon=""
-                                    variant="solo"
-                                    hide-details
-                                    flat
-                                    @update:focused="onFocusDateRange"
-                                />
+                            <v-card
+                                :border="true"
+                                rounded="lg"
+                                flat
+                                class="h-100"
+                                color="brown-lighten-5"
+                            >
+                                <v-card-item class="bg-brown-lighten-2">
+                                    <v-card-title>入住期間</v-card-title>
+                                </v-card-item>
+                                <v-divider class="border-opacity-25"></v-divider>
+                                <v-card-item class="pt-0">
+                                    <v-sheet
+                                        class="d-flex flex-column ga-3 pt-5"
+                                        color="transparent"
+                                    >
+                                        <v-sheet class="d-flex flex-row ga-2" color="transparent">
+                                            <v-date-input
+                                                label="入住日期"
+                                                :model-value="inputDateRange[0]"
+                                                prepend-icon=""
+                                                variant="outlined"
+                                                hide-details
+                                                readonly
+                                                flat
+                                                @update:focused="onFocusDateRange"
+                                            />
+                                            <v-date-input
+                                                label="退房日期"
+                                                :model-value="
+                                                    inputDateRange[inputDateRange.length - 1]
+                                                "
+                                                prepend-icon=""
+                                                variant="outlined"
+                                                hide-details
+                                                readonly
+                                                flat
+                                                @update:focused="onFocusDateRange"
+                                            />
+                                        </v-sheet>
+                                        <v-sheet
+                                            class="d-flex justify-center align-center w-100"
+                                            color="transparent"
+                                        >
+                                            <v-date-picker
+                                                bg-color="transparent"
+                                                class="w-100"
+                                                border="opacity-25 sm"
+                                                rounded="lg"
+                                                v-model="inputDateRange"
+                                                multiple="range"
+                                                show-adjacent-months
+                                                hide-header
+                                            ></v-date-picker>
+                                        </v-sheet>
+                                    </v-sheet>
+                                </v-card-item>
                             </v-card>
                         </v-col>
                     </v-row>
@@ -179,9 +235,18 @@
                 <template v-slot:item.2>
                     <v-row class="d-flex flex-row">
                         <v-col cols="12" md="7">
-                            <v-card title="優惠券" :border="true" flat rounded="lg" class="h-100">
+                            <v-card
+                                :border="true"
+                                rounded="lg"
+                                flat
+                                class="h-100"
+                                color="brown-lighten-5"
+                            >
+                                <v-card-item class="bg-brown-lighten-2">
+                                    <v-card-title>優惠券</v-card-title>
+                                </v-card-item>
                                 <v-divider class="border-opacity-25"></v-divider>
-                                <v-sheet min-height="300">
+                                <v-sheet min-height="300" color="transparent">
                                     <v-infinite-scroll
                                         max-height="480"
                                         :items="couponList"
@@ -209,7 +274,7 @@
                                         </v-item-group>
                                         <!-- Scroll empty component -->
                                         <template v-slot:empty>
-                                            <v-sheet>
+                                            <v-sheet color="transparent">
                                                 <v-alert variant="plain">
                                                     <span>{{
                                                         couponList.length > 0
@@ -224,15 +289,22 @@
                             </v-card>
                         </v-col>
                         <v-col cols="12" md="5">
-                            <v-card title="價格詳情" :border="true" flat rounded="lg">
+                            <v-card :border="true" rounded="lg" flat color="brown-lighten-5">
+                                <v-card-item class="bg-brown-lighten-2">
+                                    <v-card-title>價格詳情</v-card-title>
+                                </v-card-item>
                                 <v-divider class="border-opacity-25"></v-divider>
                                 <v-card-item>
-                                    <v-sheet class="d-flex flex-column ga-1 my-2">
+                                    <v-sheet
+                                        class="d-flex flex-column ga-1 my-2"
+                                        color="transparent"
+                                    >
                                         <v-sheet
                                             class="flex-grow-1 d-flex flex-row justify-space-between align-center"
+                                            color="transparent"
                                         >
                                             <div class="text-subtitle-1">
-                                                NT ${{ houseInfo.price }} x {{ liveDays }}晚
+                                                NT ${{ houseInfo.price }} x {{ liveDays }} 晚
                                             </div>
                                             <div class="text-body-1">
                                                 NT ${{ houseInfo.price * liveDays }}
@@ -240,15 +312,15 @@
                                         </v-sheet>
                                         <v-sheet
                                             class="flex-grow-1 d-flex flex-row justify-space-between align-center"
+                                            color="transparent"
                                         >
                                             <div class="text-subtitle-1">平台抽成(5%)</div>
-                                            <div class="text-body-1">
-                                                NT ${{ platformIncome }}
-                                            </div>
+                                            <div class="text-body-1">NT ${{ platformIncome }}</div>
                                         </v-sheet>
                                         <v-sheet
                                             v-if="selectedCoupon != null"
                                             class="flex-grow-1 d-flex flex-row justify-space-between align-center"
+                                            color="transparent"
                                         >
                                             <div class="text-subtitle-1">優惠券</div>
                                             <div class="text-body-1 text-green-darken-1">
@@ -324,7 +396,7 @@
                 </template>
 
                 <template v-slot:actions>
-                    <v-sheet class="d-flex px-6 py-3">
+                    <v-sheet class="d-flex px-6 pb-5">
                         <v-sheet class="flex-grow-1 d-flex justify-start">
                             <v-btn
                                 v-if="renderStepPrevBtn"
@@ -360,6 +432,7 @@ import { useUserStore } from "@/stores/userStore";
 import { storeToRefs } from "pinia";
 import CouponCard from "@/components/home/CouponCard.vue";
 import { useHouseBookingStore } from "@/stores/houseBookingStore";
+import Swal from "sweetalert2";
 // Use route, router
 const router = useRouter();
 const route = useRoute();
@@ -371,7 +444,7 @@ const houseBookingStore = useHouseBookingStore();
 const userStore = useUserStore();
 const { houseInfo, isErrorGetHouseInfo, isLoading } = storeToRefs(houseDetailStore);
 
-const inputDateRange = ref(null);
+const inputDateRange = ref([]);
 const dateRange = computed(() => {
     if (!inputDateRange.value || inputDateRange.value.length === 0) {
         return [null, null]; // 或者根據需求返回其他預設值
@@ -434,18 +507,18 @@ const discountPrice = computed(() => {
             return coupon.discount;
         } else if (coupon.discountRate != null) {
             // 折扣率
-            return (price * day * (coupon.discountRate)).toFixed(0); // 四捨五入至整數
+            return (price * day * coupon.discountRate).toFixed(0); // 四捨五入至整數
         }
     }
     return 0;
 });
 
-const totalPrice = computed(()=>{
+const totalPrice = computed(() => {
     const price = houseInfo.value?.price || 0;
     return price * liveDays.value - discountPrice.value;
 });
 
-const platformIncome = computed(()=>{
+const platformIncome = computed(() => {
     return parseInt((totalPrice.value * 0.05).toFixed(0));
 });
 
@@ -476,17 +549,74 @@ async function checkStepNext() {
 }
 async function checkBookingDate() {
     isLoadingStepBtn.value = true;
-    return new Promise(function (resolve, reject) {
-        setTimeout(function () {
+    if (dateRange.value[0] == null || dateRange.value[1] == null) {
+        Swal.fire({
+            title: "請選擇日期",
+            icon: "error",
+            buttonsStyling: false,
+            customClass: {
+                confirmButton:
+                    "v-btn v-btn--elevated v-theme--nomadTheme bg-brown v-btn--density-default v-btn--size-large v-btn--variant-elevated",
+                cancelButton:
+                    "v-btn v-btn--elevated v-theme--nomadTheme bg-brown v-btn--density-default v-btn--size-large v-btn--variant-elevated",
+            },
+            showConfirmButton: false,
+            showCancelButton: true,
+            cancelButtonText: "重試",
+        });
+        isLoadingStepBtn.value = false;
+        return false;
+    }
+    try {
+        const isAvailable = await houseBookingStore.isHouseAvailable(
+            houseDetailStore.houseInfo.id,
+            dateRange.value
+        );
+        if (isAvailable) {
+            console.log("當前選擇的日期區間可用");
             renderStepPrevBtn.value = true;
             isLoadingStepBtn.value = false;
             bookingStep.value = 2;
-            resolve("anything");
-        }, 1000);
-    });
+        } else {
+            console.log("當前選擇的日期區間不可用");
+            isLoadingStepBtn.value = false;
+            Swal.fire({
+                title: "當前選擇的日期區間不可用",
+                icon: "error",
+                buttonsStyling: false,
+                customClass: {
+                    confirmButton:
+                        "v-btn v-btn--elevated v-theme--nomadTheme bg-brown v-btn--density-default v-btn--size-large v-btn--variant-elevated",
+                    cancelButton:
+                        "v-btn v-btn--elevated v-theme--nomadTheme bg-brown v-btn--density-default v-btn--size-large v-btn--variant-elevated",
+                },
+                showConfirmButton: false,
+                showCancelButton: true,
+                cancelButtonText: "重試",
+            });
+        }
+    } catch (err) {
+        console.log("當前選擇的日期區間不可用", err?.response?.data);
+        isLoadingStepBtn.value = false;
+        Swal.fire({
+            title: "當前選擇的日期區間不可用",
+            text: `原因: ${err?.response?.data}`,
+            icon: "error",
+            buttonsStyling: false,
+            customClass: {
+                confirmButton:
+                    "v-btn v-btn--elevated v-theme--nomadTheme bg-brown v-btn--density-default v-btn--size-large v-btn--variant-elevated",
+                cancelButton:
+                    "v-btn v-btn--elevated v-theme--nomadTheme bg-brown v-btn--density-default v-btn--size-large v-btn--variant-elevated",
+            },
+            showConfirmButton: false,
+            showCancelButton: true,
+            cancelButtonText: "重試",
+        });
+    }
 }
 async function checkPayment() {
-    // 創建新視窗
+    // 建立新視窗
     const paymentWindow = window.open(
         "",
         "_blank",
@@ -497,7 +627,6 @@ async function checkPayment() {
     renderStepNextBtn.value = false;
     bookingStep.value = 3;
     try {
-        // 调用 Pinia 中的处理支付的函数
         const formHtml = await houseBookingStore.processBookingPayment(
             houseDetailStore.houseInfo.id,
             userStore.user.id,
@@ -505,24 +634,21 @@ async function checkPayment() {
             dateRange.value
         );
 
-        // 将返回的表单写入新窗口并提交
         paymentWindow.document.open();
         paymentWindow.document.write(formHtml);
         paymentWindow.document.close();
 
-        // 監控窗口關閉狀態
         const timer = setInterval(() => {
             if (paymentWindow.closed) {
-                clearInterval(timer); // 清除定時器
-                checkDetail(true); // 窗口關閉後執行
+                clearInterval(timer);
+                checkDetail(true);
             }
-        }, 500); // 每0.5秒檢查一次
+        }, 500);
 
         // 移除待結帳清單
         houseDetailStore.removeBookingList();
     } catch (error) {
-        console.log(error);
-        // 如果 API 请求失败，显示错误信息
+        console.log("訂房失敗 ", error?.response?.data);
         paymentWindow.document.open();
         paymentWindow.document.write(`
 <html>
