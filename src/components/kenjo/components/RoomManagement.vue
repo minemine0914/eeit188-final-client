@@ -30,10 +30,6 @@
     item-value="name"
     show-expand
   >
-  
-  <template v-slot:top>
-      
-    </template>
     <template v-slot:item.show="{ item }">    <!--狀態欄位-->
     <v-chip 
       :color="getStatusColor(item.show)"
@@ -71,8 +67,9 @@
         <v-icon @click="openDialog(item)" class="me-2" small>
           mdi-pencil
         </v-icon>
-  </template>
+    </template>
   </v-data-table>
+
         <v-dialog v-model="dialog" max-width="290">
           <v-card>
             <v-card-title class="headline">選擇狀態</v-card-title>
@@ -105,6 +102,7 @@ export default {
       dialog: false,
       selectedStatus: null,
       currentItem: null,
+      desserts: [],
       dessertHeaders: [
           //標題
         {
@@ -116,7 +114,7 @@ export default {
         { title: '狀態 ', key: 'show' },
         { title: '編輯', value: 'actions', sortable: false }
       ],
-      desserts: [],
+      
     }
   },
   
@@ -290,7 +288,7 @@ export default {
     },
     resetDialog() {
         this.selectedStatus = null; 
-        this.dialog = false; 
+        this.selectedStatus = false; 
       },
     
 },

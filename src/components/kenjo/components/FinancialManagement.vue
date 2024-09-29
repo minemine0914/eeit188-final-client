@@ -146,32 +146,32 @@ export default {
           const cashFlow = parseFloat(item.cashFlow) || 0;
 
           let discount = 0;
-          if (item.user && item.user.coupons) {
-            item.user.coupons.forEach(coupon => {
-              if (coupon.discount) {
-                discount += coupon.discount;
-              }
-              if (coupon.discountRate) {
-                discount += (cashFlow * coupon.discountRate) / 100;
-              }
-            });
-          }
+          // if (item.user && item.user.coupons) {
+          //   item.user.coupons.forEach(coupon => {
+          //     if (coupon.discount) {
+          //       discount += coupon.discount;
+          //     }
+          //     if (coupon.discountRate) {
+          //       discount += (cashFlow * coupon.discountRate) / 100;
+          //     }
+          //   });
+          // }
 
           if (!combinedData[formattedDate]) {
             combinedData[formattedDate] = {
               date: formattedDate,
               orderQuantity: 0,
               totalAmount: 0,
-              discountAmount: 0,
+              //discountAmount: 0,
               AP: 0,
               R: 0
             };
           }
           combinedData[formattedDate].orderQuantity += 1;
-          combinedData[formattedDate].totalAmount += (cashFlow * 1.1);
+          combinedData[formattedDate].totalAmount += (cashFlow * 1.05);
           //combinedData[formattedDate].discountAmount += discount;
           combinedData[formattedDate].AP += cashFlow;
-          combinedData[formattedDate].R += ((cashFlow * 0.1) - discount); 
+          combinedData[formattedDate].R += (cashFlow * 0.05) ; 
         });
         this.desserts = Object.values(combinedData);
       } catch (error) {

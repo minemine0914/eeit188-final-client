@@ -21,11 +21,11 @@
           :style="{ width: '200px' }"
         ></v-text-field>
         <v-dialog v-model="dialog" max-width="500px">
-          <template v-slot:activator="{ props }">
+          <!-- <template v-slot:activator="{ props }">
             <v-btn class="mb-2" color="primary" dark v-bind="props">
               新增
             </v-btn>
-          </template>
+          </template> -->
           <v-card>
             <v-card-title>
               <span class="text-h5">{{ formTitle }}</span>
@@ -33,7 +33,7 @@
             <v-card-text>
               <v-container>
                 <v-row>
-                  <v-col cols="12" md="4" sm="6" v-if="editedIndex !== -1">
+                  <v-col cols="12"  v-if="editedIndex !== -1">
                     <v-text-field
                       v-model="editedUser.id"
                       label="編號"
@@ -56,15 +56,15 @@
                   </v-col>
                   <v-col cols="12" md="4" sm="6">
                     <v-text-field
-                      v-model="editedUser.mobilePhone"
-                      label="手機電話"
+                      v-model="editedUser.birthday"
+                      label="生日"
                       readonly
                     ></v-text-field>
                   </v-col>
                   <v-col cols="12" md="4" sm="6">
                     <v-text-field
-                      v-model="editedUser.birthday"
-                      label="生日"
+                      v-model="editedUser.mobilePhone"
+                      label="手機電話"
                       readonly
                     ></v-text-field>
                   </v-col>
@@ -75,17 +75,17 @@
                       readonly
                     ></v-text-field>
                   </v-col>
-                  <v-col cols="12" md="8" sm="6">
-                    <v-text-field
-                      v-model="editedUser.email"
-                      label="信箱"
-                      readonly
-                    ></v-text-field>
-                  </v-col>
                   <v-col cols="12" md="4" sm="6">
                     <v-text-field
                       v-model="editedUser.createdAt"
                       label="建立時間"
+                      readonly
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="12" >
+                    <v-text-field
+                      v-model="editedUser.email"
+                      label="信箱"
                       readonly
                     ></v-text-field>
                   </v-col>
@@ -102,11 +102,11 @@
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn color="blue-darken-1" variant="text" @click="close">
-                取消
+                關閉
               </v-btn>
-              <v-btn color="blue-darken-1" variant="text" @click="save">
+              <!-- <v-btn color="blue-darken-1" variant="text" @click="save">
                 儲存
-              </v-btn>
+              </v-btn> -->
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -185,7 +185,7 @@ export default {
 
   computed: {
     formTitle() {
-      return this.editedIndex === -1 ? '新增用戶' : '編輯用戶';
+      return this.editedIndex === -1 ? '新增用戶' : '檢視用戶';
     },
   },
 
