@@ -43,49 +43,48 @@
             <v-card-text>
               <v-container>
                 <v-row>
-                  <v-col cols="12" md="4" sm="6" v-if="editedIndex !== -1">
+                  <v-col cols="12" v-if="editedIndex !== -1">
                     <v-text-field
                       v-model="editedOrder.id"
                       label="訂單編號"
                       readonly
                     ></v-text-field>
                   </v-col>
-                  <v-col cols="12" md="4" sm="6">
+                  <v-col cols="12" md="6" sm="6">
                     <v-text-field
                       v-model="editedOrder.house.name"
                       label="房屋ID"
                       @click="showPropertyId"
                     ></v-text-field>
                   </v-col>
-                  <v-col cols="12" md="4" sm="6">
-                    <v-text-field
-                      v-model="editedOrder.cashFlow"
-                      label="金額"
-                      type="number"
-                    ></v-text-field>
-                  </v-col>
-                  <v-col cols="12" md="4" sm="6">
-                    <v-text-field
-                      v-model="editedOrder.user.name"
-                      label="房客資訊"
-                      
-                    ></v-text-field>
-                  </v-col>
-                  <v-col cols="12" md="4" sm="6">
-                    <v-text-field
-                      v-model="editedOrder.house.userName"
-                      label="房東資訊"
-                      @click="showHostInfo"
-                    ></v-text-field>
-                  </v-col>
-                  <v-col cols="12" md="4" sm="6">
+                  <v-col cols="12" md="6" sm="6">
                     <v-text-field
                       v-model="editedOrder.createdAt"
                       label="下單時間"
                       readonly
                     ></v-text-field>
                   </v-col>
-                  <v-col cols="12" md="4" sm="6">
+                  <v-col cols="12" md="6" sm="6">
+                    <v-text-field
+                      v-model="editedOrder.user.name"
+                      label="房客資訊"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="12" md="6" sm="6">
+                    <v-text-field
+                      v-model="editedOrder.house.userName"
+                      label="房東資訊"
+                      @click="showHostInfo"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="12" md="6" sm="6">
+                    <v-text-field
+                      v-model="editedOrder.cashFlow"
+                      label="金額"
+                      type="number"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="12" md="6" sm="6">
                     <v-text-field
                       v-model="editedOrder.deal"
                       label="訂單狀態"

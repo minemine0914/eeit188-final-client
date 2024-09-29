@@ -40,29 +40,6 @@
   </template>
   <!-- <template v-slot:item.category="{ category }">    類型欄位 -->
     <!-- <v-chip 
-
-  <div>
-    <v-data-table
-      v-model:search="search"
-      v-model:expanded="expanded"
-      :headers="dessertHeaders"
-      :items="desserts"
-      item-value="name"
-      show-expand
-    >
-      <template v-slot:top> </template>
-      <template v-slot:item.show="{ item }">
-        <!--狀態欄位-->
-        <v-chip
-          :color="getStatusColor(item.show)"
-          size="small"
-          class="text-uppercase"
-        >
-          {{ getStatusText(item.show) }}
-        </v-chip>
-      </template>
-      <!-- <template v-slot:item.category="{ category }">    類型欄位 -->
-      <!-- <v-chip 
       :color="getCategoryColor(item.category)"
       size="small"
       class="text-uppercase">
@@ -89,26 +66,27 @@
         <v-icon @click="openDialog(item)" class="me-2" small>
           mdi-pencil
         </v-icon>
-        </template>
-    </v-data-table>
+    </template>
+  </v-data-table>
 
-    <v-dialog v-model="dialog" max-width="290">
-      <v-card>
-        <v-card-title class="headline">選擇狀態</v-card-title>
-        <v-card-text>
-          <v-radio-group v-model="selectedStatus">
-            <v-radio label="上架" :value="true"></v-radio>
-            <v-radio label="下架" :value="false"></v-radio>
-            <!-- <v-radio label="審核中" :value="null"></v-radio> -->
-          </v-radio-group>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn @click="updateStatus" color="primary">確認</v-btn>
-          <v-btn @click="resetDialog" color="grey">取消</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+        <v-dialog v-model="dialog" max-width="290">
+          <v-card>
+            <v-card-title class="headline">選擇狀態</v-card-title>
+            <v-card-text>
+              <v-radio-group v-model="selectedStatus">
+                <v-radio label="上架" :value="true"></v-radio>
+                <v-radio label="下架" :value="false"></v-radio>
+                <!-- <v-radio label="審核中" :value="null"></v-radio> -->
+              </v-radio-group>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn @click="updateStatus" color="primary">確認</v-btn>
+              <v-btn @click="resetDialog" color="grey">取消</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+  
   </div>
 </template>
 
@@ -140,8 +118,6 @@ export default {
       ],
       
     }
-      desserts: [],
-    };
   },
 
   watch: {
@@ -163,13 +139,13 @@ export default {
   },
 
   
-  // watch: {
-  //   dialog(val) {
-  //     if (!val) {
-  //       this.selectedStatus = null;
-  //     }
-  //   },
-  // },
+  watch: {
+    dialog(val) {
+      if (!val) {
+        this.selectedStatus = null;
+      }
+    },
+  },
   created() {
     this.fetchOrder();
   },
@@ -311,11 +287,12 @@ export default {
       this.dialog = true;
     },
     resetDialog() {
-      this.selectedStatus = null;
-      this.selectedStatus = false;
-    },
-  },
-};
+        this.selectedStatus = null; 
+        this.selectedStatus = false; 
+      },
+    
+},
+}
 </script>
 
 <style scoped>
