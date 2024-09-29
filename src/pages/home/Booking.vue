@@ -34,7 +34,7 @@
                                 class="h-100"
                                 color="brown-lighten-5"
                             >
-                                <v-card-item class="bg-brown-lighten-2">
+                                <v-card-item class="bg-brown-lighten-1">
                                     <v-card-title>房源資訊</v-card-title>
                                 </v-card-item>
                                 <v-divider class="border-opacity-25"></v-divider>
@@ -177,7 +177,7 @@
                                 class="h-100"
                                 color="brown-lighten-5"
                             >
-                                <v-card-item class="bg-brown-lighten-2">
+                                <v-card-item class="bg-brown-lighten-1">
                                     <v-card-title>入住期間</v-card-title>
                                 </v-card-item>
                                 <v-divider class="border-opacity-25"></v-divider>
@@ -243,7 +243,7 @@
                                 class="h-100"
                                 color="brown-lighten-5"
                             >
-                                <v-card-item class="bg-brown-lighten-2">
+                                <v-card-item class="bg-brown-lighten-1">
                                     <v-card-title>優惠券</v-card-title>
                                 </v-card-item>
                                 <v-divider class="border-opacity-25"></v-divider>
@@ -291,7 +291,7 @@
                         </v-col>
                         <v-col cols="12" md="5">
                             <v-card :border="true" rounded="lg" flat color="brown-lighten-5">
-                                <v-card-item class="bg-brown-lighten-2">
+                                <v-card-item class="bg-brown-lighten-1">
                                     <v-card-title>價格詳情</v-card-title>
                                 </v-card-item>
                                 <v-divider class="border-opacity-25"></v-divider>
@@ -379,7 +379,7 @@
                             <p class="mb-4 text-medium-emphasis text-body-2">
                                 查看您的預定，了解預定資訊
                             </p>
-                            <v-btn color="success" class="mb-3">訂單詳情</v-btn>
+                            <v-btn color="success" class="mb-3" to="/order">訂單詳情</v-btn>
                         </v-card-item>
                     </v-card>
                     <v-card v-else title="訂房失敗" flat>
@@ -397,22 +397,25 @@
                 </template>
 
                 <template v-slot:actions>
-                    <v-sheet class="d-flex px-6 pb-5">
-                        <v-sheet class="flex-grow-1 d-flex justify-start">
+                    <v-sheet
+                        class="d-flex justify-space-between align-center mx-6 mb-6"
+                        color="transparent"
+                    >
+                        <v-sheet>
                             <v-btn
                                 v-if="renderStepPrevBtn"
                                 :loading="isLoadingStepBtn"
-                                color="brown"
+                                color="brown-lighten-1"
                                 @click="checkStepPrev"
                                 size="large"
                                 >上一步</v-btn
                             >
                         </v-sheet>
-                        <v-sheet class="flex-grow-1 d-flex justify-end">
+                        <v-sheet>
                             <v-btn
                                 v-if="renderStepNextBtn"
                                 :loading="isLoadingStepBtn"
-                                color="brown"
+                                color="brown-lighten-1"
                                 @click="checkStepNext"
                                 size="large"
                                 >下一步</v-btn
@@ -557,9 +560,9 @@ async function checkBookingDate() {
             buttonsStyling: false,
             customClass: {
                 confirmButton:
-                    "v-btn v-btn--elevated v-theme--nomadTheme bg-brown v-btn--density-default v-btn--size-large v-btn--variant-elevated",
+                    "v-btn v-btn--elevated v-theme--nomadTheme bg-brown-lighten-1 v-btn--density-default v-btn--size-large v-btn--variant-elevated",
                 cancelButton:
-                    "v-btn v-btn--elevated v-theme--nomadTheme bg-brown v-btn--density-default v-btn--size-large v-btn--variant-elevated",
+                    "v-btn v-btn--elevated v-theme--nomadTheme bg-brown-lighten-1 v-btn--density-default v-btn--size-large v-btn--variant-elevated",
             },
             showConfirmButton: false,
             showCancelButton: true,
@@ -587,9 +590,9 @@ async function checkBookingDate() {
                 buttonsStyling: false,
                 customClass: {
                     confirmButton:
-                        "v-btn v-btn--elevated v-theme--nomadTheme bg-brown v-btn--density-default v-btn--size-large v-btn--variant-elevated",
+                        "v-btn v-btn--elevated v-theme--nomadTheme bg-brown-lighten-1 v-btn--density-default v-btn--size-large v-btn--variant-elevated",
                     cancelButton:
-                        "v-btn v-btn--elevated v-theme--nomadTheme bg-brown v-btn--density-default v-btn--size-large v-btn--variant-elevated",
+                        "v-btn v-btn--elevated v-theme--nomadTheme bg-brown-lighten-1 v-btn--density-default v-btn--size-large v-btn--variant-elevated",
                 },
                 showConfirmButton: false,
                 showCancelButton: true,
@@ -606,9 +609,9 @@ async function checkBookingDate() {
             buttonsStyling: false,
             customClass: {
                 confirmButton:
-                    "v-btn v-btn--elevated v-theme--nomadTheme bg-brown v-btn--density-default v-btn--size-large v-btn--variant-elevated",
+                    "v-btn v-btn--elevated v-theme--nomadTheme bg-brown-lighten-1 v-btn--density-default v-btn--size-large v-btn--variant-elevated",
                 cancelButton:
-                    "v-btn v-btn--elevated v-theme--nomadTheme bg-brown v-btn--density-default v-btn--size-large v-btn--variant-elevated",
+                    "v-btn v-btn--elevated v-theme--nomadTheme bg-brown-lighten-1 v-btn--density-default v-btn--size-large v-btn--variant-elevated",
             },
             showConfirmButton: false,
             showCancelButton: true,
