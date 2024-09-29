@@ -229,13 +229,33 @@
                                     </ol-style>
                                 </ol-source-vector>
                             </ol-vector-layer>
-                            <!-- <ol-overlay
-                                :position="[houseInfo.latitudeX, houseInfo.longitudeY]"
+                            <ol-overlay
+                                :position="[houseInfo.longitudeY, houseInfo.latitudeX]"
                                 :autoPan="true"
                                 positioning="top-center"
+                                :stopEvent="false"
                             >
-                                <v-sheet class="pa-3" rounded>hahaha</v-sheet>
-                            </ol-overlay> -->
+                                <v-menu v-model="menu" location="center">
+                                    <template v-slot:activator="{ props }">
+                                        <div v-bind="props"></div>
+                                    </template>
+                                    <v-card rounded="lg">
+                                        <v-card-item>
+                                            <v-icon icon="mdi-map-marker"></v-icon>
+                                            {{
+                                                `${houseInfo.country}, ${houseInfo.city} ${houseInfo.region} ${houseInfo.address}`
+                                            }}
+                                        </v-card-item>
+                                        <v-card-item>
+                                            <v-sheet >
+                                                <v-btn prepend-icon="fa:fa-solid fa-map-location-dot" @click.stop="onClickOpenGoogleMaps" flat variant="outlined">
+                                                    Google Maps
+                                                </v-btn>
+                                            </v-sheet>
+                                        </v-card-item>
+                                    </v-card>
+                                </v-menu>
+                            </ol-overlay>
                             <ol-zoom-control
                                 className="ol-custom-zoom-control"
                                 zoomInLabel="+"
@@ -300,7 +320,9 @@
                         <v-sheet
                             class="flex-grow-0 d-flex flex-column justify-centr align-center px-5"
                         >
-                            <div class="flex-grow-1 text-h5 d-flex align-end font-weight-bold">評分總覽</div>
+                            <div class="flex-grow-1 text-h5 d-flex align-end font-weight-bold">
+                                評分總覽
+                            </div>
 
                             <div class="flex-grow-1 d-flex align-center flex-column">
                                 <div class="text-h2 mt-5">
@@ -339,7 +361,12 @@
                                     </template>
 
                                     <v-progress-linear
-                                        :model-value="scoreDetail[key] ? scoreDetail[key] / scoreDetail.totalReviews * 100 : 0"
+                                        :model-value="
+                                            scoreDetail[key]
+                                                ? (scoreDetail[key] / scoreDetail.totalReviews) *
+                                                  100
+                                                : 0
+                                        "
                                         color="yellow-darken-3"
                                         height="15"
                                         rounded
@@ -471,6 +498,8 @@ const {
     isMoreDiscussesDialogOpen,
 } = storeToRefs(houseDetailStore);
 
+const menu = ref(false);
+
 // Functions
 function onClickCollect() {
     if (isCollected.value) {
@@ -498,6 +527,7 @@ function handleMapClick(e) {
     if (feature) {
         let geometry = feature.getGeometry();
         console.log(geometry.getCoordinates(), geometry.getType(), feature.getProperties());
+        menu.value = true;
         // popupPosition.value = geometry.getCoordinates();
         // selectedPointProps.name = feature.get("name");
         // selectedPointProps.price = feature.get("price");
@@ -520,6 +550,11 @@ async function handleChatClick() {
         senderId: hostInfo.value.id,
         receiverId: user.value.id,
     });
+}
+
+function onClickOpenGoogleMaps() {
+    let url = `https://www.google.com/maps/search/?api=1&query=${houseInfo.value.latitudeX}%2C${houseInfo.value.longitudeY}`;
+    window.open(url, "_blank").focus();
 }
 
 watch(

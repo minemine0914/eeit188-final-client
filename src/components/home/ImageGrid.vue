@@ -2,8 +2,8 @@
     <!-- Images Grid -->
     <v-hover v-slot="{ isHovering, props }">
         <v-responsive :aspect-ratio="10 / 4" ref="imageBoxRef" class="mx-1" v-bind="props">
-            <v-sheet class="fill-height d-flex flex-row ga-1" style="contain: size">
-                <v-sheet class="flex-grow-1 rounded-s-xl overflow-hidden">
+            <v-sheet class="fill-height d-flex flex-row ga-1 rounded-xl" style="contain: size" color="transparent">
+                <v-sheet class="flex-grow-1 rounded-s-xl overflow-hidden" color="transparent">
                     <v-skeleton-loader
                         class="custom-skeleton-image"
                         type="image"
@@ -18,8 +18,8 @@
                         v-else
                     ></v-img>
                 </v-sheet>
-                <v-sheet class="flex-grow-1 d-flex flex-column ga-1">
-                    <v-sheet class="flex-grow-1 d-flex flex-row ga-1">
+                <v-sheet class="flex-grow-1 d-flex flex-column ga-1" color="transparent">
+                    <v-sheet class="flex-grow-1 d-flex flex-row ga-1" color="transparent">
                         <v-sheet class="flex-grow-1">
                             <v-skeleton-loader
                                 type="image"
@@ -51,7 +51,7 @@
                             ></v-img>
                         </v-sheet>
                     </v-sheet>
-                    <v-sheet class="flex-grow-1 d-flex flex-row ga-1">
+                    <v-sheet class="flex-grow-1 d-flex flex-row ga-1" color="transparent">
                         <v-sheet class="flex-grow-1">
                             <v-skeleton-loader
                                 type="image"
