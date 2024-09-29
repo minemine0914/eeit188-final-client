@@ -8,11 +8,12 @@ import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement
 import { Line } from 'vue-chartjs'
 import { computed, onMounted } from 'vue';
 import { useHostReportStore } from '@/stores/hostReportStore';
+import { useUserStore } from '@/stores/userStore';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
 
 const store = useHostReportStore()
-
+const userStore = useUserStore()
 // Create a computed property for the chart data
 const data = computed(() => {
   // Define an array of colors for each data point
@@ -48,28 +49,38 @@ const data = computed(() => {
     lineData = store.recordsPrapared
   } else {
     lineData = store.recordsPrapared[store.selectedYear]
-    console.log("S.RP", store.recordsPrapared)
+    // console.log("S.RP", store.recordsPrapared)
     if (store.allYear === true) {
-      console.log("S.RPSUM", store.sumMonthlyData(store.recordsPrapared))
+      // console.log("S.RPSUM", store.sumMonthlyData(store.recordsPrapared))
       lineData = store.sumMonthlyData(store.recordsPrapared);
 
     }
   }
 
-  console.log(store.records.map(record => record.cashFlow || 0))
+  let datasets = [{
+    label: '營業額',
+    backgroundColor: '#f87979',
+    borderColor: '#f87979',
+    pointBackgroundColor, // Apply point colors here
+    pointRadius,
+    data: lineData // Adjust data mapping as needed
+  }]
+  // if (userStore.user.role === 'admin') {
+  //   datasets.push({
+  //     label: '平台收入',
+  //     backgroundColor: '#f87979',
+  //     borderColor: '#f87979',
+  //     pointBackgroundColor, // Apply point colors here
+  //     pointRadius,
+  //     data: lineData // Adjust data mapping as needed
+  //   })
+  // }
+
+  // console.log(store.records.map(record => record.cashFlow || 0))
 
   return {
     labels: store.labels.values, // Convert months to strings for labels
-    datasets: [
-      {
-        label: '營業額',
-        backgroundColor: '#f87979',
-        borderColor: '#f87979',
-        pointBackgroundColor, // Apply point colors here
-        pointRadius,
-        data: lineData // Adjust data mapping as needed
-      }
-    ]
+    datasets
   }
 })
 

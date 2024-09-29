@@ -5,15 +5,16 @@ import { useUserStore } from "./userStore";
 
 export const useHostManagementStore = defineStore("hostManagement", () => {
   const userStore = useUserStore();
+
   // 狀態
   const state = reactive({
-    properties: [],  // 房源
-    reviews: [],     // 評價
-    orders: [],      // 訂單
-    selectedProperty: null,  // 當前選中的房源
-    selectedReview: null,    // 當前選中的評價
-    loading: false,          // 加載狀態
-    error: null,             // 錯誤訊息
+    properties: [], // 房源
+    reviews: [], // 評價
+    orders: [], // 訂單
+    selectedProperty: null, // 當前選中的房源
+    selectedReview: null, // 當前選中的評價
+    loading: false, // 加載狀態
+    error: null, // 錯誤訊息
   });
 
   // 錯誤處理方法
@@ -21,7 +22,11 @@ export const useHostManagementStore = defineStore("hostManagement", () => {
     state.loading = false;
     if (error.response) {
       // 確保 error.response 存在，避免 undefined 錯誤
-      console.error("Error response:", error.response.status, error.response.data);
+      console.error(
+        "Error response:",
+        error.response.status,
+        error.response.data
+      );
       state.error = error.response.data.message || "Unknown error occurred";
     } else if (error.request) {
       // 請求發出但沒有收到回應
@@ -39,42 +44,38 @@ export const useHostManagementStore = defineStore("hostManagement", () => {
     state.error = null;
   }
 
-  // API 請求函數
-  //獲取該房東所有房源
-  async function fetchAllProperties() {
-    clearError();
-    state.loading = true;
+  // 狀態
+  const properties = ref([]); // 房源
+  const reviews = ref([]); // 評價
+  const orders = ref([]); // 訂單
+  const selectedProperty = ref(null); // 當前選中的房源
+  const selectedReview = ref(null); // 當前選中的評價
+
+  // 方法
+
+  // 1. 獲取所有房源，對應於 HouseController 的 API
+  async function fetchProperties() {
     try {
-      const userId = userStore.user.id;
-      const response = await api.post("/house/search", { userId: userId });
-      this.properties = response.data;
-      console.log(response.data);
+      const response = await api.get("/house"); // 假設路徑
+      state.properties.value = response.data;
     } catch (error) {
-      handleError(error);
-    } finally {
-      state.loading = false;
+      console.error("Error fetching properties:", error);
+      throw error;
     }
   }
 
-
-  async function fetchPropertyDetails(propertyId) {
-    clearError();
-    state.loading = true;
-    try {
-      const response = await api.get(`/house/${propertyId}`);
-      state.selectedProperty = response.data;
-      state.loading = false;
-    } catch (error) {
-      handleError(error);
-    }
-  }
-  // 新增房源
+  // 2. 添加房源，對應於 HouseController 的 API
   async function addProperty(propertyData) {
-    let data = { ...propertyData, userId: userStore.user.id }
+    let data = { ...propertyData, userId: userStore.user.id };
     clearError();
     state.loading = true;
-    api.get("https://nominatim.openstreetmap.org/search.php",
-      { params: { q: propertyData.city + propertyData.region, format: "jsonv2" } })
+    api
+      .get("https://nominatim.openstreetmap.org/search.php", {
+        params: {
+          q: propertyData.city + propertyData.region,
+          format: "jsonv2",
+        },
+      })
       .then((res) => {
         console.log("OpenStreetMap search long lat:", res.data);
         if (res.data.length !== 0) {
@@ -94,7 +95,59 @@ export const useHostManagementStore = defineStore("hostManagement", () => {
     }
   }
 
-  // 上傳房源圖片
+  // 3. 更新房源，對應於 HouseController 的 API
+  async function updateProperty(propertyId, propertyData) {
+    try {
+      const response = await api({
+        method: "put",
+        url: `/house/${propertyId}`,
+        data: propertyData,
+      });
+
+      return response;
+    } catch (error) {
+      console.error("Error updating property:", error);
+      throw error;
+    }
+  }
+
+  // 4. 刪除房源，對應於 HouseController 的 API
+  async function deleteProperty(propertyId) {
+    try {
+      await api({
+        method: "delete",
+        url: `/house/${propertyId}`,
+      });
+      properties.value = properties.value.filter((p) => p.id !== propertyId);
+    } catch (error) {
+      console.error("Error deleting property:", error);
+      throw error;
+    }
+  }
+
+  // 5. 獲取訂單，對應於 TranscationRecordController 的 API
+  async function fetchOrders() {
+    try {
+      const response = await api.get("/transactions"); // 假設路徑
+      orders.value = response.data;
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+      throw error;
+    }
+  }
+
+  // 6. 獲取特定房源的評價，對應於 HouseController 的 API
+  async function fetchReviews(propertyId) {
+    try {
+      const response = await api.get(`/houses/${propertyId}/reviews`); // 假設路徑
+      reviews.value = response.data;
+    } catch (error) {
+      console.error("Error fetching reviews:", error);
+      throw error;
+    }
+  }
+
+  // 7. 上傳房源圖片
   async function uploadPropertyImage(propertyId, file) {
     clearError();
     state.loading = true;
@@ -114,87 +167,96 @@ export const useHostManagementStore = defineStore("hostManagement", () => {
     }
   }
 
-
-
-  // 更新房源
-  async function updateProperty(id, propertyData) {
-    clearError();
-    state.loading = true;
+  // 8. 獲取房源背景圖片，對應於 HouseExternalResourceController 的 API
+  async function fetchPropertyBackgroundImage(propertyId) {
     try {
-      const response = await api.put(`/house/${id}`, propertyData);
-      const index = state.properties.findIndex((p) => p.id === id);
-      if (index !== -1) {
-        state.properties[index] = { ...state.properties[index], ...propertyData };
-      }
-      state.loading = false;
+      const response = await api.get(`/house/${propertyId}/background`, {
+        responseType: "blob",
+      });
+      return response.data;
     } catch (error) {
-      handleError(error);
+      throw error;
     }
   }
 
-  // 刪除房源
-  async function deleteProperty(id) {
-    clearError();
-    state.loading = true;
+  // 9. 從 MongoDB 獲取房源資料，對應於 HouseMongoController 的 API
+  async function fetchMongoProperty(propertyId) {
     try {
-      await api.delete(`/house/${id}`);
-      state.properties = state.properties.filter((p) => p.id !== id); // 移除房源
-      state.loading = false;
+      const response = await api.get(`/house/mongo/${propertyId}`); // 假設路徑
+      selectedProperty.value = response.data;
     } catch (error) {
-      handleError(error);
+      console.error("Error fetching MongoDB property:", error);
+      throw error;
     }
   }
 
-  // 獲取訂單
-  async function fetchOrders() {
-    clearError();
-    state.loading = true;
+  // 10. 使用房東ID取得所有房源
+  async function fetchAllhouse(userId) {
     try {
-      const response = await api.get("/transcation_record/all");
-      state.orders = response.data;
-      state.loading = false;
+      const response = await api({
+        method: "post",
+        url: "/house/search",
+        data: {
+          userId: userId,
+          page: 0,
+          limit: 100,
+        },
+      });
+
+      return response.data.content;
     } catch (error) {
-      handleError(error);
+      console.error(error);
+      throw error;
     }
   }
-  // 獲取單筆訂單詳情
-  async function fetchOrderDetail(orderId) {
-    clearError();
-    state.loading = true;
+
+  // 11. 使用houseId查詢單一筆房源資料
+  async function fetchHouseById(houseId) {
     try {
-      const response = await api.get(`/transcation_record/${orderId}`);
-      state.selectedOrder = response.data;
-      state.loading = false;
+      const response = await api({
+        method: "get",
+        url: `/house/${houseId}`,
+      });
+
+      return response.data;
     } catch (error) {
-      handleError(error);
+      console.error(error);
+      throw error;
     }
   }
-  // 獲取房源評價
-  async function fetchReviews(propertyId) {
-    clearError();
-    state.loading = true;
+
+  // 12. 使用userId查詢房東所擁有的房源總數
+  async function countAllhouse(userId) {
     try {
-      const response = await api.get(`/house/${propertyId}/reviews`);
-      state.reviews = response.data;
-      state.loading = false;
+      const response = await api({
+        method: "get",
+        url: `/user/find/${userId}`,
+      });
+
+      return response.data.houseCount;
     } catch (error) {
-      handleError(error);
+      console.error(error);
+      throw error;
     }
   }
 
   return {
-    state,
-    fetchAllProperties,
-    fetchPropertyDetails,
+    properties,
+    reviews,
+    orders,
+    selectedProperty,
+    selectedReview,
+    fetchProperties,
     addProperty,
     updateProperty,
     deleteProperty,
     fetchOrders,
-    fetchOrderDetail,
     fetchReviews,
     uploadPropertyImage,
-
+    fetchPropertyBackgroundImage,
+    fetchMongoProperty,
+    fetchAllhouse,
+    fetchHouseById,
+    countAllhouse,
   };
-}, {
-  // persist: true, // 持久化狀態
 });

@@ -1,13 +1,12 @@
 <template>
     <v-sheet
         :border="true"
-        rounded="sm"
+        rounded
         elevation="0"
-        class="d-flex flex-row ga-3 mx-3"
-        :color="isExpired ? 'grey-lighten-3' : 'brown-lighten-5'"
+        class="d-flex flex-row ga-3 mx-3 overflow-hidden"
+        :color="isExpired ? 'grey-lighten-3' : 'white'"
     >
         <v-sheet
-            :border="false"
             class="d-flex justify-center align-center text-center position-relative"
             :color="isExpired ? 'grey-darken-1' : 'brown-darken-1'"
             height="100"

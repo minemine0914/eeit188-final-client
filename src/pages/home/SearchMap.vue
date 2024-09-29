@@ -29,11 +29,9 @@ import SearchMapResultControll from "../../components/home/SearchMapResultContro
 const searchContainerRef = ref(null);
 const houseSearchStore = useHouseSearchStore();
 const userViewStore = useUserViewStore();
-const { currentFilterHousePage, filterHouseList } = storeToRefs(houseSearchStore);
+const { currentFilterHousePage, filterHouseList, searchParams } = storeToRefs(houseSearchStore);
 const { containerHeight } = storeToRefs(userViewStore);
 const searchContainerResizeObserve = reactive({ width: 0, height: 0 });
-
-
 
 // // ResizeObserver on searchContainer
 // let timeoutId = null;
@@ -47,13 +45,18 @@ const searchContainerResizeObserve = reactive({ width: 0, height: 0 });
 //     }, 100); // 設定 500 毫秒的延遲
 // });
 
-
 onMounted(() => {
     // houseSearchStore.getFilterHouses({ page: 0, limit: 20 });
 });
 
 onBeforeUnmount(() => {
     // if (timeoutId) clearTimeout(timeoutId);
+});
+onBeforeUnmount(() => {
+    searchParams.value.minLatitudeX = null;
+    searchParams.value.maxLatitudeX = null;
+    searchParams.value.minLongitudeY = null;
+    searchParams.value.maxLongitudeY = null;
 });
 </script>
 <style></style>
