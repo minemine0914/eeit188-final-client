@@ -165,7 +165,7 @@ export default {
           }
           combinedData[formattedDate].orderQuantity += 1;
           combinedData[formattedDate].totalAmount += (cashFlow * 1.05);
-          //combinedData[formattedDate].discountAmount += discount;
+          
           combinedData[formattedDate].AP += cashFlow;
           combinedData[formattedDate].R += (cashFlow * 0.05) ; 
         });
