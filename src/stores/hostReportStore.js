@@ -23,7 +23,7 @@ export const useHostReportStore = defineStore('hostReport', {
         selectedPeriod: 'month',
         allYear: false,
         allMonth: true,
-        allQuarter: false,
+        allQuarter: true,
 
         years: [],
         months: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
@@ -249,12 +249,19 @@ export const useHostReportStore = defineStore('hostReport', {
 
                 // 4.1 修正回傳值TxRecord只有ID的問題，TxRecord ID->TxRecord物件
                 let transformedRecords = await this.searchRecordAgainByRecordId(response.data.content);
+                console.log('fix recordID', transformedRecords)
                 // 4.2.1 修正house只有ID的問題，House ID->House物件
                 for (let item of transformedRecords) { item.house = await this.searchHouseAgainByRecordId(item.house); }
+                console.log('fix houseID', transformedRecords)
+
                 // 4.2.2 修正user只有ID的問題，User ID->User物件
                 for (let item of transformedRecords) { item.user = await this.searchUserAgainByRecordId(item.user); }
+                console.log('fix userID', transformedRecords)
+
                 // 4.3 把CreatedAt的時間拆開成不同object，方便篩選
                 transformedRecords = await this.separateCreatedAt(transformedRecords)
+                console.log('fix cratedeAT', transformedRecords)
+
                 // 4.4 查詢評分
                 transformedRecords = await this.getScore(transformedRecords)
                 console.log('transformedRecords', transformedRecords)
@@ -502,6 +509,9 @@ export const useHostReportStore = defineStore('hostReport', {
         },
 
         getUserBySelectedUserId(userId) {
+            if (typeof userId === 'object' || Array.isArray(userId)) {
+                userId = userId[0];
+            }
             return this.users.find(user => user.id === userId) || null;
         },
 

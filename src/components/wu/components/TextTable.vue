@@ -6,7 +6,7 @@
             <!-- *******************admin額外顯示查看的user(房東)資訊********************* -->
             <template v-if="store.loginUser.role === 'admin'">
                 <v-icon icon="mdi-account" />
-                &nbsp;房東名稱：{{ currentUser.name }}&nbsp;
+                &nbsp;房東名稱：{{ currentUser?.name }}&nbsp;
             </template>
 
             <v-icon icon="mdi-home" />
@@ -18,6 +18,15 @@
         </v-card-title>
 
         <v-card-title>
+            <v-chip :color="store.itemsSource[0]?.house?.show ? 'green' : 'red'">
+                {{ store.itemsSource[0]?.house?.show ? '公開中' : '不公開' }}
+            </v-chip>
+            <v-chip :color="store.itemsSource[0]?.house?.review === false ? 'red' : store.itemsSource[0]?.house?.review ? 'green' :
+                'orange'">
+                {{ store.itemsSource[0]?.house?.review === false ? '審核失敗' : store.itemsSource[0]?.house?.review ? '審核通過'
+                    :
+                    '待審核' }}
+            </v-chip>
             <v-chip v-if="store.itemsSource[0]?.house?.bedroom" variant="outlined" prepend-icon="mdi-bed-outline">
                 臥房：{{ store.itemsSource[0]?.house?.bedroom }} </v-chip>
             <v-chip v-if="store.itemsSource[0]?.house?.restroom" variant="outlined" prepend-icon="mdi-toilet">
@@ -151,8 +160,11 @@ const itemsPerPageOptions = [3, 5, 10, 25, 50, 100, -1] // Options for per-page 
 
 const currentUser = computed(() => {
     // console.log('Fetching current user...');
+
+    console.log("GGGGGG", store.selectedUserId)
     const user = store.getUserBySelectedUserId(store.selectedUserId);
-    // console.log('Current user:', user);
+
+    console.log('Current user:', user);
     return user;
 });
 

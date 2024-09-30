@@ -58,7 +58,7 @@ const data = computed(() => {
   }
 
   let datasets = [{
-    label: '營業額',
+    label: '金流',
     backgroundColor: '#f87979',
     borderColor: '#f87979',
     pointBackgroundColor, // Apply point colors here
@@ -95,7 +95,7 @@ const options = computed(() => ({
     tooltip: {
       callbacks: {
         label: function (tooltipItem) {
-          return `營業額：${tooltipItem.raw}`;
+          return `金流：${tooltipItem.raw}`;
         }
       }
     }
@@ -110,7 +110,7 @@ const options = computed(() => ({
     y: {
       title: {
         display: false,
-        text: '營業額'
+        text: '金流'
       },
       beginAtZero: true
     }

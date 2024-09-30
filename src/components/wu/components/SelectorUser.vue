@@ -59,7 +59,7 @@ import { useHostReportStore } from '@/stores/hostReportStore';
 const store = useHostReportStore()
 
 let headers = [
-    { title: '', value: 'pics', width: '200px' }, // Disable sorting for pics
+    { title: '', value: 'pics', width: '20px' }, // Disable sorting for pics
     { title: '名稱', value: 'name', sortable: true },
     { title: '性別', value: 'gender', sortable: true },
     { title: '手機', value: 'mobilePhone', sortable: true, align: "start" },
