@@ -291,7 +291,9 @@ import { required, minValue } from "@vuelidate/validators";
 import { useHostManagementStore } from "@/stores/hostManagementStore";
 import { useUserStore } from "../../stores/userStore";
 import api from "@/plugins/axios";
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
 const userStore = useUserStore();
 
 // 定義表單資料
@@ -391,9 +393,6 @@ const submitForm = async () => {
   }
 
   try {
-    // 假設經緯度生成完成
-    // property.value.latitudeX = 25.0330
-    // property.value.longitudeY = 121.5654
 
     // 發送表單資料到後端
     await hostManagementStore.addProperty(property.value);
@@ -423,6 +422,7 @@ const submitForm = async () => {
     }
 
     alert("房源已成功提交！");
+    router.push("/lo/property-management/")
   } catch (error) {
     console.error("提交失敗", error);
     alert(error.message || "提交失敗，請稍後再試");

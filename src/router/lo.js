@@ -18,11 +18,11 @@ const router = {
             name: 'reviews',
             component: () => import('@/components/lo/Reviews.vue')
         },
-        {
-            path: 'reservation-management',
-            name: 'reservationManagement',
-            component: () => import('@/components/lo/Reservation.vue')
-        },
+        // {
+        //     path: 'reservation-management',
+        //     name: 'reservationManagement',
+        //     component: () => import('@/components/lo/Reservation.vue')
+        // },
         {
             path: 'order-records',
             name: 'orderRecords',
@@ -42,7 +42,7 @@ const router = {
         {
             path: 'edit-property/:id',
             name: 'editProperty',
-            component: () => import('@/components/lo/EditProperty.vue'),
+            component: () => import('@/components/lo/EditPropertyImage.vue'),
             props: true
         },
         {
