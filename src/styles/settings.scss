@@ -1,10 +1,5 @@
 @use "vuetify/settings" with (
     // v-container 裝置寬度斷點
-    $container-max-widths: (
-        xs: 100%,
-        sm: 720px,
-        md: 960px,
-        lg: 1136px,
-        xl: 1280px,
-    )
+    $container-max-widths: (xs: 100%, sm: 720px, md: 960px, lg: 1136px, xl: 1280px),
+    // $infinite-scroll-side-padding: "0px"
 );

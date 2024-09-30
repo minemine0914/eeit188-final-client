@@ -11,25 +11,21 @@
             :items="allHouseList"
             @load="loadAllHouse"
         >
-            <!-- Scroll empty component -->
-            <template v-slot:empty>
-                <v-sheet>
-                    <v-alert variant="plain">
-                        <span>您看完了所有房源! 共 </span>
-                        <span>{{ allHouseList.length }}</span>
-                        <span> 個房源</span>
-                    </v-alert>
-                </v-sheet>
-            </template>
             <!-- Explore Banner -->
             <v-parallax
                 :src="primaryBannerImg"
+                scale="0.6"
                 height="360px"
                 width="100%"
                 class="posiiton-relative"
             >
                 <div class="d-flex flex-column fill-height justify-center align-center text-white">
-                    <div class="text-h3 font-weight-black mb-4 opacity-80">Nomad</div>
+                    <div
+                        class="text-h3 font-weight-black mb-4 opacity-80"
+                        style="font-family: 'Tenor Sans'"
+                    >
+                        NOMAD
+                    </div>
                     <div class="subheading font-weight-regular">住宿 旅遊 重新定義居住自由</div>
                 </div>
             </v-parallax>
@@ -66,7 +62,12 @@
                             v-for="hotHouse in hotHouseList"
                             :key="hotHouse.houseDetails.id"
                         >
-                            <HouseCard :house="hotHouse.houseDetails" :avg-score="hotHouse.averageScore" min-width="320" />
+                            <HouseCard
+                                :house="hotHouse.houseDetails"
+                                :avg-score="hotHouse.averageScore"
+                                :total-scores="hotHouse.totalScores"
+                                min-width="320"
+                            />
                         </v-slide-group-item>
                     </v-slide-group>
                 </v-sheet>
@@ -76,7 +77,9 @@
                 <div class="d-flex flex-column fill-height justify-center align-center text-white">
                     <h1 class="text-h4 font-weight-black mb-4 opacity-80">分享您的空間</h1>
                     <h4 class="subheading font-weight-regular">為大家提供舒適的住宿體驗</h4>
-                    <v-btn variant="outlined" class="mt-5" to="/host">立即加入</v-btn>
+                    <v-btn variant="outlined" class="mt-5" to="/host">{{
+                        user.id != null ? "管理房源" : "立即加入"
+                    }}</v-btn>
                 </div>
             </v-parallax>
             <!-- Height rating houses -->
@@ -108,7 +111,12 @@
                             v-for="newHouse in newHouseList"
                             :key="newHouse.id"
                         >
-                            <HouseCard :house="newHouse" min-width="320" />
+                            <HouseCard
+                                :house="newHouse.houseDetails"
+                                :avg-score="newHouse.averageScore"
+                                :total-scores="newHouse.totalScores"
+                                min-width="320"
+                            />
                         </v-slide-group-item>
                     </v-slide-group>
                 </v-sheet>
@@ -117,29 +125,48 @@
             <v-container fluid class="mb-5">
                 <div class="text-h5 font-weight-medium mx-5">探索房源</div>
                 <v-row justify="start" align="start">
-                    <template v-for="exploreHouse in allHouseList" :key="exploreHouse.id">
+                    <template
+                        v-for="exploreHouse in allHouseList"
+                        :key="exploreHouse.houseDetails.id"
+                    >
                         <v-col cols="12" lg="3" md="4" sm="6" xs="12">
-                            <!-- <HouseCard :house="exploreHouse.houseDetails" :avg-score="exploreHouse.averageScore" /> -->
-                            <HouseCard :house="exploreHouse" />
+                            <HouseCard
+                                :house="exploreHouse.houseDetails"
+                                :avg-score="exploreHouse.averageScore"
+                                :total-scores="exploreHouse.totalScores"
+                            />
                         </v-col>
                     </template>
                 </v-row>
             </v-container>
+            <!-- Scroll empty component -->
+            <template v-slot:empty>
+                <v-sheet>
+                    <v-alert variant="plain">
+                        <span>您看完了所有房源! 共 </span>
+                        <span>{{ allHouseList.length }}</span>
+                        <span> 個房源</span>
+                    </v-alert>
+                </v-sheet>
+            </template>
         </v-infinite-scroll>
     </v-container>
 </template>
 <script setup>
-import primaryBannerImg from "@/assets/banner05.webp";
+import primaryBannerImg from "@/assets/banner08.webp";
 import secondaryBannerImg from "@/assets/banner06.webp";
 import SearchHouseBar from "@/components/home/SearchHouseBar.vue";
 import { useHouseSearchStore } from "@/stores/houseSearchStore";
 import { useUserViewStore } from "@/stores/userViewStore";
+import { useUserStore } from "../../stores/userStore";
 import { useResizeObserver } from "@vueuse/core";
 import { storeToRefs } from "pinia";
 import { onMounted, reactive, ref } from "vue";
 import HouseCard from "../../components/home/HouseCard.vue";
 const houseSearchStore = useHouseSearchStore();
 const userViewStore = useUserViewStore();
+const userStore = useUserStore();
+const { user } = storeToRefs(userStore);
 const { allHouseList, hotHouseList, newHouseList, currentAllHousePage } =
     storeToRefs(houseSearchStore);
 const { containerHeight } = storeToRefs(userViewStore);

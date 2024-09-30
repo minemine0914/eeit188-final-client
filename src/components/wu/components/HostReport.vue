@@ -85,6 +85,6 @@ onMounted(async () => {
 
 .subBox {
     width: 70vw;
-
+    background-color: rgba(211, 211, 211, 0.5)
 }
 </style>

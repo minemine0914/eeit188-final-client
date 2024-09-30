@@ -59,6 +59,12 @@ const router = {
             component: () => import("@/components/wu/components/PlatformReport.vue"),
             meta: { title: "歷史紀錄", requiresAuth: true, requiresAdmin: true },
         },
+        {
+            path: "test",
+            name: "test",
+            component: () => import("@/components/kenjo/components/Test.vue"),
+            meta: { title: "測試", requiresAuth: true, requiresAdmin: true },
+        },
     ],
 }
 

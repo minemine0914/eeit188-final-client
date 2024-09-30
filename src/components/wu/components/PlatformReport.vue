@@ -6,6 +6,7 @@
         <v-card class="subBox">
             <v-card-title>
                 <SelectorUser />
+                <br>
                 <Selector />
             </v-card-title>
             <!-- Loading Spinner -->
@@ -40,11 +41,12 @@ import DataTab from './DataTab.vue';
 
 const store = useHostReportStore();
 const userStore = useUserStore();
+const { user } = userStore
 store.isLoading = ref(false)
 
 onMounted(async () => {
     if (userStore.user) {
-        store.loginUser = userStore.user
+        store.loginUser = user
     }
     // Set loading state to true
     store.isLoading = true;
@@ -66,3 +68,16 @@ onMounted(async () => {
     }
 });
 </script>
+
+<style scoped>
+.mainBox {
+    width: 80vw;
+    position: relative;
+    left: -100px;
+}
+
+.subBox {
+    width: 70vw;
+    background-color: rgba(211, 211, 211, 0.5)
+}
+</style>

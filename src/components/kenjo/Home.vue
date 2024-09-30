@@ -9,6 +9,7 @@
         <router-link to="/system/PromotionsandDiscountsManagement"><v-btn>優惠券</v-btn></router-link>
         <router-link to="/system/FinancialManagement"><v-btn>當日金流</v-btn></router-link>
         <router-link to="/system/PlatformReport"><v-btn>歷史紀錄</v-btn></router-link>
+        <router-link to="/system/Test"><v-btn>測試</v-btn></router-link>
         
         
       </nav>

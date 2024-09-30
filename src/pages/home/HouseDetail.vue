@@ -229,13 +229,33 @@
                                     </ol-style>
                                 </ol-source-vector>
                             </ol-vector-layer>
-                            <!-- <ol-overlay
-                                :position="[houseInfo.latitudeX, houseInfo.longitudeY]"
+                            <ol-overlay
+                                :position="[houseInfo.longitudeY, houseInfo.latitudeX]"
                                 :autoPan="true"
                                 positioning="top-center"
+                                :stopEvent="false"
                             >
-                                <v-sheet class="pa-3" rounded>hahaha</v-sheet>
-                            </ol-overlay> -->
+                                <v-menu v-model="menu" location="center">
+                                    <template v-slot:activator="{ props }">
+                                        <div v-bind="props"></div>
+                                    </template>
+                                    <v-card rounded="lg">
+                                        <v-card-item>
+                                            <v-icon icon="mdi-map-marker"></v-icon>
+                                            {{
+                                                `${houseInfo.country}, ${houseInfo.city} ${houseInfo.region} ${houseInfo.address}`
+                                            }}
+                                        </v-card-item>
+                                        <v-card-item>
+                                            <v-sheet >
+                                                <v-btn prepend-icon="fa:fa-solid fa-map-location-dot" @click.stop="onClickOpenGoogleMaps" flat variant="outlined">
+                                                    Google Maps
+                                                </v-btn>
+                                            </v-sheet>
+                                        </v-card-item>
+                                    </v-card>
+                                </v-menu>
+                            </ol-overlay>
                             <ol-zoom-control
                                 className="ol-custom-zoom-control"
                                 zoomInLabel="+"
@@ -295,6 +315,76 @@
                     </v-row>
                 </v-sheet>
                 <v-divider class="border-opacity-25 my-5"></v-divider>
+                <v-sheet min-height="100">
+                    <v-sheet class="d-flex flex-row justify-center aligh-center ga-5 mb-3">
+                        <v-sheet
+                            class="flex-grow-0 d-flex flex-column justify-centr align-center px-5"
+                        >
+                            <div class="flex-grow-1 text-h5 d-flex align-end font-weight-bold">
+                                評分總覽
+                            </div>
+
+                            <div class="flex-grow-1 d-flex align-center flex-column">
+                                <div class="text-h2 mt-5">
+                                    {{ scoreDetail.averageScore.toFixed(1) }}
+                                    <span class="text-h6 ml-n3">/5</span>
+                                </div>
+                                <v-rating
+                                    :model-value="scoreDetail.averageScore"
+                                    size="30"
+                                    color="warning"
+                                    half-increments
+                                    readonly
+                                ></v-rating>
+                                <div class="px-3">{{ scoreDetail.totalReviews }} 則評價</div>
+                            </div>
+                        </v-sheet>
+                        <v-sheet class="flex-grow-1">
+                            <v-list
+                                bg-color="transparent"
+                                class="d-flex flex-column-reverse"
+                                density="compact"
+                            >
+                                <v-list-item
+                                    v-for="(key, index) in [
+                                        'scoresInRange0To1',
+                                        'scoresInRange1To2',
+                                        'scoresInRange2To3',
+                                        'scoresInRange3To4',
+                                        'scoresInRange4To5',
+                                    ]"
+                                    :key="key"
+                                >
+                                    <template v-slot:prepend>
+                                        <span>{{ index + 1 }}</span>
+                                        <v-icon class="mx-2" icon="mdi-star"></v-icon>
+                                    </template>
+
+                                    <v-progress-linear
+                                        :model-value="
+                                            scoreDetail[key]
+                                                ? (scoreDetail[key] / scoreDetail.totalReviews) *
+                                                  100
+                                                : 0
+                                        "
+                                        color="yellow-darken-3"
+                                        height="15"
+                                        rounded
+                                    ></v-progress-linear>
+
+                                    <template v-slot:append>
+                                        <div style="min-width: 35px">
+                                            <span class="d-flex justify-end">
+                                                {{ scoreDetail[key] }}
+                                            </span>
+                                        </div>
+                                    </template>
+                                </v-list-item>
+                            </v-list>
+                        </v-sheet>
+                    </v-sheet>
+                </v-sheet>
+                <v-divider class="border-opacity-25 my-5"></v-divider>
                 <v-sheet min-height="100" flat>
                     <v-sheet class="d-flex flex-row align-top">
                         <div class="flex-grow-1 text-h6 mb-3">最新評論</div>
@@ -337,7 +427,7 @@
                         <v-col cols="12">
                             <v-sheet class="d-flex justify-center align-center">
                                 <v-alert
-                                    v-if="totalDiscussCount < 5"
+                                    v-if="scoreDetail.totalReviews < 5"
                                     variant="plain"
                                     color="brown"
                                     class="text-center"
@@ -351,7 +441,7 @@
                                     color="brown"
                                     @click="isMoreDiscussesDialogOpen = true"
                                 >
-                                    查看全部 {{ totalDiscussCount }} 則評價
+                                    查看全部 {{ scoreDetail.totalReviews }} 則評價
                                 </v-btn>
                             </v-sheet>
                         </v-col>
@@ -395,6 +485,7 @@ const houseDetailStore = useHouseDetailStore();
 const {
     houseInfo,
     hostInfo,
+    scoreDetail,
     previewDiscussList,
     selfHouseDiscuss,
     totalDiscussCount,
@@ -406,6 +497,8 @@ const {
     isDiscussDialogOpen,
     isMoreDiscussesDialogOpen,
 } = storeToRefs(houseDetailStore);
+
+const menu = ref(false);
 
 // Functions
 function onClickCollect() {
@@ -434,6 +527,7 @@ function handleMapClick(e) {
     if (feature) {
         let geometry = feature.getGeometry();
         console.log(geometry.getCoordinates(), geometry.getType(), feature.getProperties());
+        menu.value = true;
         // popupPosition.value = geometry.getCoordinates();
         // selectedPointProps.name = feature.get("name");
         // selectedPointProps.price = feature.get("price");
@@ -458,6 +552,11 @@ async function handleChatClick() {
     });
 }
 
+function onClickOpenGoogleMaps() {
+    let url = `https://www.google.com/maps/search/?api=1&query=${houseInfo.value.latitudeX}%2C${houseInfo.value.longitudeY}`;
+    window.open(url, "_blank").focus();
+}
+
 watch(
     // Watch Route params houseId change
     () => route.params.houseId,
@@ -477,6 +576,7 @@ onMounted(async () => {
             houseDetailStore.checkIsCollectedHouse(),
             houseDetailStore.checkIsDiscussHouse(),
             houseDetailStore.getHostInfo(),
+            houseDetailStore.getScoreDetail(),
             houseDetailStore.getPreviewDiscussList(),
             houseDetailStore.getSelfHouseDiscuss(),
         ]);

@@ -5,7 +5,6 @@
         @click.stop="$router.push(`/house/${house.id}`)"
         :ripple="false"
         :hover="false"
-        
     >
         <v-card-item class="pt-4">
             <v-sheet color="transparent" class="overflow-hidden" rounded="lg">
@@ -56,10 +55,23 @@
             </v-sheet>
         </v-card-item>
         <v-card-title class="py-0 d-flex flex-row align-center justify-center">
-            <div class="flex-grow-1">{{ house.name }}</div>
-            <div class="d-flex flex-grow-1 text-body-2 justify-end align-top">
-                <v-icon icon="mdi-star-outline" size="small"></v-icon>
-                <span>{{ (avgScore).toFixed(1) }}</span>
+            <div class="flex-grow-0">{{ house.name }}</div>
+            <div class="d-flex flex-grow-1 justify-end align-center ga-1">
+                <v-rating
+                    half-increments
+                    :length="5"
+                    size="x-small"
+                    :model-value="avgScore"
+                    color="warning"
+                    active-color="warning"
+                    readonly
+                    density="compact"
+                    class="mb-1"
+                />
+                <div class="text-body-2 text-grey-darken-1">
+                    {{ avgScore !== 0 ? avgScore.toFixed(1) : "無評分" }}
+                </div>
+                <div class="text-body-2 text-grey-darken-1">({{ totalScores }})</div>
             </div>
         </v-card-title>
         <v-card-subtitle class="pb-2">
@@ -94,7 +106,26 @@
                 </span>
             </div>
         </v-card-subtitle>
-        <v-card-text class="font-weight-bold pt-0">${{ house.price }} / 日</v-card-text>
+        <v-card-text class="pt-0 d-flex flex-row align-center justify-center">
+            <div class="font-weight-bold flex-grow-1">${{ house.price }} / 晚</div>
+            <!-- <div class="d-flex flex-grow-1 justify-end align-center ga-1">
+                <v-rating
+                    half-increments
+                    :length="5"
+                    size="x-small"
+                    :model-value="avgScore"
+                    color="warning"
+                    active-color="warning"
+                    readonly
+                    density="compact"
+                    class="mb-1"
+                />
+                <div class="text-body-2 text-grey-darken-1">
+                    {{ avgScore !== 0 ? avgScore.toFixed(1) : "無評分" }}
+                </div>
+                <div class="text-body-2 text-grey-darken-1">({{ totalScores }})</div>
+            </div> -->
+        </v-card-text>
     </v-card>
 </template>
 <script setup>
@@ -107,8 +138,12 @@ defineProps({
     },
     avgScore: {
         type: Number,
-        default: 0
-    }
+        default: 0,
+    },
+    totalScores: {
+        type: Number,
+        default: 0,
+    },
 });
 </script>
 <style></style>

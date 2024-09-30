@@ -14,6 +14,7 @@
 <script setup>
 import Order from "@/components/user/Order.vue";
 import TransectionRecord from "@/components/user/TransectionRecord.vue";
+import Ticket from "@/components/user/Ticket.vue";
 </script>
 
 <style scoped>
@@ -36,7 +37,7 @@ import TransectionRecord from "@/components/user/TransectionRecord.vue";
 }
 
 .record-list {
-  margin-left: 200px;
+  margin-left: 100px;
 }
 
 h1 {
