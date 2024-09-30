@@ -27,15 +27,68 @@ const fetchUserList = async (params) => {
 
 // 隨機生成房源名稱
 const generateRandomName = () => {
-    const adjectives = ["豪華", "舒適", "浪漫", "獨特", "寬敞"];
-    const nouns = ["公寓", "別墅", "套房", "小屋", "度假村"];
-    const locations = ["海邊", "山上", "市中心", "森林中", "鄉村"];
+    const adjectives = [
+        "豪華",
+        "舒適",
+        "浪漫",
+        "獨特",
+        "寬敞",
+        "迷人",
+        "現代",
+        "經典",
+        "溫馨",
+        "雅致",
+        "寧靜",
+        "時尚",
+        "田園",
+        "豪華",
+        "生態",
+    ];
+    const nouns = [
+        "公寓",
+        "別墅",
+        "套房",
+        "小屋",
+        "度假村",
+        "花園",
+        "城堡",
+        "宅邸",
+        "小型住宅",
+        "家庭旅館",
+        "豪宅",
+    ];
+    const locations = [
+        "海邊",
+        "山上",
+        "市中心",
+        "森林中",
+        "鄉村",
+        "湖邊",
+        "沙灘",
+        "河岸",
+        "商業區",
+        "小巷",
+        "古城",
+        "都市",
+        "鄉村",
+    ];
 
-    const randomAdjective = adjectives[Math.floor(Math.random() * adjectives.length)];
+    // 隨機選擇兩個形容詞和一個名詞
+    const randomAdjective1 = adjectives[Math.floor(Math.random() * adjectives.length)];
+    const randomAdjective2 = adjectives[Math.floor(Math.random() * adjectives.length)];
     const randomNoun = nouns[Math.floor(Math.random() * nouns.length)];
     const randomLocation = locations[Math.floor(Math.random() * locations.length)];
 
-    return `${randomAdjective}的${randomNoun}在${randomLocation}`; // 例如：豪華的小屋在海邊
+    // 隨機選擇組合方式
+    const formatOptions = [
+        `${randomAdjective1}${randomAdjective2}的${randomNoun}在${randomLocation}`,
+        `${randomAdjective1}的${randomNoun}位於${randomLocation}`,
+        `${randomNoun}在${randomLocation}的${randomAdjective1}${randomAdjective2}`,
+        `${randomNoun}在${randomLocation}，${randomAdjective1}${randomAdjective2}`,
+        `${randomAdjective1}和${randomAdjective2}的${randomNoun}`,
+    ];
+
+    return formatOptions[Math.floor(Math.random() * formatOptions.length)];
 };
 
 // 隨機生成價格
