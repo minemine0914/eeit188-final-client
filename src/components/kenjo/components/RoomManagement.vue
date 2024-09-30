@@ -154,6 +154,8 @@ export default {
           params: {
             page: 0,
             limit: 1000,
+            order: "createdAt",
+            dir: true,
           },
         });
 

@@ -27,10 +27,10 @@
         ></v-img>
       </div>
       <div class="info">
-        <v-text>支付新台幣 {{ r.cashFlow }} 元</v-text>
-        <v-text>{{ formatDate(r.createdAt) }}</v-text>
+        <v-text>支付新台幣 {{ r?.cashFlow }} 元</v-text>
+        <v-text>{{ formatDate(r?.createdAt) }}</v-text>
       </div>
-      <v-text class="deal">{{ r.deal }}</v-text>
+      <v-text class="deal">{{ r?.deal }}</v-text>
       <v-btn class="btn" @click="openQrCode(r)">QR CODE</v-btn>
     </v-card>
     <div v-if="hasMore && record.records.length >= 5" class="loader"></div>
