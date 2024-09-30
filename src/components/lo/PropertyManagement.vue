@@ -16,9 +16,13 @@
         <v-data-table
           :headers="headers"
           :items="house.houses"
-          item-value="name"
           class="elevation-1"
         >
+          <template v-slot:item.name="{ item }">
+            <v-text class="title-name" @click="handleClick(item)">
+              {{ item.name }}
+            </v-text>
+          </template>
           <template v-slot:item.review="{ item }">
             <!--狀態欄位-->
             <v-chip
@@ -386,6 +390,11 @@ const submitForm = async () => {
   }
 };
 
+function handleClick(item) {
+  const url = `/house/${item.id}`;
+  window.open(url, "_blank");
+}
+
 watch(dialog, (val) => {
   if (!val) close();
 });
@@ -404,6 +413,10 @@ watch(updateDialog, (val) => {
 </script>
 
 <style scoped>
+.title-name {
+  cursor: pointer;
+}
+
 .submit-card {
   width: 600px;
   padding: 50px;
