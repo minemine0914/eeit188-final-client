@@ -17,12 +17,17 @@ const userStore = useUserStore()
 // Create a computed property for the chart data
 const data = computed(() => {
   // Define an array of colors for each data point
-  let pointBackgroundColor = Array(store.records.length).fill('#f87979');
+  const cashFlowColor = '#f87979'
+  const platformIncomeColor = '#d5cc4a'
+
+  let pointBackgroundColor = Array(store.records.length).fill(cashFlowColor);
+  let pointBackgroundColorPlatform = Array(store.records.length).fill(platformIncomeColor);
   let pointRadius = Array(store.records.length).fill(3);
 
   if (store.selectedPeriod === 'year') {
     store.labels.name = '年度'
     store.labels.values = store.years
+
     if (!store.allYear) {
       pointBackgroundColor[store.selectedYear - store.years[0]] = 'blue';
       pointRadius[store.selectedYear - store.years[0]] = 8;
@@ -57,23 +62,39 @@ const data = computed(() => {
     }
   }
 
-  let datasets = [{
+  // let lineDataPlatform
+  // if (store.selectedPeriod === 'year') {
+  //   lineDataPlatform = store.recordsPraparedPlatform
+  // } else {
+  //   lineDataPlatform = store.recordsPraparedPlatform[store.selectedYear]
+  //   // console.log("S.RP", store.recordsPrapared)
+  //   if (store.allYear === true) {
+  //     // console.log("S.RPSUM", store.sumMonthlyData(store.recordsPrapared))
+  //     lineDataPlatform = store.sumMonthlyData(store.recordsPraparedPlatform);
+
+  //   }
+  // }
+
+  let datasets = []
+  // if (userStore.user.role === 'normal') {
+  datasets = [{
     label: '金流',
-    backgroundColor: '#f87979',
-    borderColor: '#f87979',
+    backgroundColor: cashFlowColor,
+    borderColor: cashFlowColor,
     pointBackgroundColor, // Apply point colors here
     pointRadius,
     data: lineData // Adjust data mapping as needed
   }]
+  // }
   // if (userStore.user.role === 'admin') {
-  //   datasets.push({
+  //   datasets = [{
   //     label: '平台收入',
-  //     backgroundColor: '#f87979',
-  //     borderColor: '#f87979',
-  //     pointBackgroundColor, // Apply point colors here
+  //     backgroundColor: platformIncomeColor,
+  //     borderColor: platformIncomeColor,
+  //     pointBackgroundColorPlatform, // Apply point colors here
   //     pointRadius,
-  //     data: lineData // Adjust data mapping as needed
-  //   })
+  //     data: lineDataPlatform // Adjust data mapping as needed
+  //   }]
   // }
 
   // console.log(store.records.map(record => record.cashFlow || 0))
@@ -95,7 +116,8 @@ const options = computed(() => ({
     tooltip: {
       callbacks: {
         label: function (tooltipItem) {
-          return `金流：${tooltipItem.raw}`;
+          console.log(tooltipItem)
+          return `${tooltipItem.dataset.label}：${tooltipItem.raw}`;
         }
       }
     }
@@ -120,10 +142,13 @@ const options = computed(() => ({
 onMounted(() => {
   if (store.selectedPeriod === 'year') {
     store.recordsPrapared = store.turnToY(store.records);
+    store.recordsPraparedPlatform = store.turnToYPlatform(store.records);
   } else if (store.selectedPeriod === 'month') {
     store.recordsPrapared = store.turnToYM(store.records);
+    store.recordsPraparedPlatform = store.turnToYMPlatform(store.records);
   } else if (store.selectedPeriod === 'quarter') {
     store.recordsPrapared = store.turnToYQ(store.records);
+    store.recordsPraparedPlatform = store.turnToYQPlatform(store.records);
   }
 })
 </script>

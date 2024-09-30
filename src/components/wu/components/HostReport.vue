@@ -16,7 +16,7 @@
                     <Selector />
                 </template>
                 <template v-else>
-                    <p>您沒有房源，馬上新增房源成為房東吧！</p>
+                    <p>您沒有房源，馬上<router-link class="link" :to="{ name: 'addProperty' }">新增房源</router-link>成為房東吧！</p>
                 </template>
             </v-card-title>
 
@@ -86,5 +86,10 @@ onMounted(async () => {
 .subBox {
     width: 70vw;
     background-color: rgba(211, 211, 211, 0.5)
+}
+
+.link {
+    color: brown;
+    text-decoration: none;
 }
 </style>
