@@ -28,7 +28,6 @@ const store = useHostManagementStore()
 const route = useRoute()
 const propertyId = ref(null)
 const property = ref({})
-const propertyImages = ref([])
 const newImages = ref(null)
 
 // 獲取圖片
