@@ -14,6 +14,8 @@ const userParams = {
     pageSize: 10,
 };
 
+const cityCountyDataPath = "src/assets/CityCountyData.json";
+
 // 定義抓取使用者清單的函數
 const fetchUserList = async (params) => {
     try {
@@ -139,7 +141,7 @@ const generateRandomRoomCount = (max) => {
 let cityCountyData;
 const readCityCountyData = () => {
     if (!cityCountyData) {
-        const rawData = fs.readFileSync("src/assets/CityCountyData.json");
+        const rawData = fs.readFileSync(cityCountyDataPath);
         cityCountyData = JSON.parse(rawData);
     }
     return cityCountyData;
