@@ -145,7 +145,7 @@ const routes = [
         component: () => import("@/components/lo/AddProperty.vue"),
       },
       {
-        path: "edit-property/:id",
+        path: "edit-property/:propertyId",
         name: "editProperty",
         component: () => import("@/components/lo/EditPropertyImage.vue"),
         props: true,
