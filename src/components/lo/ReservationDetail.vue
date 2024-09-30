@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
     <v-container>
         <v-row>
             <v-col cols="12">
@@ -72,4 +72,4 @@ onMounted(() => {
 .v-card-title {
     font-weight: bold;
 }
-</style>
+</style> -->

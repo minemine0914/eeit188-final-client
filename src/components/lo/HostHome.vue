@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <v-app>
     <v-navigation-drawer app permanent>
       <v-list>
@@ -42,4 +42,4 @@ const navigateTo = (path) => {
 .text-h5 {
   font-weight: bold;
 }
-</style>
+</style> -->
