@@ -6,8 +6,14 @@
             請選擇房東：
             <v-icon icon="mdi-account" />
         </v-card-title>
-        <v-data-table v-model="store.selectedUserId" :headers="headers" :items="store.users" item-value="id"
-            select-strategy="single" show-select @change="fetchHouses(store.selectedUserId[0])">
+
+        <v-card-title class="d-flex align-center pe-2">
+            <v-text-field v-model="search" density="compact" label="Search" prepend-inner-icon="mdi-magnify"
+                variant="solo-filled" flat hide-details single-line />
+        </v-card-title>
+
+        <v-data-table v-model:search="search" v-model="store.selectedUserId" :headers="headers" :items="items"
+            item-value="id" select-strategy="single" show-select @change="fetchHouses(store.selectedUserId[0])">
 
             <template v-slot:item.mobilePhone="{ item }">
                 {{ item?.mobilePhone?.toString().substring(0, 4) }}-{{ item?.mobilePhone?.toString().substring(4, 7)
@@ -53,10 +59,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useHostReportStore } from '@/stores/hostReportStore';
 
 const store = useHostReportStore()
+const search = ref('');
 
 let headers = [
     { title: '', value: 'pics', width: '20px' }, // Disable sorting for pics
@@ -69,6 +76,25 @@ let headers = [
     { title: '', value: '', width: '100px' }, // 空白欄 調整排版用
 ];
 
+const items = computed(() => {
+    // console.log('is', store.itemsSource)
+    let filtered = ''
+    if (!search.value) { filtered = store.users; }
+    else {
+        const searchLower = search.value.toLowerCase();
+
+        filtered = store.users.filter(item =>
+            (item?.name?.toLowerCase().includes(searchLower)) ||
+            (item?.gender?.toLowerCase().includes(searchLower)) ||
+            (item?.mobilePhone?.toLowerCase().includes(searchLower)) ||
+            (item?.email?.toLowerCase().includes(searchLower)) ||
+            (item?.createdAt?.toLowerCase().includes(searchLower)) ||
+            (item?.updatedAt?.toLowerCase().includes(searchLower)) ||
+            (item?.id?.toLowerCase().includes(searchLower))
+        );
+    }
+    return filtered
+});
 
 const getStatusColor = (review) => {
     switch (review) {

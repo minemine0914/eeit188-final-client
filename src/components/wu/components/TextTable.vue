@@ -148,7 +148,7 @@ if (store.loginUser.role === 'normal') {
         { title: '訂單成立時間', value: 'createdAt', sortable: true, width: '210px' },
         { title: '訂房者名稱', value: 'bookerName', sortable: true, width: '150px' },
         { title: '性別', value: 'bookerGender', sortable: true, width: '100px' },
-        { title: '平台收入', value: 'platformIncome', sortable: true, width: '300px', align: "end" },
+        { title: '平台收入', value: 'platformIncome', sortable: true, width: '250px', align: "end" },
         { title: '交易金額', value: 'cashFlow', sortable: true, width: '100px', align: "end" },
         { title: '評分', value: 'score', sortable: true, width: '200px' },
         // { title: '圖片', value: 'pics', sortable: false, width: '200px' }, // Disable sorting for pics
