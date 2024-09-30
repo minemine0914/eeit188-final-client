@@ -10,8 +10,8 @@ const apiClient = axios.create({
 
 // 定義抓取使用者清單的參數
 const userParams = {
-    pageNo: 0,
-    pageSize: 5,
+    pageNo: 2,
+    pageSize: 10,
 };
 
 // 定義抓取使用者清單的函數
@@ -195,18 +195,18 @@ const generateHouseData = async (userId) => {
 };
 
 // 在 createHouse 函數中使用 generateHouseData
-const createHouse = async (userId) => {
-    const houseData = await generateHouseData(userId); // 隨機生成房源數據
+const createHouse = async (user) => {
+    const houseData = await generateHouseData(user.id); // 隨機生成房源數據
 
     try {
         const response = await apiClient.post("/house/", houseData);
         let house = response.data;
         console.log(
-            `House created for user ${userId}: HouseId: ${house.id} 房源名稱: ${house.name}, 經緯度: [${house.latitudeX},${house.longitudeY}], 地址: ${house.country}${house.city}${house.region}${house.address},初始價格: ${house.price}`
+            `House created for user: ${user.name}[${user.id}]:\n\t房源: ${house.name}[${house.id}],\n\t經緯度: [${house.latitudeX},${house.longitudeY}],\n\t地址: ${house.country}${house.city}${house.region}${house.address},\n\t初始價格: ${house.price}`
         );
         return response.data;
     } catch (error) {
-        console.error(`Error creating house for user ${userId}:`, error.message, houseData);
+        console.error(`Error creating house for user: ${user.name}[${user.id}]:`, error.message, houseData);
     }
 };
 
@@ -253,7 +253,7 @@ const main = async () => {
 
     if (users.length > 0) {
         for (const user of users) {
-            let house = await createHouse(user.id);
+            let house = await createHouse(user);
             if (house) {
                 await uploadMultipleImages(house.id);
             }
