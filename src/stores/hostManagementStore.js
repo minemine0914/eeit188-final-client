@@ -66,10 +66,10 @@ export const useHostManagementStore = defineStore("hostManagement", () => {
 
   // 2. 添加房源，對應於 HouseController 的 API
   async function addProperty(propertyData) {
-    let data = { ...propertyData, userId: userStore.user.id };
+    let data = { ...propertyData, userId: userStore.user.id, price: propertyData.pricePerDay };
     clearError();
     state.loading = true;
-    api
+    await api
       .get("https://nominatim.openstreetmap.org/search.php", {
         params: {
           q: propertyData.city + propertyData.region,
