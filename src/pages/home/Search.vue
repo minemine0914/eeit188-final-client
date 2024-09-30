@@ -8,6 +8,7 @@
                 class="py-0"
             >
                 <v-infinite-scroll
+                    ref="searchInfinityScrollRef"
                     v-if="renderInfinityScrollComponent"
                     :height="searchContainerResizeObserve.height"
                     :items="filterHouseList"
@@ -17,7 +18,7 @@
                     <template v-for="(item, index) in filterHouseList" :key="index">
                         <!-- List view -->
                         <v-sheet
-                            class="d-flex align-center justify-center border mb-5 elevation-0"
+                            class="d-flex align-center justify-center border mb-5 elevation-0 search-item"
                             color="brown-lighten-5"
                             rounded="xl"
                         >
@@ -37,7 +38,9 @@
                                         >
                                             <template v-slot:prev="{ props }">
                                                 <v-btn
-                                                    v-if="item.houseExternalResourceRecords.length > 1"
+                                                    v-if="
+                                                        item.houseExternalResourceRecords.length > 1
+                                                    "
                                                     :class="props.class"
                                                     color="rgba(255,255,255,0.5)"
                                                     size="small"
@@ -49,7 +52,9 @@
                                             </template>
                                             <template v-slot:next="{ props }">
                                                 <v-btn
-                                                    v-if="item.houseExternalResourceRecords.length > 1"
+                                                    v-if="
+                                                        item.houseExternalResourceRecords.length > 1
+                                                    "
                                                     :class="props.class"
                                                     color="rgba(255,255,255,0.5)"
                                                     size="small"
@@ -180,17 +185,19 @@
             absolute
             app
             appear
+            @click.stop="onClickScrollTop"
         ></v-fab>
     </v-layout>
 </template>
 
 <script setup>
 import SearchHouseBar from "@/components/home/SearchHouseBar.vue";
-import { computed, onBeforeUnmount, onMounted, reactive, ref, nextTick } from "vue";
+import { computed, onBeforeUnmount, onMounted, reactive, ref, nextTick, useTemplateRef } from "vue";
 import { useHouseSearchStore } from "@/stores/houseSearchStore";
 import { useUserViewStore } from "@/stores/userViewStore";
 import { storeToRefs } from "pinia";
 import { useResizeObserver } from "@vueuse/core";
+const searchInfinityScrollRef = useTemplateRef("searchInfinityScrollRef");
 const searchContainerRef = ref(null);
 const searchMainRef = ref(null);
 const houseSearchStore = useHouseSearchStore();
@@ -231,6 +238,10 @@ async function loadFilterHouse({ done }) {
         console.log(`Read house list error! Page: ${currentFilterHousePage.value}`);
         done("error");
     }
+}
+
+function onClickScrollTop() {
+    searchInfinityScrollRef.value.$el.scrollTo({ behavior: "smooth", top: 0, left: 0 });
 }
 
 onMounted(() => {

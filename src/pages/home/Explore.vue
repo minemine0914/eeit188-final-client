@@ -11,25 +11,21 @@
             :items="allHouseList"
             @load="loadAllHouse"
         >
-            <!-- Scroll empty component -->
-            <template v-slot:empty>
-                <v-sheet>
-                    <v-alert variant="plain">
-                        <span>您看完了所有房源! 共 </span>
-                        <span>{{ allHouseList.length }}</span>
-                        <span> 個房源</span>
-                    </v-alert>
-                </v-sheet>
-            </template>
             <!-- Explore Banner -->
             <v-parallax
                 :src="primaryBannerImg"
+                scale="0.6"
                 height="360px"
                 width="100%"
                 class="posiiton-relative"
             >
                 <div class="d-flex flex-column fill-height justify-center align-center text-white">
-                    <div class="text-h3 font-weight-black mb-4 opacity-80">Nomad</div>
+                    <div
+                        class="text-h3 font-weight-black mb-4 opacity-80"
+                        style="font-family: 'Tenor Sans'"
+                    >
+                        NOMAD
+                    </div>
                     <div class="subheading font-weight-regular">住宿 旅遊 重新定義居住自由</div>
                 </div>
             </v-parallax>
@@ -143,11 +139,21 @@
                     </template>
                 </v-row>
             </v-container>
+            <!-- Scroll empty component -->
+            <template v-slot:empty>
+                <v-sheet>
+                    <v-alert variant="plain">
+                        <span>您看完了所有房源! 共 </span>
+                        <span>{{ allHouseList.length }}</span>
+                        <span> 個房源</span>
+                    </v-alert>
+                </v-sheet>
+            </template>
         </v-infinite-scroll>
     </v-container>
 </template>
 <script setup>
-import primaryBannerImg from "@/assets/banner05.webp";
+import primaryBannerImg from "@/assets/banner08.webp";
 import secondaryBannerImg from "@/assets/banner06.webp";
 import SearchHouseBar from "@/components/home/SearchHouseBar.vue";
 import { useHouseSearchStore } from "@/stores/houseSearchStore";

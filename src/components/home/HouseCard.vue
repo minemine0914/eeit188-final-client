@@ -107,7 +107,7 @@
             </div>
         </v-card-subtitle>
         <v-card-text class="pt-0 d-flex flex-row align-center justify-center">
-            <div class="font-weight-bold flex-grow-1">${{ house.price }} / 日</div>
+            <div class="font-weight-bold flex-grow-1">${{ house.price }} / 晚</div>
             <!-- <div class="d-flex flex-grow-1 justify-end align-center ga-1">
                 <v-rating
                     half-increments
