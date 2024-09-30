@@ -25,6 +25,40 @@ const fetchUserList = async (params) => {
     }
 };
 
+// 查詢經緯度的函數
+const getCoordinates = async (city, region) => {
+    const query = `${city}${region}`;
+    const url = `https://nominatim.openstreetmap.org/search.php`;
+
+    try {
+        const response = await axios.get(url, {params: {
+            q: query,
+            format: "jsonv2",
+        }});
+        const results = response.data;
+
+        if (results.length > 0) {
+            // 獲取第一個結果的經緯度
+            const { lat, lon } = results[0];
+            console.log(`Coordinates of ${query}: Latitude ${lat}, Longitude ${lon}`);
+            return { latitude: lat, longitude: lon };
+        } else {
+            console.log(`No results found for ${query}`);
+            return null;
+        }
+    } catch (error) {
+        console.error(`Error fetching coordinates: ${error.message}`);
+        return null;
+    }
+};
+
+// 隨機偏移經緯度的函數
+const getRandomOffset = (maxOffset) => {
+    // 隨機生成範圍在 -maxOffset 到 maxOffset 之間的數字
+    const offset = Math.random() * maxOffset * 2 - maxOffset; // 偏移範圍：-maxOffset 到 +maxOffset
+    return offset;
+};
+
 // 隨機生成房源名稱
 const generateRandomName = () => {
     const adjectives = [
@@ -105,26 +139,38 @@ const generateRandomRoomCount = (max) => {
 let cityCountyData;
 const readCityCountyData = () => {
     if (!cityCountyData) {
-        const rawData = fs.readFileSync("src/assets/CityCountyData.json"
-        );
+        const rawData = fs.readFileSync("src/assets/CityCountyData.json");
         cityCountyData = JSON.parse(rawData);
     }
     return cityCountyData;
 };
 
 // 隨機生成房源資料的函數
-const generateHouseData = (userId) => {
+const generateHouseData = async (userId) => {
     const data = readCityCountyData();
     const randomCity = data[Math.floor(Math.random() * data.length)];
     const randomArea = randomCity.AreaList[Math.floor(Math.random() * randomCity.AreaList.length)];
+    
+    // 獲取經緯度
+    const coordinates = await getCoordinates(randomCity.CityName, randomArea.AreaName);
+
+    // 隨機偏移範圍，這裡以 0.0005 度為例，根據需求調整
+    const offsetLat = getRandomOffset(0.0005); // 經度偏移範圍
+    const offsetLon = getRandomOffset(0.0005); // 緯度偏移範圍
+
+    // 檢查是否成功獲取經緯度
+    if (!coordinates) {
+        console.error(`Unable to get coordinates for ${randomCity.CityName} ${randomArea.AreaName}`);
+        return null; // 或者您可以選擇返回一個默認值
+    }
 
     return {
         name: generateRandomName(), // 隨機生成房源名稱
         userId: userId,
         category: "飯店",
         information: "This is Hotel!!!",
-        latitudeX: 25.035167201155545, // 這裡可以隨機化
-        longitudeY: 121.4995244696791, // 這裡可以隨機化
+        latitudeX: parseFloat(coordinates.latitude + offsetLat), // 使用獲取的經緯度並加上偏移，保持為數字
+        longitudeY: parseFloat(coordinates.longitude + offsetLon), // 使用獲取的經緯度並加上偏移，保持為數字
         country: "台灣",
         city: randomCity.CityName,
         region: randomArea.AreaName,
@@ -150,7 +196,7 @@ const generateHouseData = (userId) => {
 
 // 在 createHouse 函數中使用 generateHouseData
 const createHouse = async (userId) => {
-    const houseData = generateHouseData(userId); // 隨機生成房源數據
+    const houseData = await generateHouseData(userId); // 隨機生成房源數據
 
     try {
         const response = await apiClient.post("/house/", houseData);
@@ -160,7 +206,7 @@ const createHouse = async (userId) => {
         );
         return response.data;
     } catch (error) {
-        console.error(`Error creating house for user ${userId}:`, error.message);
+        console.error(`Error creating house for user ${userId}:`, error.message, houseData);
     }
 };
 
