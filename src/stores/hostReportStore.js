@@ -61,6 +61,7 @@ export const useHostReportStore = defineStore('hostReport', {
         //依據查詢結果(records)處理資料(依照年份做篩選)
         itemsSource: (state) => {
             let output = state.records
+            let temp = state.selectedHouseId
             if (!output) return
             if (!state.allYear) {
                 output = output.filter(item => item.year === state.selectedYear);
