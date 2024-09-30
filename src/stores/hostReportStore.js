@@ -16,7 +16,6 @@ export const useHostReportStore = defineStore('hostReport', {
         houses: [],
         records: [],
         recordsPrapared: [],
-        reocrdsPlatform: [],
 
         minCreatedAt: '',
         maxCreatedAt: '',
@@ -417,20 +416,20 @@ export const useHostReportStore = defineStore('hostReport', {
                 YMDC = this.records
             }
             // Initialize the result object
-            const result = { cashflow: {}, platformIncome: {} }
+            const result = {};
 
             // Iterate over each entry in the simpleArr
             YMDC.forEach(entry => {
-                const { year, month, cashFlow, platformIncome } = entry;
+                const { year, month, cashFlow } = entry;
+
                 // Initialize the year entry if it doesn't exist
-                if (!result.cashflow[year]) {
-                    result.cashflow[year] = new Array(12).fill(0);
+                if (!result[year]) {
+                    result[year] = new Array(12).fill(0);
                 }
 
                 // Add the cash flow to the appropriate month (1-based index, so subtract 1)
-                result.cashflow[year][month - 1] += cashFlow;
+                result[year][month - 1] += cashFlow;
             });
-            console.log("RRRRR", result)
             // console.log('YM', this.recordsPrapared);
             return result
         },
@@ -440,7 +439,7 @@ export const useHostReportStore = defineStore('hostReport', {
                 YMDC = this.records
             }
             // Initialize the result object
-            const result = { cashflow: [], platformIncome: [] }
+            const result = {};
 
             // Function to determine the quarter from the month
             const getQuarter = (month) => {
@@ -452,16 +451,16 @@ export const useHostReportStore = defineStore('hostReport', {
 
             // Process each entry
             YMDC.forEach(entry => {
-                const { year, month, cashFlow, platformIncome } = entry;
+                const { year, month, cashFlow } = entry;
                 const quarter = getQuarter(month);
 
                 // Initialize year and quarters if not present
-                if (!result.cashflow[year]) {
-                    result.cashflow[year] = [0, 0, 0, 0]; // Q1, Q2, Q3, Q4
+                if (!result[year]) {
+                    result[year] = [0, 0, 0, 0]; // Q1, Q2, Q3, Q4
                 }
 
                 // Add the cash flow to the appropriate quarter
-                result.cashflow[year][quarter] += cashFlow;
+                result[year][quarter] += cashFlow;
             });
             // console.log('YQ', this.recordsPrapared);
             return result
@@ -472,22 +471,21 @@ export const useHostReportStore = defineStore('hostReport', {
                 YMDC = this.records
             }
             // Initialize the result object
-            const result = { cashflow: [], platformIncome: [] }
+            const result = {};
 
             // Iterate over each entry in the input array
             YMDC.forEach(entry => {
-                const { year, cashFlow, platformIncome } = entry;
+                const { year, cashFlow } = entry;
 
                 // Initialize or update the yearly cash flow in the result object
-                if (!result.cashflow[year]) {
-                    result.cashflow[year] = 0;
+                if (!result[year]) {
+                    result[year] = 0;
                 }
-                result.cashflow[year] += cashFlow;
+                result[year] += cashFlow;
             });
 
             // Convert the yearly cash flow object to an array of values
-            const output = { cashflow: 0, platformIncome: 0 }
-            output.cashflow = Object.values(result.cashflow);
+            const output = Object.values(result);
 
             // console.log('Y', this.recordsPrapared);
             return output

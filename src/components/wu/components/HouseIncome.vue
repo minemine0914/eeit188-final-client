@@ -6,7 +6,7 @@
 <script setup>
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js'
 import { Line } from 'vue-chartjs'
-import { ref, watch, computed, onMounted } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useHostReportStore } from '@/stores/hostReportStore';
 import { useUserStore } from '@/stores/userStore';
 
@@ -14,27 +14,6 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, T
 
 const store = useHostReportStore()
 const userStore = useUserStore()
-
-let lineData = ref([])
-let lineDataPlatform
-
-watch(() => store.selectedPeriod, (newPeriod) => {
-
-  if (store.selectedPeriod === 'year') {
-    lineData = store.recordsPrapared.cashflow
-  } else {
-    console.log("CSCSCSCSC", store.recordsPrapared)
-    lineData = store.recordsPrapared.cashflow[store.selectedYear]
-    // console.log("S.RP", store.recordsPrapared)
-    if (store.allYear === true) {
-      // console.log("S.RPSUM", store.sumMonthlyData(store.recordsPrapared))
-      lineData = store.sumMonthlyData(store.recordsPrapared.cashflow);
-
-    }
-  }
-  // Call the relevant transformation function based on newPeriod
-});
-
 // Create a computed property for the chart data
 const data = computed(() => {
   // Define an array of colors for each data point
@@ -65,7 +44,18 @@ const data = computed(() => {
     }
   }
 
-  console.log("LLLLLLLL", lineData)
+  let lineData
+  if (store.selectedPeriod === 'year') {
+    lineData = store.recordsPrapared
+  } else {
+    lineData = store.recordsPrapared[store.selectedYear]
+    // console.log("S.RP", store.recordsPrapared)
+    if (store.allYear === true) {
+      // console.log("S.RPSUM", store.sumMonthlyData(store.recordsPrapared))
+      lineData = store.sumMonthlyData(store.recordsPrapared);
+
+    }
+  }
 
   let datasets = [{
     label: '金流',
@@ -75,16 +65,16 @@ const data = computed(() => {
     pointRadius,
     data: lineData // Adjust data mapping as needed
   }]
-  if (userStore.user.role === 'admin') {
-    datasets.push({
-      label: '平台收入',
-      backgroundColor: '#f87979',
-      borderColor: '#f87979',
-      pointBackgroundColor, // Apply point colors here
-      pointRadius,
-      data: lineDataPlatform // Adjust data mapping as needed
-    })
-  }
+  // if (userStore.user.role === 'admin') {
+  //   datasets.push({
+  //     label: '平台收入',
+  //     backgroundColor: '#f87979',
+  //     borderColor: '#f87979',
+  //     pointBackgroundColor, // Apply point colors here
+  //     pointRadius,
+  //     data: lineData // Adjust data mapping as needed
+  //   })
+  // }
 
   // console.log(store.records.map(record => record.cashFlow || 0))
 
@@ -127,25 +117,13 @@ const options = computed(() => ({
   }
 }))
 
-onMounted(async () => {
+onMounted(() => {
   if (store.selectedPeriod === 'year') {
-    store.recordsPrapared = await store.turnToY(store.records);
-    console.log("YYYYYY", store.recordsPrapared)
+    store.recordsPrapared = store.turnToY(store.records);
   } else if (store.selectedPeriod === 'month') {
-    store.recordsPrapared = await store.turnToYM(store.records);
-    console.log("MMMMM", store.recordsPrapared)
+    store.recordsPrapared = store.turnToYM(store.records);
   } else if (store.selectedPeriod === 'quarter') {
-    store.recordsPrapared = await store.turnToYQ(store.records);
-  }
-
-  if (store.selectedPeriod === 'year') {
-    lineData = store.recordsPrapared.cashflow
-  } else {
-    lineData = store.recordsPrapared.cashflow[store.selectedYear]
-    if (store.allYear === true) {
-      lineData = store.sumMonthlyData(store.recordsPrapared.cashflow);
-
-    }
+    store.recordsPrapared = store.turnToYQ(store.records);
   }
 })
 </script>
