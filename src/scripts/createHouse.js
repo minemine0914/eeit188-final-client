@@ -105,7 +105,8 @@ const generateRandomRoomCount = (max) => {
 let cityCountyData;
 const readCityCountyData = () => {
     if (!cityCountyData) {
-        const rawData = fs.readFileSync("../assets/CityCountyData.json");
+        const rawData = fs.readFileSync("src/assets/CityCountyData.json"
+        );
         cityCountyData = JSON.parse(rawData);
     }
     return cityCountyData;
