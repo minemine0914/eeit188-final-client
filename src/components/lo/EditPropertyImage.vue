@@ -4,12 +4,12 @@
 
     <!-- 已上傳的圖片列表 -->
     <v-row>
-      <v-col v-for="image in propertyImages" :key="image.id" cols="12" sm="4">
-        <v-img :src="imageUrl(image.id)" :alt="'Image ' + image.id" height="200px">
-          <v-btn small color="error" @click="removeImage(image.id)" class="mt-2">
+      <v-col v-for="image in property.houseExternalResourceRecords" :key="image" cols="12" sm="4">
+        <v-img :src="imageUrl(image.id)" :alt="'Image ' + image?.id" height="200px">
+        </v-img>
+        <v-btn small color="error" @click="removeImage(image?.id)" class="mt-2">
             移除
           </v-btn>
-        </v-img>
       </v-col>
     </v-row>
 
@@ -26,21 +26,24 @@ import { useRoute } from 'vue-router'
 
 const store = useHostManagementStore()
 const route = useRoute()
-const propertyId = route.params.propertyId
+const propertyId = ref(null)
 const property = ref({})
 const propertyImages = ref([])
 const newImages = ref(null)
 
 // 獲取圖片
 const fetchPropertyImages = async () => {
-  property.value = await store.fetchHouseById(propertyId)
-  const result = await store.fetchPropertyImages(propertyId)
-  propertyImages.value = result.data.content || []
+  property.value = await store.fetchHouseById(propertyId.value)
+
+  for (let i = 0; i < property.value.houseExternalResourceRecords.length; i++) {
+    console.log(property.value.houseExternalResourceRecords[i].id)
+  }
 }
 
 // 圖片的URL生成函數
 const imageUrl = (imageId) => {
-  return `/house-external-resource/image/${imageId}`
+  console.log(imageId)
+  return `http://localhost:8080/house-external-resource/image/${imageId}`
 }
 
 // 移除圖片
@@ -57,10 +60,13 @@ const uploadImages = async () => {
       formData.append('files', file)
     }
     formData.append('houseId', propertyId)
-    await store.uploadPropertyImages(formData)
+    await store.uploadPropertyImage(formData)
     fetchPropertyImages() // 更新圖片
   }
 }
 
-onMounted(fetchPropertyImages)
+onMounted(() => {
+  propertyId.value = route.params.propertyId;
+  fetchPropertyImages();
+} )
 </script>

@@ -175,9 +175,11 @@ export const useHostManagementStore = defineStore("hostManagement", () => {
     clearError();
     state.loading = true;
     try {
-      const response = await api.get(`/house-external-resource/house/${propertyId}`);
+      const response = await api.get(`/house-external-resource/image/${propertyId}`);
+      console.log(response)
       state.images = response.data.content;
       state.loading = false;
+      return response;
     } catch (error) {
       handleError(error);
       state.loading = false;
