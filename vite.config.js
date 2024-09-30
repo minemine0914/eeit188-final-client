@@ -27,7 +27,7 @@ export default defineConfig({
     },
     optimizeDeps: {
         noDiscovery: true,
-        include: ["geotiff", "lodash/isEqual"],
+        include: ["geotiff", "lodash/isEqual", "@vueuse/integrations/useQRCode", "qrcode"],
     },
     cacheDir: "node_modules/.vite_cache", // Use a cache directory to persist dependency optimization
     build: {
