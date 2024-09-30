@@ -55,6 +55,7 @@
                       v-model="editedOrder.house.name"
                       label="房屋ID"
                       @click="showPropertyId"
+                      readonly
                     ></v-text-field>
                   </v-col>
                   <v-col cols="12" md="6" sm="6">
@@ -68,6 +69,7 @@
                     <v-text-field
                       v-model="editedOrder.user.name"
                       label="房客資訊"
+                      readonly
                     ></v-text-field>
                   </v-col>
                   <v-col cols="12" md="6" sm="6">
@@ -75,6 +77,7 @@
                       v-model="editedOrder.house.userName"
                       label="房東資訊"
                       @click="showHostInfo"
+                      readonly
                     ></v-text-field>
                   </v-col>
                   <v-col cols="12" md="6" sm="6">
@@ -82,12 +85,14 @@
                       v-model="editedOrder.cashFlow"
                       label="金額"
                       type="number"
+                      readonly
                     ></v-text-field>
                   </v-col>
                   <v-col cols="12" md="6" sm="6">
                     <v-text-field
-                      v-model="editedOrder.deal"
-                      label="訂單狀態"
+                    v-model="editedOrder.deal"
+                    label="訂單狀態"
+                    readonly
                     ></v-text-field>
                   </v-col>
                 </v-row>
@@ -118,6 +123,23 @@
           </v-card>
         </v-dialog>
 
+        <v-dialog v-model="DDeal" max-width="290">
+          <v-card>
+            <v-card-title class="headline">選擇狀態</v-card-title>
+            <v-card-text>
+              <v-radio-group v-model="selectedStatus">
+                <v-radio :label="orderStatuses.CANCELLED" :value="orderStatuses.CANCELLED"></v-radio>
+                <v-radio :label="orderStatuses.PAID" :value="orderStatuses.PAID"></v-radio>
+                <v-radio :label="orderStatuses.UNPAID" :value="orderStatuses.UNPAID"></v-radio>
+              </v-radio-group>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn @click="updateStatusDeal" color="primary">確認</v-btn>
+              <v-btn @click="resetDeal" color="grey">取消</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
         <!-- 房東資訊對話框 -->
         <!-- <v-dialog v-model="dialogHostInfo" max-width="500px">
           <v-card>
@@ -137,7 +159,7 @@
         </v-dialog> -->
 
         <!-- 房客資訊對話框 -->
-        <v-dialog v-model="dialogGuestInfo" max-width="500px">
+        <!-- <v-dialog v-model="dialogGuestInfo" max-width="500px">
           <v-card>
             <v-card-title class="text-h5">房客資訊</v-card-title>
             <v-card-text>
@@ -152,7 +174,7 @@
               <v-spacer></v-spacer>
             </v-card-actions>
           </v-card>
-        </v-dialog> 
+        </v-dialog>  -->
 
         <!-- 房屋資訊對話框 -->
         <!-- <v-dialog v-model="dialogPropertyId" max-width="500px">
@@ -176,8 +198,11 @@
     </template>
 
     <template v-slot:item.actions="{ item }">
-      <v-icon class="me-2" size="small" @click="editOrder(item)">
+      <v-icon class="me-2" size="small" @click="openDeal(item)">
         mdi-pencil
+      </v-icon>
+      <v-icon class="me-2" size="small" @click="openOrder(item)">
+        mdi-eye
       </v-icon>
       <v-icon size="small" @click="deleteOrder(item)">
         mdi-delete
@@ -198,6 +223,8 @@ export default {
       dialogHostInfo: false,
       dialogGuestInfo: false,
       dialogPropertyId: false,
+      selectedStatus: null,
+      DDeal: false,
       headers: [
         { title: '訂單編號', align: 'start', sortable: false, key: 'id' },
         { title: '房屋名稱', key: 'house.name' },
@@ -209,6 +236,7 @@ export default {
         { title: '訂單狀態', key: 'deal' },
         { title: '編輯', key: 'actions', sortable: false },
       ],
+     
       orders: [],
       editedIndex: -1,
       editedOrder: {
@@ -254,7 +282,12 @@ export default {
         weekdayPrice: '',
         weekendPrice: ''
       },
-      formTitle: '編輯訂單'
+      formTitle: '檢視訂單',
+      orderStatuses: {
+        CANCELLED: '取消訂單',
+        PAID: '付款成功',
+        UNPAID: '尚未付款'
+      },
     };
   },
 
@@ -273,7 +306,10 @@ export default {
     },
     dialogPropertyId(val) {
       val || this.closePropertyId();
-    }
+    },
+    DDeal(val) {
+      val || this.close();
+    },
   },
 
   created() {
@@ -296,13 +332,14 @@ export default {
           if (response.data && Array.isArray(response.data.content)) {
             this.orders = response.data.content
             ;
-            // 檢查每個訂單，並記錄格式不正確或缺少資料的訂單
+            // 檢查每個訂單，並記錄格式不正確或缺少 house 資料的訂單
             const invalidOrders = this.orders.filter(order => 
               typeof order !== 'object' || order === null || 
               !order.id || order.cashFlow === undefined || 
               !order.house || !order.house.name ||order.user
             );
-
+              console.log(this.orders);
+              console.log(this.orderStatuses)
             //console.log('API 返回的完整資料:', response.data);
             if (invalidOrders.length > 0) {
               //console.error('以下訂單格式不正確或缺少房屋資料，將進行重新抓取:', invalidOrders);
@@ -327,15 +364,35 @@ export default {
         // 可以顯示錯誤提示給用戶
       }
     },
+    async updateStatusDeal() {
+      try {
+        const response = await axios.put(
+          `http://localhost:8080/transcation_record/${this.currentItem.id}`,
+          {
+            deal: this.selectedStatus,
+          }
+        );
+
+        if (response.status === 200) {
+          this.currentItem.deal = this.selectedStatus;
+          this.DDeal = false;
+        } else {
+          console.error("Failed to update status, response:", response);
+        }
+      } catch (error) {
+        console.error("Error updating status:", error);
+      }
+    },
     formatDate(dateString) {
       if (!dateString) return '';
         const match = dateString.match(/(\d{4}-\d{2}-\d{2})/);
         return match ? match[0] : '';  
       },
 
-    editOrder(item) {
+    openOrder(item) {
       this.editedIndex = this.orders.indexOf(item);
       this.editedOrder = Object.assign({}, item);
+      console.log(this.editedOrder);
       this.dialog = true;
     },
 
@@ -411,7 +468,16 @@ export default {
     closePropertyId() {
       this.dialogPropertyId = false;
     },
+    openDeal(item) {
+      this.currentItem = item;
+      this.selectedStatus = item.deal;
+      this.DDeal = true;
+    },
 
+    resetDeal() {
+      this.selectedStatus = null;
+      this.DDeal = false;
+    },
     async save() {
       if (!this.editedOrder.id || !this.editedOrder.house.name) {
         alert('訂單編號和房屋ID為必填項');
@@ -435,6 +501,7 @@ export default {
         alert('儲存訂單時發生錯誤。');
       }
     },
+    
     async reFetchOrder(orderId) {
       try {
         const response = await axios.get(`http://localhost:8080/transcation_record/${orderId}`);
@@ -453,7 +520,9 @@ export default {
         console.error(`重新抓取訂單 ${orderId} 時發生錯誤:`, error);
       }
     },
-  }
+  },
+  
+      
 }
 </script>
 
