@@ -311,7 +311,7 @@ export default {
 
           if (response.data && Array.isArray(response.data.content)) {
             this.orders = response.data.content;
-            // 檢查每個訂單，並記錄格式不正確或缺少 house 資料的訂單
+            // 檢查每個訂單，並記錄格式不正確或缺少資料的訂單
             const invalidOrders = this.orders.filter(
               (order) =>
                 typeof order !== "object" ||
@@ -319,7 +319,8 @@ export default {
                 !order.id ||
                 order.cashFlow === undefined ||
                 !order.house ||
-                !order.house.name
+                !order.house.name ||
+                order.user
             );
 
             //console.log('API 返回的完整資料:', response.data);
