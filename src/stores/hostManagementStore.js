@@ -66,7 +66,11 @@ export const useHostManagementStore = defineStore("hostManagement", () => {
 
   // 2. 添加房源，對應於 HouseController 的 API
   async function addProperty(propertyData) {
-    let data = { ...propertyData, userId: userStore.user.id, price: propertyData.pricePerDay };
+    let data = {
+      ...propertyData,
+      userId: userStore.user.id,
+      price: propertyData.pricePerDay,
+    };
     clearError();
     state.loading = true;
     await api
@@ -200,6 +204,8 @@ export const useHostManagementStore = defineStore("hostManagement", () => {
           userId: userId,
           page: 0,
           limit: 100,
+          order: "createdAt",
+          dir: true,
         },
       });
 
