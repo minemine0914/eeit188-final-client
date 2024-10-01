@@ -1,21 +1,62 @@
 <template>
   <v-container>
-    <h2>管理圖片 - {{ property.name }}</h2>
-
-    <!-- 已上傳的圖片列表 -->
     <v-row>
-      <v-col v-for="image in property.houseExternalResourceRecords" :key="image" cols="12" sm="4">
-        <v-img :src="imageUrl(image.id)" :alt="'Image ' + image?.id" height="200px">
-        </v-img>
-        <v-btn small color="error" @click="removeImage(image?.id)" class="mt-2">
-            移除
-          </v-btn>
+      <v-col cols="12">
+        <h2 class="text-h4 font-weight-bold mb-4">管理圖片 - {{ property.name }}</h2>
       </v-col>
     </v-row>
 
+    <!-- 已上傳的圖片列表 -->
+    <v-row>
+      <v-col
+        v-for="image in property.houseExternalResourceRecords"
+        :key="image"
+        cols="12"
+        sm="6"
+        md="4"
+        lg="3"
+        class="d-flex flex-column align-center mb-4"
+      >
+        <v-card>
+          <v-img
+            :src="imageUrl(image.id)"
+            :alt="'Image ' + image?.id"
+            height="200px"
+            class="align-center"
+          ></v-img>
+          <v-card-actions>
+            <v-btn
+              color="error"
+              block
+              @click="removeImage(image?.id)"
+              class="mt-2"
+            >
+              移除圖片
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-col>
+    </v-row>
+
+    <v-divider class="my-4"></v-divider>
+
     <!-- 上傳新圖片 -->
-    <v-file-input label="上傳新圖片" v-model="newImages" accept="image/*" multiple></v-file-input>
-    <v-btn color="primary" @click="uploadImages">上傳圖片</v-btn>
+    <v-row>
+      <v-col cols="12" md="8">
+        <v-file-input
+          label="上傳新圖片"
+          v-model="newImages"
+          accept="image/*"
+          multiple
+          prepend-icon="mdi-image-plus"
+        ></v-file-input>
+      </v-col>
+      <v-col cols="12" md="4">
+        <v-btn color="primary" block @click="uploadImages" class="mt-4">
+          上傳圖片
+        </v-btn>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
@@ -102,3 +143,9 @@ onMounted(() => {
   fetchPropertyImages();
 } )
 </script>
+
+<style scoped>
+.v-img {
+  border-radius: 8px;
+}
+</style>
