@@ -1,5 +1,5 @@
-<!-- <template>
-    <v-container>
+<template>
+    <!-- <v-container>
         <v-row>
             <v-col v-for="review in paginatedReviews" :key="review.id" cols="12">
                 <v-card>
@@ -41,63 +41,63 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
-    </v-container>
+    </v-container> -->
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { useHostManagementStore } from '@/stores/hostManagementStore'
+import { ref, computed, onMounted } from "vue";
+import { useHostManagementStore } from "@/stores/hostManagementStore";
 
-const hostManagementStore = useHostManagementStore()
+const hostManagementStore = useHostManagementStore();
 
-const reviews = ref([])
-const page = ref(1)
-const itemsPerPage = ref(5)
-const showDialog = ref(false)
-const selectedReview = ref({})
+const reviews = ref([]);
+const page = ref(1);
+const itemsPerPage = ref(5);
+const showDialog = ref(false);
+const selectedReview = ref({});
 
 // 計算分頁的評價
 const paginatedReviews = computed(() => {
-    const start = (page.value - 1) * itemsPerPage.value
-    const end = page.value * itemsPerPage.value
-    return reviews.value.slice(start, end)
-})
+    const start = (page.value - 1) * itemsPerPage.value;
+    const end = page.value * itemsPerPage.value;
+    return reviews.value.slice(start, end);
+});
 
 // 計算總頁數
 const totalPages = computed(() => {
-    return Math.ceil(reviews.value.length / itemsPerPage.value)
-})
+    return Math.ceil(reviews.value.length / itemsPerPage.value);
+});
 
 // 獲取評價資料
 const fetchReviews = async () => {
     try {
-        const data = await hostManagementStore.fetchReviews() // 從後端 API 獲取評價資料
-        reviews.value = data
+        const data = await hostManagementStore.fetchReviews(); // 從後端 API 獲取評價資料
+        reviews.value = data;
     } catch (error) {
-        console.error('獲取評價失敗:', error)
+        console.error("獲取評價失敗:", error);
     }
-}
+};
 
 // 查看評價詳情
-const viewReviewDetails = (id) => {
-    const review = reviews.value.find(r => r.id === id)
-    selectedReview.value = review || {}
-    showDialog.value = true
-}
+const viewReviewDetails = id => {
+    const review = reviews.value.find(r => r.id === id);
+    selectedReview.value = review || {};
+    showDialog.value = true;
+};
 
 // 關閉詳情彈窗
 const closeDialog = () => {
-    showDialog.value = false
-}
+    showDialog.value = false;
+};
 
 // 在組件掛載時獲取評價資料
 onMounted(() => {
-    fetchReviews()
-})
+    fetchReviews();
+});
 </script>
 
 <style scoped>
 .v-card-title {
     font-weight: bold;
 }
-</style> -->
+</style>
