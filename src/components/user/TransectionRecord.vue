@@ -93,7 +93,7 @@ async function fetchTickets() {
       data: {
         userId: user.id,
         pageNum: page.value,
-        pageSize: 5,
+        pageSize: 10,
         orderBy: "createdAt",
         desc: true,
       },
