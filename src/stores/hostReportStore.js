@@ -16,6 +16,7 @@ export const useHostReportStore = defineStore('hostReport', {
         houses: [],
         records: [],
         recordsPrapared: [],
+        recordsPraparedPlatform: [],
 
         minCreatedAt: '',
         maxCreatedAt: '',
@@ -23,7 +24,7 @@ export const useHostReportStore = defineStore('hostReport', {
         selectedPeriod: 'month',
         allYear: false,
         allMonth: true,
-        allQuarter: false,
+        allQuarter: true,
 
         years: [],
         months: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
@@ -61,6 +62,7 @@ export const useHostReportStore = defineStore('hostReport', {
         //依據查詢結果(records)處理資料(依照年份做篩選)
         itemsSource: (state) => {
             let output = state.records
+            let temp = state.selectedHouseId
             if (!output) return
             if (!state.allYear) {
                 output = output.filter(item => item.year === state.selectedYear);
@@ -200,11 +202,14 @@ export const useHostReportStore = defineStore('hostReport', {
                     console.log('fetch last', endYear)
 
                     this.years = []
-                    for (let i = startYear; i <= endYear; i++) {
+                    for (let i = Number(startYear); i <= Number(endYear); i++) {
                         this.years.push(i)
+                        console.log(startYear, endYear, i)
                     }
-
+                    console.log(this.years.filter(year => typeof year === 'number'))
                     this.selectedYear = this.years[this.years.length - 1]
+                    console.log(this.years)
+
                 }
             } catch (error) {
                 console.error('Error fetching tx-records:', error);
@@ -249,12 +254,19 @@ export const useHostReportStore = defineStore('hostReport', {
 
                 // 4.1 修正回傳值TxRecord只有ID的問題，TxRecord ID->TxRecord物件
                 let transformedRecords = await this.searchRecordAgainByRecordId(response.data.content);
+                console.log('fix recordID', transformedRecords)
                 // 4.2.1 修正house只有ID的問題，House ID->House物件
                 for (let item of transformedRecords) { item.house = await this.searchHouseAgainByRecordId(item.house); }
+                console.log('fix houseID', transformedRecords)
+
                 // 4.2.2 修正user只有ID的問題，User ID->User物件
                 for (let item of transformedRecords) { item.user = await this.searchUserAgainByRecordId(item.user); }
+                console.log('fix userID', transformedRecords)
+
                 // 4.3 把CreatedAt的時間拆開成不同object，方便篩選
                 transformedRecords = await this.separateCreatedAt(transformedRecords)
+                console.log('fix cratedeAT', transformedRecords)
+
                 // 4.4 查詢評分
                 transformedRecords = await this.getScore(transformedRecords)
                 console.log('transformedRecords', transformedRecords)
@@ -501,7 +513,118 @@ export const useHostReportStore = defineStore('hostReport', {
             return monthlySum; // Returns an array of summed monthly data
         },
 
+        turnToYMDPlatform(YMDC) {
+            if (!YMDC) {
+                YMDC = this.records
+            }
+            // Initialize the result object
+            const result = {};
+
+            // Iterate over each entry in the simpleArr
+            YMDC.forEach(entry => {
+                const { year, month, date, platformIncome } = entry;
+
+                // Initialize the year and month entries if they don't exist
+                if (!result[year]) {
+                    result[year] = {};
+                }
+                if (!result[year][month]) {
+                    // Initialize an array for days of the month (31 days max)
+                    result[year][month] = new Array(31).fill(0);
+                }
+
+                // Add the cash flow to the appropriate day (date - 1 because array is zero-indexed)
+                result[year][month][date - 1] += platformIncome;
+            });
+            // console.log('YMD', this.recordsPrapared);
+            return result
+        },
+
+        turnToYMPlatform(YMDC) {
+            if (!YMDC) {
+                YMDC = this.records
+            }
+            // Initialize the result object
+            const result = {};
+
+            // Iterate over each entry in the simpleArr
+            YMDC.forEach(entry => {
+                const { year, month, platformIncome } = entry;
+
+                // Initialize the year entry if it doesn't exist
+                if (!result[year]) {
+                    result[year] = new Array(12).fill(0);
+                }
+
+                // Add the cash flow to the appropriate month (1-based index, so subtract 1)
+                result[year][month - 1] += platformIncome;
+            });
+            // console.log('YM', this.recordsPrapared);
+            return result
+        },
+
+        turnToYQPlatform(YMDC) {
+            if (!YMDC) {
+                YMDC = this.records
+            }
+            // Initialize the result object
+            const result = {};
+
+            // Function to determine the quarter from the month
+            const getQuarter = (month) => {
+                if (month >= 1 && month <= 3) return 0; // Q1
+                if (month >= 4 && month <= 6) return 1; // Q2
+                if (month >= 7 && month <= 9) return 2; // Q3
+                if (month >= 10 && month <= 12) return 3; // Q4
+            };
+
+            // Process each entry
+            YMDC.forEach(entry => {
+                const { year, month, platformIncome } = entry;
+                const quarter = getQuarter(month);
+
+                // Initialize year and quarters if not present
+                if (!result[year]) {
+                    result[year] = [0, 0, 0, 0]; // Q1, Q2, Q3, Q4
+                }
+
+                // Add the cash flow to the appropriate quarter
+                result[year][quarter] += platformIncome;
+            });
+            // console.log('YQ', this.recordsPrapared);
+            return result
+        },
+
+        turnToYPlatform(YMDC) {
+            if (!YMDC) {
+                YMDC = this.records
+            }
+            // Initialize the result object
+            const result = {};
+
+            // Iterate over each entry in the input array
+            YMDC.forEach(entry => {
+                const { year, platformIncome } = entry;
+
+                // Initialize or update the yearly cash flow in the result object
+                if (!result[year]) {
+                    result[year] = 0;
+                }
+                result[year] += platformIncome;
+            });
+
+            // Convert the yearly cash flow object to an array of values
+            const output = Object.values(result);
+
+            // console.log('Y', this.recordsPrapared);
+            return output
+
+        },
+
         getUserBySelectedUserId(userId) {
+            if (typeof userId === 'object' || Array.isArray(userId)) {
+                userId = userId[0];
+            }
             return this.users.find(user => user.id === userId) || null;
         },
 

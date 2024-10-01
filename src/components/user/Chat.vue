@@ -32,9 +32,11 @@
               </div>
               <div class="chat-recored-text">
                 <v-list-item-content class="chat-recored-content">
-                  <v-list-item-content id="item-subtitle-1">{{
-                    item?.subtitle
-                  }}</v-list-item-content>
+                  <v-list-item-content
+                    id="item-subtitle-1"
+                    v-html="item?.subtitle"
+                  >
+                  </v-list-item-content>
                 </v-list-item-content>
                 <v-list-item-content class="chat-recored-content">
                   <v-list-item-content id="item-subtitle-2">{{
@@ -122,8 +124,7 @@
               <!-- <v-btn color="red-darken-4">收回</v-btn> -->
             </div>
             <div class="chat-content-2">
-              <v-card-text id="text" width="300">
-                {{ chat?.chat }}
+              <v-card-text id="text" width="300" v-html="chat?.chat">
               </v-card-text>
               <v-card-text width="300">
                 {{ formatDate(chat?.createdAt) }}
@@ -199,7 +200,7 @@ onMounted(async () => {
   }
 
   // Connect to WebSocket
-  socket.value = new WebSocket("ws://localhost:3002");
+  socket.value = new WebSocket(import.meta.env.VITE_WS_URL);
 
   socket.value.onopen = () => {
     console.log("WebSocket connection established");
@@ -225,7 +226,7 @@ onMounted(async () => {
     if (retryCount < maxRetries) {
       console.log("WebSocket connection closed, attempting to reconnect...");
       setTimeout(() => {
-        socket.value = new WebSocket("ws://localhost:3002");
+        socket.value = new WebSocket(import.meta.env.VITE_WS_URL);
         retryCount++;
       }, 5000);
     } else {
