@@ -32,9 +32,11 @@
               </div>
               <div class="chat-recored-text">
                 <v-list-item-content class="chat-recored-content">
-                  <v-list-item-content id="item-subtitle-1">{{
-                    item?.subtitle
-                  }}</v-list-item-content>
+                  <v-list-item-content
+                    id="item-subtitle-1"
+                    v-html="item?.subtitle"
+                  >
+                  </v-list-item-content>
                 </v-list-item-content>
                 <v-list-item-content class="chat-recored-content">
                   <v-list-item-content id="item-subtitle-2">{{
@@ -122,8 +124,7 @@
               <!-- <v-btn color="red-darken-4">收回</v-btn> -->
             </div>
             <div class="chat-content-2">
-              <v-card-text id="text" width="300">
-                {{ chat?.chat }}
+              <v-card-text id="text" width="300" v-html="chat?.chat">
               </v-card-text>
               <v-card-text width="300">
                 {{ formatDate(chat?.createdAt) }}
