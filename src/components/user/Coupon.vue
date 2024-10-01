@@ -25,7 +25,7 @@
           v-if="coupon?.discountRate != null"
           class="bg-surface-light pt-4"
         >
-          {{ (Math.round(coupon?.discountRate * 10) / 10) * 10 }} 折
+          {{ 100 - (coupon.discountRate * 100).toFixed(0) }} 折
         </v-card-text>
         <v-card-text class="bg-surface-light pt-4">
           折扣到期日: {{ expireDate?.expireDates[index] }}
