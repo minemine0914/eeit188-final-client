@@ -70,6 +70,7 @@ export const useHostReportStore = defineStore('hostReport', {
             if (!state.allMonth) {
                 output = output.filter(item => item.month === state.selectedMonth);
             }
+            console.log("itemS", output)
             return output
         },
 
@@ -488,9 +489,18 @@ export const useHostReportStore = defineStore('hostReport', {
                 result[year] += cashFlow;
             });
 
-            // Convert the yearly cash flow object to an array of values
-            const output = Object.values(result);
+            const keys = Object.keys(result)
+            const start = Math.min(...keys)
+            const end = Math.max(...keys)
+            let output = []
+            for (let i = start; i <= end; i++) {
+                output.push(result[i] || 0)
+            }
 
+            // Convert the yearly cash flow object to an array of values
+            console.log("RES", result, start, end)
+            // const output = Object.values(result);
+            console.log("OTUPET", output)
             // console.log('Y', this.recordsPrapared);
             return output
 

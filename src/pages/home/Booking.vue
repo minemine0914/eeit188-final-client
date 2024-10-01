@@ -501,33 +501,35 @@ const selectedCoupon = computed(() =>
     selectedCouponIndex.value != null ? couponList.at(selectedCouponIndex.value) : null
 );
 
-const discountPrice = computed(() => {
-    const coupon = selectedCoupon.value;
-    if (coupon) {
-        const price = houseInfo.value?.price || 0;
-        const day = liveDays.value; // 使用實際天數
-        if (coupon.discount != null) {
-            // 固定折扣
-            return coupon.discount;
-        } else if (coupon.discountRate != null) {
-            // 折扣率
-            return (price * day * coupon.discountRate).toFixed(0); // 四捨五入至整數
-        }
-    }
-    return 0;
-});
-
 const totalPrice = computed(() => {
     const price = houseInfo.value?.price || 0;
-    return price * liveDays.value - discountPrice.value;
+    return price * liveDays.value;
 });
 
 const platformIncome = computed(() => {
     return parseInt((totalPrice.value * 0.05).toFixed(0));
 });
 
-const finalPrice = computed(() => {
+const priceWithCommission = computed(() => {
     return totalPrice.value + platformIncome.value;
+});
+
+const discountPrice = computed(() => {
+    const coupon = selectedCoupon.value;
+    if (coupon) {
+        if (coupon.discount != null) {
+            // 固定折扣
+            return coupon.discount;
+        } else if (coupon.discountRate != null) {
+            // 折扣率
+            return (priceWithCommission.value * coupon.discountRate).toFixed(0); // 四捨五入至整數
+        }
+    }
+    return 0;
+});
+
+const finalPrice = computed(() => {
+    return priceWithCommission.value - discountPrice.value;
 });
 
 // Funcions

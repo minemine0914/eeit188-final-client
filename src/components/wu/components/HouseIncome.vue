@@ -54,7 +54,7 @@ const data = computed(() => {
     lineData = store.recordsPrapared
   } else {
     lineData = store.recordsPrapared[store.selectedYear]
-    // console.log("S.RP", store.recordsPrapared)
+    console.log("S.RP", store.recordsPrapared)
     if (store.allYear === true) {
       // console.log("S.RPSUM", store.sumMonthlyData(store.recordsPrapared))
       lineData = store.sumMonthlyData(store.recordsPrapared);
