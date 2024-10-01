@@ -13,13 +13,25 @@
             width="100"
             :class="[isExpired ? 'opacity-80' : '']"
         >
+            <v-icon
+                icon="mdi-ticket-percent-outline"
+                size="45"
+                class="mb-3"
+                :class="[isExpired ? 'opacity-30' : '']"
+            ></v-icon>
 
-            <v-icon icon="mdi-ticket-percent-outline" size="45" class="mb-3" :class="[isExpired ? 'opacity-30' : '']"></v-icon>
-
-            <div v-if="coupon.discount != null" class="text-caption position-absolute left-0 bottom-0 w-100 mb-4" :class="[isExpired ? 'opacity-30' : '']">
+            <div
+                v-if="coupon.discount != null"
+                class="text-caption position-absolute left-0 bottom-0 w-100 mb-4"
+                :class="[isExpired ? 'opacity-30' : '']"
+            >
                 NT ${{ coupon.discount }}
             </div>
-            <div v-else class="text-caption position-absolute left-0 bottom-0 w-100 mb-4" :class="[isExpired ? 'opacity-30' : '']">
+            <div
+                v-else
+                class="text-caption position-absolute left-0 bottom-0 w-100 mb-4"
+                :class="[isExpired ? 'opacity-30' : '']"
+            >
                 {{ 100 - (coupon.discountRate * 100).toFixed(0) }} 折
             </div>
         </v-sheet>
@@ -27,17 +39,29 @@
             class="flex-grow-1 d-flex flex-column justify-space-between py-2"
             color="transparent"
         >
-            <div class="font-weight-regular text-h6 font-weight-bold" :class="[isExpired ? 'opacity-30' : '']">
+            <div
+                class="font-weight-regular text-h6 font-weight-bold"
+                :class="[isExpired ? 'opacity-30' : '']"
+            >
                 {{ coupon.name != null ? coupon.name : "折價券" }}
             </div>
-            <div v-if="coupon.discount != null" class="text-caption" :class="[isExpired ? 'opacity-30' : '']">折抵 NT ${{ coupon.discount }} 元</div>
-            <div v-else class="text-caption" :class="[isExpired ? 'opacity-30' : '']">折抵 {{ 100 - (coupon.discountRate * 100).toFixed(0) }} 折</div>
+            <div
+                v-if="coupon.discount != null"
+                class="text-caption"
+                :class="[isExpired ? 'opacity-30' : '']"
+            >
+                折抵 NT ${{ coupon.discount }} 元
+            </div>
+            <div v-else class="text-caption" :class="[isExpired ? 'opacity-30' : '']">
+                折抵 {{ 100 - (coupon.discountRate * 100).toFixed(0) }} 折
+            </div>
             <div class="text-caption" :class="[isExpired ? 'text-red' : '']">
                 使用期限: {{ expireDate.toLocaleDateString() }} {{ isExpired ? "(已過期)" : "" }}
             </div>
         </v-sheet>
         <v-sheet class="d-flex align-center px-3" color="transparent">
             <v-btn
+                v-show="show"
                 variant="outlined"
                 color="brown"
                 :disabled="isExpired"
@@ -78,6 +102,10 @@ const props = defineProps({
         default: function () {
             console.log("Do nothing!!");
         },
+    },
+    show: {
+        type: Boolean,
+        default: true,
     },
 });
 

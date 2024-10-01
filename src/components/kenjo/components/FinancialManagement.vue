@@ -29,7 +29,9 @@
         @change="filterByMonth"
         :style="{ width: '200px' }"
       ></v-select>
-      <v-btn color="primary" @click="clearFilters">查詢全部訂單</v-btn>
+      <!-- <v-btn color="primary" @click="clearFilters">查詢全部訂單</v-btn> -->
+      <v-btn color="secondary" @click="printData">列印</v-btn> <!-- 新增列印按鈕 -->
+      <v-btn color="success" @click="exportCSV">匯出 CSV</v-btn> <!-- 匯出 CSV 按鈕 -->
     </v-toolbar>
 
     <v-data-table
@@ -84,8 +86,12 @@
 </template>
 
 <script>
+
 const currentYear = new Date().getFullYear(); // 獲取當前年份
 const currentMonth = new Date().getMonth() + 1; // 獲取當前月份 
+
+import axios from "@/plugins/axios";
+
 export default {
   data() {
     return {
@@ -132,10 +138,19 @@ export default {
   methods: {
     async fetchOrders() {
       try {
-        const response = await fetch('http://localhost:8080/transcation_record/all');
-        const data = await response.json();
+      const response = await axios.get('/transcation_record/all'); // 使用 axios 進行 GET 請求
+      console.log('獲取的響應:', response); // 確認完整的響應結構
+
+      const responseData = response.data; // 使用不同的變數名稱
+      console.log('獲取的數據:', responseData); // 確認返回的數據結構
+
+      // 檢查 responseData 是否有 content 屬性
+      if (!responseData || !responseData.content || !Array.isArray(responseData.content)) {
+        console.error('數據中未找到有效的 content 屬性');
+        return;
+      }
         const combinedData = {};
-        data.content.forEach(item => {
+        responseData.content.forEach(item => {
           const date = new Date(item.createdAt);
           if (isNaN(date)) {
             console.error('Invalid date:', item.createdAt);
@@ -190,6 +205,37 @@ export default {
       this.dialog = true;
     },
 
+    printData() {
+      window.print(); 
+    },
+    exportCSV() {
+      const csvContent = this.generateCSV(this.filteredDesserts);
+      const bom = '\uFEFF'; 
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', 'orders.csv');
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    },
+
+    generateCSV(data) {
+      const headers = this.headers.map(header => `"${header.title}"`).join(',') + '\n';
+      
+      const rows = data.map(item => 
+        this.headers.map(header => {
+          const value = item[header.value]; // 取得值
+          // 檢查值是否為 undefined 或 null，並進行適當處理
+           return `"${(value !== undefined && value !== null ? value.toString().replace(/"/g, '""') : '')}"`;
+          }).join(',')
+        ).join('\n');
+
+        return headers + rows;
+      },
+
     editItem(item) {
       this.editedIndex = this.desserts.indexOf(item);
       this.editedItem = { ...item };
@@ -198,7 +244,9 @@ export default {
 
     deleteItem(item) {
       const index = this.desserts.indexOf(item);
-      this.desserts.splice(index, 1);
+      if (confirm('確定要刪除這個項目嗎？')) {
+        this.desserts.splice(index, 1);
+      }
     },
 
     close() {

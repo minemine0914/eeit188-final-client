@@ -66,26 +66,28 @@ import { useHostManagementStore } from '@/stores/hostManagementStore'
 import { useRoute } from 'vue-router'
 import Swal from 'sweetalert2' // 引入 SweetAlert2
 
-const store = useHostManagementStore()
-const route = useRoute()
-const propertyId = ref(null)
-const property = ref({})
-const newImages = ref(null)
+const store = useHostManagementStore();
+const route = useRoute();
+const propertyId = ref(null);
+const property = ref({});
+const newImages = ref(null);
 
 // 獲取圖片
 const fetchPropertyImages = async () => {
-  property.value = await store.fetchHouseById(propertyId.value)
+  property.value = await store.fetchHouseById(propertyId.value);
 
   for (let i = 0; i < property.value.houseExternalResourceRecords.length; i++) {
-    console.log(property.value.houseExternalResourceRecords[i].id)
+    console.log(property.value.houseExternalResourceRecords[i].id);
   }
-}
+};
 
 // 圖片的URL生成函數
 const imageUrl = (imageId) => {
-  console.log(imageId)
-  return `http://localhost:8080/house-external-resource/image/${imageId}`
-}
+  console.log(imageId);
+  return (
+    import.meta.env.VITE_API_URL + `/house-external-resource/image/${imageId}`
+  );
+};
 
 // 移除圖片
 const removeImage = async (imageId) => {
@@ -141,7 +143,7 @@ const uploadImages = async () => {
 onMounted(() => {
   propertyId.value = route.params.propertyId;
   fetchPropertyImages();
-} )
+});
 </script>
 
 <style scoped>

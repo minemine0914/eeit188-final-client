@@ -379,16 +379,16 @@ const handleRetract = async (chatId) => {
           type: "recall",
           id: chatId,
           receiverId: other.id,
-        };
+        }.then(() => {
+          socket.value.send(JSON.stringify(retractData));
 
-        socket.value.send(JSON.stringify(retractData));
+          api({
+            method: "put",
+            url: `/chat-record/retract/${chatId}`,
+          });
 
-        api({
-          method: "put",
-          url: `/chat-record/retract/${chatId}`,
+          handleIncomingMessage(retractData);
         });
-
-        handleIncomingMessage(retractData);
 
         Swal.fire({
           title: "訊息已收回！",

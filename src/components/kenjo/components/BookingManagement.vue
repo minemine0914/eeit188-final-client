@@ -56,7 +56,7 @@
                       v-model="editedOrder.house.name"
                       label="房屋ID"
                       @click="showPropertyId"
-                      readonly
+                      
                     ></v-text-field>
                   </v-col>
                   <v-col cols="12" md="6" sm="6">
@@ -190,7 +190,7 @@
         </v-dialog>  -->
 
         <!-- 房屋資訊對話框 -->
-        <!-- <v-dialog v-model="dialogPropertyId" max-width="500px">
+        <v-dialog v-model="dialogPropertyId" max-width="500px">
           <v-card>
             <v-card-title class="text-h5">房屋資訊</v-card-title>
             <v-card-text>
@@ -206,7 +206,7 @@
               <v-spacer></v-spacer>
             </v-card-actions>
           </v-card>
-        </v-dialog> -->
+        </v-dialog>
       </v-toolbar>
     </template>
 
@@ -225,7 +225,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import axios from "@/plugins/axios";
 
 export default {
   data() {
@@ -299,7 +299,7 @@ export default {
       orderStatuses: {
         CANCELLED: '取消訂單',
         PAID: '付款成功',
-        UNPAID: '尚未付款'
+        UNPAID: '確認付款中'
       },
     };
   },
@@ -333,7 +333,7 @@ export default {
     async fetchOrder() {
       try {
         const response = await axios.get(
-          "http://localhost:8080/transcation_record/all",
+          "/transcation_record/all",
           {
             params: {
               page: 0,
@@ -390,7 +390,7 @@ export default {
     async updateStatusDeal() {
       try {
         const response = await axios.put(
-          `http://localhost:8080/transcation_record/${this.currentItem.id}`,
+          `/transcation_record/${this.currentItem.id}`,
           {
             deal: this.selectedStatus,
           }
@@ -428,7 +428,7 @@ export default {
     async deleteOrderConfirm() {
       try {
         await axios.delete(
-          `http://localhost:8080/transcation_record/${this.editedOrder.id}`
+          `/transcation_record/${this.editedOrder.id}`
         );
         this.orders.splice(this.editedIndex, 1);
         this.closeDelete();
@@ -458,8 +458,8 @@ export default {
     showPropertyId() {
       this.propertyInfo = {
         name: this.editedOrder.house.name,
-        location: "我在..",
-        type: "我是xx",
+        location: this.editedOrder.house.address,
+        type:  this.editedOrder.house.type,
         weekdayPrice: "$$$$",
         weekendPrice: "$$$$",
       };
@@ -513,14 +513,14 @@ export default {
         if (this.editedIndex > -1) {
           // 更新現有訂單
           await axios.put(
-            `http://localhost:8080/transcation_record/${this.editedOrder.id}`,
+            `/transcation_record/${this.editedOrder.id}`,
             this.editedOrder
           );
           this.orders[this.editedIndex] = this.editedOrder; // 更新本地列表
         } else {
           // 創建新訂單
           const response = await axios.post(
-            "http://localhost:8080/transcation_record",
+            "/transcation_record",
             this.editedOrder
           );
           this.orders.push(response.data); // 添加新訂單到本地列表
@@ -536,7 +536,7 @@ export default {
     async reFetchOrder(orderId) {
       try {
         const response = await axios.get(
-          `http://localhost:8080/transcation_record/${orderId}`
+          `/transcation_record/${orderId}`
         );
 
         if (response.status === 200) {

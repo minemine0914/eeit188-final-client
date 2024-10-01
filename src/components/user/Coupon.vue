@@ -6,32 +6,16 @@
       subtitle="您目前沒有任何優惠券"
       width="400"
     ></v-card>
-    <v-card
-      v-for="(coupon, index) in coupon?.coupons"
+    <CouponCard
+      v-for="coupon in coupon?.coupons"
       :key="coupon?.id"
+      :coupon="coupon"
+      :show="false"
       class="mx-auto mb-5"
       id="coupon"
-      subtitle="您的優惠券"
       width="400"
     >
-      <v-card class="mx-auto" width="400">
-        <v-card-text
-          v-if="coupon?.discount != null"
-          class="bg-surface-light pt-4"
-        >
-          折扣： {{ coupon?.discount }} 元
-        </v-card-text>
-        <v-card-text
-          v-if="coupon?.discountRate != null"
-          class="bg-surface-light pt-4"
-        >
-          {{ 100 - (coupon.discountRate * 100).toFixed(0) }} 折
-        </v-card-text>
-        <v-card-text class="bg-surface-light pt-4">
-          折扣到期日: {{ expireDate?.expireDates[index] }}
-        </v-card-text>
-      </v-card>
-    </v-card>
+    </CouponCard>
     <div v-if="hasMore && coupon.coupons.length >= 5" class="loader"></div>
     <v-text class="bottom-text" v-if="!hasMore && coupon.coupons.length !== 0"
       >已經到底囉～</v-text
@@ -43,6 +27,7 @@
 import { reactive, ref, onMounted } from "vue";
 import { useUserStore } from "../../stores/userStore";
 import api from "@/plugins/axios";
+import CouponCard from "../home/CouponCard.vue";
 
 const userStore = useUserStore();
 const { user } = userStore;

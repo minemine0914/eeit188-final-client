@@ -234,14 +234,14 @@ const retractDiscuss = async (discussId) => {
         api({
           method: "put",
           url: `/discuss/retract/${discussId}`,
-        });
-
-        for (let i = 0; i < discuss.discusses.length; i++) {
-          if (discuss.discusses[i].id === discussId) {
-            discuss.discusses.splice(i, 1);
-            break;
+        }).then(() => {
+          for (let i = 0; i < discuss.discusses.length; i++) {
+            if (discuss.discusses[i].id === discussId) {
+              discuss.discusses.splice(i, 1);
+              break;
+            }
           }
-        }
+        });
 
         Swal.fire({
           title: "您的評論已收回！",

@@ -9,7 +9,6 @@
     <template v-slot:item.deal="{ item }">
         
         <v-chip
-          
           :color="getStatusColor(item.deal)"
           size="small"
           class="text-uppercase"
@@ -60,7 +59,7 @@
                   </v-col>
                   <v-col cols="12" md="6" sm="6">
                     <v-text-field
-                      v-model="editedOrder.ticket"
+                    v-model="editedOrder.ticket.people" 
                       label="人數"
                       type="number"
                       readonly
@@ -97,14 +96,14 @@
                   </v-col>
                   <v-col cols="12" md="6" sm="6">
                     <v-text-field
-                      v-model="editedOrder.ticket" 
+                      v-model="editedOrder.startedAt" 
                       label="入住時間"
                       readonly
                     ></v-text-field>
                   </v-col>
                   <v-col cols="12" md="6" sm="6">
                     <v-text-field
-                      v-model="editedOrder.ticket"
+                      v-model="editedOrder.endedAt"
                       label="退房時間"
                       readonly
                     ></v-text-field>
@@ -194,7 +193,7 @@ export default {
     return {
       userId: '', 
       search: '',
-       orders: [],
+      orders: [],
       dialog: false,
       dialogDelete: false,
       dialogHostInfo: false,
@@ -206,15 +205,13 @@ export default {
         { title: '訂單編號', align: 'start', sortable: false, key: 'id' },
         { title: '房屋名稱', key: 'house.name' },
         { title: '房客資訊', key: 'user.name' },
-        // { title: '房東資訊', key: 'house.userName' },
         { title: '金額', key: 'cashFlow' },
+        // { title: '房東資訊', key: 'house.userName' },
         // { title: '付款方式', key: '' },
         { title: '下單時間', key: 'createdAt' },
         { title: '訂單狀態', key: 'deal' },
         { title: '編輯', key: 'actions', sortable: false },
       ],
-     
-      orders: [],
       editedIndex: -1,
       editedOrder: {
         id: '',
@@ -227,7 +224,13 @@ export default {
         },
         cashFlow: '',
         createdAt: '',
-        deal: ''
+        deal: '',
+        ticket: { 
+          people: '',
+          startedAt: '',
+          endedAt: ''
+        }
+        
       },
       defaultOrder: {
         id: '',
@@ -240,7 +243,12 @@ export default {
         },
         cashFlow: '',
         createdAt: '',
-        deal: ''
+        deal: '',
+        ticket: { 
+        people: 0,
+        startedAt: '',
+        endedAt: ''
+      }
       },
       hostInfo: {
         name: '',
@@ -263,7 +271,7 @@ export default {
       orderStatuses: {
         CANCELLED: '取消訂單',
         PAID: '付款成功',
-        UNPAID: '尚未付款'
+        UNPAID: '確認付款中'
       },
     };
   },
@@ -316,19 +324,24 @@ export default {
                     const houseUserId = order.house ? order.house.userId : null;
                     console.log(`House User ID: ${houseUserId}, Current User ID: ${userId}`); // 確保這裡被執行
                     return houseUserId === userId;  // 比較 userId
-                }).map(order => ({
-                        ...order,
-                        createdAt: this.formatDate(order.createdAt) // 格式化日期
-                    }));;
+                }).map(order => {
+                    return {
+                      ...order,
+                      createdAt: this.formatDate(order.createdAt),
+                      endedAt: this.formatDate(order.ticket ? order.ticket.endedAt : ''),
+                      startedAt: this.formatDate(order.ticket ? order.ticket.startedAt : '')
+                    };
+                  });
+                    // 檢查無效的訂單
+                    const invalidOrders = this.orders.filter(order => 
+                        typeof order !== 'object' || order === null || 
+                        order.cashFlow === undefined || 
+                        !order.house || !order.house.name || order.user ||order.ticket||
+                        order.ticket.people === undefined
+                    );
 
                 console.log("Filtered Orders:", this.orders);
 
-                // 檢查無效的訂單
-                const invalidOrders = this.orders.filter(order => 
-                    typeof order !== 'object' || order === null || 
-                    order.cashFlow === undefined || 
-                    !order.house || !order.house.name || order.user
-                );
 
                 console.log("Invalid Orders:", invalidOrders);
 
@@ -367,18 +380,28 @@ export default {
         console.error("Error updating status:", error);
       }
     },
-    formatDate(dateString) {
-      if (!dateString) return '';
-      const date = new Date(dateString);
-      return date.toISOString().split('T')[0];
-      },
+      formatDate(dateString) {
+          if (!dateString) return '';
+          const date = new Date(dateString);
+          console.log("date=",date)
+          console.log( date.toLocaleString().split('/').join('-')); 
+          return date.toLocaleString().split('/').join('-').split(' ')[0]; 
+          // 返回 yyyy-mm-dd 格式
+        },
 
-    openOrder(item) {
-      this.editedIndex = this.orders.indexOf(item);
-      this.editedOrder = Object.assign({}, item);
-      console.log(this.editedOrder);
-      this.dialog = true;
-    },
+      openOrder(item) {
+        if (item) {
+                  this.editedOrder = Object.assign({}, item);
+                  this.dialog = true;
+              } else {
+                  console.error('Invalid item:', item);
+              }
+          },
+
+          close() {
+              this.dialog = false;
+              this.editedOrder = Object.assign({}, this.defaultOrder); // 確保不會設置為 null
+          },
 
     deleteOrder(item) {
       this.editedIndex = this.orders.indexOf(item);
@@ -419,7 +442,7 @@ export default {
           return "red";
         case "付款成功":
           return "green";
-        case "尚未付款":
+        case "確認付款中":
           return "blue";
         default:
           return "gray"; // 預設狀態顏色
@@ -431,8 +454,8 @@ export default {
           return "取消訂單";
         case "付款成功":
           return "付款成功";
-        case "尚未付款":
-          return "尚未付款";
+        case "確認付款中":
+          return "確認付款中";
         default:
           return "確認中";
       }
@@ -484,8 +507,12 @@ export default {
           if (index !== -1) {
             const updatedOrder = {
             ...response.data,
-            createdAt: this.formatDate(response.data.createdAt) // 格式化日期
+            createdAt: this.formatDate(response.data.createdAt),
+            startedAt: this.formatDate(response.data.ticket.startedAt),
+            endedAt: this.formatDate(response.data.ticket.endedAt),
+            ticket: response.data.ticket || { people: 0 } 
         };
+        console.log("AAA=",updatedOrder)
             this.orders[index] = updatedOrder; // 更新訂單
           }
         } else {

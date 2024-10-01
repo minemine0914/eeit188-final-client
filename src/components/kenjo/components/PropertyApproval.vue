@@ -72,7 +72,8 @@
 </template>
 
 <script>
-import axios from 'axios';
+// import axios from 'axios';
+import axios from "@/plugins/axios";
 
 export default {
   data () {
@@ -131,7 +132,7 @@ export default {
   methods: {
     async fetchOrder() {
       try {
-        const response = await axios.get('http://localhost:8080/house/all', {
+        const response = await axios.get('/house/all', {
           params: {
             page: 0,
             limit: 1000,
@@ -193,7 +194,7 @@ export default {
 
     async updateStatus() {
       try {
-        const response = await axios.put(`http://localhost:8080/house/${this.currentItem.id}`, {
+        const response = await axios.put(`/house/${this.currentItem.id}`, {
           review: this.selectedStatus
         });
 
