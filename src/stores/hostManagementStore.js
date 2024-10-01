@@ -171,17 +171,46 @@ export const useHostManagementStore = defineStore("hostManagement", () => {
     }
   }
 
-  // 8. 獲取房源背景圖片，對應於 HouseExternalResourceController 的 API
-  async function fetchPropertyBackgroundImage(propertyId) {
+  async function fetchPropertyImages(propertyId) {
+    clearError();
+    state.loading = true;
     try {
-      const response = await api.get(`/house/${propertyId}/background`, {
-        responseType: "blob",
-      });
-      return response.data;
+      const response = await api.get(`/house-external-resource/image/${propertyId}`);
+      console.log(response)
+      state.images = response.data.content;
+      state.loading = false;
+      return response;
     } catch (error) {
+      handleError(error);
+      state.loading = false;
+    }
+  }
+  // 8. 獲取房源背景圖片，對應於 HouseExternalResourceController 的 API
+  // async function fetchPropertyBackgroundImage(propertyId) {
+  //   try {
+  //     const response = await api.get(`/house/${propertyId}/background`, {
+  //       responseType: "blob",
+  //     });
+  //     return response.data;
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // }
+
+  async function deleteImage(propertyId, imageId) {
+    try {
+      await api.delete(`/house-external-resource/${imageId}`, {
+        params: { houseId: propertyId },
+      });
+    } catch (error) {
+      console.error("Error deleting image:", error);
       throw error;
     }
   }
+
+
+
+
 
   // 9. 從 MongoDB 獲取房源資料，對應於 HouseMongoController 的 API
   async function fetchMongoProperty(propertyId) {
@@ -259,7 +288,9 @@ export const useHostManagementStore = defineStore("hostManagement", () => {
     fetchOrders,
     fetchReviews,
     uploadPropertyImage,
-    fetchPropertyBackgroundImage,
+    deleteImage,
+    fetchPropertyImages,
+    //fetchPropertyBackgroundImage,
     fetchMongoProperty,
     fetchAllhouse,
     fetchHouseById,

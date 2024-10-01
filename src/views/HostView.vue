@@ -130,7 +130,7 @@ const menuItems = ref([
   { title: "管理房源", path: "/lo/property-management" },
   { title: "新增房源", path: "/lo/add-property" },
   { title: "訂單管理", path: "/lo/order-records" },
-  { title: "入住 check in", path: "/lo/check-in" },
+  { title: "住客評價", path: "/lo/reviews" },
   { title: "分析報表", path: "/lo/reports" },
 ]);
 

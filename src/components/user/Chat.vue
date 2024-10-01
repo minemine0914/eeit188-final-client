@@ -200,7 +200,7 @@ onMounted(async () => {
   }
 
   // Connect to WebSocket
-  socket.value = new WebSocket("ws://localhost:3002");
+  socket.value = new WebSocket(import.meta.env.VITE_WS_URL);
 
   socket.value.onopen = () => {
     console.log("WebSocket connection established");
@@ -226,7 +226,7 @@ onMounted(async () => {
     if (retryCount < maxRetries) {
       console.log("WebSocket connection closed, attempting to reconnect...");
       setTimeout(() => {
-        socket.value = new WebSocket("ws://localhost:3002");
+        socket.value = new WebSocket(import.meta.env.VITE_WS_URL);
         retryCount++;
       }, 5000);
     } else {

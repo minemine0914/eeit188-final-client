@@ -2,7 +2,7 @@ import { createWebHistory, createRouter, useRouter } from "vue-router";
 
 // Import your router
 import minemineRouter from "./minemine";
-import wuRouter_host from "./wu_host";
+import wuRouter from "./wu";
 import kenjoRouter from "./kenjo";
 import leonRouter from "./leon";
 import loRouter from "./lo";
@@ -145,9 +145,9 @@ const routes = [
         component: () => import("@/components/lo/AddProperty.vue"),
       },
       {
-        path: "edit-property/:id",
+        path: "edit-property/:propertyId",
         name: "editProperty",
-        component: () => import("@/components/lo/EditProperty.vue"),
+        component: () => import("@/components/lo/EditPropertyImage.vue"),
         props: true,
       },
       {
@@ -232,7 +232,7 @@ const routes = [
     component: () => import("@/views/NotFound.vue"),
   },
   minemineRouter,
-  // wuRouter_host,
+  wuRouter,
   leonRouter,
   loRouter,
 ];

@@ -6,8 +6,14 @@
             房源列表
             <v-icon icon="mdi-home" />
         </v-card-title>
-        <v-data-table v-model="store.selectedHouseId" :headers="headers" :items="store.houses" item-value="id"
-            select-strategy="single" show-select @change="update">
+
+        <v-card-title class="d-flex align-center pe-2">
+            <v-text-field v-model="search" density="compact" label="Search" prepend-inner-icon="mdi-magnify"
+                variant="solo-filled" flat hide-details single-line />
+        </v-card-title>
+
+        <v-data-table v-model:search="search" v-model="store.selectedHouseId" :headers="headers" :items="items"
+            item-value="id" select-strategy="single" show-select @change="update">
 
             <template v-slot:item.show="{ item }">
                 <v-chip v-if="item.show" color="green" size="small" class="text-uppercase">
@@ -60,7 +66,7 @@
             <template v-slot:item.createdAt="{ item }">
                 {{ new Date(item.createdAt).getFullYear() }}年{{ String(new Date(item.createdAt).getMonth() +
                     1).padStart(2,
-                '0') }}月{{ String(new Date(item.createdAt).getDate()).padStart(2, '0') }}日 {{ String(new
+                        '0') }}月{{ String(new Date(item.createdAt).getDate()).padStart(2, '0') }}日 {{ String(new
                     Date(item.createdAt).getHours()).padStart(2, '0') }}:{{ String(new
                     Date(item.createdAt).getMinutes()).padStart(2, '0') }}:{{ String(new
                     Date(item.createdAt).getSeconds()).padStart(2, '0') }}
@@ -103,13 +109,14 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useHostReportStore } from '@/stores/hostReportStore';
 import { useUserStore } from '../../../stores/userStore';
 
 const store = useHostReportStore()
 const userStore = useUserStore()
 store.isLoading = ref(false)
+const search = ref('');
 let headers = []
 // 平台和房東共用此表格，先判定登入者權限，再決定欄位順序
 if (userStore.user.role === 'normal') {
@@ -163,6 +170,43 @@ if (userStore.user.role === 'normal') {
         { title: '', value: '', width: '100px' }, // 空白欄 調整排版用
     ];
 }
+
+const items = computed(() => {
+    // console.log('is', store.itemsSource)
+    let filtered = ''
+    if (!search.value) { filtered = store.houses; }
+    else {
+        const searchLower = search.value.toLowerCase();
+
+        filtered = store.houses.filter(item =>
+            (item?.category?.toLowerCase().includes(searchLower)) ||
+            (item?.id?.toLowerCase().includes(searchLower)) ||
+            (item?.name?.toLowerCase().includes(searchLower)) ||
+            (item?.country?.toLowerCase().includes(searchLower)) ||
+            (item?.city?.toLowerCase().includes(searchLower)) ||
+            (item?.region?.toLowerCase().includes(searchLower)) ||
+            (item?.address?.toLowerCase().includes(searchLower)) ||
+            (item?.show?.toString().includes(searchLower)) ||
+            (item?.review?.toString().includes(searchLower)) ||
+            (item?.averageScore.toString().includes(searchLower)) ||
+            (item?.click?.toString().includes(searchLower)) ||
+            (item?.share?.toString().includes(searchLower)) ||
+            (item?.pricePerDay?.toString().includes(searchLower)) ||
+            (item?.adult?.toString().includes(searchLower)) ||
+            (item?.child?.toString().includes(searchLower)) ||
+            (item?.livingDiningRoom?.toString().includes(searchLower)) ||
+            (item?.bedroom?.toString().includes(searchLower)) ||
+            (item?.restroom?.toString().includes(searchLower)) ||
+            (item?.bathroom?.toString().includes(searchLower)) ||
+            (item?.balcony?.toString().includes(searchLower)) ||
+            (item?.kitchen?.toString().includes(searchLower)) ||
+            (item?.pet?.toString().includes(searchLower)) ||
+            (item?.smoke?.toString().includes(searchLower)) ||
+            (item?.createdAt?.includes(searchLower))
+        );
+    }
+    return filtered
+});
 
 const getStatusColor = (review) => {
     switch (review) {

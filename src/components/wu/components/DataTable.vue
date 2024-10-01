@@ -40,11 +40,14 @@
                 </div>
                 <div v-if="store.selectedPeriod === 'quarter'">
                     <!-- Content for Quarter -->
-
-                    <label for="quarterRange">季度：</label>
-                    <select id="quarterRange" v-model="store.selectedQuarter">
+                    <input id="allQuarter" type="checkbox" v-model="store.allQuarter"><label
+                        for="allQuarter">顯示所有季度的資料</label>
+                    &nbsp;
+                    <label for="quarterRange">選擇季度：</label>
+                    <select id="quarterRange" v-model="store.selectedQuarter" :disabled="store.allQuarter">
                         <option v-for="quarter, key in 4" :key="key" :value="quarter">{{ quarter }}</option>
                     </select>
+
                 </div>
             </div>
         </div>
