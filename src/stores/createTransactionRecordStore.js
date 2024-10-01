@@ -13,7 +13,7 @@ export const useCreateTransactionRecordStore = defineStore('createTransactionRec
         async findAllUserString() {
 
             try {
-                const response = await api.get(`/user/find-users?limit=1000`);
+                const response = await api.get(`/user/find-users?pageSize=1000`);
                 this.usersResult = response.data.users.map(user => user.id || 0);
             } catch (error) {
                 console.error('Error fetching users:', error);
