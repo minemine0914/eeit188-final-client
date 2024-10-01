@@ -135,8 +135,9 @@
 </template>
 
 <script>
-import axios from 'axios';
+//import axios from 'axios';
 import { useUserStore } from '../../../stores/userStore';
+import axios from "@/plugins/axios";
 
 export default {
   data() {
@@ -213,7 +214,7 @@ export default {
     // }
 
     try {
-      const response = await axios.get('http://localhost:8080/user/find-users', {
+      const response = await axios.get('/user/find-users', {
         headers: {
           Authorization: `Bearer ${token}`
         },
@@ -261,7 +262,7 @@ export default {
     async deleteUserConfirm() {
       const token = localStorage.getItem('jwtToken');
       try {
-        await axios.delete(`http://localhost:8080/user/${this.editedUser.id}`, {
+        await axios.delete(`/user/${this.editedUser.id}`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -314,7 +315,7 @@ export default {
       try {
           if (this.editedIndex > -1) {
               // 更新現有用戶
-              const response = await axios.put(`http://localhost:8080/user/${this.editedUser.id}`, dataToSend, {
+              const response = await axios.put(`/user/${this.editedUser.id}`, dataToSend, {
                   headers: {
                       Authorization: `Bearer ${token}`
                   }
@@ -323,7 +324,7 @@ export default {
               Object.assign(this.desserts[this.editedIndex], response.data);
           } else {
               // 創建新用戶
-              const response = await axios.post('http://localhost:8080/user/createUser', dataToSend, {
+              const response = await axios.post('/user/createUser', dataToSend, {
                   headers: {
                       Authorization: `Bearer ${token}`
                   }

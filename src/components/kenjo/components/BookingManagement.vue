@@ -225,7 +225,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import axios from "@/plugins/axios";
 
 export default {
   data() {
@@ -333,7 +333,7 @@ export default {
     async fetchOrder() {
       try {
         const response = await axios.get(
-          "http://localhost:8080/transcation_record/all",
+          "/transcation_record/all",
           {
             params: {
               page: 0,
@@ -390,7 +390,7 @@ export default {
     async updateStatusDeal() {
       try {
         const response = await axios.put(
-          `http://localhost:8080/transcation_record/${this.currentItem.id}`,
+          `/transcation_record/${this.currentItem.id}`,
           {
             deal: this.selectedStatus,
           }
@@ -428,7 +428,7 @@ export default {
     async deleteOrderConfirm() {
       try {
         await axios.delete(
-          `http://localhost:8080/transcation_record/${this.editedOrder.id}`
+          `/transcation_record/${this.editedOrder.id}`
         );
         this.orders.splice(this.editedIndex, 1);
         this.closeDelete();
