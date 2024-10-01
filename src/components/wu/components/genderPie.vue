@@ -23,7 +23,7 @@ const store = useHostReportStore()
 const maleCount = computed(() => {
     let count = 0
     store.itemsSource.forEach(item => {
-        if (item.userGender === 'male') {
+        if (item.userGender === 'male' || item.userGender === '男性') {
             count++
         }
     })
@@ -33,7 +33,7 @@ const maleCount = computed(() => {
 const femaleCount = computed(() => {
     let count = 0
     store.itemsSource.forEach(item => {
-        if (item.userGender === 'female') {
+        if (item.userGender === 'female' || item.userGender === '女性') {
             count++
         }
     })
@@ -43,7 +43,7 @@ const femaleCount = computed(() => {
 const otherCount = computed(() => {
     let count = 0
     store.itemsSource.forEach(item => {
-        if (item.userGender === 'other') {
+        if (item.userGender === 'other' || item.userGender === '其他') {
             count++
         }
     })
