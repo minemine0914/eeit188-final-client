@@ -1,4 +1,4 @@
-<!--訂單管理系統-->
+訂單管理系統
   
 <template>
   <v-data-table
@@ -7,7 +7,7 @@
     :items="orders"
     :sort-by="[{ key: 'createdAt', order: 'asc' }]">
     <template v-slot:item.deal="{ item }">
-        <!--狀態欄位-->
+        
         <v-chip
           
           :color="getStatusColor(item.deal)"
@@ -36,7 +36,6 @@
           :style="{ width: '200px' }"
         ></v-text-field>
 
-        <!-- 編輯訂單對話框 -->
         <v-dialog v-model="dialog" max-width="500px">
           <v-card>
             <v-card-title>
@@ -139,7 +138,6 @@
           </v-card>
         </v-dialog>
 
-        <!-- 刪除確認對話框 -->
         <v-dialog v-model="dialogDelete" max-width="500px">
           <v-card>
             <v-card-title class="text-h5">確定要刪除?</v-card-title>
@@ -182,9 +180,7 @@
       <v-icon class="me-2" size="small" @click="openOrder(item)">
         mdi-eye
       </v-icon>
-      <!-- <v-icon size="small" @click="deleteOrder(item)">
-        mdi-delete
-      </v-icon> -->
+     
     </template>
   </v-data-table>
 </template>

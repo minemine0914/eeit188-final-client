@@ -16,9 +16,13 @@
         <v-data-table
           :headers="headers"
           :items="house.houses"
-          item-value="name"
           class="elevation-1"
         >
+          <template v-slot:item.name="{ item }">
+            <v-text class="title-name" @click="handleClick(item)">
+              {{ item.name }}
+            </v-text>
+          </template>
           <template v-slot:item.review="{ item }">
             <!--狀態欄位-->
             <v-chip
@@ -46,7 +50,9 @@
             <v-btn color="primary" @click="openUpdateDialog(item)">編輯</v-btn>
             <v-btn color="error" @click="deleteItem(item)">刪除</v-btn>
 
-            <v-btn color="info" @click="goToEditPropertyImage(item.id)">圖片管理</v-btn>
+            <v-btn color="info" @click="goToEditPropertyImage(item.id)"
+              >圖片管理</v-btn
+            >
           </template>
         </v-data-table>
 
@@ -287,8 +293,8 @@ const deleteItem = async (item) => {
 };
 
 const goToEditPropertyImage = (propertyId) => {
-  router.push(`edit-property/${propertyId}`)
-}
+  router.push(`lo/edit-property/${propertyId}`);
+};
 
 // 處理彈出視窗
 function openDialog(item) {
@@ -396,6 +402,11 @@ const submitForm = async () => {
   }
 };
 
+function handleClick(item) {
+  const url = `/house/${item.id}`;
+  window.open(url, "_blank");
+}
+
 watch(dialog, (val) => {
   if (!val) close();
 });
@@ -414,6 +425,10 @@ watch(updateDialog, (val) => {
 </script>
 
 <style scoped>
+.title-name {
+  cursor: pointer;
+}
+
 .submit-card {
   width: 600px;
   padding: 50px;

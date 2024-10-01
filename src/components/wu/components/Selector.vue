@@ -233,6 +233,7 @@ const getStatusText = (review) => {
 const update = async () => {
     store.selectedHouseId = store.selectedHouseId[0]
     store.isLoading = true;
+    store.selectedPeriod = 'month'
     try {
         store.fetchTransactionRecordsStartingValue()
         store.fetchTransactionRecords()

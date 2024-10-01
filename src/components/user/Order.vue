@@ -50,18 +50,23 @@ onMounted(() => {
 });
 
 function fetchOrders() {
-  const bookingList = JSON.parse(
-    localStorage.getItem("HouseDetail")
-  ).bookingList;
+  if (
+    localStorage.getItem("HouseDetail") !== null &&
+    JSON.parse(localStorage.getItem("HouseDetail")).bookingList.length > 0
+  ) {
+    const bookingList = JSON.parse(
+      localStorage.getItem("HouseDetail")
+    ).bookingList;
 
-  let orderList;
+    let orderList;
 
-  for (let b in bookingList) {
-    orderList = bookingList[b].list;
+    for (let b in bookingList) {
+      orderList = bookingList[b].list;
+    }
+
+    order.orders.push(...orderList);
+    order.orders.reverse();
   }
-
-  order.orders.push(...orderList);
-  order.orders.reverse();
 }
 
 const fetchImage = (o) => {
