@@ -1,4 +1,4 @@
-<!-- 訂單管理系統
+訂單管理系統
   
 <template>
   <v-data-table
@@ -532,4 +532,4 @@ export default {
 <style scoped>
 </style>
 
- -->
+
