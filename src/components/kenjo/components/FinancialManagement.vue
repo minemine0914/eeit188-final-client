@@ -84,8 +84,12 @@
 </template>
 
 <script>
+
 const currentYear = new Date().getFullYear(); // 獲取當前年份
 const currentMonth = new Date().getMonth() + 1; // 獲取當前月份 
+
+import axios from "@/plugins/axios";
+
 export default {
   data() {
     return {
@@ -132,10 +136,19 @@ export default {
   methods: {
     async fetchOrders() {
       try {
-        const response = await fetch('http://localhost:8080/transcation_record/all');
-        const data = await response.json();
+      const response = await axios.get('/transcation_record/all'); // 使用 axios 進行 GET 請求
+      console.log('獲取的響應:', response); // 確認完整的響應結構
+
+      const responseData = response.data; // 使用不同的變數名稱
+      console.log('獲取的數據:', responseData); // 確認返回的數據結構
+
+      // 檢查 responseData 是否有 content 屬性
+      if (!responseData || !responseData.content || !Array.isArray(responseData.content)) {
+        console.error('數據中未找到有效的 content 屬性');
+        return;
+      }
         const combinedData = {};
-        data.content.forEach(item => {
+        responseData.content.forEach(item => {
           const date = new Date(item.createdAt);
           if (isNaN(date)) {
             console.error('Invalid date:', item.createdAt);

@@ -9,7 +9,6 @@
     <template v-slot:item.deal="{ item }">
         
         <v-chip
-          
           :color="getStatusColor(item.deal)"
           size="small"
           class="text-uppercase"

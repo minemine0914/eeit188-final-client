@@ -1,5 +1,5 @@
-<!-- <template>
-    <v-container>
+<template>
+    <!-- <v-container>
         <v-row>
             <v-col cols="12">
                 <v-card>
@@ -36,47 +36,47 @@
                 </v-card>
             </v-col>
         </v-row>
-    </v-container>
+    </v-container> -->
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useHostManagementStore } from '@/stores/hostManagementStore'
+import { ref, onMounted } from "vue";
+import { useHostManagementStore } from "@/stores/hostManagementStore";
 
 const orderRecord = ref({
-  id: '',
-  customerName: '',
-  stayDate: '',
-  paymentStatus: '',
-  totalAmount: 0,
-  roomName: '',
-})
+    id: "",
+    customerName: "",
+    stayDate: "",
+    paymentStatus: "",
+    totalAmount: 0,
+    roomName: "",
+});
 
 const props = defineProps({
-  id: {
-    type: String,
-    required: true,
-  },
-})
+    id: {
+        type: String,
+        required: true,
+    },
+});
 
-const hostManagementStore = useHostManagementStore()
+const hostManagementStore = useHostManagementStore();
 
 const getOrderDetail = async () => {
-  try {
-    const data = await hostManagementStore.fetchOrderDetail(props.id) // 從 API 獲取訂單詳細資料
-    Object.assign(orderRecord.value, data) // 將獲取的數據綁定到 orderRecord
-  } catch (error) {
-    console.error('無法獲取訂單詳情', error)
-  }
-}
+    try {
+        const data = await hostManagementStore.fetchOrderDetail(props.id); // 從 API 獲取訂單詳細資料
+        Object.assign(orderRecord.value, data); // 將獲取的數據綁定到 orderRecord
+    } catch (error) {
+        console.error("無法獲取訂單詳情", error);
+    }
+};
 
 onMounted(() => {
-  getOrderDetail() // 在組件掛載時獲取訂單詳細資料
-})
+    getOrderDetail(); // 在組件掛載時獲取訂單詳細資料
+});
 </script>
 
 <style scoped>
 .v-card-title {
     font-weight: bold;
 }
-</style> -->
+</style>

@@ -187,7 +187,8 @@
 
 <script setup>
 import { ref, computed,onMounted } from 'vue';
-import axios from 'axios';
+import axios from "@/plugins/axios";
+
 
 const searchPromotions = ref('');
 const searchDiscountCodes = ref('');
@@ -225,7 +226,7 @@ const discountCodeHeaders = [
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/user/find-users');
+      const response = await axios.get('/user/find-users');
       console.log('Fetched users:', response.data);
       users.value = response.data.users || []; 
       // 確保從 response.data 中提取正確的用戶數組
@@ -243,7 +244,7 @@ const discountCodeHeaders = [
   };
     const fetchPromotions = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/coupon/all');
+      const response = await axios.get('/coupon/all');
       promotions.value = response.data.content.filter(promotion => promotion.discountRate).map(promotion => ({
         ...promotion,
         createdAt: formatDate(promotion.createdAt)
@@ -255,7 +256,7 @@ const discountCodeHeaders = [
 
     const fetchDiscountCodes = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/coupon/all');
+      const response = await axios.get('/coupon/all');
       discountCodes.value = response.data.content.filter(discountCode => discountCode.discount).map(discountCode => ({
         ...discountCode,
         createdAt: formatDate(discountCode.createdAt)
@@ -298,7 +299,7 @@ const savePromotion = async () => {
 
         console.log('Post data for user:', postData); // 打印每個用戶的請求數據
 
-        const response = await axios.post('http://localhost:8080/coupon/', postData);
+        const response = await axios.post('/coupon/', postData);
         console.log('促銷活動創建成功', response.data);
       }} else {
         // 只為當前選擇的用戶創建促銷活動
@@ -311,7 +312,7 @@ const savePromotion = async () => {
 
         console.log('Post data:', postData); // 打印請求數據
 
-        const response = await axios.post('http://localhost:8080/coupon/', postData);
+        const response = await axios.post('/coupon/', postData);
         console.log('促銷活動創建成功', response.data);
       }
 
@@ -330,7 +331,7 @@ const savePromotion = async () => {
 
   const deletePromotion = async (promotion) => {
     try {
-      await axios.delete(`http://localhost:8080/coupon/${promotion.id}`);
+      await axios.delete(`/coupon/${promotion.id}`);
       fetchPromotions();
     } catch (error) {
       console.error('刪除促銷活動時出錯:', error);
@@ -366,7 +367,7 @@ const saveDiscountCode = async () => {
 
         console.log('Post data for user:', postData); // 打印每個用戶的請求數據
 
-        const response = await axios.post('http://localhost:8080/coupon/', postData);
+        const response = await axios.post('/coupon/', postData);
         console.log('促銷活動創建成功', response.data);
       }} else {
         // 只為當前選擇的用戶創建促銷活動
@@ -379,7 +380,7 @@ const saveDiscountCode = async () => {
 
         console.log('Post data:', postData); // 打印請求數據
 
-        const response = await axios.post('http://localhost:8080/coupon/', postData);
+        const response = await axios.post('/coupon/', postData);
         console.log('促銷活動創建成功', response.data);
       }
 
@@ -398,7 +399,7 @@ const saveDiscountCode = async () => {
 
     const deleteDiscountCode = async (discountCode) => {
       try {
-        await axios.delete(`http://localhost:8080/coupon/code/${discountCode.id}`);
+        await axios.delete(`/coupon/code/${discountCode.id}`);
         fetchDiscountCodes();
       } catch (error) {
         console.error('刪除優惠碼時出錯:', error);
