@@ -31,7 +31,9 @@
         <v-text>{{ formatDate(r.createdAt) }}</v-text>
       </div>
       <v-text class="deal">{{ r.deal }}</v-text>
-      <v-btn class="btn" @click="openQrCode(r)">QR CODE</v-btn>
+      <v-btn v-if="r.deal === '付款成功'" class="btn" @click="openQrCode(r)"
+        >QR CODE</v-btn
+      >
     </v-card>
     <div v-if="hasMore && record.records.length >= 5" class="loader"></div>
     <v-text class="bottom-text" v-if="!hasMore && record.records.length !== 0"
