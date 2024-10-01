@@ -1,19 +1,8 @@
 <template>
-    <v-card
-        flat
-        rounded="lg"
-        @click.stop="$router.push(`/house/${house.id}`)"
-        :ripple="false"
-        :hover="false"
-    >
+    <v-card flat rounded="lg" @click.stop="$router.push(`/house/${house.id}`)" :ripple="false" :hover="false">
         <v-card-item class="pt-4">
             <v-sheet color="transparent" class="overflow-hidden" rounded="lg">
-                <v-carousel
-                    height="200"
-                    show-arrows="hover"
-                    hide-delimiter-background
-                    hide-delimiters
-                >
+                <v-carousel height="200" show-arrows="hover" hide-delimiter-background hide-delimiters>
                     <template v-slot:prev="{ props }">
                         <v-btn
                             v-if="house.houseExternalResourceRecords.length > 1"
@@ -39,24 +28,18 @@
                         ></v-btn>
                     </template>
                     <v-carousel-item
-                        v-for="imageSrc in houseSearchStore.getHouseImageUrlList(
-                            house.houseExternalResourceRecords
-                        )"
+                        v-for="imageSrc in houseSearchStore.getHouseImageUrlList(house.houseExternalResourceRecords)"
                     >
-                        <v-img
-                            :aspect-ratio="1"
-                            :height="200"
-                            :src="imageSrc"
-                            cover
-                            class="cursor-pointer"
-                        ></v-img>
+                        <v-img :aspect-ratio="1" :height="200" :src="imageSrc" cover class="cursor-pointer"></v-img>
                     </v-carousel-item>
                 </v-carousel>
             </v-sheet>
         </v-card-item>
         <v-card-title class="py-0 d-flex flex-row align-center justify-center">
-            <div class="flex-grow-0">{{ house.name }}</div>
-            <div class="d-flex flex-grow-1 justify-end align-center ga-1">
+            <div class="flex-grow-1 overflow-hidden">
+                <div class="h-100">{{ house.name }}</div>
+            </div>
+            <div class="d-flex flex-grow-0 justify-end align-center ga-1">
                 <v-rating
                     half-increments
                     :length="5"
