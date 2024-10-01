@@ -47,22 +47,29 @@ const imageUrl = (imageId) => {
 
 // 移除圖片
 const removeImage = async (imageId) => {
-  await store.deleteImage(imageId)
-  fetchPropertyImages() // 更新圖片
-}
+  try {
+    await store.deleteImage(propertyId.value, imageId);
+    fetchPropertyImages(); // 更新圖片列表
+  } catch (error) {
+    console.error('Failed to delete image:', error);
+  }
+};
+
 
 // 上傳圖片
 const uploadImages = async () => {
   if (newImages.value && newImages.value.length > 0) {
-    const formData = new FormData()
-    for (const file of newImages.value) {
-      formData.append('files', file)
+    try {
+      for (const file of newImages.value) {
+        await store.uploadPropertyImage(propertyId.value, file);
+      }
+      fetchPropertyImages(); // 更新圖片列表
+    } catch (error) {
+      console.error('Failed to upload image:', error);
     }
-    formData.append('houseId', propertyId)
-    await store.uploadPropertyImage(formData)
-    fetchPropertyImages() // 更新圖片
   }
-}
+};
+
 
 onMounted(() => {
   propertyId.value = route.params.propertyId;
