@@ -109,14 +109,18 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { watch, ref, computed } from 'vue';
 import { useHostReportStore } from '@/stores/hostReportStore';
 import { useUserStore } from '../../../stores/userStore';
+
+
 
 const store = useHostReportStore()
 const userStore = useUserStore()
 store.isLoading = ref(false)
 const search = ref('');
+
+
 let headers = []
 // 平台和房東共用此表格，先判定登入者權限，再決定欄位順序
 if (userStore.user.role === 'normal') {

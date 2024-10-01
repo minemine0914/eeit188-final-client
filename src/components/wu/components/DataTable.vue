@@ -61,16 +61,22 @@ import { useHostReportStore } from '@/stores/hostReportStore';
 
 const store = useHostReportStore()
 
-watch(() => store.selectedPeriod, (newPeriod) => {
-    if (newPeriod === 'year') {
+// Function to prepare records based on selected period
+const prepareRecords = (newValue) => {
+    if (store.selectedPeriod === 'year') {
         store.recordsPrapared = store.turnToY(store.records);
-        console.log('SRP', store.recordsPrapared)
-    } else if (newPeriod === 'month') {
+        console.log('SRP', store.recordsPrapared);
+    } else if (store.selectedPeriod === 'month') {
         store.recordsPrapared = store.turnToYM(store.records);
-    } else if (newPeriod === 'quarter') {
+    } else if (store.selectedPeriod === 'quarter') {
         store.recordsPrapared = store.turnToYQ(store.records);
     }
-});
+};
+
+// Watchers for selectedPeriod, selectedHouseId, and selectedUserId
+watch(() => store.selectedPeriod, prepareRecords);
+watch(() => store.selectedHouseId, prepareRecords);
+watch(() => store.selectedUserId, prepareRecords);
 
 </script>
 

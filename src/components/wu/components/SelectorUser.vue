@@ -59,11 +59,13 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { watch, ref, onMounted, computed } from 'vue';
 import { useHostReportStore } from '@/stores/hostReportStore';
 
 const store = useHostReportStore()
 const search = ref('');
+
+
 
 let headers = [
     { title: '', value: 'pics', width: '20px' }, // Disable sorting for pics
