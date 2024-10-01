@@ -101,10 +101,11 @@ async function fetchTickets() {
 
     const fatchedTickets = response.data.content;
 
-    console.log(fatchedTickets);
-
     if (fatchedTickets.length > 0) {
-      ticket.tickets.push(...fatchedTickets);
+      console.log(fatchedTickets);
+      ticket.tickets.push(
+        ...fatchedTickets.filter((obj) => obj.transactionRecord != null)
+      );
     } else {
       hasMore.value = false;
     }
