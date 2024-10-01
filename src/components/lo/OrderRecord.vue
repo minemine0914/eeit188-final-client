@@ -192,7 +192,7 @@
 <script>
 import axios from 'axios';
 
-
+   
 export default {
   data() {
     return {
@@ -299,52 +299,59 @@ export default {
 
   methods: {
     async fetchOrder() {
-      try {
-        const response = await axios.get('http://localhost:8080/transcation_record/all', {
-          params: {
-            page: 0,
-            limit: 1000
-          }
-        });
-        console.log("API response:", response.data);
-        if (response.status === 200) {
-         // console.log('API response:', response.data);
-          
-          if (response.data && Array.isArray(response.data.content)) {
-            this.orders = response.data.content
-            ;
-            // 檢查每個訂單，並記錄格式不正確或缺少 house 資料的訂單
-            const invalidOrders = this.orders.filter(order => 
-              typeof order !== 'object' || order === null || 
-              !order.id || order.cashFlow === undefined || 
-              !order.house || !order.house.name ||order.user
-            );
-              //console.log(this.orders);
-              console.log(this.orderStatuses)
-            //console.log('API 返回的完整資料:', response.data);
-            if (invalidOrders.length > 0) {
-              //console.error('以下訂單格式不正確或缺少房屋資料，將進行重新抓取:', invalidOrders);
-              // 確保重抓取時不會有 undefined 的 ID
-              const validIds = invalidOrders.map(order => order.id).filter(id => id);
-              await Promise.all(validIds.map(id => this.reFetchOrder(id)));
+    const userData = localStorage.getItem('user');
+
+    if (userData) {
+        const parsedData = JSON.parse(userData);
+        const userId = parsedData.user.id;  // 獲取 userId
+        console.log('User ID:', userId);
+
+        try {
+            const response = await axios.get('http://localhost:8080/transcation_record/all', {
+                params: { page: 0, limit: 1000 }
+            });
+            console.log("API response content:", response.data.content);
+            
+            if (response.status === 200 && response.data && Array.isArray(response.data.content)) {
+                console.log("Content length:", response.data.content.length); // 檢查資料長度
+
+                // 過濾符合當前 userId 的訂單
+                this.orders = response.data.content.filter(order => {
+                    const houseUserId = order.house ? order.house.userId : null;
+                    console.log(`House User ID: ${houseUserId}, Current User ID: ${userId}`); // 確保這裡被執行
+                    return houseUserId === userId;  // 比較 userId
+                }).map(order => ({
+                        ...order,
+                        createdAt: this.formatDate(order.createdAt) // 格式化日期
+                    }));;
+
+                console.log("Filtered Orders:", this.orders);
+
+                // 檢查無效的訂單
+                const invalidOrders = this.orders.filter(order => 
+                    typeof order !== 'object' || order === null || 
+                    order.cashFlow === undefined || 
+                    !order.house || !order.house.name || order.user
+                );
+
+                console.log("Invalid Orders:", invalidOrders);
+
+                if (invalidOrders.length > 0) {
+                    const validIds = invalidOrders.map(order => order.id).filter(id => id);
+                    await Promise.all(validIds.map(id => this.reFetchOrder(id)));
+                }
+            } else {
+                this.orders = [];
+                console.error('No valid content in response.');
             }
-            this.orders = response.data.content.map(oder => ({
-            ...oder,
-            createdAt: this.formatDate(oder.createdAt) 
-          }))
-          } 
-          else {
-            //console.error('API response is not in expected format:', response.data);
-            this.orders = [];
-          }
-        } else {
-          //console.error('API response status is not OK:', response.status);
+        } catch (error) {
+            console.error('Error in fetchOrder:', error);
         }
-      } catch (error) {
-        //console.error('Error in fetchOrder:', error);
-        // 可以顯示錯誤提示給用戶
-      }
-    },
+    } else {
+        console.log('User data not found in localStorage.');
+    }
+},
+
     async updateStatusDeal() {
       try {
         const response = await axios.put(
@@ -366,8 +373,8 @@ export default {
     },
     formatDate(dateString) {
       if (!dateString) return '';
-        const match = dateString.match(/(\d{4}-\d{2}-\d{2})/);
-        return match ? match[0] : '';  
+      const date = new Date(dateString);
+      return date.toISOString().split('T')[0];
       },
 
     openOrder(item) {
@@ -479,7 +486,11 @@ export default {
           // 假設 API 返回的格式是正確的，更新相應的訂單資料
           const index = this.orders.findIndex(order => order.id === orderId);
           if (index !== -1) {
-            this.orders[index] = response.data; // 更新訂單
+            const updatedOrder = {
+            ...response.data,
+            createdAt: this.formatDate(response.data.createdAt) // 格式化日期
+        };
+            this.orders[index] = updatedOrder; // 更新訂單
           }
         } else {
           console.error(`無法重新抓取訂單 ${orderId}:`, response.status);
