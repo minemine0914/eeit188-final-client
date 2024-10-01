@@ -268,6 +268,7 @@
                                                             :selected="isSelected"
                                                             :coupon="coupon"
                                                             :toggle="toggle"
+                                                            :show="true"
                                                         />
                                                     </div>
                                                 </v-item>
