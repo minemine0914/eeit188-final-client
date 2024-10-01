@@ -124,6 +124,7 @@ import { useRouter } from "vue-router";
 import { useUserViewStore } from "../stores/userViewStore";
 import { useUserStore } from "../stores/userStore";
 import { storeToRefs } from "pinia";
+import Swal from "sweetalert2";
 
 const menuItems = ref([
   { title: "管理房源", path: "/lo/property-management" },
@@ -166,11 +167,19 @@ function onResize() {
 
 // 登出
 function handleLogout() {
-  const confirmLogout = window.confirm("請確認是否要登出");
-
-  if (confirmLogout) {
-    logout();
-  }
+  Swal.fire({
+    title: "請確認是否要登出?",
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "確定",
+    cancelButtonText: "取消",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      userStore.logout();
+    }
+  });
 }
 </script>
 <style scoped></style>
