@@ -10,6 +10,7 @@
       v-for="coupon in coupon?.coupons"
       :key="coupon?.id"
       :coupon="coupon"
+      :show="false"
       class="mx-auto mb-5"
       id="coupon"
       width="400"
