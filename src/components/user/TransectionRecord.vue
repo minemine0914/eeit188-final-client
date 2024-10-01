@@ -77,7 +77,6 @@ const page = ref(0);
 const isFetching = ref(false);
 const hasMore = ref(true);
 const dialog = ref(false);
-const ticketQRCode = ref(null);
 
 onMounted(() => {
   fetchTickets();
@@ -166,7 +165,7 @@ async function loadNextPage() {
 
   page.value++; // Increment the page
 
-  await fetchRecords();
+  await fetchTickets();
 }
 
 // Date formatting function
