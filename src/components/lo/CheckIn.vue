@@ -55,17 +55,21 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, reactive } from "vue";
 import { QrcodeStream } from "vue-qrcode-reader";
 import api from "@/plugins/axios";
 import Swal from "sweetalert2";
+import { useUserStore } from "../../stores/userStore";
+
+const userStore = useUserStore();
+const { user, addChatRecord } = userStore;
 
 /*** detection handling ***/
 
 const result = ref("");
+let ticket = reactive(null);
 
 async function onDetect(detectedCodes) {
-  console.log(detectedCodes);
   result.value = JSON.stringify(detectedCodes.map((code) => code.rawValue));
   if (await checkQrCode()) {
     Swal.fire({
@@ -225,12 +229,14 @@ function onError(err) {
 
 async function checkQrCode() {
   try {
-    await api({
+    const response = await api({
       method: "get",
       url: `/ticket/${JSON.parse(result.value)[0]}`,
     });
 
-    usedTicket();
+    ticket = response.data;
+
+    await usedTicket();
 
     return true;
   } catch (error) {
@@ -247,6 +253,12 @@ async function usedTicket() {
       data: {
         used: true,
       },
+    });
+
+    await addChatRecord({
+      chat: `感謝您的入住，幫我評價一下吧！<br><a href="/house/${ticket.house.id}" target="_blank">點擊這裡評價</a>`,
+      senderId: ticket.house.userId,
+      receiverId: user.id,
     });
   } catch (error) {
     console.log(error);

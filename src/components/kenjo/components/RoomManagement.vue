@@ -39,14 +39,15 @@
           {{ getStatusText(item.show) }}
         </v-chip>
       </template>
+      
       <!-- <template v-slot:item.category="{ category }">    類型欄位 -->
       <!-- <v-chip 
       :color="getCategoryColor(item.category)"
       size="small"
       class="text-uppercase">
       {{ getCategoryText(item.category) }}
-    </v-chip> -->
-      <!-- </template> -->
+    </v-chip>
+      </template> -->
 
       <template v-slot:expanded-row="{ columns, item }">
         <tr>
@@ -206,40 +207,45 @@ export default {
       }
     },
 
+    
     // getCategoryColor(category) {
     //   switch (category) {
-    //     case "villa":
+    //     case "公寓":
     //       return 'green';
-    //     case "guesthouse":
+    //     case "度假別墅":
     //       return 'orange';
-    //     case "hotel":
+    //     case "包棟民宿":
     //       return 'blue';
-    //     case "inn":
+    //     case "旅店":
     //       return 'yellow';
-    //     case "apartment":
+    //     case "露營地":
     //       return 'gray';
-    //     case "campground":
+    //     case "酒店式公寓":
     //       return 'magenta';
     //     default:
     //         return 'red';
     //   }
     // },
+
+
     // getCategoryText(category) {
     //     switch (category) {
-    //       case "villa":
-    //         return '獨棟別墅';
-    //       case "guesthouse":
-    //         return '民宿';
-    //       case "hotel":
-    //         return '飯店';
-    //       case "inn":
-    //         return '旅館';
+    //       case "公寓":
+    //         return '公寓';
+    //       case "度假別墅":
+    //         return '度假別墅';
+    //       case "包棟民宿":
+    //         return '包棟民宿';
+    //       case "旅店":
+    //         return '旅店';
     //       case "apartment":
     //         return '公寓';
-    //       case "campground":
+    //       case "露營地":
     //         return '露營地';
+    //         case"酒店式公寓":
+    //         return'酒店式公寓'
     //       default:
-    //         return '確認中';
+    //         return '其他';
     //     }
     //   },
 
@@ -288,7 +294,7 @@ export default {
     },
     resetDialog() {
       this.selectedStatus = null;
-      this.selectedStatus = false;
+      this.dialog = false;
     },
   },
 };
