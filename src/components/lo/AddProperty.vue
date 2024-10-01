@@ -14,6 +14,7 @@
             "
             required
             outlined
+            persistent-hint
           ></v-text-field>
         </v-col>
 
@@ -29,6 +30,7 @@
             "
             required
             outlined
+            persistent-hint
           ></v-select>
         </v-col>
       </v-row>
@@ -164,6 +166,7 @@
             type="number"
             :error-messages="$v.property.bedroom.$error ? ['不可小於一間'] : []"
             outlined
+            required
           ></v-text-field>
         </v-col>
         <v-col cols="12" md="4">
@@ -175,6 +178,7 @@
               $v.property.bathroom.$error ? ['不可小於一間'] : []
             "
             outlined
+            required
           ></v-text-field>
         </v-col>
         <v-col cols="12" md="4">
@@ -186,6 +190,7 @@
               $v.property.restroom.$error ? ['不可小於一間'] : []
             "
             outlined
+            required
           ></v-text-field>
         </v-col>
         <v-col cols="12" md="2">
@@ -195,7 +200,9 @@
           <v-checkbox label="陽台" v-model="property.balcony"></v-checkbox>
         </v-col>
       </v-row>
-      <v-row> </v-row>
+
+      <v-divider></v-divider>
+      <!-- 人數設置 -->
       <v-row>
         <v-col cols="12" md="4">
           <v-text-field
@@ -204,6 +211,7 @@
             type="number"
             :error-messages="$v.property.adult.$error ? ['不可小於一位'] : []"
             outlined
+            required
           ></v-text-field>
         </v-col>
         <v-col cols="12" md="4">
@@ -215,6 +223,7 @@
           ></v-text-field>
         </v-col>
       </v-row>
+
       <v-divider></v-divider>
 
       <!-- 價格設置 -->
@@ -266,8 +275,9 @@
         </v-col>
       </v-row>
 
-      <!-- 額外設置 -->
       <v-divider></v-divider>
+
+      <!-- 額外設置 -->
       <v-row>
         <v-col cols="12" md="6">
           <v-checkbox label="允許寵物" v-model="property.pet"></v-checkbox>
@@ -279,7 +289,10 @@
       </v-row>
 
       <!-- 提交按鈕 -->
-      <v-btn type="submit" color="primary" block class="mt-4">提交</v-btn>
+      <v-btn :disabled="isSubmitting" type="submit" color="primary" block class="mt-4">
+        <span v-if="isSubmitting">提交中...</span>
+        <span v-else>提交</span>
+      </v-btn>
     </v-form>
   </v-container>
 </template>
@@ -287,7 +300,8 @@
 <script setup>
 import { ref, watch } from "vue";
 import useVuelidate from "@vuelidate/core";
-import { required, minValue } from "@vuelidate/validators";
+import { required, minValue, maxValue, numeric } from "@vuelidate/validators";
+import Swal from "sweetalert2";
 import { useHostManagementStore } from "@/stores/hostManagementStore";
 import { useUserStore } from "../../stores/userStore";
 import api from "@/plugins/axios";
@@ -308,7 +322,7 @@ const property = ref({
   address: "",
   latitudeX: null,
   longitudeY: null,
-  pricePerDay: 0,
+  pricePerDay: 100,
   pricePerWeek: 0,
   pricePerMonth: 0,
   livingDiningRoom: 0,
@@ -325,15 +339,7 @@ const property = ref({
 });
 
 // 定義下拉選單的選項
-const categories = [
-  "公寓",
-  "度假別墅",
-  "包棟民宿",
-  "旅店",
-  "露營地",
-  "酒店式公寓",
-  "其他",
-];
+const categories = ["公寓", "度假別墅", "包棟民宿", "旅店", "露營地", "酒店式公寓", "其他"];
 const countries = ["臺灣"];
 
 // 定義驗證規則
@@ -346,15 +352,15 @@ const rules = {
     city: { required },
     region: { required },
     address: { required },
-    pricePerDay: { required, minValue: minValue(1) },
-    pricePerWeek: { minValue: minValue(0) },
-    pricePerMonth: { minValue: minValue(0) },
-    livingDiningRoom: { minValue: minValue(0) },
-    bedroom: { minValue: minValue(1) },
-    bathroom: { minValue: minValue(1) },
-    restroom: { minValue: minValue(1) },
-    adult: { required, minValue: minValue(1) },
-    child: { minValue: minValue(0) },
+    pricePerDay: { required, numeric, minValue: minValue(1) },
+    pricePerWeek: { numeric, minValue: minValue(0) },
+    pricePerMonth: { numeric, minValue: minValue(0) },
+    livingDiningRoom: { numeric, minValue: minValue(0) },
+    bedroom: { required, numeric, minValue: minValue(1) },
+    bathroom: { required, numeric, minValue: minValue(1) },
+    restroom: { required, numeric, minValue: minValue(1) },
+    adult: { required, numeric, minValue: minValue(1), maxValue: maxValue(20) },
+    child: { numeric, minValue: minValue(0), maxValue: maxValue(10) },
     images: { required },
   },
 };
@@ -383,17 +389,25 @@ watch(
   }
 );
 
+// 提交狀態
+const isSubmitting = ref(false);
+
 // 表單提交處理
 const submitForm = async () => {
   $v.value.$touch(); // 啟動驗證
 
   if ($v.value.$invalid) {
-    alert("表單有誤，請檢查填寫內容");
+    Swal.fire({
+      icon: "error",
+      title: "表單有誤",
+      text: "請檢查填寫內容",
+    });
     return;
   }
 
-  try {
+  isSubmitting.value = true; // 開始提交，禁用按鈕
 
+  try {
     // 發送表單資料到後端
     await hostManagementStore.addProperty(property.value);
 
@@ -421,11 +435,22 @@ const submitForm = async () => {
       }
     }
 
-    alert("房源已成功提交！");
-    router.push("/lo/property-management/")
+    Swal.fire({
+      icon: "success",
+      title: "成功提交！",
+      text: "房源已成功提交。",
+    });
+
+    router.push("/lo");
   } catch (error) {
     console.error("提交失敗", error);
-    alert(error.message || "提交失敗，請稍後再試");
+    Swal.fire({
+      icon: "error",
+      title: "提交失敗",
+      text: error.message || "提交失敗，請稍後再試",
+    });
+  } finally {
+    isSubmitting.value = false; // 提交完成，啟用按鈕
   }
 };
 </script>

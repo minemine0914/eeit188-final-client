@@ -23,6 +23,7 @@
 import { ref, onMounted } from 'vue'
 import { useHostManagementStore } from '@/stores/hostManagementStore'
 import { useRoute } from 'vue-router'
+import Swal from 'sweetalert2' // 引入 SweetAlert2
 
 const store = useHostManagementStore()
 const route = useRoute()
@@ -49,12 +50,21 @@ const imageUrl = (imageId) => {
 const removeImage = async (imageId) => {
   try {
     await store.deleteImage(propertyId.value, imageId);
-    fetchPropertyImages(); // 更新圖片列表
+    await fetchPropertyImages(); // 更新圖片列表
+    Swal.fire({
+      icon: 'success',
+      title: '移除成功',
+      text: '圖片已成功移除。',
+    });
   } catch (error) {
     console.error('Failed to delete image:', error);
+    Swal.fire({
+      icon: 'error',
+      title: '移除失敗',
+      text: '移除圖片時發生錯誤，請稍後再試。',
+    });
   }
 };
-
 
 // 上傳圖片
 const uploadImages = async () => {
@@ -63,13 +73,29 @@ const uploadImages = async () => {
       for (const file of newImages.value) {
         await store.uploadPropertyImage(propertyId.value, file);
       }
-      fetchPropertyImages(); // 更新圖片列表
+      await fetchPropertyImages(); // 更新圖片列表
+      newImages.value = null; // 清空上傳圖片的欄位
+      Swal.fire({
+        icon: 'success',
+        title: '上傳成功',
+        text: '圖片已成功上傳。',
+      });
     } catch (error) {
       console.error('Failed to upload image:', error);
+      Swal.fire({
+        icon: 'error',
+        title: '上傳失敗',
+        text: '上傳圖片時發生錯誤，請稍後再試。',
+      });
     }
+  } else {
+    Swal.fire({
+      icon: 'info',
+      title: '未選擇圖片',
+      text: '請先選擇要上傳的圖片。',
+    });
   }
 };
-
 
 onMounted(() => {
   propertyId.value = route.params.propertyId;
