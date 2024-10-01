@@ -3,9 +3,9 @@
     <v-container class="mainBox">
         <!-- Loading Spinner -->
         <div v-if="store.isLoading"
-            style="position: fixed;left:80vw;top:30vh;transform: translate(-50%, -50%);z-index: 100;">
-            <v-progress-circular indeterminate color="primary" class="ma-5" :size="400"
-                :width="50"></v-progress-circular>
+            style="position: fixed;right:5vw;top:20vh;transform: translate(-50%, -50%);z-index: 100;">
+            <v-progress-circular indeterminate color="primary" class="ma-5" :size="100"
+                :width="18"></v-progress-circular>
         </div>
         <!-- main content -->
         <h1>歷史紀錄與報表</h1>
@@ -16,7 +16,7 @@
                     <Selector />
                 </template>
                 <template v-else>
-                    <p>您沒有房源，馬上新增房源成為房東吧！</p>
+                    <p>您沒有房源，馬上<router-link class="link" :to="{ name: 'addProperty' }">新增房源</router-link>成為房東吧！</p>
                 </template>
             </v-card-title>
 
@@ -72,7 +72,7 @@ onMounted(async () => {
 
         setTimeout(() => {
             store.isLoading = false;
-        }, 500);// setTimeout for test
+        }, 0);// setTimeout for test
     }
 });
 </script>
@@ -86,5 +86,10 @@ onMounted(async () => {
 .subBox {
     width: 70vw;
     background-color: rgba(211, 211, 211, 0.5)
+}
+
+.link {
+    color: brown;
+    text-decoration: none;
 }
 </style>

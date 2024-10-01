@@ -11,8 +11,9 @@ export const useCreateTransactionRecordStore = defineStore('createTransactionRec
     }),
     actions: {
         async findAllUserString() {
+
             try {
-                const response = await api.get(`/user/find-users`);
+                const response = await api.get(`/user/find-users?limit=1000`);
                 this.usersResult = response.data.users.map(user => user.id || 0);
             } catch (error) {
                 console.error('Error fetching users:', error);
@@ -21,7 +22,7 @@ export const useCreateTransactionRecordStore = defineStore('createTransactionRec
 
         async findAllHouse() {
             try {
-                const response = await api.get(`/house/all`);
+                const response = await api.get(`/house/all?limit=1000`);
                 this.housesResult = response.data.content.map(house => house.id || 0);
             } catch (error) {
                 console.error('Error fetching houses:', error);
@@ -33,14 +34,30 @@ export const useCreateTransactionRecordStore = defineStore('createTransactionRec
                 try {
                     const houseId = this.housesResult[Math.floor(Math.random() * this.housesResult.length)];
                     const userId = this.usersResult[Math.floor(Math.random() * this.usersResult.length)];
+                    let cashflow = Math.random() * 10000
+                    // console.log(new Date(Date.now() - Math.random() * 86400 * 1000 * 365 * 10))
+                    let date = new Date(Date.now() - Math.random() * 86400 * 1000 * 365 * 10)
+                    const pad = (num) => String(num).padStart(2, '0');
 
+                    const year = date.getUTCFullYear();
+                    const month = pad(date.getUTCMonth() + 1); // Months are zero-based
+                    const day = pad(date.getUTCDate());
+                    const hours = pad(date.getUTCHours());
+                    const minutes = pad(date.getUTCMinutes());
+                    const seconds = pad(date.getUTCSeconds());
+                    const milliseconds = String(date.getUTCMilliseconds()).padStart(3, '0');
+                    // 2024-09-24 17:54:07.2490000
+                    date = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}+00:00`;
+                    console.log(date)
                     await api.post(`/transcation_record/`, {
                         houseId,
                         userId,
-                        cashFlow: i * 10,
-                        deal: "haha",
-                        platformIncome: i,
+                        cashFlow: cashflow,
+                        deal: "確認付款中",
+                        platformIncome: cashflow * 0.05,
+                        "createdAt": date,
                     });
+                    console.log("created", houseId, userId)
                 } catch (error) {
                     console.error('Error inserting transaction record:', error);
                 }

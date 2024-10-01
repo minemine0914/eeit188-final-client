@@ -1,6 +1,6 @@
 const router = {
-    path: "/platform-report",
-    name: "Wu_platform",
+    path: "/wu",
+    name: "Wu",
     children: [
         // {
         //     path: "", // Default
