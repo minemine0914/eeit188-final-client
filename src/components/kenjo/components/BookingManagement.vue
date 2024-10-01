@@ -1,5 +1,5 @@
 <!--訂單管理系統-->
-  
+
 <!--/*預訂管理	
 	預訂列表:顯示所有的預訂記錄，包括當前、未來和歷史的預訂。
 	預訂詳情:查看和編輯單個預訂的詳細信息，包括客戶信息、預訂狀態、房間分配等。
@@ -16,7 +16,8 @@
     v-model:search="search"
     :headers="headers"
     :items="orders"
-    :sort-by="[{ key: 'createdAt', order: 'asc' }]">
+    :sort-by="[{ key: 'createdAt', order: 'asc' }]"
+  >
     <template v-slot:top>
       <v-toolbar flat>
         <v-toolbar-title>訂單管理</v-toolbar-title>
@@ -116,8 +117,15 @@
             <v-card-title class="text-h5">確定要刪除?</v-card-title>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="blue-darken-1" variant="text" @click="closeDelete">取消</v-btn>
-              <v-btn color="blue-darken-1" variant="text" @click="deleteOrderConfirm">刪除</v-btn>
+              <v-btn color="blue-darken-1" variant="text" @click="closeDelete"
+                >取消</v-btn
+              >
+              <v-btn
+                color="blue-darken-1"
+                variant="text"
+                @click="deleteOrderConfirm"
+                >刪除</v-btn
+              >
               <v-spacer></v-spacer>
             </v-card-actions>
           </v-card>
@@ -170,7 +178,12 @@
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="blue-darken-1" variant="text" @click="closeGuestInfo">關閉</v-btn>
+              <v-btn
+                color="blue-darken-1"
+                variant="text"
+                @click="closeGuestInfo"
+                >關閉</v-btn
+              >
               <v-spacer></v-spacer>
             </v-card-actions>
           </v-card>
@@ -212,12 +225,12 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios from "axios";
 
 export default {
   data() {
     return {
-      search: '',
+      search: "",
       dialog: false,
       dialogDelete: false,
       dialogHostInfo: false,
@@ -226,61 +239,61 @@ export default {
       selectedStatus: null,
       DDeal: false,
       headers: [
-        { title: '訂單編號', align: 'start', sortable: false, key: 'id' },
-        { title: '房屋名稱', key: 'house.name' },
-        { title: '房客資訊', key: 'user.name' },
-        { title: '房東資訊', key: 'house.userName' },
-        { title: '金額', key: 'cashFlow' },
+        { title: "訂單編號", align: "start", sortable: false, key: "id" },
+        { title: "房屋名稱", key: "house.name" },
+        { title: "房客資訊", key: "user.name" },
+        { title: "房東資訊", key: "house.userName" },
+        { title: "金額", key: "cashFlow" },
         // { title: '付款方式', key: '' },
-        { title: '下單時間', key: 'createdAt' },
-        { title: '訂單狀態', key: 'deal' },
-        { title: '編輯', key: 'actions', sortable: false },
+        { title: "下單時間", key: "createdAt" },
+        { title: "訂單狀態", key: "deal" },
+        { title: "編輯", key: "actions", sortable: false },
       ],
      
       orders: [],
       editedIndex: -1,
       editedOrder: {
-        id: '',
+        id: "",
         house: {
-          name: '',
-          userName: ''
+          name: "",
+          userName: "",
         },
         user: {
-          name: ''
+          name: "",
         },
-        cashFlow: '',
-        createdAt: '',
-        deal: ''
+        cashFlow: "",
+        createdAt: "",
+        deal: "",
       },
       defaultOrder: {
-        id: '',
+        id: "",
         house: {
-          name: '',
-          userName: ''
+          name: "",
+          userName: "",
         },
         user: {
-          name: ''
+          name: "",
         },
-        cashFlow: '',
-        createdAt: '',
-        deal: ''
+        cashFlow: "",
+        createdAt: "",
+        deal: "",
       },
       hostInfo: {
-        name: '',
-        phone: '',
-        email: ''
+        name: "",
+        phone: "",
+        email: "",
       },
       guestInfo: {
-        name: '',
-        phone: '',
-        email: ''
+        name: "",
+        phone: "",
+        email: "",
       },
       propertyInfo: {
-        name: '',
-        location: '',
-        type: '',
-        weekdayPrice: '',
-        weekendPrice: ''
+        name: "",
+        location: "",
+        type: "",
+        weekdayPrice: "",
+        weekendPrice: "",
       },
       formTitle: '檢視訂單',
       orderStatuses: {
@@ -319,24 +332,33 @@ export default {
   methods: {
     async fetchOrder() {
       try {
-        const response = await axios.get('http://localhost:8080/transcation_record/all', {
-          params: {
-            page: 0,
-            limit: 1000
+        const response = await axios.get(
+          "http://localhost:8080/transcation_record/all",
+          {
+            params: {
+              page: 0,
+              limit: 1000,
+              order: "createdAt",
+              dir: true,
+            },
           }
-        });
+        );
 
         if (response.status === 200) {
-          console.log('API response:', response.data);
-          
+          console.log("API response:", response.data);
+
           if (response.data && Array.isArray(response.data.content)) {
-            this.orders = response.data.content
-            ;
-            // 檢查每個訂單，並記錄格式不正確或缺少 house 資料的訂單
-            const invalidOrders = this.orders.filter(order => 
-              typeof order !== 'object' || order === null || 
-              !order.id || order.cashFlow === undefined || 
-              !order.house || !order.house.name ||order.user
+            this.orders = response.data.content;
+            // 檢查每個訂單，並記錄格式不正確或缺少資料的訂單
+            const invalidOrders = this.orders.filter(
+              (order) =>
+                typeof order !== "object" ||
+                order === null ||
+                !order.id ||
+                order.cashFlow === undefined ||
+                !order.house ||
+                !order.house.name ||
+                order.user
             );
               console.log(this.orders);
               console.log(this.orderStatuses)
@@ -344,15 +366,16 @@ export default {
             if (invalidOrders.length > 0) {
               //console.error('以下訂單格式不正確或缺少房屋資料，將進行重新抓取:', invalidOrders);
               // 確保重抓取時不會有 undefined 的 ID
-              const validIds = invalidOrders.map(order => order.id).filter(id => id);
-              await Promise.all(validIds.map(id => this.reFetchOrder(id)));
+              const validIds = invalidOrders
+                .map((order) => order.id)
+                .filter((id) => id);
+              await Promise.all(validIds.map((id) => this.reFetchOrder(id)));
             }
-            this.orders = response.data.content.map(oder => ({
-            ...oder,
-            createdAt: this.formatDate(oder.createdAt) 
-          }))
-          } 
-          else {
+            this.orders = response.data.content.map((oder) => ({
+              ...oder,
+              createdAt: this.formatDate(oder.createdAt),
+            }));
+          } else {
             //console.error('API response is not in expected format:', response.data);
             this.orders = [];
           }
@@ -384,10 +407,10 @@ export default {
       }
     },
     formatDate(dateString) {
-      if (!dateString) return '';
-        const match = dateString.match(/(\d{4}-\d{2}-\d{2})/);
-        return match ? match[0] : '';  
-      },
+      if (!dateString) return "";
+      const match = dateString.match(/(\d{4}-\d{2}-\d{2})/);
+      return match ? match[0] : "";
+    },
 
     openOrder(item) {
       this.editedIndex = this.orders.indexOf(item);
@@ -404,19 +427,21 @@ export default {
 
     async deleteOrderConfirm() {
       try {
-        await axios.delete(`http://localhost:8080/transcation_record/${this.editedOrder.id}`);
+        await axios.delete(
+          `http://localhost:8080/transcation_record/${this.editedOrder.id}`
+        );
         this.orders.splice(this.editedIndex, 1);
         this.closeDelete();
       } catch (error) {
-        console.error('Error deleting order:', error);
+        console.error("Error deleting order:", error);
       }
     },
 
     showHostInfo() {
       this.hostInfo = {
         name: this.editedOrder.house.userName,
-        phone: '我是電話',
-        email: '我是信箱'
+        phone: "我是電話",
+        email: "我是信箱",
       };
       this.dialogHostInfo = true;
     },
@@ -424,8 +449,8 @@ export default {
     showGuestInfo() {
       this.guestInfo = {
         name: this.editedOrder.user.name,
-        phone: '我是電話',
-        email: '我是信箱'
+        phone: "我是電話",
+        email: "我是信箱",
       };
       this.dialogGuestInfo = true;
     },
@@ -433,10 +458,10 @@ export default {
     showPropertyId() {
       this.propertyInfo = {
         name: this.editedOrder.house.name,
-        location: '我在..',
-        type: '我是xx',
-        weekdayPrice: '$$$$',
-        weekendPrice: '$$$$'
+        location: "我在..",
+        type: "我是xx",
+        weekdayPrice: "$$$$",
+        weekendPrice: "$$$$",
       };
       this.dialogPropertyId = true;
     },
@@ -480,36 +505,44 @@ export default {
     },
     async save() {
       if (!this.editedOrder.id || !this.editedOrder.house.name) {
-        alert('訂單編號和房屋ID為必填項');
+        alert("訂單編號和房屋ID為必填項");
         return;
       }
 
       try {
         if (this.editedIndex > -1) {
           // 更新現有訂單
-          await axios.put(`http://localhost:8080/transcation_record/${this.editedOrder.id}`, this.editedOrder);
+          await axios.put(
+            `http://localhost:8080/transcation_record/${this.editedOrder.id}`,
+            this.editedOrder
+          );
           this.orders[this.editedIndex] = this.editedOrder; // 更新本地列表
         } else {
           // 創建新訂單
-          const response = await axios.post('http://localhost:8080/transcation_record', this.editedOrder);
+          const response = await axios.post(
+            "http://localhost:8080/transcation_record",
+            this.editedOrder
+          );
           this.orders.push(response.data); // 添加新訂單到本地列表
         }
         this.close();
       } catch (error) {
-        console.error('Error saving order:', error);
+        console.error("Error saving order:", error);
         // 顯示錯誤消息
-        alert('儲存訂單時發生錯誤。');
+        alert("儲存訂單時發生錯誤。");
       }
     },
     
     async reFetchOrder(orderId) {
       try {
-        const response = await axios.get(`http://localhost:8080/transcation_record/${orderId}`);
-        
+        const response = await axios.get(
+          `http://localhost:8080/transcation_record/${orderId}`
+        );
+
         if (response.status === 200) {
           console.log(`重新抓取訂單 ${orderId}:`, response.data);
           // 假設 API 返回的格式是正確的，更新相應的訂單資料
-          const index = this.orders.findIndex(order => order.id === orderId);
+          const index = this.orders.findIndex((order) => order.id === orderId);
           if (index !== -1) {
             this.orders[index] = response.data; // 更新訂單
           }
@@ -526,7 +559,4 @@ export default {
 }
 </script>
 
-<style scoped>
-</style>
-
-
+<style scoped></style>

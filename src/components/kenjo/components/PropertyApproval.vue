@@ -133,9 +133,11 @@ export default {
       try {
         const response = await axios.get('http://localhost:8080/house/all', {
           params: {
-            pageNo: 0,
-            pageSize: 1000
-          }
+            page: 0,
+            limit: 1000,
+            order: "createdAt",
+            dir: true,
+          },
         });
 
         console.log('API response:', response); // 詳細輸出整個響應

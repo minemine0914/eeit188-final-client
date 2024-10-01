@@ -45,6 +45,8 @@
             </v-icon>
             <v-btn color="primary" @click="openUpdateDialog(item)">編輯</v-btn>
             <v-btn color="error" @click="deleteItem(item)">刪除</v-btn>
+
+            <v-btn color="info" @click="goToEditPropertyImage(item.id)">圖片管理</v-btn>
           </template>
         </v-data-table>
 
@@ -216,8 +218,6 @@ const router = useRouter();
 const hostManagementStore = useHostManagementStore();
 
 // 統計數據
-const availableProperties = ref(0);
-const bookedProperties = ref(0);
 const totalProperties = ref(0);
 
 // 房源列表
@@ -227,10 +227,16 @@ const house = reactive({
   houses: [],
 });
 
-const categories = ["公寓", "別墅", "小木屋"];
-const countries = ["台灣", "日本", "美國"];
-const cities = ["台北", "東京", "紐約"];
-const districts = ["大安區", "澀谷區", "曼哈頓區"];
+const categories = [
+  "公寓",
+  "度假別墅",
+  "包棟民宿",
+  "旅店",
+  "露營地",
+  "酒店式公寓",
+  "其他",
+];
+const countries = ["臺灣"];
 
 // 表格標題
 const headers = [
@@ -279,6 +285,10 @@ const deleteItem = async (item) => {
     }
   }
 };
+
+const goToEditPropertyImage = (propertyId) => {
+  router.push(`edit-property/${propertyId}`)
+}
 
 // 處理彈出視窗
 function openDialog(item) {

@@ -38,9 +38,12 @@
       >已經到底囉～</v-text
     >
   </div>
-  <v-dialog v-model="dialog" width="auto">
-    <v-card max-width="400" title="您的QR CODE">
-      <v-text>{{ ticket }}</v-text>
+  <v-dialog class="ticket-dialog" v-model="dialog" width="auto">
+    <v-card class="ticket-card" max-width="400">
+      <v-text class="ticket-text" id="ticket-text-title">您的QR CODE</v-text>
+      <v-text class="ticket-text">編號： {{ ticket }}</v-text>
+      <v-text class="ticket-text" id="ticket-text-check">{{ used }}</v-text>
+      <img :src="ticketQRCode" alt="QR Code" />
       <template v-slot:actions>
         <v-btn class="ms-auto" text="Ok" @click="dialog = false"></v-btn>
       </template>
@@ -49,10 +52,11 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from "vue";
+import { ref, reactive, onMounted, computed, nextTick } from "vue";
 import { useUserStore } from "../../stores/userStore";
 import notFoundImg from "@/assets/ImageNotAvailable02.webp";
 import api from "@/plugins/axios";
+import QRCode from "qrcode";
 
 const userStore = useUserStore();
 const { user } = userStore;
@@ -62,11 +66,12 @@ const record = reactive({
 });
 
 const ticket = ref(null);
-
+const used = ref(null);
 const page = ref(0);
 const isFetching = ref(false);
 const hasMore = ref(true);
 const dialog = ref(false);
+const ticketQRCode = ref(null);
 
 onMounted(() => {
   fetchRecords();
@@ -140,6 +145,20 @@ async function fetchTicket(r) {
     }
 
     ticket.value = response.data.id;
+
+    if (response.data.used) {
+      used.value = "已入住";
+    } else {
+      used.value = "未入住";
+    }
+
+    QRCode.toDataURL(response.data.id)
+      .then((url) => {
+        ticketQRCode.value = url;
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   } catch (error) {
     console.log(error);
   }
@@ -242,5 +261,23 @@ const formatDate = (dateString) => {
 
 .btn {
   margin-right: 30px;
+}
+
+.ticket-text {
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 10px;
+}
+
+.ticket-card {
+  padding: 10px;
+}
+
+#ticket-text-title {
+  font-size: 30px;
+}
+
+#ticket-text-check {
+  font-size: 30px;
 }
 </style>
