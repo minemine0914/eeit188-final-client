@@ -50,7 +50,6 @@ onMounted(() => {
 });
 
 function fetchOrders() {
-  console.log(localStorage.getItem("HouseDetail"));
   if (
     localStorage.getItem("HouseDetail") !== null &&
     JSON.parse(localStorage.getItem("HouseDetail")).bookingList.length > 0
