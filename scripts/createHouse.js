@@ -1,23 +1,27 @@
 import axios from "axios";
+import https from "https";
 import FormData from "form-data"; // 用來構建 form-data 請求
 import fs from "fs"; // 用於讀取 JSON 檔案
 
 // 創建 axios 實例並設置 baseURL
 const apiClient = axios.create({
-    baseURL: "http://localhost:8080", // 這是你的 BASE URL
+    baseURL: "https://192.168.36.64/api", // 這是你的 BASE URL
     timeout: 10000, // 可選：設置請求超時（10秒）
+    httpsAgent: new https.Agent({
+        rejectUnauthorized: false,
+    }),
 });
 
 // 定義抓取使用者清單的參數
 const userParams = {
-    pageNo: 2,
-    pageSize: 10,
+    pageNo: 0,
+    pageSize: 20,
 };
 
 const cityCountyDataPath = "src/assets/CityCountyData.json";
 
 // 定義抓取使用者清單的函數
-const fetchUserList = async (params) => {
+const fetchUserList = async params => {
     try {
         const response = await apiClient.get("/user/find-users", { params });
         return response.data.users;
@@ -33,10 +37,12 @@ const getCoordinates = async (city, region) => {
     const url = `https://nominatim.openstreetmap.org/search.php`;
 
     try {
-        const response = await axios.get(url, {params: {
-            q: query,
-            format: "jsonv2",
-        }});
+        const response = await axios.get(url, {
+            params: {
+                q: query,
+                format: "jsonv2",
+            },
+        });
         const results = response.data;
 
         if (results.length > 0) {
@@ -55,7 +61,7 @@ const getCoordinates = async (city, region) => {
 };
 
 // 隨機偏移經緯度的函數
-const getRandomOffset = (maxOffset) => {
+const getRandomOffset = maxOffset => {
     // 隨機生成範圍在 -maxOffset 到 maxOffset 之間的數字
     const offset = Math.random() * maxOffset * 2 - maxOffset; // 偏移範圍：-maxOffset 到 +maxOffset
     return offset;
@@ -80,19 +86,7 @@ const generateRandomName = () => {
         "豪華",
         "生態",
     ];
-    const nouns = [
-        "公寓",
-        "別墅",
-        "套房",
-        "小屋",
-        "度假村",
-        "花園",
-        "城堡",
-        "宅邸",
-        "小型住宅",
-        "家庭旅館",
-        "豪宅",
-    ];
+    const nouns = ["公寓", "別墅", "套房", "小屋", "度假村", "花園", "城堡", "宅邸", "小型住宅", "家庭旅館", "豪宅"];
     const locations = [
         "海邊",
         "山上",
@@ -133,7 +127,7 @@ const generateRandomPrice = (min, max) => {
 };
 
 // 隨機生成房間數量
-const generateRandomRoomCount = (max) => {
+const generateRandomRoomCount = max => {
     return Math.floor(Math.random() * max) + 1; // 隨機生成 1 到 max 的房間數量
 };
 
@@ -148,11 +142,11 @@ const readCityCountyData = () => {
 };
 
 // 隨機生成房源資料的函數
-const generateHouseData = async (userId) => {
+const generateHouseData = async userId => {
     const data = readCityCountyData();
     const randomCity = data[Math.floor(Math.random() * data.length)];
     const randomArea = randomCity.AreaList[Math.floor(Math.random() * randomCity.AreaList.length)];
-    
+
     // 獲取經緯度
     const coordinates = await getCoordinates(randomCity.CityName, randomArea.AreaName);
 
@@ -197,7 +191,7 @@ const generateHouseData = async (userId) => {
 };
 
 // 在 createHouse 函數中使用 generateHouseData
-const createHouse = async (user) => {
+const createHouse = async user => {
     const houseData = await generateHouseData(user.id); // 隨機生成房源數據
 
     try {
@@ -218,13 +212,13 @@ const generateRandomImageUrl = () => {
 };
 
 // 從 URL 下載圖片並返回 Buffer 的函數
-const downloadImage = async (imageUrl) => {
+const downloadImage = async imageUrl => {
     const imageResponse = await axios.get(imageUrl, { responseType: "arraybuffer" });
     return Buffer.from(imageResponse.data, "binary");
 };
 
 // 上傳多張圖片的函數
-const uploadMultipleImages = async (houseId) => {
+const uploadMultipleImages = async houseId => {
     try {
         const formData = new FormData();
         formData.append("houseId", houseId); // 添加 houseId
