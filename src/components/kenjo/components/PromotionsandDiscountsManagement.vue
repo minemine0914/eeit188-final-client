@@ -28,6 +28,9 @@
       <template v-slot:header.name>
         <div class="text-center">活動名稱</div>
       </template>
+      <template v-slot:item.discountRate="{ item }">
+        <div class="text-center">{{ (item.discountRate ).toFixed(0) }}%</div>
+      </template>
       <template v-slot:header.discountRate>
         <div class="text-center">折扣比率</div>
       </template>
@@ -107,7 +110,7 @@
         </v-card-title>
         <v-card-text>
           <v-text-field v-model="currentPromotion.name" label="活動名稱" ></v-text-field>
-          <v-text-field v-model="currentPromotion.discountRate" label="折扣百分比" type="number"></v-text-field>
+          <v-text-field v-model="currentPromotion.discountRate" label="折扣百分比(請輸入0~1之間的值)" ></v-text-field>
           <!-- <v-text-field v-model="currentPromotion.discountRate" label="使用者ID" ></v-text-field> -->
           <v-menu v-model="promotionStartDateMenu" :close-on-content-click="false">
             <template v-slot:activator="{ on, attrs }">
@@ -226,7 +229,11 @@ const discountCodeHeaders = [
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get('/user/find-users');
+      const response = await axios.get('/user/find-users', {
+          params: {
+            pageSize: 1000
+          }
+        });
       console.log('Fetched users:', response.data);
       users.value = response.data.users || []; 
       // 確保從 response.data 中提取正確的用戶數組
