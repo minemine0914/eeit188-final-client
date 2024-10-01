@@ -126,7 +126,7 @@ import { useUserStore } from "../stores/userStore";
 import { storeToRefs } from "pinia";
 
 const menuItems = ref([
-    { title: "管理房源", path: "/lo/property-management" },
+    { title: "管理房源", path: "/lo/" },
     { title: "新增房源", path: "/lo/add-property" },
     { title: "訂單管理", path: "/lo/order-records" },
     { title: "住客評價", path: "/lo/reviews" },
