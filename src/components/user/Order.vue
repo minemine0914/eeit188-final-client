@@ -57,10 +57,7 @@ function fetchOrders() {
   let orderList;
 
   for (let b in bookingList) {
-    if (bookingList[b].userId === user.id) {
-      orderList = bookingList[b].list;
-      break;
-    }
+    orderList = bookingList[b].list;
   }
 
   order.orders.push(...orderList);
