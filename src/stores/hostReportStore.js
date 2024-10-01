@@ -652,11 +652,14 @@ export const useHostReportStore = defineStore('hostReport', {
 
         // get click only
         async getselectedHouseClick() {
-
-            const response = await api.post(`house/mongo/count/click`, { houseId: this.selectedHouseId });
-            // console.log('HGGHHGHGHGH', response.data)
-            return response.data
-
+            try {
+                const response = await api.post(`house/mongo/count/click`, { houseId: this.selectedHouseId });
+                // console.log('HGGHHGHGHGH', response.data)
+                return response.data
+            } catch (error) {
+                console.log("catch error!", error)
+                return 0
+            }
         },
 
 

@@ -49,18 +49,38 @@ export const useCreateTransactionRecordStore = defineStore('createTransactionRec
                     // 2024-09-24 17:54:07.2490000
                     date = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}+00:00`;
                     console.log(date)
-                    await api.post(`/transcation_record/`, {
-                        houseId,
-                        userId,
-                        cashFlow: cashflow,
-                        deal: "確認付款中",
-                        platformIncome: cashflow * 0.05,
-                        "createdAt": date,
+
+                    let longTime = Date.now() - Math.random() * 86400 * 1000 * 365
+                    let startDate = new Date(longTime)
+                    let endDate = new Date(Math.min(longTime + Math.random() * 86400 * 1000 * 365, startDate))
+
+
+                    const response = await api.post("/payment/booking-house", {
+                        houseId: houseId,
+                        userId: userId,
+                        // couponId: couponId ? couponId : null,
+                        dateRange: [startDate, endDate],
                     });
-                    console.log("created", houseId, userId)
+                    return response.data;
                 } catch (error) {
-                    console.error('Error inserting transaction record:', error);
+                    // console.error("Error creating order:", error);
+                    throw error;
                 }
+
+
+
+                //     await api.post(`/transcation_record/`, {
+                //         houseId,
+                //         userId,
+                //         cashFlow: cashflow,
+                //         deal: "確認付款中",
+                //         platformIncome: cashflow * 0.05,
+                //         "createdAt": date,
+                //     });
+                //     console.log("created", houseId, userId)
+                // } catch (error) {
+                //     console.error('Error inserting transaction record:', error);
+                // }
             }
         },
     }
