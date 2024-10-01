@@ -215,7 +215,7 @@ import { reactive, ref, onMounted, watch } from "vue";
 import { useHostManagementStore } from "@/stores/hostManagementStore";
 import { useRouter } from "vue-router";
 import { useUserStore } from "../../stores/userStore";
-import axios from "axios";
+import axios from "@/plugins/axios.js";
 
 const userStore = useUserStore();
 const { user } = userStore;
@@ -367,12 +367,9 @@ function getReviewText(review) {
 
 const updateStatus = async () => {
   try {
-    const response = await axios.put(
-      `http://localhost:8080/house/${currentItem.value.id}`,
-      {
-        show: selectedStatus.value,
-      }
-    );
+    const response = await axios.put(`/house/${currentItem.value.id}`, {
+      show: selectedStatus.value,
+    });
 
     if (response.status === 200) {
       currentItem.value.show = selectedStatus.value;
