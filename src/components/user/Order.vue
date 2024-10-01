@@ -109,11 +109,9 @@ const removeOrder = (o) => {
           }
           return b;
         });
-        localStorage
-          .setItem("HouseDetail", JSON.stringify(houseDetail))
-          .then(() => {
-            fetchOrders();
-          });
+        localStorage.setItem("HouseDetail", JSON.stringify(houseDetail));
+
+        fetchOrders();
 
         Swal.fire({
           title: "您的訂單已移除！",
