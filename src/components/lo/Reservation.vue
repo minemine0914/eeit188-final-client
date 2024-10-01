@@ -1,6 +1,5 @@
-<template>
+<!-- <template>
     <v-container>
-        <!-- 排序和篩選 -->
         <v-row>
             <v-col cols="12" sm="4">
                 <v-select
@@ -14,7 +13,6 @@
             </v-col>
         </v-row>
 
-        <!-- 預約列表 -->
         <v-row>
             <v-col v-for="reservation in paginatedReservations" :key="reservation.id" cols="12">
                 <v-card>
@@ -27,12 +25,10 @@
             </v-col>
         </v-row>
 
-        <!-- 分頁導航 -->
         <v-row justify="center">
             <v-pagination v-model="page" :length="totalPages"></v-pagination>
         </v-row>
 
-        <!-- 查看詳情的彈出視窗 -->
         <v-dialog v-model="showDialog" max-width="600px">
             <v-card>
                 <v-card-text>
@@ -110,4 +106,4 @@ onMounted(async () => {
 </script>
 
 <style scoped></style>
--->
+--> 

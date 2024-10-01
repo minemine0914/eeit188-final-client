@@ -293,7 +293,7 @@ const deleteItem = async (item) => {
 };
 
 const goToEditPropertyImage = (propertyId) => {
-  router.push(`edit-property/${propertyId}`);
+  router.push(`lo/edit-property/${propertyId}`);
 };
 
 // 處理彈出視窗
