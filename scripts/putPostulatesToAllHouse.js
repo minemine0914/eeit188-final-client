@@ -39,7 +39,7 @@ async function getHouses() {
         const response = await apiClient.get("/house/all", {
             params: {
                 page: 0,
-                limit: 100,
+                limit: 1000,
                 dir: true,
                 order: "createdAt"
             }
@@ -79,22 +79,25 @@ async function updateHousePostulates(house, postulateIds) {
         const response = await apiClient.put(`/house/${house.id}`, {
             postulateIds: postulateIds
         });
-        console.log(`更新房源 ${house.id} 的設施清單成功`, response.data);
+        console.log(`(${proccessingHouseCount}/${totalHouseCount}) 更新房源 ${house.id} 的設施清單成功`);
     } catch (error) {
-        console.error(`更新房源 ${house.id} 的設施清單失敗:`, error.response ? error.response.data : error.message);
+        console.error(`(${proccessingHouseCount}/${totalHouseCount}) 更新房源 ${house.id} 的設施清單失敗:`, error.response ? error.response.data : error.message);
     }
 }
 
+let totalHouseCount = 0;
+let proccessingHouseCount = 0;
 async function assignPostulatesToHouses() {
     const houses = await getHouses();
     const postulates = await getPostulates();
-
+    totalHouseCount = houses.length;
     if (houses.length === 0 || postulates.length === 0) {
         console.error("無法繼續，因為房源或設施清單為空");
         return;
     }
 
-    for (const house of houses) {
+    for (const [i, house] of houses.entries()) {
+        proccessingHouseCount = i + 1;
         const randomPostulates = getRandomPostulates(postulates);
         await updateHousePostulates(house, randomPostulates);
     }
