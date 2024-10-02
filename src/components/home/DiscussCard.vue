@@ -2,7 +2,7 @@
     <v-card color="brown-lighten-5" flat border rounded="lg">
         <template v-slot:prepend>
             <v-avatar size="large" border>
-                <v-img :src="discuss.avatar"></v-img>
+                <v-img :src="discuss.avatar ? discuss.avatar : emptyUserAvavtarImage"></v-img>
             </v-avatar>
         </template>
         <template v-slot:title>
@@ -48,6 +48,7 @@
 </template>
 <script setup>
 import timeAgo from "@/plugins/time-ago";
+import emptyUserAvavtarImage from "@/assets/user.png";
 defineProps(["discuss"]);
 </script>
 <style scoped></style>
