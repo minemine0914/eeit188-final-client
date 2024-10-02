@@ -110,48 +110,57 @@ const routes = [
     component: () => import("@/views/HostView.vue"),
     children: [
       {
-        path: "",
-        name: "propertyManagement",
+        path: "property-management", // 管理房源
+        name: "HostPropertyManagement",
         component: () => import("@/components/lo/PropertyManagement.vue"),
+        meta: { title: "Nomad 管理房源", requiresAuth: true, role: "normal" },
       },
       {
-        path: "reviews",
-        name: "reviews",
-        component: () => import("@/components/lo/Reviews.vue"),
+        path: "add-property", // 新增房源
+        name: "HostAddProperty",
+        component: () => import("@/components/lo/AddProperty.vue"),
+        meta: { title: "Nomad 新增房源", requiresAuth: true, role: "normal" },
       },
       {
-        path: "reservation-management",
-        name: "reservationManagement",
-        component: () => import("@/components/lo/Reservation.vue"),
-      },
-      {
-        path: "order-records",
-        name: "orderRecords",
+        path: "order-records", // 訂單管理
+        name: "HostOrderRecords",
         component: () => import("@/components/lo/OrderRecord.vue"),
+        meta: { title: "Nomad 訂單管理", requiresAuth: true, role: "normal" },
+      },
+      {
+        path: "check-in", // 入住 Check In
+        name: "HostCheckIn",
+        component: () => import("@/components/lo/CheckIn.vue"),
+        meta: { title: "Nomad 入住 Check In", requiresAuth: true, role: "normal" },
+      },
+      {
+        path: "reports", // 分析報表
+        name: "HostReports",
+        component: () => import("@/components/wu/components/HostReport.vue"),
+        meta: { title: "Nomad 分析報表", requiresAuth: true, role: "normal" },
       },
       // {
-      //   path: "reports",
-      //   name: "reports",
-      //   component: () => import("@/components/lo/Reports.vue"),
+      //   path: "reviews", // 
+      //   name: "HostReviews",
+      //   component: () => import("@/components/lo/Reviews.vue"),
       // },
-      {
-        path: "add-property",
-        name: "addProperty",
-        component: () => import("@/components/lo/AddProperty.vue"),
-      },
-      {
-        path: "edit-property/:propertyId",
-        name: "editProperty",
-        component: () => import("@/components/lo/EditPropertyImage.vue"),
-        props: true,
-      },
-      {
-        path: "order-detail/:id",
-        name: "orderDetail",
-        component: () => import("@/components/lo/OrderDetail.vue"),
-        props: true,
-      },
-      // wuRouter_host,
+      // {
+      //   path: "reservation-management", // 
+      //   name: "HostReservationManagement",
+      //   component: () => import("@/components/lo/Reservation.vue"),
+      // },
+      // {
+      //   path: "edit-property/:propertyId", // 
+      //   name: "HostEditProperty",
+      //   component: () => import("@/components/lo/EditPropertyImage.vue"),
+      //   props: true,
+      // },
+      // {
+      //   path: "order-detail/:id", // 
+      //   name: "HostOrderDetail",
+      //   component: () => import("@/components/lo/OrderDetail.vue"),
+      //   props: true,
+      // },
     ],
   },
   {

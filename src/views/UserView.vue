@@ -72,9 +72,12 @@
             <v-list-item to="/order" prepend-icon="mdi-list-box" slim
               >查詢訂單</v-list-item
             >
-            <v-list-item to="/host" prepend-icon="mdi-home-group-plus" slim>{{
-              user.houseCount > 0 ? "管理房源" : "成為房東"
-            }}</v-list-item>
+            <v-list-item
+              to="/host/property-management"
+              prepend-icon="mdi-home-group-plus"
+              slim
+              >{{ user.houseCount > 0 ? "管理房源" : "成為房東" }}</v-list-item
+            >
             <v-list-item @click="submit" prepend-icon="mdi-message-outline" slim
               >聯絡我們</v-list-item
             >

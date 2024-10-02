@@ -5,12 +5,12 @@ const router = {
   children: [
     {
       path: "",
-      name: "propertyManagement",
+      name: "lo_propertyManagement",
       component: () => import("@/components/lo/PropertyManagement.vue"),
     },
     {
       path: "reviews",
-      name: "reviews",
+      name: "lo_reviews",
       component: () => import("@/components/lo/Reviews.vue"),
     },
     // {
@@ -20,34 +20,34 @@ const router = {
     // },
     {
       path: "order-records",
-      name: "orderRecords",
+      name: "lo_orderRecords",
       component: () => import("@/components/lo/OrderRecord.vue"),
     },
     {
       path: "check-in",
-      name: "CheckIn",
+      name: "lo_CheckIn",
       component: () => import("@/components/lo/CheckIn.vue"),
     },
     {
       path: "reports",
-      name: "reports",
+      name: "lo_reports",
       component: () => import("@/components/wu/components/HostReport.vue"),
       meta: { title: "歷史紀錄與報表[房東]", requiresAuth: false },
     },
     {
       path: "add-property",
-      name: "addProperty",
+      name: "lo_addProperty",
       component: () => import("@/components/lo/AddProperty.vue"),
     },
     {
       path: "edit-property/:propertyId",
-      name: "editProperty",
+      name: "lo_editProperty",
       component: () => import("@/components/lo/EditPropertyImage.vue"),
       props: true,
     },
     {
       path: "order-detail/:id",
-      name: "orderDetail",
+      name: "lo_orderDetail",
       component: () => import("@/components/lo/OrderDetail.vue"),
       props: true,
     },
