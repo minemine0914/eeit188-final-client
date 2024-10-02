@@ -5,7 +5,7 @@ import fs from "fs"; // 用於讀取 JSON 檔案
 
 // 創建 axios 實例並設置 baseURL
 const apiClient = axios.create({
-    baseURL: "https://192.168.36.64/api", // 這是你的 BASE URL
+    baseURL: "https://localhost/api", // 這是你的 BASE URL
     timeout: 10000, // 可選：設置請求超時（10秒）
     httpsAgent: new https.Agent({
         rejectUnauthorized: false,
@@ -15,8 +15,11 @@ const apiClient = axios.create({
 // 定義抓取使用者清單的參數
 const userParams = {
     pageNo: 0,
-    pageSize: 20,
+    pageSize: 50,
 };
+
+let foundUserCount = 0;
+let processingUserCount = 0;
 
 const cityCountyDataPath = "src/assets/CityCountyData.json";
 
@@ -48,14 +51,14 @@ const getCoordinates = async (city, region) => {
         if (results.length > 0) {
             // 獲取第一個結果的經緯度
             const { lat, lon } = results[0];
-            console.log(`Coordinates of ${query}: Latitude ${lat}, Longitude ${lon}`);
+            console.log(`(${processingUserCount}/${foundUserCount}) Coordinates of ${query}: Latitude ${lat}, Longitude ${lon}`);
             return { latitude: lat, longitude: lon };
         } else {
-            console.log(`No results found for ${query}`);
+            console.log(`(${processingUserCount}/${foundUserCount}) No results found for ${query}`);
             return null;
         }
     } catch (error) {
-        console.error(`Error fetching coordinates: ${error.message}`);
+        console.error(`(${processingUserCount}/${foundUserCount}) Error fetching coordinates: ${error.message}`);
         return null;
     }
 };
@@ -156,7 +159,7 @@ const generateHouseData = async userId => {
 
     // 檢查是否成功獲取經緯度
     if (!coordinates) {
-        console.error(`Unable to get coordinates for ${randomCity.CityName} ${randomArea.AreaName}`);
+        console.error(`(${processingUserCount}/${foundUserCount}) Unable to get coordinates for ${randomCity.CityName} ${randomArea.AreaName}`);
         return null; // 或者您可以選擇返回一個默認值
     }
 
@@ -198,11 +201,11 @@ const createHouse = async user => {
         const response = await apiClient.post("/house/", houseData);
         let house = response.data;
         console.log(
-            `House created for user: ${user.name}[${user.id}]:\n\t房源: ${house.name}[${house.id}],\n\t經緯度: [${house.latitudeX},${house.longitudeY}],\n\t地址: ${house.country}${house.city}${house.region}${house.address},\n\t初始價格: ${house.price}`
+            `(${processingUserCount}/${foundUserCount}) House created for user: ${user.name}[${user.id}]:\n\t房源: ${house.name}[${house.id}],\n\t經緯度: [${house.latitudeX},${house.longitudeY}],\n\t地址: ${house.country}${house.city}${house.region}${house.address},\n\t初始價格: ${house.price}`
         );
         return response.data;
     } catch (error) {
-        console.error(`Error creating house for user: ${user.name}[${user.id}]:`, error.message, houseData);
+        console.error(`(${processingUserCount}/${foundUserCount}) Error creating house for user: ${user.name}[${user.id}]:`, error.message, houseData);
     }
 };
 
@@ -237,18 +240,19 @@ const uploadMultipleImages = async houseId => {
             },
         });
 
-        console.log(`Images uploaded for house ${houseId}:`, response.data.locations);
+        console.log(`(${processingUserCount}/${foundUserCount}) Images uploaded for house ${houseId}:`, response.data.locations);
     } catch (error) {
-        console.error(`Error uploading images for house ${houseId}:`, error.message);
+        console.error(`(${processingUserCount}/${foundUserCount}) Error uploading images for house ${houseId}:`, error.message);
     }
 };
 
 // 主函數
 const main = async () => {
     const users = await fetchUserList(userParams); // 使用已獨立的搜尋參數
-
-    if (users.length > 0) {
+    foundUserCount = users.length;
+    if (foundUserCount > 0) {
         for (const user of users) {
+            processingUserCount++;
             let house = await createHouse(user);
             if (house) {
                 await uploadMultipleImages(house.id);
