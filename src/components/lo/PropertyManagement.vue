@@ -227,12 +227,11 @@ const hostManagementStore = useHostManagementStore();
 const totalProperties = ref(0);
 
 // 房源列表
-const properties = ref([]);
-
 const house = reactive({
   houses: [],
 });
 
+// 房源類別選項
 const categories = [
   "公寓",
   "度假別墅",
@@ -243,6 +242,23 @@ const categories = [
   "其他",
 ];
 const countries = ["臺灣"];
+
+import cityData from "@/assets/CityCountyData.json";
+
+const cities = ref(cityData.map((city) => city.CityName));
+const districts = ref([]);
+
+// 確保 currentItem 已經初始化為空物件
+const currentItem = ref({});
+
+// 監聽 city 的變化以更新對應的區域（行政區）
+watch(() => currentItem.value.city, (newCity) => {
+  const selectedCity = cityData.find((city) => city.CityName === newCity);
+  districts.value = selectedCity ? selectedCity.AreaList.map((area) => area.AreaName) : [];
+  if (!districts.value.includes(currentItem.value.region)) {
+    currentItem.value.region = "";
+  }
+});
 
 // 表格標題
 const headers = [
@@ -255,7 +271,6 @@ const headers = [
 const dialog = ref(false);
 const updateDialog = ref(false);
 const selectedStatus = ref(null);
-const currentItem = ref(null);
 
 // 更新統計數據
 const updateStatistics = (propertyList) => {
@@ -382,20 +397,21 @@ const updateStatus = async () => {
 
 const submitForm = async () => {
   try {
-    // 發送表單資料到後端
-    const response = await hostManagementStore.updateProperty(
-      currentItem.value.id,
-      currentItem.value
-    );
+    await hostManagementStore.updateProperty(currentItem.value.id, currentItem.value);
 
-    if (response.status === 200) {
-      updateDialog.value = false;
-    }
+    Swal.fire({
+      icon: "success",
+      title: "房源已修改成功！",
+    });
 
-    alert("房源已修改成功！");
+    updateDialog.value = false;
   } catch (error) {
     console.error("修改失敗", error);
-    alert("修改失敗，請稍後再試");
+    Swal.fire({
+      icon: "error",
+      title: "修改失敗",
+      text: "請稍後再試",
+    });
   }
 };
 
