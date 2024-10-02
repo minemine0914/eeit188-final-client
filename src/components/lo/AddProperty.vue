@@ -382,6 +382,23 @@ const rules = {
 
 const $v = useVuelidate(rules, { property });
 
+import cityData from "@/assets/CityCountyData.json";
+  
+  const cities = ref(cityData.map((city) => city.CityName));
+  
+  const districts = ref([]);
+  watch(
+    () => property.value.city,
+    (newCity) => {
+      const selectedCity = cityData.find((city) => city.CityName === newCity);
+      districts.value = selectedCity
+        ? selectedCity.AreaList.map((area) => area.AreaName)
+        : [];
+      if (!districts.value.includes(property.value.region)) {
+        property.value.region = "";
+      }
+    }
+  );
 // 狀態管理
 const hostManagementStore = useHostManagementStore();
 const isSubmitting = ref(false);
