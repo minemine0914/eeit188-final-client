@@ -44,15 +44,13 @@ import { useHostReportStore } from '@/stores/hostReportStore';
 import { useUserStore } from '@/stores/userStore';
 import Selector from '@/components/wu/components/Selector.vue';
 import DataTable from '@/components/wu/components/DataTable.vue';
-import SelectorUser from './SelectorUser.vue';
-import DataTab from './DataTab.vue';
+import DataTab from '@/components/wu/components/DataTab.vue';
 
 const store = useHostReportStore();
 const userStore = useUserStore();
 store.isLoading = ref(false)
 
 onMounted(async () => {
-
     if (userStore.user) {
         store.loginUser = userStore.user
     }
@@ -69,13 +67,13 @@ onMounted(async () => {
         await store.fetchTransactionRecords()
     } finally {
         // Ensure loading state is set to false after fetching
-
         setTimeout(() => {
             store.isLoading = false;
         }, 0);// setTimeout for test
     }
 });
 </script>
+
 <style scoped>
 .mainBox {
     width: 80vw;

@@ -69,7 +69,7 @@ export const useHostReportStore = defineStore('hostReport', {
             if (!state.allMonth) {
                 output = output.filter(item => item.month === state.selectedMonth);
             }
-            console.log("itemS", output)
+            console.log("record處理後的結果itemSource=", output)
             return output
         },
 
@@ -82,7 +82,7 @@ export const useHostReportStore = defineStore('hostReport', {
                 this.users = response.data;
                 // 0.1 修正user只有ID的問題，User ID->User物件
                 for (let i = 0; i < this.users.length; i++) { this.users[i] = await this.searchUserAgainByRecordId(this.users[i]); }
-                console.log('this.users', this.users)
+                console.log('找到的所有host = this.users', this.users)
             } catch (error) {
                 console.error('Error fetching users:', error);
             }
@@ -149,7 +149,7 @@ export const useHostReportStore = defineStore('hostReport', {
 
                 this.houses = combinedShare
 
-                console.log('tH1', this.houses)
+                console.log('host底下的house=this.houses', this.houses)
                 //如果查詢結果為空，產生一個NO HOUSE結果
                 if (Object.keys(this.houses).length === 0) {
                     this.houses = [{ id: '', name: 'NO HOUSES' }]
@@ -157,7 +157,7 @@ export const useHostReportStore = defineStore('hostReport', {
                 //指定第一筆資料做顯示
                 this.selectedHouseId = this.houses[0].id
 
-                console.log('tH', this.houses)
+                console.log('沒有house的情況，處理後的this.houses = ', this.houses)
             } catch (error) {
                 console.error('Error fetching houses:', error);
             }
@@ -194,21 +194,21 @@ export const useHostReportStore = defineStore('hostReport', {
                 if (!year && !month && !quarter) {
                     const first = await api.post(`/transcation_record/search`, body);
                     let startYear = new Date(first.data.content[0].createdAt).getFullYear()
-                    console.log('fetch 1st', startYear)
+                    console.log('fetch 1st year', startYear)
 
                     body.dir = true //desc
                     const last = await api.post(`/transcation_record/search`, body);
                     let endYear = new Date(last.data.content[0].createdAt).getFullYear()
-                    console.log('fetch last', endYear)
+                    console.log('fetch last year', endYear)
 
                     this.years = []
                     for (let i = Number(startYear); i <= Number(endYear); i++) {
                         this.years.push(i)
-                        console.log(startYear, endYear, i)
+                        // console.log(startYear, endYear, i)
                     }
-                    console.log(this.years.filter(year => typeof year === 'number'))
+                    // console.log(this.years.filter(year => typeof year === 'number'))
                     this.selectedYear = this.years[this.years.length - 1]
-                    console.log(this.years)
+                    // console.log(this.years)
 
                 }
             } catch (error) {
@@ -229,12 +229,12 @@ export const useHostReportStore = defineStore('hostReport', {
 
             try {
                 //default
-                console.log('year', year)
+                console.log('year = ', year)
                 let minCreatedAt = year ? new Date(year, 0, 1) : new Date(0)
                 let maxCreatedAt = year ? new Date(parseInt(year) + 1, 0, 1) : new Date()
                 const houseId = this.selectedHouseId
                 //log**********
-                console.log('minCA:', minCreatedAt)
+                console.log('minCreatedAt = ', minCreatedAt)
                 //log***************
                 let body = {
                     houseId,
@@ -269,7 +269,7 @@ export const useHostReportStore = defineStore('hostReport', {
 
                 // 4.4 查詢評分
                 transformedRecords = await this.getScore(transformedRecords)
-                console.log('transformedRecords', transformedRecords)
+                console.log('transformedRecords with score', transformedRecords)
 
                 this.records = transformedRecords;
 
@@ -297,7 +297,7 @@ export const useHostReportStore = defineStore('hostReport', {
                 }
 
             } catch (error) {
-                console.error('Error fetching users:', error);
+                console.error('Error fetching transcation_record:', error);
             }
         },
 
@@ -363,9 +363,6 @@ export const useHostReportStore = defineStore('hostReport', {
                 // delete output.createdAt;
                 contentArray[i] = output
             }
-            //log**************************
-            // console.log(contentArray)
-            //log**************************
             return contentArray
         },
 
@@ -374,14 +371,12 @@ export const useHostReportStore = defineStore('hostReport', {
             for (let i = 0; i < contentArray.length; i++) {
                 let score = 0
                 try {
-                    // console.log('getScore(userId,HoouseId)', contentArray[i].user.id, this.selectedHouseId)
                     const response = await api.get(`/house/mongo/find/${contentArray[i].user.id}/${this.selectedHouseId}`);
-                    // console.log('score', response)
                     if (response.data?.score) {
                         score = response.data.score
                     }
                 } catch (error) {
-                    console.error('Error fetching users:', error);
+                    console.error('Error fetching score:', error);
                 }
                 contentArray[i].houseScore = score
             }
@@ -411,7 +406,6 @@ export const useHostReportStore = defineStore('hostReport', {
                 // Add the cash flow to the appropriate day (date - 1 because array is zero-indexed)
                 result[year][month][date - 1] += cashFlow;
             });
-            // console.log('YMD', this.recordsPrapared);
             return result
         },
 
@@ -434,7 +428,6 @@ export const useHostReportStore = defineStore('hostReport', {
                 // Add the cash flow to the appropriate month (1-based index, so subtract 1)
                 result[year][month - 1] += cashFlow;
             });
-            // console.log('YM', this.recordsPrapared);
             return result
         },
 
@@ -466,7 +459,6 @@ export const useHostReportStore = defineStore('hostReport', {
                 // Add the cash flow to the appropriate quarter
                 result[year][quarter] += cashFlow;
             });
-            // console.log('YQ', this.recordsPrapared);
             return result
         },
 
@@ -497,12 +489,10 @@ export const useHostReportStore = defineStore('hostReport', {
             }
 
             // Convert the yearly cash flow object to an array of values
-            console.log("RES", result, start, end)
+            // console.log("RES", result, start, end)
             // const output = Object.values(result);
-            console.log("OTUPET", output)
-            // console.log('Y', this.recordsPrapared);
+            // console.log("output", output)
             return output
-
         },
 
         // Function to sum monthly data across all years
@@ -545,7 +535,6 @@ export const useHostReportStore = defineStore('hostReport', {
                 // Add the cash flow to the appropriate day (date - 1 because array is zero-indexed)
                 result[year][month][date - 1] += platformIncome;
             });
-            // console.log('YMD', this.recordsPrapared);
             return result
         },
 
@@ -568,7 +557,6 @@ export const useHostReportStore = defineStore('hostReport', {
                 // Add the cash flow to the appropriate month (1-based index, so subtract 1)
                 result[year][month - 1] += platformIncome;
             });
-            // console.log('YM', this.recordsPrapared);
             return result
         },
 
@@ -600,7 +588,6 @@ export const useHostReportStore = defineStore('hostReport', {
                 // Add the cash flow to the appropriate quarter
                 result[year][quarter] += platformIncome;
             });
-            // console.log('YQ', this.recordsPrapared);
             return result
         },
 
@@ -625,7 +612,6 @@ export const useHostReportStore = defineStore('hostReport', {
             // Convert the yearly cash flow object to an array of values
             const output = Object.values(result);
 
-            // console.log('Y', this.recordsPrapared);
             return output
 
         },
@@ -661,174 +647,8 @@ export const useHostReportStore = defineStore('hostReport', {
             }
         },
 
-
-
-
-
-        // useTestYMDC(callWhich) {
-        //     let testArr = [
-        //         {
-        //             "year": 2024,
-        //             "month": 3,
-        //             'date': 2,
-        //             "cashFlow": 100
-        //         },
-        //         {
-        //             "year": 2024,
-        //             "month": 3,
-        //             'date': 12,
-        //             "cashFlow": 100
-        //         },
-        //         {
-        //             "year": 2024,
-        //             "month": 9,
-        //             'date': 2,
-        //             "cashFlow": 10
-        //         },
-        //         {
-        //             "year": 2024,
-        //             "month": 9,
-        //             'date': 22,
-        //             "cashFlow": 10
-        //         },
-        //         {
-        //             "year": 2024,
-        //             "month": 9,
-        //             'date': 13,
-        //             "cashFlow": 1
-        //         },
-        //         {
-        //             "year": 2024,
-        //             "month": 9,
-        //             'date': 5,
-        //             "cashFlow": 100
-        //         },
-        //         {
-        //             "year": 2024,
-        //             "month": 9,
-        //             'date': 8,
-        //             "cashFlow": 100
-        //         },
-        //         {
-        //             "year": 2024,
-        //             "month": 9,
-        //             'date': 27,
-        //             "cashFlow": 1000
-        //         },
-        //         {
-        //             "year": 2024,
-        //             "month": 9,
-        //             'date': 10,
-        //             "cashFlow": 1
-        //         },
-        //         {
-        //             "year": 2024,
-        //             "month": 9,
-        //             'date': 26,
-        //             "cashFlow": 1000
-        //         },
-        //         {
-        //             "year": 2024,
-        //             "month": 9,
-        //             'date': 2,
-        //             "cashFlow": 100
-        //         },
-        //         {
-        //             "year": 2024,
-        //             "month": 9,
-        //             'date': 4,
-        //             "cashFlow": 10
-        //         },
-        //         {
-        //             "year": 2024,
-        //             "month": 9,
-        //             'date': 4,
-        //             "cashFlow": 100
-        //         },
-        //         {
-        //             "year": 2024,
-        //             "month": 9,
-        //             'date': 6,
-        //             "cashFlow": 1000
-        //         },
-        //         {
-        //             "year": 2024,
-        //             "month": 9,
-        //             'date': 29,
-        //             "cashFlow": 1000
-        //         },
-        //         {
-        //             "year": 2024,
-        //             "month": 9,
-        //             'date': 2,
-        //             "cashFlow": 100
-        //         },
-        //         {
-        //             "year": 2024,
-        //             "month": 9,
-        //             'date': 2,
-        //             "cashFlow": 1000
-        //         },
-        //         {
-        //             "year": 2024,
-        //             "month": 9,
-        //             'date': 2,
-        //             "cashFlow": 10
-        //         },
-        //         {
-        //             "year": 2024,
-        //             "month": 4,
-        //             'date': 2,
-        //             "cashFlow": 100
-        //         },
-        //         {
-        //             "year": 2023,
-        //             "month": 6,
-        //             'date': 2,
-        //             "cashFlow": 100
-        //         },
-        //         {
-        //             "year": 2023,
-        //             "month": 9,
-        //             'date': 2,
-        //             "cashFlow": 100
-        //         },
-        //         {
-        //             "year": 2024,
-        //             "month": 8,
-        //             'date': 2,
-        //             "cashFlow": 10
-        //         },
-        //         {
-        //             "year": 2023,
-        //             "month": 5,
-        //             'date': 2,
-        //             "cashFlow": 1
-        //         },
-        //         {
-        //             "year": 2023,
-        //             "month": 6,
-        //             'date': 2,
-        //             "cashFlow": 10
-        //         },
-        //         {
-        //             "year": 2024,
-        //             "month": 8,
-        //             'date': 2,
-        //             "cashFlow": 1
-        //         }
-        //     ]
-        //     if (callWhich === 'YMD') {
-        //         return this.turnToYMD(testArr)
-        //     } else if (callWhich === 'YM') {
-        //         return this.turnToYM(testArr)
-        //     } else if (callWhich === 'YQ') {
-        //         return this.turnToYQ(testArr)
-        //     } else if (callWhich === 'Y') {
-        //         return this.turnToY(testArr)
-        //     }
-
-        // },
-
+        formatDate(date) {
+            return `${new Date(date).getFullYear()}年${String(new Date(date).getMonth() + 1).padStart(2, '0')}月${String(new Date(date).getDate()).padStart(2, '0')}日 ${String(new Date(date).getHours()).padStart(2, '0')}:${String(new Date(date).getMinutes()).padStart(2, '0')}:${String(new Date(date).getSeconds()).padStart(2, '0')}`
+        },
     },
 });

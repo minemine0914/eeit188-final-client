@@ -71,22 +71,15 @@
             </template>
 
             <template v-slot:item.createdAt="{ item }">
-                {{ new Date(item.createdAt).getFullYear() }}年{{ String(new Date(item.createdAt).getMonth() +
-                    1).padStart(2,
-                        '0') }}月{{ String(new Date(item.createdAt).getDate()).padStart(2, '0') }}日 {{ String(new
-                    Date(item.createdAt).getHours()).padStart(2, '0') }}:{{ String(new
-                    Date(item.createdAt).getMinutes()).padStart(2, '0') }}:{{ String(new
-                    Date(item.createdAt).getSeconds()).padStart(2, '0') }}
+                <template v-if="item.createdAt">
+                    {{ store.formatDate(item.createdAt) }}
+                </template>
+                <template v-else>--</template>
             </template>
 
             <template v-slot:item.updatedAt="{ item }">
                 <template v-if="item.updatedAt">
-                    {{ new Date(item.updatedAt).getFullYear() }}年{{ String(new Date(item.updatedAt).getMonth() +
-                        1).padStart(2, '0') }}月{{ String(new Date(item.updatedAt).getDate()).padStart(2, '0') }}日 {{
-                        String(new
-                            Date(item.updatedAt).getHours()).padStart(2, '0') }}:{{ String(new
-                        Date(item.updatedAt).getMinutes()).padStart(2, '0') }}:{{ String(new
-                        Date(item.updatedAt).getSeconds()).padStart(2, '0') }}
+                    {{ store.formatDate(item.updatedAt) }}
                 </template>
                 <template v-else>--</template>
             </template>
@@ -122,17 +115,14 @@
 </template>
 
 <script setup>
-import { watch, ref, computed } from 'vue';
+import { ref, computed } from 'vue';
 import { useHostReportStore } from '@/stores/hostReportStore';
-import { useUserStore } from '../../../stores/userStore';
-
-
+import { useUserStore } from '@/stores/userStore';
 
 const store = useHostReportStore()
 const userStore = useUserStore()
 store.isLoading = ref(false)
 const search = ref('');
-
 
 let headers = []
 // 平台和房東共用此表格，先判定登入者權限，再決定欄位順序

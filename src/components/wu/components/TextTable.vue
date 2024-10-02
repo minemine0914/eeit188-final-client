@@ -94,25 +94,6 @@
                 ${{ item.cashFlow }}
             </template>
 
-            <!-- <template v-slot:item.pics="{ item }">
-                <div style="display:grid ;grid-template-columns: 1fr 1fr;">
-                    <v-card v-if="Math.floor(Math.random() * 10) % 2" class="my-2" elevation="2" rounded>
-                        <v-img :src="item.pics.doge.src" height="64" :title="item.pics.doge.title" cover />
-                    </v-card>
-                    <v-card v-if="Math.floor(Math.random() * 10) % 2" class="my-2" elevation="2" rounded>
-                        <v-img :src="item.pics.cat.src" height="64" :title="item.pics.cat.title" cover />
-                    </v-card>
-                    <v-card v-if="Math.floor(Math.random() * 10) % 2" class="my-2" elevation="2" rounded>
-                        <v-img :src="item.pics.smoker.src" height="64" :title="item.pics.smoker.title" cover />
-                    </v-card>
-                    <v-card v-if="Math.floor(Math.random() * 10) % 2" class="my-2" elevation="2" rounded>
-                        <v-img :src="item.pics.toys.src" height="64" :title="item.pics.toys.title" cover />
-                    </v-card>
-                    <v-card v-if="Math.floor(Math.random() * 10) % 2" class="my-2" elevation="2" rounded>
-                        <v-img :src="item.pics.good.src" height="64" :title="item.pics.good.title" cover />
-                    </v-card>
-                </div>
-            </template> -->
         </v-data-table>
     </v-card>
 </template>
@@ -147,7 +128,6 @@ if (store.loginUser.role === 'normal') {
         { title: '性別', value: 'bookerGender', sortable: true },
         { title: '金額', value: 'cashFlow', sortable: true, align: "end" },
         { title: '評分', value: 'score', sortable: true },
-        // { title: '圖片', value: 'pics', sortable: false, width: '200px' }, // Disable sorting for pics
         // { title: '', value: '', sortable: false, width: '100px' }, // 空白欄 調整排版用
     ];
 } else if (store.loginUser.role === 'admin') {
@@ -159,7 +139,6 @@ if (store.loginUser.role === 'normal') {
         { title: '平台收入', value: 'platformIncome', sortable: true, width: '250px', align: "end" },
         { title: '交易金額', value: 'cashFlow', sortable: true, width: '100px', align: "end" },
         { title: '評分', value: 'score', sortable: true, width: '200px' },
-        // { title: '圖片', value: 'pics', sortable: false, width: '200px' }, // Disable sorting for pics
         // { title: '', value: 'postulate', sortable: false, width: '100px' }, // 空白欄 調整排版用
     ];
 }
@@ -169,7 +148,7 @@ const itemsPerPageOptions = [3, 5, 10, 25, 50, 100, -1] // Options for per-page 
 const currentUser = computed(() => {
     // console.log('Fetching current user...');
 
-    console.log("GGGGGG", store.selectedUserId)
+    console.log("選擇的user ID", store.selectedUserId)
     const user = store.getUserBySelectedUserId(store.selectedUserId);
 
     console.log('Current user:', user);

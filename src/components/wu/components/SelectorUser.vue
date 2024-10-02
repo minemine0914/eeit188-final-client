@@ -16,7 +16,8 @@
             item-value="id" select-strategy="single" show-select @change="fetchHouses(store.selectedUserId[0])">
 
             <template v-slot:item.name="{ item }">
-                {{ item.name }}
+                <v-img :src="item.avatarBase64 ? item.avatarBase64 : emptyUserAvavtarImage" width="1rem"
+                    class="avatar" />{{ item.name }}
                 <v-icon icon="mdi-crown" color="orange" v-if="item.houseCount == maxHouseCount" />
             </template>
 
@@ -35,22 +36,15 @@
             </template>
 
             <template v-slot:item.createdAt="{ item }">
-                {{ new Date(item.createdAt).getFullYear() }}年{{ String(new Date(item.createdAt).getMonth() +
-                    1).padStart(2,
-                        '0') }}月{{ String(new Date(item.createdAt).getDate()).padStart(2, '0') }}日 {{ String(new
-                    Date(item.createdAt).getHours()).padStart(2, '0') }}:{{ String(new
-                    Date(item.createdAt).getMinutes()).padStart(2, '0') }}:{{ String(new
-                    Date(item.createdAt).getSeconds()).padStart(2, '0') }}
+                <template v-if="item.createdAt">
+                    {{ store.formatDate(item.createdAt) }}
+                </template>
+                <template v-else>--</template>
             </template>
 
             <template v-slot:item.updatedAt="{ item }">
                 <template v-if="item.updatedAt">
-                    {{ new Date(item.updatedAt).getFullYear() }}年{{ String(new Date(item.updatedAt).getMonth() +
-                        1).padStart(2, '0') }}月{{ String(new Date(item.updatedAt).getDate()).padStart(2, '0') }}日 {{
-                        String(new
-                            Date(item.updatedAt).getHours()).padStart(2, '0') }}:{{ String(new
-                        Date(item.updatedAt).getMinutes()).padStart(2, '0') }}:{{ String(new
-                        Date(item.updatedAt).getSeconds()).padStart(2, '0') }}
+                    {{ store.formatDate(item.updatedAt) }}
                 </template>
                 <template v-else>--</template>
             </template>
@@ -69,8 +63,9 @@
 </template>
 
 <script setup>
-import { watch, ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useHostReportStore } from '@/stores/hostReportStore';
+import emptyUserAvavtarImage from "@/assets/user.png";
 
 const store = useHostReportStore()
 const search = ref('');
@@ -117,30 +112,6 @@ const items = computed(() => {
     })
 });
 
-const getStatusColor = (review) => {
-    switch (review) {
-        case null: return 'orange'; // 待審核
-        case true: return 'green'; // 審核通過
-        case false: return 'red'; // 審核失敗
-        default: return 'grey'; // 未知狀態
-    }
-}
-
-const getStatusText = (review) => {
-    switch (review) {
-        case null:
-            return '待審核';
-        case true:
-            return '審核通過';
-        case false:
-            return '審核失敗';
-        default:
-            return '確認中';
-    }
-}
-
-
-
 const fetchHouses = async (userId) => {
     await store.fetchHouses(userId);
     store.fetchTransactionRecordsStartingValue()
@@ -152,10 +123,6 @@ onMounted(async () => {
     await store.findAllHost();
     store.selectedUserId = store.users[0].id
     fetchHouses(store.selectedUserId)
-    //log************
-    // console.log('store.selectedUser', store.selectedUser)
-    // console.log('store.users', store.users)
-    //log************
 });
 </script>
 
@@ -163,5 +130,10 @@ onMounted(async () => {
 select {
     border: 1px solid black;
     background-color: #aff;
+}
+
+.avatar {
+    display: inline-block;
+    margin-right: 0.5rem;
 }
 </style>
