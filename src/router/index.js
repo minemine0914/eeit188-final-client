@@ -1,4 +1,4 @@
-import { createWebHistory, createRouter, useRouter } from "vue-router";
+import { createWebHistory, createRouter } from "vue-router";
 
 // Import your router
 import minemineRouter from "./minemine";
@@ -108,6 +108,7 @@ const routes = [
     path: "/host",
     name: "Host",
     component: () => import("@/views/HostView.vue"),
+    meta: { title: "Nomad 管理房源", requiresAuth: true, role: "normal" },
     children: [
       {
         path: "property-management", // 管理房源
