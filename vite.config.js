@@ -3,6 +3,7 @@ import vue from "@vitejs/plugin-vue";
 import vuetify from "vite-plugin-vuetify";
 import path from "path";
 import mkcert from "vite-plugin-mkcert";
+import svgLoader from 'vite-svg-loader'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -17,6 +18,7 @@ export default defineConfig({
             },
         }),
         mkcert(),
+        svgLoader(),
     ],
     resolve: {
         alias: {
