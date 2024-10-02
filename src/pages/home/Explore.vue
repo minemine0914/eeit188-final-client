@@ -5,9 +5,11 @@
             <!-- Explore Banner -->
             <v-parallax :src="primaryBannerImg" scale="0.6" height="360px" width="100%" class="posiiton-relative">
                 <div class="d-flex flex-column fill-height justify-center align-center text-white">
-                    <NomadSvg height="230px" class="position-absolute opacity-40" style="top: 50px;" />
-                    <div class="text-h3 font-weight-black mb-4 opacity-80" style="font-family: 'Tenor Sans'">NOMAD</div>
-                    <div class="subheading font-weight-bold opacity-90">住宿 旅遊 重新定義居住自由</div>
+                    <NomadSvg height="230px" class="position-absolute opacity-40" style="top: 35px;" />
+                    <div class="position-absolute" style="top: 125px;">
+                        <div class="text-h3 font-weight-black mb-3 opacity-80" style="font-family: 'Tenor Sans'">NOMAD</div>
+                        <div class="subheading font-weight-regular opacity-90">住宿 旅遊 重新定義居住自由</div>
+                    </div>
                 </div>
             </v-parallax>
             <!-- SearchHouseBar -->
