@@ -113,27 +113,31 @@ const routes = [
         path: "property-management", // 管理房源
         name: "HostPropertyManagement",
         component: () => import("@/components/lo/PropertyManagement.vue"),
+        meta: { title: "Nomad 管理房源", requiresAuth: true, role: "normal" },
       },
       {
         path: "add-property", // 新增房源
         name: "HostAddProperty",
         component: () => import("@/components/lo/AddProperty.vue"),
+        meta: { title: "Nomad 新增房源", requiresAuth: true, role: "normal" },
       },
       {
         path: "order-records", // 訂單管理
         name: "HostOrderRecords",
         component: () => import("@/components/lo/OrderRecord.vue"),
+        meta: { title: "Nomad 訂單管理", requiresAuth: true, role: "normal" },
       },
       {
         path: "check-in", // 入住 Check In
         name: "HostCheckIn",
         component: () => import("@/components/lo/CheckIn.vue"),
+        meta: { title: "Nomad 入住 Check In", requiresAuth: true, role: "normal" },
       },
       {
         path: "reports", // 分析報表
         name: "HostReports",
         component: () => import("@/components/wu/components/HostReport.vue"),
-        meta: { title: "歷史紀錄與報表[房東]", requiresAuth: false },
+        meta: { title: "Nomad 分析報表", requiresAuth: true, role: "normal" },
       },
       // {
       //   path: "reviews", // 
