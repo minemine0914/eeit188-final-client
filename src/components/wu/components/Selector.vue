@@ -95,11 +95,6 @@
                 <v-rating :model-value="item.averageScore" color="orange-darken-2" density="compact" size="small"
                     readonly></v-rating>
             </template>
-
-            <template v-slot:item.price="{ item }">
-                ${{ item.price }}
-            </template>
-
         </v-data-table>
     </v-card>
     <!-- 
@@ -139,7 +134,7 @@ if (userStore.user.role === 'normal') {
         { title: '平均評分', value: 'averageScore', sortable: true, align: "end" },
         { title: '', value: 'show', sortable: true, align: "center" },
         { title: '', value: 'review', sortable: true, align: "center" },
-        { title: '每日價格', value: 'price', sortable: true, align: "end" },
+        { title: '每日價格', value: 'pricePerDay', sortable: true, align: "end" },
         { title: '房間容量', value: 'capacity', sortable: true, align: "end" },
         { title: '廳數', value: 'livingDiningRoom', sortable: true, align: "end" },
         { title: '臥房數', value: 'bedroom', sortable: true, align: "end" },
@@ -164,7 +159,7 @@ if (userStore.user.role === 'normal') {
         { title: '平均評分', value: 'averageScore', sortable: true, align: "end" },
         { title: '', value: 'click', sortable: true, align: "end" },
         { title: '', value: 'share', sortable: true, align: "end" },
-        { title: '每日價格', value: 'price', sortable: true, align: "end" },
+        { title: '每日價格', value: 'pricePerDay', sortable: true, align: "end" },
         { title: '房間容量', value: 'capacity', sortable: true, align: "end" },
         { title: '廳數', value: 'livingDiningRoom', sortable: true, align: "end" },
         { title: '臥房數', value: 'bedroom', sortable: true, align: "end" },
