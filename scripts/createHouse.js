@@ -1,3 +1,5 @@
+// 此程式會從現有的使用者抓取使用者清單 並從清單內位每個使用者建立隨機的一間房源
+
 import axios from "axios";
 import https from "https";
 import FormData from "form-data"; // 用來構建 form-data 請求
@@ -5,8 +7,9 @@ import fs from "fs"; // 用於讀取 JSON 檔案
 
 // 創建 axios 實例並設置 baseURL
 const apiClient = axios.create({
-    baseURL: "https://localhost/api", // 這是你的 BASE URL
-    timeout: 10000, // 可選：設置請求超時（10秒）
+    // baseURL: "https://localhost/api", // 上線環境
+    baseURL: "http://localhost:8080", // 開發環境
+    timeout: 20000, // 可選：設置請求超時（10秒）
     httpsAgent: new https.Agent({
         rejectUnauthorized: false,
     }),
