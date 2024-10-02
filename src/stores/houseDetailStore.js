@@ -4,6 +4,7 @@ import api from "../plugins/axios";
 import { useRouter } from "vue-router";
 import { useUserStore } from "./userStore";
 import NotAvailableImage from "@/assets/ImageNotAvailable01.webp";
+import emptyUserAvavtarImage from "@/assets/user.png";
 
 const initialHouseInfo = {
     id: null,
@@ -259,12 +260,16 @@ export const useHouseDetailStore = defineStore(
             await api
                 .get(`/user/find/${houseInfo.userId}`)
                 .then((res) => {
-                    console.log("[HouseDetailStore] Get host avater success");
+                    console.log("[HouseDetailStore] Get host info success", res.data);
+                    Object.assign(hostInfo, initialHostInfo);
                     Object.assign(hostInfo, res.data);
+                    if (hostInfo.avatarBase64 == null) {
+                        hostInfo.avatarBase64 = emptyUserAvavtarImage;
+                    }
                 })
                 .catch((err) => {
                     Object.assign(hostInfo, initialHostInfo);
-                    console.log("[HouseDetailStore] Get host avater failed");
+                    console.log("[HouseDetailStore] Get host info failed");
                 });
         }
 
