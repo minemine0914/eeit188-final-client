@@ -1,4 +1,5 @@
 // 此程式會從現有的使用者抓取使用者清單 並從清單內位每個使用者建立隨機的一間房源
+// Usage: node ./script/createHousePixelApi.js --api-key=YOUR_API_KEY
 
 import axios from "axios";
 import https from "https";
@@ -19,6 +20,28 @@ const userParams = {
 let foundUserCount = 0;
 let processingUserCount = 0;
 
+// 解析命令行參數
+const args = process.argv.slice(2); // 去掉前兩個默認參數
+
+// 創建一個對象來存儲解析後的參數
+const params = {};
+args.forEach(arg => {
+    const [key, value] = arg.split('='); // 根據 "=" 分割
+    if (key && value) {
+        params[key.replace('--', '')] = value; // 去掉 "--" 前綴
+    }
+});
+
+// 提取 Pexels API 金鑰
+const pexelsApiKey = params['api-key']; // 獲取 api-key 參數
+console.log('Pexels API Key:', pexelsApiKey);
+
+// 確保在使用前檢查是否獲取到了 API 金鑰
+if (!pexelsApiKey) {
+    console.error('Error: Pexels API Key is required.');
+    process.exit(1); // 終止程序，返回非零狀態碼
+}
+
 // 創建 axios 實例並設置 baseURL
 const apiClient = axios.create({
     baseURL: eeitApiUrl,
@@ -26,6 +49,13 @@ const apiClient = axios.create({
     httpsAgent: new https.Agent({
         rejectUnauthorized: false,
     }),
+});
+
+const pexelsApiClient = axios.create({
+    baseURL: "https://api.pexels.com/v1",
+    headers: {
+        Authorization: pexelsApiKey,
+    },
 });
 
 const cityCountyDataPath = "src/assets/CityCountyData.json";
@@ -216,46 +246,122 @@ const createHouse = async user => {
     }
 };
 
-// 生成隨機圖片 URL 的函數
-const generateRandomImageUrl = () => {
-    return `https://picsum.photos/640/320.webp?random=${Math.floor(Math.random() * 10000)}`;
-    // return `https://loremflickr.com/640/320/house`;
-};
+let imageCache = []; // 用於緩存圖片資料
+const imageCacheSize = 80; // 緩存的圖片數量
 
-// 從 URL 下載圖片並返回 Buffer 的函數
-const downloadImage = async imageUrl => {
-    const imageResponse = await axios.get(imageUrl, { responseType: "arraybuffer" });
-    return Buffer.from(imageResponse.data, "binary");
-};
-
-// 上傳多張圖片的函數
-const uploadMultipleImages = async houseId => {
+// 初始獲取圖片並儲存到緩存的函數
+const initializeImageCache = async () => {
     try {
-        const formData = new FormData();
-        formData.append("houseId", houseId); // 添加 houseId
-
-        // 下載並添加 7 張隨機圖片到 form-data 中
-        for (let i = 0; i < 7; i++) {
-            const imageUrl = generateRandomImageUrl(); // 生成隨機圖片的 URL
-            const imageBuffer = await downloadImage(imageUrl); // 下載圖片
-            formData.append("files", imageBuffer, `image-${i + 1}.jpg`); // 添加圖片到 form-data
-        }
-
-        // 發送 POST 請求上傳圖片
-        const response = await apiClient.post("/house-external-resource/", formData, {
-            headers: {
-                ...formData.getHeaders(), // 設置適當的 headers
+        const response = await pexelsApiClient.get("/search", {
+            params: {
+                query: "house",
+                per_page: imageCacheSize,
+                page: Math.floor(Math.random() * 100) + 1 // 隨機選擇頁面
             },
         });
 
-        console.log(`(${processingUserCount}/${foundUserCount}) Images uploaded for house ${houseId}:`, response.data.locations);
+        const photos = response.data.photos;
+        if (photos.length > 0) {
+            imageCache.push(...photos.map(photo => photo.src.large)); // 儲存圖片 URL 到緩存
+            console.log(`Initialized image cache with ${photos.length} images.`);
+        } else {
+            console.error("No photos found from Pexels.");
+        }
     } catch (error) {
-        console.error(`(${processingUserCount}/${foundUserCount}) Error uploading images for house ${houseId}:`, error.message);
+        console.error("Error initializing image cache:", error.message);
+    }
+};
+
+// 獲取隨機圖片 URL 的函數
+const getRandomImageUrls = async (count = 7) => {
+    const selectedPhotos = [];
+
+    // 優先使用緩存中的圖片
+    while (selectedPhotos.length < count && imageCache.length > 0) {
+        const randomIndex = Math.floor(Math.random() * imageCache.length);
+        selectedPhotos.push(imageCache[randomIndex]);
+        imageCache.splice(randomIndex, 1); // 從緩存中刪除已選擇的圖片
+    }
+
+    // 如果緩存不足，則從 API 獲取更多圖片
+    if (selectedPhotos.length < count) {
+        await initializeImageCache(); // 更新緩存
+
+        // 再次檢查緩存
+        while (selectedPhotos.length < count && imageCache.length > 0) {
+            const randomIndex = Math.floor(Math.random() * imageCache.length);
+            selectedPhotos.push(imageCache[randomIndex]);
+            imageCache.splice(randomIndex, 1);
+        }
+
+        // 如果仍然不足，則發送請求
+        if (selectedPhotos.length < count) {
+            const additionalImagesNeeded = count - selectedPhotos.length;
+            const response = await pexelsApiClient.get("/search", {
+                params: {
+                    query: "house",
+                    per_page: additionalImagesNeeded,
+                    page: Math.floor(Math.random() * 100) + 1
+                },
+            });
+            const newPhotos = response.data.photos;
+            if (newPhotos.length > 0) {
+                imageCache.push(...newPhotos.map(photo => photo.src.large)); // 更新緩存
+                // 繼續選擇新圖片
+                while (selectedPhotos.length < count && imageCache.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * imageCache.length);
+                    selectedPhotos.push(imageCache[randomIndex]);
+                    imageCache.splice(randomIndex, 1);
+                }
+            }
+        }
+    }
+
+    return selectedPhotos;
+};
+
+// 從 URL 下載圖片並返回 Buffer 的函數
+const downloadImage = async (imageUrl) => {
+    try {
+        const imageResponse = await axios.get(imageUrl, { responseType: "arraybuffer" });
+        return Buffer.from(imageResponse.data, "binary");
+    } catch (error) {
+        console.error(`Error downloading image: ${imageUrl}`, error.message);
+        throw error; // 重新拋出錯誤以便上層函數處理
+    }
+};
+
+// 更新上傳多張圖片的函數
+const uploadMultipleImages = async (houseId) => {
+    try {
+        const formData = new FormData();
+        formData.append("houseId", houseId); 
+
+        // 獲取 7 張隨機圖片的 URL
+        const imageUrls = await getRandomImageUrls(7);
+        
+        // 下載並添加圖片到 form-data 中
+        for (let i = 0; i < imageUrls.length; i++) {
+            const imageUrl = imageUrls[i];
+            const imageBuffer = await downloadImage(imageUrl); 
+            formData.append("files", imageBuffer, `image-${i + 1}.jpg`); 
+        }
+
+        const response = await apiClient.post("/house-external-resource/", formData, {
+            headers: {
+                ...formData.getHeaders(),
+            },
+        });
+
+        console.log(`Images uploaded for house ${houseId}:`, response.data.locations);
+    } catch (error) {
+        console.error(`Error uploading images for house ${houseId}:`, error.message);
     }
 };
 
 // 主函數
 const main = async () => {
+    await initializeImageCache(); // 初始化圖片緩存
     const users = await fetchUserList(userParams); // 使用已獨立的搜尋參數
     foundUserCount = users.length;
     if (foundUserCount > 0) {

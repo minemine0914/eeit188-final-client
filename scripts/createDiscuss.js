@@ -3,10 +3,14 @@ import https from "https";
 import FormData from "form-data"; // 用來構建 form-data 請求
 import fs from "fs"; // 用於讀取 JSON 檔案
 
+// API 網址
+let eeitApiUrl;
+// eeitApiUrl = "https://localhost/api"; // 上線環境
+eeitApiUrl = "http://localhost:8080"; // 開發環境
+
 // 創建 axios 實例並設置 baseURL
 const apiClient = axios.create({
-    // baseURL: "https://localhost/api", // 上線環境
-    baseURL: "http://localhost:8080", // 開發環境
+    baseURL: eeitApiUrl,
     timeout: 20000, // 可選：設置請求超時（10秒）
     httpsAgent: new https.Agent({
         rejectUnauthorized: false,
