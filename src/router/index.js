@@ -139,6 +139,12 @@ const routes = [
         component: () => import("@/components/wu/components/HostReport.vue"),
         meta: { title: "Nomad 分析報表", requiresAuth: true, role: "normal" },
       },
+      {
+        path: "edit-property/:propertyId", // 編輯房源相片
+        name: "HostEditProperty",
+        component: () => import("@/components/lo/EditPropertyImage.vue"),
+        meta: { title: "Nomad 編輯房源相片", requiresAuth: true, role: "normal" },
+      },
       // {
       //   path: "reviews", // 
       //   name: "HostReviews",
@@ -148,12 +154,6 @@ const routes = [
       //   path: "reservation-management", // 
       //   name: "HostReservationManagement",
       //   component: () => import("@/components/lo/Reservation.vue"),
-      // },
-      // {
-      //   path: "edit-property/:propertyId", // 
-      //   name: "HostEditProperty",
-      //   component: () => import("@/components/lo/EditPropertyImage.vue"),
-      //   props: true,
       // },
       // {
       //   path: "order-detail/:id", // 
