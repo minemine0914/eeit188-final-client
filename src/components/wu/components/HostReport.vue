@@ -8,7 +8,10 @@
                 :width="18"></v-progress-circular>
         </div>
         <!-- main content -->
-        <h1>歷史紀錄與報表</h1>
+        <span class="font-weight-black text-brown-darken-1 text-h5" style="font-family: 'Tenor Sans'">
+            NOMAD
+        </span>
+        <h2 style="display:inline"> 分析報表</h2>
         <v-spacer></v-spacer>
         <v-card class="subBox">
             <v-card-title>您好，{{ store.loginUser.name }}，歡迎使用本系統
@@ -31,7 +34,7 @@
                         <DataTab />
                     </template>
 
-                    <p v-else>查無資料</p>
+                    <h3 v-else>查無資料</h3>
                 </v-card-text>
             </template>
         </v-card>
@@ -44,15 +47,13 @@ import { useHostReportStore } from '@/stores/hostReportStore';
 import { useUserStore } from '@/stores/userStore';
 import Selector from '@/components/wu/components/Selector.vue';
 import DataTable from '@/components/wu/components/DataTable.vue';
-import SelectorUser from './SelectorUser.vue';
-import DataTab from './DataTab.vue';
+import DataTab from '@/components/wu/components/DataTab.vue';
 
 const store = useHostReportStore();
 const userStore = useUserStore();
 store.isLoading = ref(false)
 
 onMounted(async () => {
-
     if (userStore.user) {
         store.loginUser = userStore.user
     }
@@ -69,13 +70,13 @@ onMounted(async () => {
         await store.fetchTransactionRecords()
     } finally {
         // Ensure loading state is set to false after fetching
-
         setTimeout(() => {
             store.isLoading = false;
         }, 0);// setTimeout for test
     }
 });
 </script>
+
 <style scoped>
 .mainBox {
     width: 80vw;

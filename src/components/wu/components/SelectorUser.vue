@@ -15,34 +15,38 @@
         <v-data-table v-model:search="search" v-model="store.selectedUserId" :headers="headers" :items="items"
             item-value="id" select-strategy="single" show-select @change="fetchHouses(store.selectedUserId[0])">
 
+            <template v-slot:item.name="{ item }">
+                <v-img :src="item.avatarBase64 ? item.avatarBase64 : emptyUserAvavtarImage" width="1rem"
+                    class="avatar" />{{ item.name }}
+                <v-icon icon="mdi-crown" color="orange" v-if="item.houseCount == maxHouseCount" />
+            </template>
+
             <template v-slot:item.mobilePhone="{ item }">
                 {{ item?.mobilePhone?.toString().substring(0, 4) }}-{{ item?.mobilePhone?.toString().substring(4, 7)
                 }}-***
             </template>
 
-            <!-- 
-            <template v-slot:item.email="{ item }">
-                {{ item?.email.split('@')[0] }}@***
+            <!-- <template v-slot:item.houseCount="{ item }">
+                <v-icon icon="mdi-crown" color="orange" v-if="item.houseCount == maxHouseCount" />
+                {{ item.houseCount }}
             </template> -->
 
+            <template v-slot:item.email="{ item }">
+                {{ item?.email?.split('@')[0] }}@***
+            </template>
+
             <template v-slot:item.createdAt="{ item }">
-                {{ new Date(item.createdAt).getFullYear() }}年{{ String(new Date(item.createdAt).getMonth() +
-                    1).padStart(2,
-                        '0') }}月{{ String(new Date(item.createdAt).getDate()).padStart(2, '0') }}日 {{ String(new
-                    Date(item.createdAt).getHours()).padStart(2, '0') }}:{{ String(new
-                    Date(item.createdAt).getMinutes()).padStart(2, '0') }}:{{ String(new
-                    Date(item.createdAt).getSeconds()).padStart(2, '0') }}
+                <template v-if="item.createdAt">
+                    {{ store.formatDate(item.createdAt) }}
+                </template>
+                <template v-else>--</template>
             </template>
 
             <template v-slot:item.updatedAt="{ item }">
                 <template v-if="item.updatedAt">
-                    {{ new Date(item.updatedAt).getFullYear() }}年{{ String(new Date(item.updatedAt).getMonth() +
-                        1).padStart(2, '0') }}月{{ String(new Date(item.updatedAt).getDate()).padStart(2, '0') }}日 {{
-                        String(new
-                            Date(item.updatedAt).getHours()).padStart(2, '0') }}:{{ String(new
-                        Date(item.updatedAt).getMinutes()).padStart(2, '0') }}:{{ String(new
-                        Date(item.updatedAt).getSeconds()).padStart(2, '0') }}
+                    {{ store.formatDate(item.updatedAt) }}
                 </template>
+                <template v-else>--</template>
             </template>
 
         </v-data-table>
@@ -59,17 +63,19 @@
 </template>
 
 <script setup>
-import { watch, ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useHostReportStore } from '@/stores/hostReportStore';
+import emptyUserAvavtarImage from "@/assets/user.png";
 
 const store = useHostReportStore()
 const search = ref('');
-
+const maxHouseCount = ref(0)
 
 
 let headers = [
     { title: '', value: 'pics', width: '20px' }, // Disable sorting for pics
     { title: '名稱', value: 'name', sortable: true },
+    { title: '擁有房源數', value: 'houseCount', sortable: true, align: "end" },
     { title: '性別', value: 'gender', sortable: true },
     { title: '手機', value: 'mobilePhone', sortable: true, align: "start" },
     { title: 'email', value: 'email', sortable: true },
@@ -95,32 +101,16 @@ const items = computed(() => {
             (item?.id?.toLowerCase().includes(searchLower))
         );
     }
-    return filtered
+    maxHouseCount.value = filtered.reduce((max, item) => {
+        return item?.houses?.length > max ? item?.houses?.length : max;
+    }, 0);
+    return filtered.map(item => {
+        return {
+            ...item,
+            'houseCount': item?.houses?.length,
+        }
+    })
 });
-
-const getStatusColor = (review) => {
-    switch (review) {
-        case null: return 'orange'; // 待審核
-        case true: return 'green'; // 審核通過
-        case false: return 'red'; // 審核失敗
-        default: return 'grey'; // 未知狀態
-    }
-}
-
-const getStatusText = (review) => {
-    switch (review) {
-        case null:
-            return '待審核';
-        case true:
-            return '審核通過';
-        case false:
-            return '審核失敗';
-        default:
-            return '確認中';
-    }
-}
-
-
 
 const fetchHouses = async (userId) => {
     await store.fetchHouses(userId);
@@ -133,10 +123,6 @@ onMounted(async () => {
     await store.findAllHost();
     store.selectedUserId = store.users[0].id
     fetchHouses(store.selectedUserId)
-    //log************
-    // console.log('store.selectedUser', store.selectedUser)
-    // console.log('store.users', store.users)
-    //log************
 });
 </script>
 
@@ -144,5 +130,10 @@ onMounted(async () => {
 select {
     border: 1px solid black;
     background-color: #aff;
+}
+
+.avatar {
+    display: inline-block;
+    margin-right: 0.5rem;
 }
 </style>

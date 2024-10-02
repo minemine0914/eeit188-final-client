@@ -25,8 +25,15 @@
             </template>
 
             <template v-slot:item.capacity="{ item }">
-                <v-icon icon="mdi-account-supervisor" />{{ item.adult }}大 <v-icon icon="mdi-teddy-bear" />{{ item.child
-                }}小
+                <template v-if="item.adult">
+                    <v-icon icon="mdi-account-supervisor" />{{ item.adult }}大
+                </template>
+                <template v-if="item.child">
+                    <v-icon icon="mdi-teddy-bear" />{{ item.child }}小
+                </template>
+                <template v-if="!item.adult && !item.child">
+                    無特別限制
+                </template>
             </template>
 
             <template v-slot:item.review="{ item }">
@@ -64,23 +71,17 @@
             </template>
 
             <template v-slot:item.createdAt="{ item }">
-                {{ new Date(item.createdAt).getFullYear() }}年{{ String(new Date(item.createdAt).getMonth() +
-                    1).padStart(2,
-                        '0') }}月{{ String(new Date(item.createdAt).getDate()).padStart(2, '0') }}日 {{ String(new
-                    Date(item.createdAt).getHours()).padStart(2, '0') }}:{{ String(new
-                    Date(item.createdAt).getMinutes()).padStart(2, '0') }}:{{ String(new
-                    Date(item.createdAt).getSeconds()).padStart(2, '0') }}
+                <template v-if="item.createdAt">
+                    {{ store.formatDate(item.createdAt) }}
+                </template>
+                <template v-else>--</template>
             </template>
 
             <template v-slot:item.updatedAt="{ item }">
                 <template v-if="item.updatedAt">
-                    {{ new Date(item.updatedAt).getFullYear() }}年{{ String(new Date(item.updatedAt).getMonth() +
-                        1).padStart(2, '0') }}月{{ String(new Date(item.updatedAt).getDate()).padStart(2, '0') }}日 {{
-                        String(new
-                            Date(item.updatedAt).getHours()).padStart(2, '0') }}:{{ String(new
-                        Date(item.updatedAt).getMinutes()).padStart(2, '0') }}:{{ String(new
-                        Date(item.updatedAt).getSeconds()).padStart(2, '0') }}
+                    {{ store.formatDate(item.updatedAt) }}
                 </template>
+                <template v-else>--</template>
             </template>
 
             <template v-slot:item.click="{ item }">
@@ -95,6 +96,11 @@
                 <v-rating :model-value="item.averageScore" color="orange-darken-2" density="compact" size="small"
                     readonly></v-rating>
             </template>
+
+            <template v-slot:item.price="{ item }">
+                ${{ item.price }}
+            </template>
+
         </v-data-table>
     </v-card>
     <!-- 
@@ -109,17 +115,14 @@
 </template>
 
 <script setup>
-import { watch, ref, computed } from 'vue';
+import { ref, computed } from 'vue';
 import { useHostReportStore } from '@/stores/hostReportStore';
-import { useUserStore } from '../../../stores/userStore';
-
-
+import { useUserStore } from '@/stores/userStore';
 
 const store = useHostReportStore()
 const userStore = useUserStore()
 store.isLoading = ref(false)
 const search = ref('');
-
 
 let headers = []
 // 平台和房東共用此表格，先判定登入者權限，再決定欄位順序
@@ -131,10 +134,10 @@ if (userStore.user.role === 'normal') {
         { title: '位置', value: 'fullAddress', sortable: true },
         { title: '', value: 'click', sortable: true, align: "center" },
         { title: '', value: 'share', sortable: true, align: "center" },
-        { title: '平均評分', value: 'averageScore', sortable: true, align: "end" },
+        { title: '平均評分', value: 'averageScore', sortable: true },
         { title: '', value: 'show', sortable: true, align: "center" },
         { title: '', value: 'review', sortable: true, align: "center" },
-        { title: '每日價格', value: 'pricePerDay', sortable: true, align: "end" },
+        { title: '每日價格', value: 'price', sortable: true, align: "end" },
         { title: '房間容量', value: 'capacity', sortable: true, align: "end" },
         { title: '廳數', value: 'livingDiningRoom', sortable: true, align: "end" },
         { title: '臥房數', value: 'bedroom', sortable: true, align: "end" },
@@ -156,10 +159,10 @@ if (userStore.user.role === 'normal') {
         { title: '位置', value: 'fullAddress', sortable: true },
         { title: '', value: 'show', sortable: true, align: "center" },
         { title: '', value: 'review', sortable: true, align: "center" },
-        { title: '平均評分', value: 'averageScore', sortable: true, align: "end" },
+        { title: '平均評分', value: 'averageScore', sortable: true },
         { title: '', value: 'click', sortable: true, align: "end" },
         { title: '', value: 'share', sortable: true, align: "end" },
-        { title: '每日價格', value: 'pricePerDay', sortable: true, align: "end" },
+        { title: '每日價格', value: 'price', sortable: true, align: "end" },
         { title: '房間容量', value: 'capacity', sortable: true, align: "end" },
         { title: '廳數', value: 'livingDiningRoom', sortable: true, align: "end" },
         { title: '臥房數', value: 'bedroom', sortable: true, align: "end" },

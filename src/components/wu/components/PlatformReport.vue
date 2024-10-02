@@ -36,8 +36,8 @@ import { useHostReportStore } from '@/stores/hostReportStore';
 import { useUserStore } from '@/stores/userStore';
 import Selector from '@/components/wu/components/Selector.vue';
 import DataTable from '@/components/wu/components/DataTable.vue';
-import SelectorUser from './SelectorUser.vue';
-import DataTab from './DataTab.vue';
+import SelectorUser from '@/components/wu/components/SelectorUser.vue';
+import DataTab from '@/components/wu/components/DataTab.vue';
 
 const store = useHostReportStore();
 const userStore = useUserStore();

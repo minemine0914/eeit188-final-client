@@ -31,8 +31,8 @@
 <script setup>
 import { ref } from 'vue';
 import HouseIncome from '@/components/wu/components/HouseIncome.vue';
-import TextTable from './TextTable.vue';
-import GenderPie from './genderPie.vue';
+import TextTable from '@/components/wu/components/TextTable.vue';
+import GenderPie from '@/components/wu/components/genderPie.vue';
 
 const tab = ref(null)
 
