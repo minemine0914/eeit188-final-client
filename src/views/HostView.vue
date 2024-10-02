@@ -12,7 +12,7 @@
             @click="$router.push('/')"
             height="60px"
           >
-            <NomadSvg class="text-brown" style="height: 65%;"/>
+            <NomadSvg class="text-brown-darken-1" style="height: 65%;"/>
             <span
               class="font-weight-black text-brown-darken-1 text-h5"
               style="font-family: 'Tenor Sans'"
