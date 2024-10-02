@@ -97,7 +97,6 @@
                     </v-list>
                 </v-menu>
             </template>
-            <!-- <v-btn v-if="jwtToken" >登出</v-btn> -->
         </v-app-bar>
         <v-main>
             <router-view></router-view>
@@ -124,6 +123,9 @@ import { useUserViewStore } from "../stores/userViewStore";
 import { useUserStore } from "../stores/userStore";
 import { storeToRefs } from "pinia";
 import Swal from "sweetalert2";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 
 const userViewStore = useUserViewStore();
 const { windowSize, containerHeight, isOpenLoginDialog, memberMenu, appbarRef } =
@@ -131,6 +133,7 @@ const { windowSize, containerHeight, isOpenLoginDialog, memberMenu, appbarRef } 
 const { height: appbarHeight } = useElementSize(appbarRef);
 
 const userStore = useUserStore();
+const { addChatRecord } = userStore;
 const { user, jwtToken } = storeToRefs(userStore);
 
 let timeoutId = null; // 儲存定時器 ID
@@ -145,6 +148,20 @@ function onResize() {
         containerHeight.value = window.innerHeight - appbarHeight.value;
         // console.log(containerHeight.value);
     }, 100); // 300 毫秒的延遲
+}
+
+async function submit() {
+    try {
+        await addChatRecord({
+            chat: `這裡是系統客服中心，請問有什麼需要協助的地方嗎？`,
+            senderId: "a44bd6cb-fd86-4a7a-8ff9-e7e5060c9fd0",
+            receiverId: user.value.id,
+        }).then(() => {
+            router.push("/chat");
+        });
+    } catch (error) {
+        console.error("Error adding chat record:", error);
+    }
 }
 
 // 登出
