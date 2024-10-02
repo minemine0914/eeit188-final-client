@@ -2,12 +2,25 @@
   <v-app v-resize="onResize">
     <v-app-bar :elevation="2" ref="appbarRef">
       <v-app-bar-title>
-        <span
-          class="pa-3 cursor-pointer font-weight-black text-brown-darken-1 text-h5"
-          @click="$router.push('/')"
-          style="font-family: 'Tenor Sans'"
-          >NOMAD</span
+        <v-sheet
+          color="transparent"
+          class="d-flex flex-row justify-start align-center"
         >
+          <v-sheet
+            color="transparent"
+            class="d-flex flex-row justify-center align-center cursor-pointer"
+            @click="$router.push('/')"
+            height="60px"
+          >
+            <NomadSvg class="text-brown-darken-1" style="height: 65%;"/>
+            <span
+              class="font-weight-black text-brown-darken-1 text-h5"
+              style="font-family: 'Tenor Sans'"
+            >
+              NOMAD
+            </span>
+          </v-sheet>
+        </v-sheet>
       </v-app-bar-title>
       <v-spacer></v-spacer>
       <template v-slot:append>
@@ -72,7 +85,7 @@
             <v-list-item to="/order" prepend-icon="mdi-list-box" slim>
               查詢訂單
             </v-list-item>
-            <v-list-item to="/host" prepend-icon="mdi-home-group-plus" slim>
+            <v-list-item to="/host/property-management" prepend-icon="mdi-home-group-plus" slim>
               {{ user.houseCount > 0 ? "管理房源" : "成為房東" }}
             </v-list-item>
             <v-list-item to="/chat" prepend-icon="mdi-message-outline" slim>
@@ -88,10 +101,16 @@
 
     <v-navigation-drawer app permanent>
       <v-list>
-        <v-list-item v-for="item in menuItems" :key="item.path">
-          <v-btn text @click="navigateTo(item.path)">
-            {{ item.title }}
-          </v-btn>
+        <v-list-item v-for="item in menuItems" :key="item.path" :to="item.path" color="brown">
+          <template v-slot:prepend>
+            <v-icon :icon="item.icon"></v-icon>
+          </template>
+          <template v-slot:title>
+            <div class="text-body-1 font-weight-bold">
+              {{ item.title }}
+            </div>
+          </template>
+          
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
@@ -117,7 +136,7 @@
   </v-app>
 </template>
 <script setup>
-import avaterImg from "@/assets/banner01.webp";
+import NomadSvg from "@/assets/nomad.svg?component";
 import { useElementSize } from "@vueuse/core";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
@@ -127,11 +146,11 @@ import { storeToRefs } from "pinia";
 import Swal from "sweetalert2";
 
 const menuItems = ref([
-  { title: "管理房源", path: "/lo" },
-  { title: "新增房源", path: "/lo/add-property" },
-  { title: "訂單管理", path: "/lo/order-records" },
-  { title: "入住 check in", path: "/lo/check-in" },
-  { title: "分析報表", path: "/lo/reports" },
+  { title: "管理房源", path: "/host/property-management", icon: "mdi-home-edit" },
+  { title: "新增房源", path: "/host/add-property", icon: "mdi-home-plus" },
+  { title: "訂單管理", path: "/host/order-records", icon: "mdi-order-bool-descending-variant" },
+  { title: "入住 Check In", path: "/host/check-in", icon: "mdi-qrcode-scan" },
+  { title: "分析報表", path: "/host/reports", icon: "mdi-home-analytics" },
 ]);
 
 const router = useRouter();

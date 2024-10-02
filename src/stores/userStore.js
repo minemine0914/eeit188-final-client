@@ -3,6 +3,7 @@ import api from "@/plugins/axios";
 import { ref, reactive } from "vue";
 import * as jwtDecode from "jwt-decode";
 import { useRouter } from "vue-router";
+import emptyUserAvavtarImage from "@/assets/user.png";
 
 const initialUser = {
   id: null,
@@ -132,7 +133,11 @@ export const useUserStore = defineStore(
           method: "get",
           url: `/user/find/${userId}`,
         });
+        Object.assign(user, initialUser);
         Object.assign(user, response.data);
+        if ( user.avatarBase64 == null ) {
+          user.avatarBase64 = emptyUserAvavtarImage;
+        }
       } catch (error) {
         console.log(error);
       }

@@ -4,6 +4,7 @@ import api from "../plugins/axios";
 import { useRouter } from "vue-router";
 import { useUserStore } from "./userStore";
 import NotAvailableImage from "@/assets/ImageNotAvailable01.webp";
+import emptyUserAvavtarImage from "@/assets/user.png";
 
 const initialHouseInfo = {
     id: null,
@@ -259,12 +260,16 @@ export const useHouseDetailStore = defineStore(
             await api
                 .get(`/user/find/${houseInfo.userId}`)
                 .then((res) => {
-                    console.log("[HouseDetailStore] Get host avater success");
+                    console.log("[HouseDetailStore] Get host info success", res.data);
+                    Object.assign(hostInfo, initialHostInfo);
                     Object.assign(hostInfo, res.data);
+                    if (hostInfo.avatarBase64 == null) {
+                        hostInfo.avatarBase64 = emptyUserAvavtarImage;
+                    }
                 })
                 .catch((err) => {
                     Object.assign(hostInfo, initialHostInfo);
-                    console.log("[HouseDetailStore] Get host avater failed");
+                    console.log("[HouseDetailStore] Get host info failed");
                 });
         }
 
@@ -304,16 +309,16 @@ export const useHouseDetailStore = defineStore(
 
         async function getScoreDetail() {
             await api
-            .get(`/house/mongo/scores/${houseInfo.id}`)
-            .then((res) => {
-                console.log("[HouseDetailStore] Get score detail success", res.data);
-                Object.assign(scoreDetail, initalScoreDetail);
-                Object.assign(scoreDetail, res.data);
-            })
-            .catch((err) => {
-                Object.assign(scoreDetail, initalScoreDetail);
-                console.log("[HouseDetailStore] Get score detail failed");
-            });
+                .get(`/house/mongo/scores/${houseInfo.id}`)
+                .then((res) => {
+                    console.log("[HouseDetailStore] Get score detail success", res.data);
+                    Object.assign(scoreDetail, initalScoreDetail);
+                    Object.assign(scoreDetail, res.data);
+                })
+                .catch((err) => {
+                    Object.assign(scoreDetail, initalScoreDetail);
+                    console.log("[HouseDetailStore] Get score detail failed");
+                });
         }
 
         async function getSelfHouseDiscuss() {
@@ -452,6 +457,42 @@ export const useHouseDetailStore = defineStore(
             }
         }
 
+        async function recordHouseMongoClick() {
+            if (userStore.user.id !== null) {
+                await api
+                    .post(`/house/mongo/click`, {
+                        userId: userStore.user.id,
+                        houseId: houseInfo.id,
+                    })
+                    .then((res) => {
+                        console.log("[HouseDetailStore] Record user click house success.");
+                    })
+                    .catch((err) => {
+                        console.log("[HouseDetailStore] Record user click house failed.");
+                    });
+            } else {
+                console.log("[HouseDetailStore] You are not login! can't check discuss.");
+            }
+        }
+
+        async function recordHouseMongoShare() {
+            if (userStore.user.id !== null) {
+                await api
+                    .post(`/house/mongo/share`, {
+                        userId: userStore.user.id,
+                        houseId: houseInfo.id,
+                    })
+                    .then((res) => {
+                        console.log("[HouseDetailStore] Record user share house success.");
+                    })
+                    .catch((err) => {
+                        console.log("[HouseDetailStore] Record user share house failed.");
+                    });
+            } else {
+                console.log("[HouseDetailStore] You are not login! can't check discuss.");
+            }
+        }
+
         return {
             houseInfo,
             hostInfo,
@@ -487,6 +528,8 @@ export const useHouseDetailStore = defineStore(
             getBookingList,
             removeBookingList,
             cleanBookingList,
+            recordHouseMongoClick,
+            recordHouseMongoShare,
         };
     },
     {

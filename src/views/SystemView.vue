@@ -2,12 +2,22 @@
     <v-app>
         <v-app-bar :elevation="2" ref="appbarRef">
             <v-app-bar-title>
-                <span
-                    class="pa-3 cursor-pointer font-weight-black text-brown-darken-1 text-h5"
-                    @click="$router.push('/system')"
-                    style="font-family: 'Tenor Sans'"
-                    >NOMAD</span
-                >
+                <v-sheet color="transparent" class="d-flex flex-row justify-start align-center">
+                    <v-sheet
+                        color="transparent"
+                        class="d-flex flex-row justify-center align-center cursor-pointer"
+                        @click="$router.push('/system')"
+                        height="60px"
+                    >
+                        <NomadSvg class="text-brown-darken-1" style="height: 65%" />
+                        <span
+                            class="font-weight-black text-brown-darken-1 text-h5"
+                            style="font-family: 'Tenor Sans'"
+                        >
+                            NOMAD
+                        </span>
+                    </v-sheet>
+                </v-sheet>
             </v-app-bar-title>
             <v-spacer></v-spacer>
             <template v-slot:append>
@@ -84,6 +94,7 @@
 </template>
 
 <script setup>
+import NomadSvg from "@/assets/nomad.svg?component";
 import { storeToRefs } from "pinia";
 import { useUserStore } from "../stores/userStore";
 import { useUserViewStore } from "../stores/userViewStore";

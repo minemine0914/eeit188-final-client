@@ -30,7 +30,27 @@
         <v-text>支付新台幣 {{ t?.transactionRecord.cashFlow }} 元</v-text>
         <v-text>{{ formatDate(t?.transactionRecord.createdAt) }}</v-text>
       </div>
-      <v-text class="deal">{{ t?.transactionRecord.deal }}</v-text>
+      <v-card
+        class="deal"
+        v-if="t?.transactionRecord.deal === '確認付款中'"
+        color="warning"
+      >
+        <v-text>{{ t?.transactionRecord.deal }}</v-text>
+      </v-card>
+      <v-card
+        class="deal"
+        v-if="t?.transactionRecord.deal === '付款成功'"
+        color="success"
+      >
+        <v-text>{{ t?.transactionRecord.deal }}</v-text>
+      </v-card>
+      <v-card
+        class="deal"
+        v-if="t?.transactionRecord.deal === '取消訂單'"
+        color="error"
+      >
+        <v-text>{{ t?.transactionRecord.deal }}</v-text>
+      </v-card>
       <v-btn
         v-if="t?.transactionRecord.deal === '付款成功'"
         class="btn"
@@ -47,8 +67,45 @@
     <v-card class="ticket-card" max-width="400">
       <v-text class="ticket-text" id="ticket-text-title">您的QR CODE</v-text>
       <v-text class="ticket-text">編號： {{ currentTicket.id }}</v-text>
-      <v-text class="ticket-text" id="ticket-text-check">{{ used }}</v-text>
-      <img :src="qrCode" alt="QR Code" />
+      <v-card
+        v-if="new Date(currentTicket.startedAt) > new Date()"
+        class="ticket-status"
+        color="warning"
+      >
+        <v-text id="ticket-text-check">非有效時間</v-text>
+      </v-card>
+      <v-card
+        v-if="
+          used === '已入住' &&
+          new Date(currentTicket.startedAt) <= new Date() &&
+          new Date(currentTicket.endedAt) >= new Date()
+        "
+        class="ticket-status"
+        color="success"
+      >
+        <v-text id="ticket-text-check">{{ used }}</v-text>
+      </v-card>
+      <v-card
+        v-if="
+          used === '未入住' &&
+          new Date(currentTicket.startedAt) <= new Date() &&
+          new Date(currentTicket.endedAt) >= new Date()
+        "
+        class="ticket-status"
+        color="grey-lighten-2"
+        width="100"
+      >
+        <v-text id="ticket-text-check">{{ used }}</v-text>
+      </v-card>
+      <v-card
+        v-if="new Date(currentTicket.endedAt) < new Date()"
+        class="ticket-status"
+        color="error"
+        width="100"
+      >
+        <v-text id="ticket-text-check">票券已過期</v-text>
+      </v-card>
+      <img :src="qrCode" width="300" alt="QR Code" />
       <template v-slot:actions>
         <v-btn class="ms-auto" text="Ok" @click="dialog = false"></v-btn>
       </template>
@@ -95,7 +152,7 @@ async function fetchTickets() {
         pageNum: page.value,
         pageSize: 10,
         orderBy: "createdAt",
-        desc: true,
+        desc: false,
       },
     });
 
@@ -217,6 +274,7 @@ const formatDate = (dateString) => {
 
 .deal {
   margin-right: 30px;
+  padding: 5px;
 }
 
 .main-img {
@@ -258,6 +316,9 @@ const formatDate = (dateString) => {
 }
 
 .ticket-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   padding: 10px;
 }
 
@@ -267,5 +328,10 @@ const formatDate = (dateString) => {
 
 #ticket-text-check {
   font-size: 30px;
+}
+
+.ticket-status {
+  padding: 5px;
+  text-align: center;
 }
 </style>

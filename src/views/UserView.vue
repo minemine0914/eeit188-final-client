@@ -2,12 +2,22 @@
     <v-app v-resize="onResize">
         <v-app-bar :elevation="2" ref="appbarRef">
             <v-app-bar-title>
-                <span
-                    class="pa-3 cursor-pointer font-weight-black text-brown-darken-1 text-h5"
-                    @click="$router.push('/')"
-                    style="font-family: 'Tenor Sans'"
-                    >NOMAD</span
-                >
+                <v-sheet color="transparent" class="d-flex flex-row justify-start align-center">
+                    <v-sheet
+                        color="transparent"
+                        class="d-flex flex-row justify-center align-center cursor-pointer"
+                        @click="$router.push('/')"
+                        height="60px"
+                    >
+                        <NomadSvg class="text-brown-darken-1" style="height: 65%" />
+                        <span
+                            class="font-weight-black text-brown-darken-1 text-h5"
+                            style="font-family: 'Tenor Sans'"
+                        >
+                            NOMAD
+                        </span>
+                    </v-sheet>
+                </v-sheet>
             </v-app-bar-title>
             <v-spacer></v-spacer>
             <template v-slot:append>
@@ -72,10 +82,13 @@
                         <v-list-item to="/order" prepend-icon="mdi-list-box" slim
                             >查詢訂單</v-list-item
                         >
-                        <v-list-item to="/host" prepend-icon="mdi-home-group-plus" slim>{{
-                            user.houseCount > 0 ? "管理房源" : "成為房東"
-                        }}</v-list-item>
-                        <v-list-item to="/chat" prepend-icon="mdi-message-outline" slim
+                        <v-list-item
+                            to="/host/property-management"
+                            prepend-icon="mdi-home-group-plus"
+                            slim
+                            >{{ user.houseCount > 0 ? "管理房源" : "成為房東" }}</v-list-item
+                        >
+                        <v-list-item @click="submit" prepend-icon="mdi-message-outline" slim
                             >聯絡我們</v-list-item
                         >
                         <v-list-item prepend-icon="mdi-logout" slim @click="handleLogout"
@@ -84,7 +97,6 @@
                     </v-list>
                 </v-menu>
             </template>
-            <!-- <v-btn v-if="jwtToken" >登出</v-btn> -->
         </v-app-bar>
         <v-main>
             <router-view></router-view>
@@ -104,13 +116,16 @@
     </v-app>
 </template>
 <script setup>
-// import avaterImg from "@/assets/banner01.webp";
+import NomadSvg from "@/assets/nomad.svg?component";
 import { useElementSize } from "@vueuse/core";
 import { ref } from "vue";
 import { useUserViewStore } from "../stores/userViewStore";
 import { useUserStore } from "../stores/userStore";
 import { storeToRefs } from "pinia";
 import Swal from "sweetalert2";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 
 const userViewStore = useUserViewStore();
 const { windowSize, containerHeight, isOpenLoginDialog, memberMenu, appbarRef } =
@@ -118,6 +133,7 @@ const { windowSize, containerHeight, isOpenLoginDialog, memberMenu, appbarRef } 
 const { height: appbarHeight } = useElementSize(appbarRef);
 
 const userStore = useUserStore();
+const { addChatRecord } = userStore;
 const { user, jwtToken } = storeToRefs(userStore);
 
 let timeoutId = null; // 儲存定時器 ID
@@ -132,6 +148,20 @@ function onResize() {
         containerHeight.value = window.innerHeight - appbarHeight.value;
         // console.log(containerHeight.value);
     }, 100); // 300 毫秒的延遲
+}
+
+async function submit() {
+    try {
+        await addChatRecord({
+            chat: `這裡是系統客服中心，請問有什麼需要協助的地方嗎？`,
+            senderId: "a44bd6cb-fd86-4a7a-8ff9-e7e5060c9fd0",
+            receiverId: user.value.id,
+        }).then(() => {
+            router.push("/chat");
+        });
+    } catch (error) {
+        console.error("Error adding chat record:", error);
+    }
 }
 
 // 登出

@@ -24,7 +24,7 @@
                                     size="default"
                                     rounded="pill"
                                     variant="tonal"
-                                    @click="copy()"
+                                    @click="actionShare(copy)"
                                     :color="copied ? 'success' : ''"
                                 >
                                     {{ copied ? "已複製" : "複製連結" }}
@@ -49,7 +49,7 @@
                                 :media="sharingInfo.media"
                                 v-slot="{ share }"
                             >
-                                <v-btn icon class="ma-3" @click.stop="share">
+                                <v-btn icon class="ma-3" @click.stop="actionShare(share)">
                                     <v-avatar :icon="network.icon"></v-avatar>
                                 </v-btn>
                             </share-network>
@@ -88,7 +88,13 @@ const sharingInfo = ref({
     quote: "Nomad House",
     hashtags: "nomad",
     twitterUser: "NOMAD",
-    media: "https://images.unsplash.com/photo-1708283508253-337621680a84?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
 });
+function actionShare(func) {
+    console.log("[typeof] ", typeof func);
+    if ( typeof func === 'function' ) {
+        func();
+    }
+    houseDetailStore.recordHouseMongoShare();
+}
 </script>
 <style scoped></style>
