@@ -15,15 +15,24 @@
         <v-data-table v-model:search="search" v-model="store.selectedUserId" :headers="headers" :items="items"
             item-value="id" select-strategy="single" show-select @change="fetchHouses(store.selectedUserId[0])">
 
+            <template v-slot:item.name="{ item }">
+                {{ item.name }}
+                <v-icon icon="mdi-crown" color="orange" v-if="item.houseCount == maxHouseCount" />
+            </template>
+
             <template v-slot:item.mobilePhone="{ item }">
                 {{ item?.mobilePhone?.toString().substring(0, 4) }}-{{ item?.mobilePhone?.toString().substring(4, 7)
                 }}-***
             </template>
 
-            <!-- 
-            <template v-slot:item.email="{ item }">
-                {{ item?.email.split('@')[0] }}@***
+            <!-- <template v-slot:item.houseCount="{ item }">
+                <v-icon icon="mdi-crown" color="orange" v-if="item.houseCount == maxHouseCount" />
+                {{ item.houseCount }}
             </template> -->
+
+            <template v-slot:item.email="{ item }">
+                {{ item?.email?.split('@')[0] }}@***
+            </template>
 
             <template v-slot:item.createdAt="{ item }">
                 {{ new Date(item.createdAt).getFullYear() }}年{{ String(new Date(item.createdAt).getMonth() +
@@ -64,12 +73,13 @@ import { useHostReportStore } from '@/stores/hostReportStore';
 
 const store = useHostReportStore()
 const search = ref('');
-
+const maxHouseCount = ref(0)
 
 
 let headers = [
     { title: '', value: 'pics', width: '20px' }, // Disable sorting for pics
     { title: '名稱', value: 'name', sortable: true },
+    { title: '擁有房源數', value: 'houseCount', sortable: true, align: "end" },
     { title: '性別', value: 'gender', sortable: true },
     { title: '手機', value: 'mobilePhone', sortable: true, align: "start" },
     { title: 'email', value: 'email', sortable: true },
@@ -95,7 +105,15 @@ const items = computed(() => {
             (item?.id?.toLowerCase().includes(searchLower))
         );
     }
-    return filtered
+    maxHouseCount.value = filtered.reduce((max, item) => {
+        return item?.houses?.length > max ? item?.houses?.length : max;
+    }, 0);
+    return filtered.map(item => {
+        return {
+            ...item,
+            'houseCount': item?.houses?.length,
+        }
+    })
 });
 
 const getStatusColor = (review) => {
