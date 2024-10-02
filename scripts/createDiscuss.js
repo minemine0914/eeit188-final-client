@@ -125,7 +125,7 @@ const preCreateDiscussTemplates = [
 async function addRandomDiscuss() {
     try {
         // 取得使用者清單
-        const usersResponse = await apiClient.get('/user/find-users?pageNo=0&pageSize=100');
+        const usersResponse = await apiClient.get('/user/find-users?pageNo=0&pageSize=500');
         const users = usersResponse.data.users;
 
         // 取得房源清單
@@ -134,7 +134,7 @@ async function addRandomDiscuss() {
 
         for (let index = 0; index < users.length; index++) {
             const user = users[index];
-            console.log(`處理使用者 ${index + 1} / ${users.length}`); // 顯示目前處理的使用者計算
+            console.log(`(${index + 1} / ${users.length}) 處理使用者 ${index + 1} / ${users.length}`); // 顯示目前處理的使用者計算
 
             // 每位使用者隨機評論 3~5 間房源
             const numberOfReviews = Math.floor(Math.random() * 3) + 3; // 隨機 3 到 5
@@ -153,7 +153,7 @@ async function addRandomDiscuss() {
 
                 // 發送 POST 請求新增評論
                 await apiClient.post('/discuss/', discussData);
-                console.log(`成功新增評論: ${discussData.discuss}，分數: ${discussData.score} (使用者 ${index + 1} / ${users.length})`);
+                console.log(`(${index + 1} / ${users.length}) 成功新增評論: ${discussData.discuss}，分數: ${discussData.score}`);
             }
         }
     } catch (error) {
