@@ -55,7 +55,7 @@
                 <v-sheet class="mb-3">
                     <div class="text-h5 font-weight-medium mx-9">最新房源</div>
                     <v-slide-group show-arrows>
-                        <v-slide-group-item v-if="hotHouseList.length === 0" v-for="n in 8" :key="n">
+                        <v-slide-group-item v-if="newHouseList.length === 0" v-for="n in 8" :key="n">
                             <v-card height="360" width="320" elevation="0">
                                 <v-card-item class="pt-4">
                                     <v-sheet color="transparent" class="overflow-hidden" rounded="lg" height="200">
