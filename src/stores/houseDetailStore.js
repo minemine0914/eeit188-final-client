@@ -304,16 +304,16 @@ export const useHouseDetailStore = defineStore(
 
         async function getScoreDetail() {
             await api
-            .get(`/house/mongo/scores/${houseInfo.id}`)
-            .then((res) => {
-                console.log("[HouseDetailStore] Get score detail success", res.data);
-                Object.assign(scoreDetail, initalScoreDetail);
-                Object.assign(scoreDetail, res.data);
-            })
-            .catch((err) => {
-                Object.assign(scoreDetail, initalScoreDetail);
-                console.log("[HouseDetailStore] Get score detail failed");
-            });
+                .get(`/house/mongo/scores/${houseInfo.id}`)
+                .then((res) => {
+                    console.log("[HouseDetailStore] Get score detail success", res.data);
+                    Object.assign(scoreDetail, initalScoreDetail);
+                    Object.assign(scoreDetail, res.data);
+                })
+                .catch((err) => {
+                    Object.assign(scoreDetail, initalScoreDetail);
+                    console.log("[HouseDetailStore] Get score detail failed");
+                });
         }
 
         async function getSelfHouseDiscuss() {
@@ -452,6 +452,42 @@ export const useHouseDetailStore = defineStore(
             }
         }
 
+        async function recordHouseMongoClick() {
+            if (userStore.user.id !== null) {
+                await api
+                    .post(`/house/mongo/click`, {
+                        userId: userStore.user.id,
+                        houseId: houseInfo.id,
+                    })
+                    .then((res) => {
+                        console.log("[HouseDetailStore] Record user click house success.");
+                    })
+                    .catch((err) => {
+                        console.log("[HouseDetailStore] Record user click house failed.");
+                    });
+            } else {
+                console.log("[HouseDetailStore] You are not login! can't check discuss.");
+            }
+        }
+
+        async function recordHouseMongoShare() {
+            if (userStore.user.id !== null) {
+                await api
+                    .post(`/house/mongo/share`, {
+                        userId: userStore.user.id,
+                        houseId: houseInfo.id,
+                    })
+                    .then((res) => {
+                        console.log("[HouseDetailStore] Record user share house success.");
+                    })
+                    .catch((err) => {
+                        console.log("[HouseDetailStore] Record user share house failed.");
+                    });
+            } else {
+                console.log("[HouseDetailStore] You are not login! can't check discuss.");
+            }
+        }
+
         return {
             houseInfo,
             hostInfo,
@@ -487,6 +523,8 @@ export const useHouseDetailStore = defineStore(
             getBookingList,
             removeBookingList,
             cleanBookingList,
+            recordHouseMongoClick,
+            recordHouseMongoShare,
         };
     },
     {

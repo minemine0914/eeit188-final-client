@@ -165,7 +165,7 @@
     </ol-map>
 </template>
 <script setup>
-import pointIcon from "@/assets/point01.svg";
+import pointIcon from "@/assets/point01.svg?image";
 import { ref } from "vue";
 import { storeToRefs } from "pinia";
 import { useUserViewStore } from "@/stores/userViewStore";

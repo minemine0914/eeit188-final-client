@@ -495,7 +495,7 @@ import DiscussDialog from "@/components/home/DiscussDialog.vue";
 import MoreDiscussesDialog from "@/components/home/MoreDiscussesDialog.vue";
 import DiscussCard from "../../components/home/DiscussCard.vue";
 // Assets
-import pointIcon from "@/assets/point01.svg";
+import pointIcon from "@/assets/point01.svg?image";
 // Openlayers
 import { platformModifierKeyOnly } from "ol/events/condition";
 // Use route, router
@@ -613,6 +613,7 @@ onMounted(async () => {
       houseDetailStore.getScoreDetail(),
       houseDetailStore.getPreviewDiscussList(),
       houseDetailStore.getSelfHouseDiscuss(),
+      houseDetailStore.recordHouseMongoClick(),
     ]);
     if (isErrorGetHouseInfo.value) {
       router.push("/");
