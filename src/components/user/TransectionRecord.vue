@@ -152,7 +152,7 @@ async function fetchTickets() {
         pageNum: page.value,
         pageSize: 10,
         orderBy: "createdAt",
-        desc: true,
+        desc: false,
       },
     });
 
