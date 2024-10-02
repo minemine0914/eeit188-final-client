@@ -236,6 +236,13 @@ async function checkQrCode() {
 
     ticket = response.data;
 
+    if (
+      new Date(ticket.endedAt) < new Date() ||
+      new Date(ticket.startedAt) > new Date()
+    ) {
+      return false;
+    }
+
     await usedTicket();
 
     return true;
