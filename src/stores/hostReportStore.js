@@ -10,7 +10,6 @@ export const useHostReportStore = defineStore('hostReport', {
         // loginUser: 'f27a7b80-4d60-44cf-aa1c-9b44dd375698',
         selectedHouseId: '',
         selectedUserId: '',
-        selectedUserIndex: 0,
 
         users: [{ "id": '' }],
         houses: [],

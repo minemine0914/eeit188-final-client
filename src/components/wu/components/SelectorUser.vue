@@ -52,6 +52,7 @@
                         Date(item.updatedAt).getMinutes()).padStart(2, '0') }}:{{ String(new
                         Date(item.updatedAt).getSeconds()).padStart(2, '0') }}
                 </template>
+                <template v-else>--</template>
             </template>
 
         </v-data-table>

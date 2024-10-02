@@ -86,7 +86,15 @@
                 </template>
             </template>
 
-            <template v-slot:item.pics="{ item }">
+            <template v-slot:item.platformIncome="{ item }">
+                ${{ item.platformIncome }}
+            </template>
+
+            <template v-slot:item.cashFlow="{ item }">
+                ${{ item.cashFlow }}
+            </template>
+
+            <!-- <template v-slot:item.pics="{ item }">
                 <div style="display:grid ;grid-template-columns: 1fr 1fr;">
                     <v-card v-if="Math.floor(Math.random() * 10) % 2" class="my-2" elevation="2" rounded>
                         <v-img :src="item.pics.doge.src" height="64" :title="item.pics.doge.title" cover />
@@ -104,7 +112,7 @@
                         <v-img :src="item.pics.good.src" height="64" :title="item.pics.good.title" cover />
                     </v-card>
                 </div>
-            </template>
+            </template> -->
         </v-data-table>
     </v-card>
 </template>

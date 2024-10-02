@@ -25,8 +25,15 @@
             </template>
 
             <template v-slot:item.capacity="{ item }">
-                <v-icon icon="mdi-account-supervisor" />{{ item.adult }}大 <v-icon icon="mdi-teddy-bear" />{{ item.child
-                }}小
+                <template v-if="item.adult">
+                    <v-icon icon="mdi-account-supervisor" />{{ item.adult }}大
+                </template>
+                <template v-if="item.child">
+                    <v-icon icon="mdi-teddy-bear" />{{ item.child }}小
+                </template>
+                <template v-if="!item.adult && !item.child">
+                    無特別限制
+                </template>
             </template>
 
             <template v-slot:item.review="{ item }">
@@ -81,6 +88,7 @@
                         Date(item.updatedAt).getMinutes()).padStart(2, '0') }}:{{ String(new
                         Date(item.updatedAt).getSeconds()).padStart(2, '0') }}
                 </template>
+                <template v-else>--</template>
             </template>
 
             <template v-slot:item.click="{ item }">
