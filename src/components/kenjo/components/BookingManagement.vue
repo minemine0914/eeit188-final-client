@@ -155,7 +155,7 @@
             <v-card-title class="text-h5">房東資訊</v-card-title>
             <v-card-text>
               <p>姓名:{{ hostInfo.name }}</p>
-              <p>聯絡方法:</p>
+              <!-- <p>聯絡方法:</p> -->
               <p>電話:{{ hostInfo.phone }}</p>
               <p>信箱:{{ hostInfo.email }}</p>
             </v-card-text>
