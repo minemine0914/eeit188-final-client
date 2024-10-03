@@ -8,8 +8,8 @@ import fs from "fs"; // 用於讀取 JSON 檔案
 
 // API 網址
 let eeitApiUrl;
-// eeitApiUrl = "https://localhost/api"; // 上線環境
-eeitApiUrl = "http://localhost:8080"; // 開發環境
+eeitApiUrl = "https://localhost/api"; // 上線環境
+// eeitApiUrl = "http://localhost:8080"; // 開發環境
 
 // 定義抓取使用者清單的參數
 const userParams = {
@@ -25,20 +25,20 @@ const args = process.argv.slice(2); // 去掉前兩個默認參數
 
 // 創建一個對象來存儲解析後的參數
 const params = {};
-args.forEach(arg => {
-    const [key, value] = arg.split('='); // 根據 "=" 分割
+args.forEach((arg) => {
+    const [key, value] = arg.split("="); // 根據 "=" 分割
     if (key && value) {
-        params[key.replace('--', '')] = value; // 去掉 "--" 前綴
+        params[key.replace("--", "")] = value; // 去掉 "--" 前綴
     }
 });
 
 // 提取 Pexels API 金鑰
-const pexelsApiKey = params['api-key']; // 獲取 api-key 參數
-console.log('Pexels API Key:', pexelsApiKey);
+const pexelsApiKey = params["api-key"]; // 獲取 api-key 參數
+console.log("Pexels API Key:", pexelsApiKey);
 
 // 確保在使用前檢查是否獲取到了 API 金鑰
 if (!pexelsApiKey) {
-    console.error('Error: Pexels API Key is required.');
+    console.error("Error: Pexels API Key is required.");
     process.exit(1); // 終止程序，返回非零狀態碼
 }
 
@@ -61,7 +61,7 @@ const pexelsApiClient = axios.create({
 const cityCountyDataPath = "src/assets/CityCountyData.json";
 
 // 定義抓取使用者清單的函數
-const fetchUserList = async params => {
+const fetchUserList = async (params) => {
     try {
         const response = await apiClient.get("/user/find-users", { params });
         return response.data.users;
@@ -88,20 +88,24 @@ const getCoordinates = async (city, region) => {
         if (results.length > 0) {
             // 獲取第一個結果的經緯度
             const { lat, lon } = results[0];
-            console.log(`(${processingUserCount}/${foundUserCount}) Coordinates of ${query}: Latitude ${lat}, Longitude ${lon}`);
+            console.log(
+                `(${processingUserCount}/${foundUserCount}) Coordinates of ${query}: Latitude ${lat}, Longitude ${lon}`
+            );
             return { latitude: lat, longitude: lon };
         } else {
             console.log(`(${processingUserCount}/${foundUserCount}) No results found for ${query}`);
             return null;
         }
     } catch (error) {
-        console.error(`(${processingUserCount}/${foundUserCount}) Error fetching coordinates: ${error.message}`);
+        console.error(
+            `(${processingUserCount}/${foundUserCount}) Error fetching coordinates: ${error.message}`
+        );
         return null;
     }
 };
 
 // 隨機偏移經緯度的函數
-const getRandomOffset = maxOffset => {
+const getRandomOffset = (maxOffset) => {
     // 隨機生成範圍在 -maxOffset 到 maxOffset 之間的數字
     const offset = Math.random() * maxOffset * 2 - maxOffset; // 偏移範圍：-maxOffset 到 +maxOffset
     return offset;
@@ -126,7 +130,19 @@ const generateRandomName = () => {
         "豪華",
         "生態",
     ];
-    const nouns = ["公寓", "別墅", "套房", "小屋", "度假村", "花園", "城堡", "宅邸", "小型住宅", "家庭旅館", "豪宅"];
+    const nouns = [
+        "公寓",
+        "別墅",
+        "套房",
+        "小屋",
+        "度假村",
+        "花園",
+        "城堡",
+        "宅邸",
+        "小型住宅",
+        "家庭旅館",
+        "豪宅",
+    ];
     const locations = [
         "海邊",
         "山上",
@@ -167,7 +183,7 @@ const generateRandomPrice = (min, max) => {
 };
 
 // 隨機生成房間數量
-const generateRandomRoomCount = max => {
+const generateRandomRoomCount = (max) => {
     return Math.floor(Math.random() * max) + 1; // 隨機生成 1 到 max 的房間數量
 };
 
@@ -182,7 +198,7 @@ const readCityCountyData = () => {
 };
 
 // 隨機生成房源資料的函數
-const generateHouseData = async userId => {
+const generateHouseData = async (userId) => {
     const data = readCityCountyData();
     const randomCity = data[Math.floor(Math.random() * data.length)];
     const randomArea = randomCity.AreaList[Math.floor(Math.random() * randomCity.AreaList.length)];
@@ -196,7 +212,9 @@ const generateHouseData = async userId => {
 
     // 檢查是否成功獲取經緯度
     if (!coordinates) {
-        console.error(`(${processingUserCount}/${foundUserCount}) Unable to get coordinates for ${randomCity.CityName} ${randomArea.AreaName}`);
+        console.error(
+            `(${processingUserCount}/${foundUserCount}) Unable to get coordinates for ${randomCity.CityName} ${randomArea.AreaName}`
+        );
         return null; // 或者您可以選擇返回一個默認值
     }
 
@@ -231,7 +249,7 @@ const generateHouseData = async userId => {
 };
 
 // 在 createHouse 函數中使用 generateHouseData
-const createHouse = async user => {
+const createHouse = async (user) => {
     const houseData = await generateHouseData(user.id); // 隨機生成房源數據
 
     try {
@@ -242,38 +260,20 @@ const createHouse = async user => {
         );
         return response.data;
     } catch (error) {
-        console.error(`(${processingUserCount}/${foundUserCount}) Error creating house for user: ${user.name}[${user.id}]:`, error.message, houseData);
+        console.error(
+            `(${processingUserCount}/${foundUserCount}) Error creating house for user: ${user.name}[${user.id}]:`,
+            error.message,
+            houseData
+        );
     }
 };
 
 let imageCache = []; // 用於緩存圖片資料
 const imageCacheSize = 80; // 緩存的圖片數量
 
-// 初始獲取圖片並儲存到緩存的函數
-const initializeImageCache = async () => {
-    try {
-        const response = await pexelsApiClient.get("/search", {
-            params: {
-                query: "house",
-                per_page: imageCacheSize,
-                page: Math.floor(Math.random() * 100) + 1 // 隨機選擇頁面
-            },
-        });
-
-        const photos = response.data.photos;
-        if (photos.length > 0) {
-            imageCache.push(...photos.map(photo => photo.src.large)); // 儲存圖片 URL 到緩存
-            console.log(`Initialized image cache with ${photos.length} images.`);
-        } else {
-            console.error("No photos found from Pexels.");
-        }
-    } catch (error) {
-        console.error("Error initializing image cache:", error.message);
-    }
-};
-
 // 獲取隨機圖片 URL 的函數
 const getRandomImageUrls = async (count = 7) => {
+    
     const selectedPhotos = [];
 
     // 優先使用緩存中的圖片
@@ -285,35 +285,40 @@ const getRandomImageUrls = async (count = 7) => {
 
     // 如果緩存不足，則從 API 獲取更多圖片
     if (selectedPhotos.length < count) {
-        await initializeImageCache(); // 更新緩存
-
-        // 再次檢查緩存
-        while (selectedPhotos.length < count && imageCache.length > 0) {
-            const randomIndex = Math.floor(Math.random() * imageCache.length);
-            selectedPhotos.push(imageCache[randomIndex]);
-            imageCache.splice(randomIndex, 1);
-        }
-
-        // 如果仍然不足，則發送請求
-        if (selectedPhotos.length < count) {
-            const additionalImagesNeeded = count - selectedPhotos.length;
+        console.log(`[PexelsApi] 從Pexels快取${imageCacheSize}張圖片來源...`);
+        try {
             const response = await pexelsApiClient.get("/search", {
                 params: {
-                    query: "house",
-                    per_page: additionalImagesNeeded,
-                    page: Math.floor(Math.random() * 100) + 1
+                    query: "Living room, Bed room, Hotel room",
+                    // query: "Hotel room",
+                    orientation: "landscape",
+                    per_page: imageCacheSize,
+                    page: Math.floor(Math.random() * 100) + 1, // 隨機選擇頁面
                 },
             });
-            const newPhotos = response.data.photos;
-            if (newPhotos.length > 0) {
-                imageCache.push(...newPhotos.map(photo => photo.src.large)); // 更新緩存
+
+            const photos = response.data.photos;
+            const rateLimit = response.headers["x-ratelimit-limit"];
+            const remaining = response.headers["x-ratelimit-remaining"];
+            const resetTime = response.headers["x-ratelimit-reset"];
+
+            console.log(`[PexelsApi] 每月配額總請求次數: ${rateLimit}`);
+            console.log(`[PexelsApi] 剩餘的請求次數: ${remaining}`);
+            console.log(`[PexelsApi] 重新計算週期的時間: ${new Date(resetTime * 1000).toLocaleString()}`);
+
+            if (photos.length > 0) {
+                imageCache.push(...photos.map((photo) => photo.src.large)); // 更新緩存
                 // 繼續選擇新圖片
                 while (selectedPhotos.length < count && imageCache.length > 0) {
                     const randomIndex = Math.floor(Math.random() * imageCache.length);
                     selectedPhotos.push(imageCache[randomIndex]);
                     imageCache.splice(randomIndex, 1);
                 }
+            } else {
+                console.error("[PexelsApi] 沒有圖片可以獲取");
             }
+        } catch (error) {
+            console.error("[PexelsApi] 獲取圖片錯誤:", error.message);
         }
     }
 
@@ -326,7 +331,7 @@ const downloadImage = async (imageUrl) => {
         const imageResponse = await axios.get(imageUrl, { responseType: "arraybuffer" });
         return Buffer.from(imageResponse.data, "binary");
     } catch (error) {
-        console.error(`Error downloading image: ${imageUrl}`, error.message);
+        console.error(`(${processingUserCount}/${foundUserCount}) 下載圖片失敗: ${imageUrl}`, error.message);
         throw error; // 重新拋出錯誤以便上層函數處理
     }
 };
@@ -335,16 +340,16 @@ const downloadImage = async (imageUrl) => {
 const uploadMultipleImages = async (houseId) => {
     try {
         const formData = new FormData();
-        formData.append("houseId", houseId); 
+        formData.append("houseId", houseId);
 
         // 獲取 7 張隨機圖片的 URL
         const imageUrls = await getRandomImageUrls(7);
-        
+
         // 下載並添加圖片到 form-data 中
         for (let i = 0; i < imageUrls.length; i++) {
             const imageUrl = imageUrls[i];
-            const imageBuffer = await downloadImage(imageUrl); 
-            formData.append("files", imageBuffer, `image-${i + 1}.jpg`); 
+            const imageBuffer = await downloadImage(imageUrl);
+            formData.append("files", imageBuffer, `image-${i + 1}.jpg`);
         }
 
         const response = await apiClient.post("/house-external-resource/", formData, {
@@ -353,15 +358,14 @@ const uploadMultipleImages = async (houseId) => {
             },
         });
 
-        console.log(`Images uploaded for house ${houseId}:`, response.data.locations);
+        console.log(`(${processingUserCount}/${foundUserCount}) 圖片上傳成功! ${houseId}`);
     } catch (error) {
-        console.error(`Error uploading images for house ${houseId}:`, error.message);
+        console.error(`(${processingUserCount}/${foundUserCount}) 圖片上傳失敗! ${houseId}:`, error.message);
     }
 };
 
 // 主函數
 const main = async () => {
-    await initializeImageCache(); // 初始化圖片緩存
     const users = await fetchUserList(userParams); // 使用已獨立的搜尋參數
     foundUserCount = users.length;
     if (foundUserCount > 0) {
@@ -373,7 +377,7 @@ const main = async () => {
             }
         }
     } else {
-        console.log("No users found to create houses.");
+        console.log("找不到使用者可以建立房源");
     }
 };
 
