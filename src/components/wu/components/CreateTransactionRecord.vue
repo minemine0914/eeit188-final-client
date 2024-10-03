@@ -13,9 +13,10 @@
             </div>
         </div>
 
-        (1.<button @click="findAllUserString">findAllUser</button>
-        2.<button @click="findAllHouse">findAllHouse</button>
-        ) 3.<button @click="crossInsertTransactionRecord">CREATE!!!</button>
+        (1.抓取使用者清單<button @click="findAllUserString">先點我</button>
+        2.抓取房源清單<button @click="findAllHouse">再點我</button>
+        ) 3.產生假交易<button @click="crossInsertTransactionRecord">最後再點我</button>
+        <p>*{{ store.progress }}</p>
     </div>
 </template>
 
