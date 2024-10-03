@@ -28,7 +28,7 @@ import { useVuelidate } from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
 import { useUserStore } from "../../stores/userStore";
 import { useRouter, useRoute } from "vue-router";
-import Swal from "sweetalert2";
+import Swal from "@/plugins/sweetalert2";
 
 const initialState = {
   email: null,
@@ -75,6 +75,8 @@ const submit = async () => {
     Swal.fire({
       title: "登入失敗，請確認email及密碼",
       icon: "error",
+      showConfirmButton: false,
+      showDenyButton: true,
     });
     console.error("Login failed:", error);
   }
