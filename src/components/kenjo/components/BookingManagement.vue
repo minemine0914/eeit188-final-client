@@ -56,7 +56,7 @@
                       v-model="editedOrder.house.name"
                       label="房屋ID"
                       @click="showPropertyId"
-                      
+                      readonly
                     ></v-text-field>
                   </v-col>
                   <v-col cols="12" md="6" sm="6">
@@ -70,6 +70,7 @@
                     <v-text-field
                       v-model="editedOrder.user.name"
                       label="房客資訊"
+                      @click="showGuestInfo"
                       readonly
                     ></v-text-field>
                   </v-col>
@@ -149,7 +150,7 @@
           </v-card>
         </v-dialog>
         <!-- 房東資訊對話框 -->
-        <!-- <v-dialog v-model="dialogHostInfo" max-width="500px">
+        <v-dialog v-model="dialogHostInfo" max-width="500px">
           <v-card>
             <v-card-title class="text-h5">房東資訊</v-card-title>
             <v-card-text>
@@ -164,15 +165,15 @@
               <v-spacer></v-spacer>
             </v-card-actions>
           </v-card>
-        </v-dialog> -->
+        </v-dialog>
 
         <!-- 房客資訊對話框 -->
-        <!-- <v-dialog v-model="dialogGuestInfo" max-width="500px">
+        <v-dialog v-model="dialogGuestInfo" max-width="500px">
           <v-card>
             <v-card-title class="text-h5">房客資訊</v-card-title>
             <v-card-text>
-              <p>姓名:{{ house.userName.phone }}</p>
-              <p>聯絡方法:</p>
+              <p>姓名:{{ guestInfo.name }}</p>
+              <!-- <p>聯絡方法:</p> -->
               <p>電話:{{ guestInfo.phone }}</p>
               <p>信箱:{{ guestInfo.email }}</p>
             </v-card-text>
@@ -187,7 +188,7 @@
               <v-spacer></v-spacer>
             </v-card-actions>
           </v-card>
-        </v-dialog>  -->
+        </v-dialog> 
 
         <!-- 房屋資訊對話框 -->
         <v-dialog v-model="dialogPropertyId" max-width="500px">
@@ -195,10 +196,10 @@
             <v-card-title class="text-h5">房屋資訊</v-card-title>
             <v-card-text>
               <p>名稱:{{ propertyInfo.name }}</p>
-              <p>地點:{{ propertyInfo.location }}</p>
-              <p>類型:{{ propertyInfo.type }}</p>
-              <p>平日價格:{{ propertyInfo.weekdayPrice }}</p>
-              <p>假日價格:{{ propertyInfo.weekendPrice }}</p>
+              <p>城市:{{ propertyInfo.city }}</p>
+              <p>地址:{{ propertyInfo.location }}</p>
+              <p>類型:{{ propertyInfo.category }}</p>
+              <p>每晚價格:{{ propertyInfo.price }}</p>
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
@@ -437,20 +438,31 @@ export default {
       }
     },
 
-    showHostInfo() {
-      this.hostInfo = {
-        name: this.editedOrder.house.userName,
-        phone: "我是電話",
-        email: "我是信箱",
-      };
-      this.dialogHostInfo = true;
+    async showHostInfo() {
+      try {
+        const response = await axios.get(`/user/find/${this.editedOrder.house.userId}`); // 假設 userId 是房東的 ID
+        if (response.status === 200) {
+          this.hostInfo = {
+            name: response.data.name,
+            phone: response.data.phone,
+            email: response.data.email,
+          };
+          this.dialogHostInfo = true;
+        } else {
+          console.error("無法獲取房東資訊:", response.status);
+          // 可以顯示提示訊息給使用者
+        }
+      } catch (error) {
+        console.error("獲取房東資訊時發生錯誤:", error);
+        // 可以顯示提示訊息給使用者
+      }
     },
 
     showGuestInfo() {
       this.guestInfo = {
         name: this.editedOrder.user.name,
-        phone: "我是電話",
-        email: "我是信箱",
+        phone:this.editedOrder.user.phone,
+        email: this.editedOrder.user.email,
       };
       this.dialogGuestInfo = true;
     },
@@ -459,9 +471,9 @@ export default {
       this.propertyInfo = {
         name: this.editedOrder.house.name,
         location: this.editedOrder.house.address,
-        type:  this.editedOrder.house.type,
-        weekdayPrice: "$$$$",
-        weekendPrice: "$$$$",
+        category:  this.editedOrder.house.category,
+        price: this.editedOrder.house.price,
+        city: this.editedOrder.house.city,
       };
       this.dialogPropertyId = true;
     },
