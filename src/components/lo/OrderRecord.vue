@@ -6,8 +6,8 @@
     :headers="headers"
     :items="orders"
     :sort-by="[{ key: 'createdAt', order: 'asc' }]">
+    
     <template v-slot:item.deal="{ item }">
-        
         <v-chip
           :color="getStatusColor(item.deal)"
           size="small"
@@ -16,10 +16,10 @@
           {{ getStatusText(item.deal) }}
         </v-chip>
        </template>
+       
     <template v-slot:top>
-
-      
       <v-toolbar flat>
+        
         <v-toolbar-title>訂單管理</v-toolbar-title>
         <v-divider class="mx-4" inset vertical></v-divider>
         <v-spacer></v-spacer>
@@ -34,7 +34,7 @@
           single-line
           :style="{ width: '200px' }"
         ></v-text-field>
-
+        <v-btn color="success" @click="exportCSV">匯出 CSV</v-btn> <!-- 匯出 CSV 按鈕 -->
         <v-dialog v-model="dialog" max-width="500px">
           <v-card>
             <v-card-title>
@@ -551,7 +551,38 @@ export default {
         // 合併所有訂單
         this.orders = [].concat(...ordersArrays);
       }
-    }
+    },
+    exportCSV() {
+      const csvContent = this.generateCSV(this.orders); // 使用 orders
+      const bom = '\uFEFF'; // 加入 BOM
+      const blob = new Blob([bom + csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', 'orders.csv');
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    },
+
+    generateCSV(data) {
+        const filteredHeaders = this.headers.filter(header => header.key !== 'actions'); // 不列印出 actions 欄位
+        const headers = filteredHeaders.map(header => `"${header.title}"`).join(',') + '\n';
+        
+        const rows = data.map(item => 
+          filteredHeaders.map(header => {
+            const keys = header.key.split('.'); 
+            let value = item;
+            keys.forEach(key => {
+              value = value ? value[key] : '';
+            });
+            return `"${(value !== undefined && value !== null ? value.toString().replace(/"/g, '""') : '')}"`;
+          }).join(',')
+        ).join('\n');
+
+        return headers + rows;
+      }
   },
 }
 </script>
