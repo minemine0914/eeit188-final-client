@@ -8,8 +8,8 @@ import fs from "fs"; // 用於讀取 JSON 檔案
 
 // API 網址
 let eeitApiUrl;
-eeitApiUrl = "https://localhost/api"; // 上線環境
-// eeitApiUrl = "http://localhost:8080"; // 開發環境
+// eeitApiUrl = "https://localhost/api"; // 上線環境
+eeitApiUrl = "http://localhost:8080"; // 開發環境
 
 // 定義抓取使用者清單的參數
 const userParams = {

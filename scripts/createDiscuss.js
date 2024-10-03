@@ -133,7 +133,7 @@ async function addRandomDiscuss() {
         const users = usersResponse.data.users;
 
         // 取得房源清單
-        const housesResponse = await apiClient.get('/house/all?page=0&limit=100&dir=true&order=createdAt');
+        const housesResponse = await apiClient.get('/house/all?page=0&limit=500&dir=true&order=createdAt');
         const houses = housesResponse.data.content;
 
         for (let index = 0; index < users.length; index++) {
@@ -157,7 +157,7 @@ async function addRandomDiscuss() {
 
                 // 發送 POST 請求新增評論
                 await apiClient.post('/discuss/', discussData);
-                console.log(`(${index + 1} / ${users.length}) 成功新增評論: ${discussData.discuss}，分數: ${discussData.score}`);
+                console.log(`(${index + 1} / ${users.length}) 成功新增評論: ${discussData.discuss}，分數: ${discussData.score}，房源: ${randomHouse.name}[${randomHouse.id}]`);
             }
         }
     } catch (error) {
