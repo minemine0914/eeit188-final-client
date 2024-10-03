@@ -501,20 +501,20 @@ export default {
         const response = await axios.get(`http://localhost:8080/transcation_record/${orderId}`);
         
         if (response.status === 200) {
-          console.log(`重新抓取訂單 ${orderId}:`, response.data);
+          //console.log(`重新抓取訂單 ${orderId}:`, response.data);
           // 假設 API 返回的格式是正確的，更新相應的訂單資料
-          const index = this.orders.findIndex(order => order.id === orderId);
-          if (index !== -1) {
-            const updatedOrder = {
-            ...response.data,
-            createdAt: this.formatDate(response.data.createdAt),
-            startedAt: this.formatDate(response.data.ticket.startedAt),
-            endedAt: this.formatDate(response.data.ticket.endedAt),
-            ticket: response.data.ticket || { people: 0 } 
-        };
-        console.log("AAA=",updatedOrder)
-            this.orders[index] = updatedOrder; // 更新訂單
-          }
+        //   const index = this.orders.findIndex(order => order.id === orderId);
+        //   if (index !== -1) {
+        //     const updatedOrder = {
+        //     ...response.data,
+        //     createdAt: this.formatDate(response.data.createdAt),
+        //     startedAt: this.formatDate(response.data.ticket.startedAt),
+        //     endedAt: this.formatDate(response.data.ticket.endedAt),
+        //     ticket: response.data.ticket || { people: 0 } 
+        // };
+        // console.log("AAA=",updatedOrder)
+        //     this.orders[index] = updatedOrder; // 更新訂單
+        //   }
         } else {
           console.error(`無法重新抓取訂單 ${orderId}:`, response.status);
         }
