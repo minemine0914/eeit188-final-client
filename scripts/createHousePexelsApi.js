@@ -207,8 +207,8 @@ const generateHouseData = async (userId) => {
     const coordinates = await getCoordinates(randomCity.CityName, randomArea.AreaName);
 
     // 隨機偏移範圍，這裡以 0.0005 度為例，根據需求調整
-    const offsetLat = getRandomOffset(0.0005); // 經度偏移範圍
-    const offsetLon = getRandomOffset(0.0005); // 緯度偏移範圍
+    const offsetLat = getRandomOffset(0.009); // 經度偏移範圍
+    const offsetLon = getRandomOffset(0.009); // 緯度偏移範圍
 
     // 檢查是否成功獲取經緯度
     if (!coordinates) {
