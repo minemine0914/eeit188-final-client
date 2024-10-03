@@ -82,13 +82,7 @@ export const useUserStore = defineStore(
           url: "/user/system/login",
           data: loginData,
         });
-        // if (response.data && response.data.token) {
-        //   localStorage.setItem('jwtToken', response.data.token); 
-          jwtToken.value = response.data.token; 
-        // } else {
-        //   //console.error('未能取得 token');
-        //   throw new Error('未能取得 token');
-        // }
+        jwtToken.value = response.data.token;
 
         await reloadUser();
       } catch (error) {
@@ -135,7 +129,7 @@ export const useUserStore = defineStore(
         });
         Object.assign(user, initialUser);
         Object.assign(user, response.data);
-        if ( user.avatarBase64 == null ) {
+        if (user.avatarBase64 == null) {
           user.avatarBase64 = emptyUserAvavtarImage;
         }
       } catch (error) {
