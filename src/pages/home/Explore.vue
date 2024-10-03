@@ -1,14 +1,41 @@
 <template>
-    <v-container ref="exploreContainerRef" :style="[`height: ${containerHeight}px`]" class="pa-0" fluid>
+    <v-container
+        ref="exploreContainerRef"
+        :style="[`height: ${containerHeight}px`]"
+        class="pa-0"
+        fluid
+    >
         <!-- Infinity scroll -->
-        <v-infinite-scroll :height="exploreContainerResizeObserve.height" :items="allHouseList" @load="loadAllHouse">
+        <v-infinite-scroll
+            :height="exploreContainerResizeObserve.height"
+            :items="allHouseList"
+            @load="loadAllHouse"
+        >
             <!-- Explore Banner -->
-            <v-parallax :src="primaryBannerImg" scale="0.6" height="360px" width="100%" class="posiiton-relative">
+            <v-parallax
+                :src="primaryBannerImg"
+                scale="0.6"
+                height="360px"
+                width="100%"
+                class="posiiton-relative"
+                style="top: -16px"
+            >
                 <div class="d-flex flex-column fill-height justify-center align-center text-white">
-                    <NomadSvg height="230px" class="position-absolute opacity-40" style="top: 35px;" />
-                    <div class="position-absolute" style="top: 125px;">
-                        <div class="text-h3 font-weight-black mb-3 opacity-80" style="font-family: 'Tenor Sans'">NOMAD</div>
-                        <div class="subheading font-weight-regular opacity-90">住宿 旅遊 重新定義居住自由</div>
+                    <NomadSvg
+                        height="230px"
+                        class="position-absolute opacity-40"
+                        style="top: 35px"
+                    />
+                    <div class="position-absolute" style="top: 125px">
+                        <div
+                            class="text-h3 font-weight-black mb-3 opacity-80"
+                            style="font-family: 'Tenor Sans'"
+                        >
+                            NOMAD
+                        </div>
+                        <div class="subheading font-weight-regular opacity-90">
+                            住宿 旅遊 重新定義居住自由
+                        </div>
                     </div>
                 </div>
             </v-parallax>
@@ -17,29 +44,12 @@
                 <SearchHouseBar style="top: -100px" />
             </v-sheet>
             <!-- Hot Houses -->
-            <v-container fluid class="px-0">
+            <v-container fluid class="px-0 pt-0">
                 <v-sheet class="mb-3">
                     <div class="text-h5 font-weight-medium mx-9">熱門推薦</div>
-                    <v-slide-group show-arrows>
-                        <v-slide-group-item v-if="hotHouseList.length === 0" v-for="n in 8" :key="n">
-                            <v-card height="360" width="320" elevation="0">
-                                <v-card-item class="pt-4">
-                                    <v-sheet color="transparent" class="overflow-hidden" rounded="lg" height="200">
-                                        <v-skeleton-loader class="mx-auto h-100" type="image" />
-                                    </v-sheet>
-                                </v-card-item>
-                                <v-skeleton-loader type="list-item-three-line" />
-                            </v-card>
-                        </v-slide-group-item>
-                        <v-slide-group-item v-else v-for="hotHouse in hotHouseList" :key="hotHouse.houseDetails.id">
-                            <HouseCard
-                                :house="hotHouse.houseDetails"
-                                :avg-score="hotHouse.averageScore"
-                                :total-scores="hotHouse.totalScores"
-                                width="320"
-                            />
-                        </v-slide-group-item>
-                    </v-slide-group>
+                    <div class="position-relative">
+                        <HotHouseInfinityScorll />
+                    </div>
                 </v-sheet>
             </v-container>
             <!-- Ads for House host -->
@@ -54,35 +64,19 @@
             </v-parallax>
             <!-- Height rating houses -->
             <v-container fluid class="px-0">
-                <v-sheet class="mb-3">
+                <v-sheet class="mb-3 position-relative">
                     <div class="text-h5 font-weight-medium mx-9">最新房源</div>
-                    <v-slide-group show-arrows>
-                        <v-slide-group-item v-if="newHouseList.length === 0" v-for="n in 8" :key="n">
-                            <v-card height="360" width="320" elevation="0">
-                                <v-card-item class="pt-4">
-                                    <v-sheet color="transparent" class="overflow-hidden" rounded="lg" height="200">
-                                        <v-skeleton-loader class="mx-auto h-100" type="image" />
-                                    </v-sheet>
-                                </v-card-item>
-                                <v-skeleton-loader type="list-item-three-line" />
-                            </v-card>
-                        </v-slide-group-item>
-                        <v-slide-group-item v-else v-for="newHouse in newHouseList" :key="newHouse.id">
-                            <HouseCard
-                                :house="newHouse.houseDetails"
-                                :avg-score="newHouse.averageScore"
-                                :total-scores="newHouse.totalScores"
-                                width="320"
-                            />
-                        </v-slide-group-item>
-                    </v-slide-group>
+                    <NewHouseInfinityScorll />
                 </v-sheet>
             </v-container>
             <!-- Explore all houses -->
-            <v-container fluid class="mb-5">
+            <v-container fluid class="mb-5 pt-0">
                 <div class="text-h5 font-weight-medium mx-5">探索房源</div>
                 <v-row justify="start" align="start">
-                    <template v-for="exploreHouse in allHouseList" :key="exploreHouse.houseDetails.id">
+                    <template
+                        v-for="exploreHouse in allHouseList"
+                        :key="exploreHouse.houseDetails.id"
+                    >
                         <v-col cols="12" lg="3" md="4" sm="6" xs="12">
                             <HouseCard
                                 :house="exploreHouse.houseDetails"
@@ -118,11 +112,15 @@ import { useResizeObserver } from "@vueuse/core";
 import { storeToRefs } from "pinia";
 import { onMounted, reactive, ref } from "vue";
 import HouseCard from "../../components/home/HouseCard.vue";
+import HotHouseInfinityScorll from "../../components/home/HotHouseInfinityScorll.vue";
+import NewHouseInfinityScorll from "../../components/home/NewHouseInfinityScorll.vue";
+
 const houseSearchStore = useHouseSearchStore();
 const userViewStore = useUserViewStore();
 const userStore = useUserStore();
 const { user } = storeToRefs(userStore);
-const { allHouseList, hotHouseList, newHouseList, currentAllHousePage } = storeToRefs(houseSearchStore);
+const { allHouseList, hotHouseList, newHouseList, currentAllHousePage } =
+    storeToRefs(houseSearchStore);
 const { containerHeight } = storeToRefs(userViewStore);
 const exploreContainerRef = ref(null);
 const exploreContainerResizeObserve = reactive({ width: 0, height: 0 });
@@ -148,7 +146,7 @@ async function loadAllHouse({ done }) {
 
 // ResizeObserver on searchContainer
 let timeoutId = null;
-useResizeObserver(exploreContainerRef, entries => {
+useResizeObserver(exploreContainerRef, (entries) => {
     if (timeoutId) clearTimeout(timeoutId);
     timeoutId = setTimeout(() => {
         const entry = entries[0];
@@ -159,14 +157,14 @@ useResizeObserver(exploreContainerRef, entries => {
 });
 
 onMounted(() => {
-    houseSearchStore.getHotHouse();
-    houseSearchStore.getNewHouse();
+    // houseSearchStore.getHotHouse();
+    // houseSearchStore.getNewHouse();
 });
 </script>
 <style scoped>
-:deep(.v-infinite-scroll__side) {
+/* :deep(.v-infinite-scroll__side) {
     padding: 0 !important;
-}
+} */
 :deep(.v-skeleton-loader > *) {
     margin: 0;
 }

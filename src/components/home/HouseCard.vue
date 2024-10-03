@@ -1,5 +1,5 @@
 <template>
-    <v-card flat rounded="lg" @click.stop="$router.push(`/house/${house.id}`)" :ripple="false" :hover="false">
+    <v-card flat rounded="lg" @click.stop="$router.push(`/house/${house.id}`)" :ripple="false" :hover="false" class="h-100">
         <v-card-item class="pt-4">
             <v-sheet color="transparent" class="overflow-hidden" rounded="lg">
                 <v-carousel height="200" show-arrows="hover" hide-delimiter-background hide-delimiters>
