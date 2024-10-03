@@ -210,8 +210,8 @@ export default {
     },
     exportCSV() {
       const csvContent = this.generateCSV(this.filteredDesserts);
-      const bom = '\uFEFF'; 
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const bom = '\uFEFF'; // 加入 BOM
+      const blob = new Blob([bom + csvContent], { type: 'text/csv;charset=utf-8;' }); // 將 BOM 加入 blob 中
       const link = document.createElement('a');
       const url = URL.createObjectURL(blob);
       link.setAttribute('href', url);
@@ -223,18 +223,17 @@ export default {
     },
 
     generateCSV(data) {
-      const headers = this.headers.map(header => `"${header.title}"`).join(',') + '\n';
-      
+      const filteredHeaders = this.headers.filter(header => header.value !== 'actions');//不列印出 actions欄位
+      const headers = filteredHeaders.map(header => `"${header.title}"`).join(',') + '\n';
       const rows = data.map(item => 
         this.headers.map(header => {
-          const value = item[header.value]; // 取得值
-          // 檢查值是否為 undefined 或 null，並進行適當處理
-           return `"${(value !== undefined && value !== null ? value.toString().replace(/"/g, '""') : '')}"`;
-          }).join(',')
-        ).join('\n');
+          const value = item[header.value];
+          return `"${(value !== undefined && value !== null ? value.toString().replace(/"/g, '""') : '')}"`;
+        }).join(',')
+      ).join('\n');
 
-        return headers + rows;
-      },
+      return headers + rows;
+    },
 
     editItem(item) {
       this.editedIndex = this.desserts.indexOf(item);
