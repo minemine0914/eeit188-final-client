@@ -206,6 +206,7 @@ import { useHostManagementStore } from "@/stores/hostManagementStore";
 import { useRouter } from "vue-router";
 import { useUserStore } from "../../stores/userStore";
 import axios from "@/plugins/axios.js";
+import Swal from "sweetalert2";
 
 const userStore = useUserStore();
 const { user } = userStore;

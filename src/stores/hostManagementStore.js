@@ -69,7 +69,7 @@ export const useHostManagementStore = defineStore("hostManagement", () => {
     let data = {
       ...propertyData,
       userId: userStore.user.id,
-      price: propertyData.pricePerDay,
+      price: propertyData.price,
     };
     clearError();
     state.loading = true;
