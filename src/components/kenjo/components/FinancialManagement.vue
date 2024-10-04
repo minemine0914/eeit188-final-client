@@ -190,10 +190,8 @@ export default {
           combinedData[formattedDate].AP += cashFlow;
           combinedData[formattedDate].R += (cashFlow * 0.05) ; 
           //const formattedTotalAmount = combinedData[formattedDate].totalAmount.toFixed(2);
-          combinedData[formattedDate].formattedTotalAmount = combinedData[formattedDate].totalAmount.toFixed(2);
-          combinedData[formattedDate].formattedTotalR = combinedData[formattedDate].R.toFixed(2);
-          // console.log("totalAmount=" + combinedData[formattedDate].formattedTotalAmount);
-          // console.log("R=" + combinedData[formattedDate].formattedTotalR);
+          combinedData[formattedDate].formattedTotalAmount = combinedData[formattedDate].totalAmount.toFixed(0);
+          combinedData[formattedDate].formattedTotalR = (combinedData[formattedDate].totalAmount - combinedData[formattedDate].AP).toFixed(0);
         });
         this.desserts = Object.values(combinedData);
       } catch (error) {
