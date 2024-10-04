@@ -14,7 +14,7 @@
               <div class="chat-recored-title">
                 <v-list-item-avatar>
                   <v-img
-                    v-if="!item?.avatar"
+                    v-if="!item?.avatar || item?.avatar === null"
                     src="src/assets/user.png"
                     width="50px"
                     alt=""
@@ -84,7 +84,7 @@
             <div class="member">
               <v-avatar class="avatar" size="50">
                 <v-img
-                  v-if="!chat?.senderAvatar"
+                  v-if="!chat?.senderAvatar || chat?.senderAvatar === null"
                   src="src/assets/user.png"
                   width="50px"
                   alt=""
@@ -109,7 +109,7 @@
             <div class="member">
               <v-avatar class="avatar" color="surface-light" size="50">
                 <v-img
-                  v-if="!chat?.senderAvatar"
+                  v-if="!chat?.senderAvatar || chat?.senderAvatar === null"
                   src="src/assets/user.png"
                   width="50px"
                   alt=""
