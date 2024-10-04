@@ -83,7 +83,7 @@ async function loadHotHouse({ done }) {
             show: true,
             review: true,
             limit: 10,
-            page: 0,
+            page: currentPage.value,
             dir: true,
             order: "createdAt",
         });
