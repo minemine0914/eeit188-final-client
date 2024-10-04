@@ -207,7 +207,6 @@ import { useRouter } from "vue-router";
 import { useUserStore } from "../../stores/userStore";
 import Swal from "@/plugins/sweetalert2";
 import axios from "@/plugins/axios.js";
-import Swal from "sweetalert2";
 
 const userStore = useUserStore();
 const { user } = userStore;
