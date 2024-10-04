@@ -54,22 +54,19 @@ function fetchOrders() {
     localStorage.getItem("HouseDetail") !== null &&
     JSON.parse(localStorage.getItem("HouseDetail")).bookingList.length > 0
   ) {
-    let currentIndex = JSON.parse(
+    const bookingList = JSON.parse(
       localStorage.getItem("HouseDetail")
-    ).bookingList.findIndex((list) => list.userId == userStore.user.id);
-    if (currentIndex != -1) {
-      const bookingList = JSON.parse(
-        localStorage.getItem("HouseDetail")
-      ).bookingList;
+    ).bookingList;
 
-      let orderList;
+    let orderList;
 
-      for (let b in bookingList) {
+    for (let b in bookingList) {
+      if (bookingList[b].userId === user.id) {
         orderList = bookingList[b].list;
+        order.orders.push(...orderList);
+        order.orders.reverse();
+        break;
       }
-
-      order.orders.push(...orderList);
-      order.orders.reverse();
     }
   }
 }
