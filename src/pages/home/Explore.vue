@@ -53,17 +53,18 @@
         </v-sheet>
     </v-container>
     <!-- Explore all houses -->
-    <v-container fluid class="mb-5 pt-0">
+    <v-container fluid class="mb-3 pt-0">
         <!-- Infinity scroll -->
         <v-infinite-scroll :items="allHouseList" @load="loadAllHouse">
             <div class="text-h5 font-weight-medium mx-5">探索房源</div>
-            <v-row justify="start" align="start">
+            <v-row no-gutters>
                 <template v-for="exploreHouse in allHouseList" :key="exploreHouse.houseDetails.id">
                     <v-col cols="12" lg="3" md="4" sm="6" xs="12">
                         <HouseCard
                             :house="exploreHouse.houseDetails"
                             :avg-score="exploreHouse.averageScore"
                             :total-scores="exploreHouse.totalScores"
+                            class="w-100"
                         />
                     </v-col>
                 </template>
