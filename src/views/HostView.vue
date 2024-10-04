@@ -12,7 +12,7 @@
             @click="$router.push('/')"
             height="60px"
           >
-            <NomadSvg class="text-brown-darken-1" style="height: 65%;"/>
+            <NomadSvg class="text-brown-darken-1" style="height: 65%" />
             <span
               class="font-weight-black text-brown-darken-1 text-h5"
               style="font-family: 'Tenor Sans'"
@@ -85,12 +85,16 @@
             <v-list-item to="/order" prepend-icon="mdi-list-box" slim>
               查詢訂單
             </v-list-item>
-            <v-list-item to="/host/property-management" prepend-icon="mdi-home-group-plus" slim>
+            <v-list-item
+              to="/host/property-management"
+              prepend-icon="mdi-home-group-plus"
+              slim
+            >
               {{ user.houseCount > 0 ? "管理房源" : "成為房東" }}
             </v-list-item>
-            <v-list-item to="/chat" prepend-icon="mdi-message-outline" slim>
-              聯絡我們
-            </v-list-item>
+            <v-list-item @click="submit" prepend-icon="mdi-message-outline" slim
+              >聯絡我們</v-list-item
+            >
             <v-list-item prepend-icon="mdi-logout" slim @click="handleLogout">
               登出
             </v-list-item>
@@ -101,7 +105,12 @@
 
     <v-navigation-drawer app permanent>
       <v-list>
-        <v-list-item v-for="item in menuItems" :key="item.path" :to="item.path" color="brown">
+        <v-list-item
+          v-for="item in menuItems"
+          :key="item.path"
+          :to="item.path"
+          color="brown"
+        >
           <template v-slot:prepend>
             <v-icon :icon="item.icon"></v-icon>
           </template>
@@ -110,7 +119,6 @@
               {{ item.title }}
             </div>
           </template>
-          
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
@@ -146,9 +154,17 @@ import { storeToRefs } from "pinia";
 import Swal from "sweetalert2";
 
 const menuItems = ref([
-  { title: "管理房源", path: "/host/property-management", icon: "mdi-home-edit" },
+  {
+    title: "管理房源",
+    path: "/host/property-management",
+    icon: "mdi-home-edit",
+  },
   { title: "新增房源", path: "/host/add-property", icon: "mdi-home-plus" },
-  { title: "訂單管理", path: "/host/order-records", icon: "mdi-order-bool-descending-variant" },
+  {
+    title: "訂單管理",
+    path: "/host/order-records",
+    icon: "mdi-order-bool-descending-variant",
+  },
   { title: "入住 Check In", path: "/host/check-in", icon: "mdi-qrcode-scan" },
   { title: "分析報表", path: "/host/reports", icon: "mdi-home-analytics" },
 ]);
@@ -182,6 +198,20 @@ function onResize() {
     containerHeight.value = window.innerHeight - appbarHeight.value;
     // console.log(containerHeight.value);
   }, 100); // 300 毫秒的延遲
+}
+
+async function submit() {
+  try {
+    await addChatRecord({
+      chat: `這裡是系統客服中心，請問有什麼需要協助的地方嗎？`,
+      senderId: "11cf0713-0c98-421f-821f-ded2a6484948",
+      receiverId: user.value.id,
+    }).then(() => {
+      router.push("/chat");
+    });
+  } catch (error) {
+    console.error("Error adding chat record:", error);
+  }
 }
 
 // 登出
