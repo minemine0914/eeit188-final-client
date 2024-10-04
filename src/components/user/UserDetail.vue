@@ -96,7 +96,7 @@ import {
 } from "@vuelidate/validators";
 import { VDateInput } from "vuetify/labs/VDateInput";
 import { useUserStore } from "../../stores/userStore";
-import Swal from "sweetalert2";
+import Swal from "@/plugins/sweetalert2";
 
 const userStore = useUserStore();
 const { reloadUser, updateUser, user } = userStore;

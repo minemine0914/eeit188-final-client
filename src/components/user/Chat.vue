@@ -153,7 +153,7 @@ import { useUserStore } from "../../stores/userStore";
 import api from "@/plugins/axios";
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
-import Swal from "sweetalert2";
+import Swal from "@/plugins/sweetalert2";
 
 const userStore = useUserStore();
 const { user, getChatRecord, addChatRecord } = userStore;

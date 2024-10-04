@@ -205,6 +205,7 @@ import { reactive, ref, onMounted, watch } from "vue";
 import { useHostManagementStore } from "@/stores/hostManagementStore";
 import { useRouter } from "vue-router";
 import { useUserStore } from "../../stores/userStore";
+import Swal from "@/plugins/sweetalert2";
 import axios from "@/plugins/axios.js";
 import Swal from "sweetalert2";
 
@@ -243,13 +244,18 @@ const districts = ref([]);
 const currentItem = ref({});
 
 // 監聽 city 的變化以更新對應的區域（行政區）
-watch(() => currentItem.value.city, (newCity) => {
-  const selectedCity = cityData.find((city) => city.CityName === newCity);
-  districts.value = selectedCity ? selectedCity.AreaList.map((area) => area.AreaName) : [];
-  if (!districts.value.includes(currentItem.value.region)) {
-    currentItem.value.region = "";
+watch(
+  () => currentItem.value.city,
+  (newCity) => {
+    const selectedCity = cityData.find((city) => city.CityName === newCity);
+    districts.value = selectedCity
+      ? selectedCity.AreaList.map((area) => area.AreaName)
+      : [];
+    if (!districts.value.includes(currentItem.value.region)) {
+      currentItem.value.region = "";
+    }
   }
-});
+);
 
 // 表格標題
 const headers = [
@@ -388,7 +394,10 @@ const updateStatus = async () => {
 
 const submitForm = async () => {
   try {
-    await hostManagementStore.updateProperty(currentItem.value.id, currentItem.value);
+    await hostManagementStore.updateProperty(
+      currentItem.value.id,
+      currentItem.value
+    );
 
     Swal.fire({
       icon: "success",

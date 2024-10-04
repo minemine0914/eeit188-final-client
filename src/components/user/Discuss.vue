@@ -77,7 +77,7 @@
 import { onMounted, reactive, ref } from "vue";
 import { useUserStore } from "../../stores/userStore";
 import api from "@/plugins/axios";
-import Swal from "sweetalert2";
+import Swal from "@/plugins/sweetalert2";
 import notFoundImg from "@/assets/ImageNotAvailable02.webp";
 
 const userStore = useUserStore();
