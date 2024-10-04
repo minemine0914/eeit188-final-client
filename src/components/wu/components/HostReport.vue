@@ -81,7 +81,7 @@ onMounted(async () => {
 .mainBox {
     width: 80vw;
     position: relative;
-    left: -100px;
+    left: 0;
 }
 
 .subBox {
