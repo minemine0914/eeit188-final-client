@@ -41,7 +41,12 @@ export const useCreateTransactionRecordStore = defineStore('createTransactionRec
                     this.progress = `*開始建立交易(${i + 1}/${this.dataAmountTxRecord})`
                     console.log(`開始建立交易(${i + 1}/${this.dataAmountTxRecord})`)
 
-                    const houseId = this.housesResult[Math.floor(Math.random() * this.housesResult.length)];
+                    let houseId
+                    if (!this.house) {
+                        houseId = this.housesResult[Math.floor(Math.random() * this.housesResult.length)];
+                    } else {
+                        houseId = this.house;
+                    }
                     const userId = this.usersResult[Math.floor(Math.random() * this.usersResult.length)];
                     // let cashflow = Math.random() * 10000
                     // console.log(new Date(Date.now() - Math.random() * 86400 * 1000 * 365 * 10))

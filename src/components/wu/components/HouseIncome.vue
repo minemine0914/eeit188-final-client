@@ -6,7 +6,7 @@
 <script setup>
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js'
 import { Line } from 'vue-chartjs'
-import { nextTick, computed, onMounted } from 'vue';
+import { ref, nextTick, computed, onMounted } from 'vue';
 import { useHostReportStore } from '@/stores/hostReportStore';
 import { useUserStore } from '@/stores/userStore';
 
@@ -14,10 +14,12 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, T
 
 const store = useHostReportStore()
 const userStore = useUserStore()
+let labelName = ''
+
 // Create a computed property for the chart data
 const data = computed(() => {
   // Define an array of colors for each data point
-  const cashFlowColor = '#f87979'
+  let cashFlowColor = '#f87979'
   const platformIncomeColor = '#d5cc4a'
 
   let pointBackgroundColor = Array(store.records.length).fill(cashFlowColor);
@@ -62,23 +64,33 @@ const data = computed(() => {
     }
   }
 
-  // let lineDataPlatform
-  // if (store.selectedPeriod === 'year') {
-  //   lineDataPlatform = store.recordsPraparedPlatform
-  // } else {
-  //   lineDataPlatform = store.recordsPraparedPlatform[store.selectedYear]
-  //   // console.log("S.RP", store.recordsPrapared)
-  //   if (store.allYear === true) {
-  //     // console.log("S.RPSUM", store.sumMonthlyData(store.recordsPrapared))
-  //     lineDataPlatform = store.sumMonthlyData(store.recordsPraparedPlatform);
+  let lineDataPlatform
+  if (store.selectedPeriod === 'year') {
+    lineDataPlatform = store.recordsPraparedPlatform
+  } else {
+    lineDataPlatform = store.recordsPraparedPlatform[store.selectedYear]
+    // console.log("S.RP", store.recordsPrapared)
+    if (store.allYear === true) {
+      // console.log("S.RPSUM", store.sumMonthlyData(store.recordsPrapared))
+      lineDataPlatform = store.sumMonthlyData(store.recordsPraparedPlatform);
 
-  //   }
+    }
+  }
+
+  labelName = '金流'
+
+  // if (userStore.user.role === 'admin') {
+  //   lineData = lineData?.map(value => value * 0.05)
+  //   labelName = '平台收入'
+  //   cashFlowColor = '#d5cc4a'
+  //   pointBackgroundColor = Array(store.records.length).fill(cashFlowColor);
   // }
+
 
   let datasets = []
   // if (userStore.user.role === 'normal') {
   datasets = [{
-    label: '金流',
+    label: labelName,
     backgroundColor: cashFlowColor,
     borderColor: cashFlowColor,
     pointBackgroundColor, // Apply point colors here
@@ -86,16 +98,16 @@ const data = computed(() => {
     data: lineData // Adjust data mapping as needed
   }]
   // }
-  // if (userStore.user.role === 'admin') {
-  //   datasets = [{
-  //     label: '平台收入',
-  //     backgroundColor: platformIncomeColor,
-  //     borderColor: platformIncomeColor,
-  //     pointBackgroundColorPlatform, // Apply point colors here
-  //     pointRadius,
-  //     data: lineDataPlatform // Adjust data mapping as needed
-  //   }]
-  // }
+  if (userStore.user.role === 'admin') {
+    datasets.push({
+      label: '金流',
+      backgroundColor: platformIncomeColor,
+      borderColor: platformIncomeColor,
+      pointBackgroundColorPlatform, // Apply point colors here
+      pointRadius,
+      data: lineDataPlatform // Adjust data mapping as needed
+    })
+  }
 
   // console.log(store.records.map(record => record.cashFlow || 0))
 
@@ -132,7 +144,7 @@ const options = computed(() => ({
     y: {
       title: {
         display: false,
-        text: '金流'
+        text: labelName
       },
       beginAtZero: true
     }
@@ -140,15 +152,15 @@ const options = computed(() => ({
 }))
 
 onMounted(() => {
-  if (store.selectedPeriod === 'year') {
-    store.recordsPrapared = store.turnToY(store.records);
-    store.recordsPraparedPlatform = store.turnToYPlatform(store.records);
-  } else if (store.selectedPeriod === 'month') {
-    store.recordsPrapared = store.turnToYM(store.records);
-    store.recordsPraparedPlatform = store.turnToYMPlatform(store.records);
-  } else if (store.selectedPeriod === 'quarter') {
-    store.recordsPrapared = store.turnToYQ(store.records);
-    store.recordsPraparedPlatform = store.turnToYQPlatform(store.records);
-  }
+  // if (store.selectedPeriod === 'year') {
+  //   store.recordsPrapared = store.turnToY(store.records);
+  //   store.recordsPraparedPlatform = store.turnToYPlatform(store.records);
+  // } else if (store.selectedPeriod === 'month') {
+  //   store.recordsPrapared = store.turnToYM(store.records);
+  //   store.recordsPraparedPlatform = store.turnToYMPlatform(store.records);
+  // } else if (store.selectedPeriod === 'quarter') {
+  //   store.recordsPrapared = store.turnToYQ(store.records);
+  //   store.recordsPraparedPlatform = store.turnToYQPlatform(store.records);
+  // }
 })
 </script>
