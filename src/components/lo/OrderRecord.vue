@@ -28,10 +28,9 @@
         <template v-slot:top>
             <v-toolbar flat>
                 <v-toolbar-title>訂單管理</v-toolbar-title>
-                <!-- <v-divider class="opacity-0" inset vertical></v-divider> -->
-                <!-- <v-spacer></v-spacer> -->
                 <!-- 搜尋欄位下拉選單 -->
                 <v-select
+                prefix="搜尋條件:"
                     v-model="selectedField"
                     :items="[
                         { title: '金額', value: 'cashFlow' },
