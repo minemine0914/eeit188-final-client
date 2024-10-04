@@ -61,7 +61,7 @@
                 <v-text-field v-model="editedItem.orderQuantity" label="訂單數量" readonly></v-text-field>
               </v-col>
               <v-col cols="12">
-                <v-text-field v-model="editedItem.totalAmount" label="總金額" readonly></v-text-field>
+                <v-text-field v-model="editedItem.formattedTotalAmount" label="總金額" readonly></v-text-field>
               </v-col>
               <v-col cols="12">
                 <v-text-field v-model="editedItem.discountAmount" label="折扣金額" readonly></v-text-field>
@@ -70,7 +70,7 @@
                 <v-text-field v-model="editedItem.AP" label="應付帳款" readonly></v-text-field>
               </v-col>
               <v-col cols="12">
-                <v-text-field v-model="editedItem.R" label="收益" readonly></v-text-field>
+                <v-text-field v-model="editedItem.formattedTotalR" label="收益" readonly></v-text-field>
               </v-col>
             </v-row>
           </v-container>
@@ -100,10 +100,10 @@ export default {
       headers: [
         { title: '日期', value: 'date' },
         { title: '訂單數量', value: 'orderQuantity' },
-        { title: '總金額', value: 'totalAmount' },
+        { title: '總金額', value: 'formattedTotalAmount' },
         //{ title: '折扣金額', value: 'discountAmount' },
         { title: '應付帳款', value: 'AP' },
-        { title: '平台收益', value: 'R' },
+        { title: '平台收益', value: 'formattedTotalR' },
         { text: '操作', value: 'actions', sortable: false },
       ],
       desserts: [],
@@ -112,6 +112,7 @@ export default {
         orderQuantity: 0,
         totalAmount: 0,
         discountAmount: 0,
+        
       },
       editedIndex: -1,
       months: Array.from({ length: 12 }, (v, k) => k + 1), 
@@ -179,7 +180,8 @@ export default {
               totalAmount: 0,
               //discountAmount: 0,
               AP: 0,
-              R: 0
+              R: 0,
+              formattedTotalAmount: '0.00',
             };
           }
           combinedData[formattedDate].orderQuantity += 1;
@@ -187,6 +189,11 @@ export default {
           //combinedData[formattedDate].discountAmount += discount;
           combinedData[formattedDate].AP += cashFlow;
           combinedData[formattedDate].R += (cashFlow * 0.05) ; 
+          //const formattedTotalAmount = combinedData[formattedDate].totalAmount.toFixed(2);
+          combinedData[formattedDate].formattedTotalAmount = combinedData[formattedDate].totalAmount.toFixed(2);
+          combinedData[formattedDate].formattedTotalR = combinedData[formattedDate].R.toFixed(2);
+          // console.log("totalAmount=" + combinedData[formattedDate].formattedTotalAmount);
+          // console.log("R=" + combinedData[formattedDate].formattedTotalR);
         });
         this.desserts = Object.values(combinedData);
       } catch (error) {
