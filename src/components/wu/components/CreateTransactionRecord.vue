@@ -10,6 +10,11 @@
                 <textarea style="width: 25rem;height:500px;border:1px solid black;font-family: monospace;"
                     v-model="store.housesResult"></textarea>
             </div>
+            <div style="display: inline-block;">
+                <p>指定house</p>
+                <textarea style="width: 25rem;height:200px;border:1px solid black;font-family: monospace;"
+                    v-model="store.house"></textarea>
+            </div>
         </div>
         <p>**注意1和2要等到抓完資料(列表出現ID字串)才可以繼續下一步</p>
         1. 抓取使用者清單<button @click="findAllUserString">先點我</button>
