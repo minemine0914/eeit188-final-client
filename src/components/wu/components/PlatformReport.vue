@@ -1,7 +1,11 @@
 <!-- src/views/HostReport.vue -->
 <template>
+    <v-overlay :model-value="store.isLoading" class="d-flex align-center justify-center fullscreen-overlay"
+        :scrim="false">
+        <v-progress-circular color="brown" size="100" width="12" indeterminate></v-progress-circular>
+    </v-overlay>
     <v-container class="mainBox">
-        <h1>歷史紀錄查詢</h1>
+        <h1>歷史紀錄查詢與統計</h1>
         <v-spacer></v-spacer>
         <v-card class="subBox">
             <v-card-title>
@@ -10,11 +14,11 @@
                 <Selector />
             </v-card-title>
             <!-- Loading Spinner -->
-            <div v-if="store.isLoading"
+            <!-- <div v-if="store.isLoading"
                 style="position: fixed;right:5vw;top:20vh;transform: translate(-50%, -50%);z-index: 100;">
                 <v-progress-circular indeterminate color="primary" class="ma-5" :size="100"
                     :width="18"></v-progress-circular>
-            </div>
+            </div> -->
             <!-- Data Table -->
             <v-card-title>
                 <DataTable />
@@ -70,6 +74,15 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+.fullscreen-overlay {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999;
+}
+
 .mainBox {
     width: 80vw;
     position: relative;

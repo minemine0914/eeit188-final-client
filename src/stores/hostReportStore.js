@@ -14,8 +14,8 @@ export const useHostReportStore = defineStore('hostReport', {
         users: [{ "id": '' }],
         houses: [],
         records: [],
-        recordsPrapared: [],
-        recordsPraparedPlatform: [],
+        // recordsPrapared: [],
+        // recordsPraparedPlatform: [],
 
         minCreatedAt: '',
         maxCreatedAt: '',
@@ -72,7 +72,30 @@ export const useHostReportStore = defineStore('hostReport', {
             console.log("record處理後的結果itemSource=", output)
             return output
         },
-
+        recordsPrapared: (state) => {
+            if (state.selectedPeriod === 'year') {
+                return state.turnToY(state.records);
+                // store.recordsPraparedPlatform = store.turnToYPlatform(store.records);
+            } else if (state.selectedPeriod === 'month') {
+                return state.turnToYM(state.records);
+                // store.recordsPraparedPlatform = store.turnToYMPlatform(store.records);
+            } else if (state.selectedPeriod === 'quarter') {
+                return state.turnToYQ(state.records);
+                // store.recordsPraparedPlatform = store.turnToYQPlatform(store.records);
+            }
+        },
+        recordsPraparedPlatform: (state) => {
+            if (state.selectedPeriod === 'year') {
+                return state.turnToYPlatform(state.records);
+                // store.recordsPraparedPlatform = store.turnToYPlatform(store.records);
+            } else if (state.selectedPeriod === 'month') {
+                return state.turnToYMPlatform(state.records);
+                // store.recordsPraparedPlatform = store.turnToYMPlatform(store.records);
+            } else if (state.selectedPeriod === 'quarter') {
+                return state.turnToYQPlatform(state.records);
+                // store.recordsPraparedPlatform = store.turnToYQPlatform(store.records);
+            }
+        },
     },
     actions: {
         // 0.找出所有host
