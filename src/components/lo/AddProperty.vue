@@ -244,11 +244,11 @@
           <v-col cols="12" md="4">
             <v-text-field
               label="每晚價格/元(NTD) *"
-              v-model="property.pricePerDay"
+              v-model="property.price"
               :error-messages="
-                !$v.property.pricePerDay.required &&
-                $v.property.pricePerDay.$error
-                  ? ['每日價格為必填項']
+                !$v.property.price.required &&
+                $v.property.price.$error
+                  ? ['每晚價格為必填項']
                   : []
               "
               type="number"
@@ -256,7 +256,7 @@
               required
             ></v-text-field>
           </v-col>
-          <v-col cols="12" md="4">
+          <!-- <v-col cols="12" md="4">
             <v-text-field
               label="每週價格/元(NTD) (選填)"
               v-model="property.pricePerWeek"
@@ -271,7 +271,7 @@
               type="number"
               outlined
             ></v-text-field>
-          </v-col>
+          </v-col> -->
         </v-row>
       </v-card-text>
     </v-card>
@@ -330,9 +330,10 @@ const property = ref({
   address: "",
   latitudeX: null,
   longitudeY: null,
-  pricePerDay: 0,
-  pricePerWeek: 0,
-  pricePerMonth: 0,
+  price: 0,
+  // pricePerDay: 0,
+  // pricePerWeek: 0,
+  // pricePerMonth: 0,
   livingDiningRoom: 0,
   bedroom: 1,
   bathroom: 1,
@@ -368,9 +369,10 @@ const rules = {
     city: { required },
     region: { required },
     address: { required },
-    pricePerDay: { required, numeric, minValue: minValue(1) },
-    pricePerWeek: { numeric, minValue: minValue(0) },
-    pricePerMonth: { numeric, minValue: minValue(0) },
+    price: { required, numeric, minValue: minValue(1) },
+    // pricePerDay: { required, numeric, minValue: minValue(1) },
+    // pricePerWeek: { numeric, minValue: minValue(0) },
+    // pricePerMonth: { numeric, minValue: minValue(0) },
     bedroom: { required, numeric, minValue: minValue(1) },
     bathroom: { required, numeric, minValue: minValue(1) },
     restroom: { required, numeric, minValue: minValue(1) },

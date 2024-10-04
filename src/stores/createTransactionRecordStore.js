@@ -95,7 +95,7 @@ export const useCreateTransactionRecordStore = defineStore('createTransactionRec
                     }
                     while (!clicked && !liked && !shared)
 
-                    const response = await api.put("/house/mongo/", {
+                    const response = await api.put("/house/mongo/set-true", {
                         houseId,
                         userId,
                         clicked,
