@@ -7,6 +7,7 @@ export const useCreateTransactionRecordStore = defineStore('createTransactionRec
     state: () => ({
         usersResult: '',
         housesResult: '',
+        house: '',
         dataAmountTxRecord: 100,
         dataAmountClickShare: 1000,
         progress: '',
@@ -60,8 +61,9 @@ export const useCreateTransactionRecordStore = defineStore('createTransactionRec
 
                     let longTime = Date.now() - Math.random() * 86400 * 1000 * 365 * 3 // 訂房起始日設為3年內開始
                     let startDate = new Date(longTime)
-                    let endDate = new Date(Math.min(longTime + Math.random() * 86400 * 1000 * 5, startDate)) // 住1~5天
+                    let endDate = new Date(longTime + Math.random() * 86400 * 1000 * 5) // 住1~5天
 
+                    console.log('RRRRRR', [startDate, endDate])
                     const response = await api.post("/payment/booking-house", {
                         houseId: houseId,
                         userId: userId,
@@ -85,7 +87,12 @@ export const useCreateTransactionRecordStore = defineStore('createTransactionRec
                     this.progress = `*開始建立點擊/分享(${i + 1}/${this.dataAmountClickShare})`
                     console.log(`開始建立點擊/分享(${i + 1}/${this.dataAmountClickShare})`)
 
-                    const houseId = this.housesResult[Math.floor(Math.random() * this.housesResult.length)];
+                    let houseId
+                    if (!this.house) {
+                        houseId = this.housesResult[Math.floor(Math.random() * this.housesResult.length)];
+                    } else {
+                        houseId = this.house;
+                    }
                     const userId = this.usersResult[Math.floor(Math.random() * this.usersResult.length)];
                     let clicked, liked, shared
                     do {
