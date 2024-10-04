@@ -314,6 +314,7 @@ import Swal from "sweetalert2";
 import { useHostManagementStore } from "@/stores/hostManagementStore";
 import { useUserStore } from "../../stores/userStore";
 import { useRouter } from 'vue-router';
+import api from "@/plugins/axios";
 
 const router = useRouter();
 const userStore = useUserStore();
@@ -422,7 +423,29 @@ const submitForm = async () => {
   try {
     // 發送表單資料
     await hostManagementStore.addProperty(property.value);
+    
+    if (property.value.images.length > 0) {    
+      try {
+        const response = await api({
+          method: "post",
+          url: `/house/search`,
+          data: {
+            userId: userStore.user.id,
+            page: 0,
+            limit: 1,
+            order: "createdAt",
+            dir: true,
+          },
+        });
 
+        const propertyId = response.data.content[0].id;
+        for (let image of property.value.images) {
+          await hostManagementStore.uploadPropertyImage(propertyId, image);
+        }
+      } catch (error) {
+        throw error;
+      }
+    }
     Swal.fire({
       icon: "success",
       title: "成功提交！",
