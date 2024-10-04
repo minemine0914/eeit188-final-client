@@ -207,7 +207,6 @@ import { useRouter } from "vue-router";
 import { useUserStore } from "../../stores/userStore";
 import Swal from "@/plugins/sweetalert2";
 import axios from "@/plugins/axios.js";
-import Swal from "sweetalert2";
 
 const userStore = useUserStore();
 const { user } = userStore;
@@ -420,21 +419,21 @@ function handleClick(item) {
   window.open(url, "_blank");
 }
 
-watch(dialog, (val) => {
-  if (!val) close();
-});
+// watch(dialog, (val) => {
+//   if (!val) close();
+// });
 
-watch(dialog, (val) => {
-  if (!val) selectedStatus.value = null;
-});
+// watch(dialog, (val) => {
+//   if (!val) selectedStatus.value = null;
+// });
 
-watch(updateDialog, (val) => {
-  if (!val) close();
-});
+// watch(updateDialog, (val) => {
+//   if (!val) close();
+// });
 
-watch(updateDialog, (val) => {
-  if (!val) selectedStatus.value = null;
-});
+// watch(updateDialog, (val) => {
+//   if (!val) selectedStatus.value = null;
+// });
 </script>
 
 <style scoped>

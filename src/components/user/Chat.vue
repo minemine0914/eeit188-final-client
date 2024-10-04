@@ -14,8 +14,8 @@
               <div class="chat-recored-title">
                 <v-list-item-avatar>
                   <v-img
-                    v-if="!item?.avatar"
-                    src="src/assets/user.png"
+                    v-if="!item?.avatar || item?.avatar === null"
+                    :src="defaultAvatar"
                     width="50px"
                     alt=""
                   ></v-img>
@@ -84,8 +84,8 @@
             <div class="member">
               <v-avatar class="avatar" size="50">
                 <v-img
-                  v-if="!chat?.senderAvatar"
-                  src="src/assets/user.png"
+                  v-if="!chat?.senderAvatar || chat?.senderAvatar === null"
+                  :src="defaultAvatar"
                   width="50px"
                   alt=""
                 ></v-img>
@@ -109,8 +109,8 @@
             <div class="member">
               <v-avatar class="avatar" color="surface-light" size="50">
                 <v-img
-                  v-if="!chat?.senderAvatar"
-                  src="src/assets/user.png"
+                  v-if="!chat?.senderAvatar || chat?.senderAvatar === null"
+                  :src="defaultAvatar"
                   width="50px"
                   alt=""
                 ></v-img>
@@ -154,6 +154,7 @@ import api from "@/plugins/axios";
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
 import Swal from "@/plugins/sweetalert2";
+import defaultAvatar from "@/assets/user.png";
 
 const userStore = useUserStore();
 const { user, getChatRecord, addChatRecord } = userStore;

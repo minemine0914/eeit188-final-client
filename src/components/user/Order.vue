@@ -61,11 +61,13 @@ function fetchOrders() {
     let orderList;
 
     for (let b in bookingList) {
-      orderList = bookingList[b].list;
+      if (bookingList[b].userId === user.id) {
+        orderList = bookingList[b].list;
+        order.orders.push(...orderList);
+        order.orders.reverse();
+        break;
+      }
     }
-
-    order.orders.push(...orderList);
-    order.orders.reverse();
   }
 }
 

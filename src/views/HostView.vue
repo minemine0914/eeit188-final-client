@@ -124,9 +124,7 @@
     </v-navigation-drawer>
 
     <v-main>
-      <v-container>
         <router-view></router-view>
-      </v-container>
     </v-main>
 
     <v-dialog v-model="isOpenLoginDialog" width="auto">
