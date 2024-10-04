@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <v-container>
     <p>
       <select v-model="selectedConstraints">
         <option
@@ -51,7 +51,7 @@
         @camera-on="onCameraReady"
       />
     </div>
-  </div>
+  </v-container>
 </template>
 
 <script setup lang="ts">
