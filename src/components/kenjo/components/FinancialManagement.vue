@@ -187,6 +187,10 @@ export default {
           //combinedData[formattedDate].discountAmount += discount;
           combinedData[formattedDate].AP += cashFlow;
           combinedData[formattedDate].R += (cashFlow * 0.05) ; 
+          const formattedTotalAmount = combinedData[formattedDate].totalAmount.toFixed(2);
+          const formattedTotalR = combinedData[formattedDate].R.toFixed(2);
+          console.log(formattedTotalAmount);
+          console.log(formattedTotalR);
         });
         this.desserts = Object.values(combinedData);
       } catch (error) {
