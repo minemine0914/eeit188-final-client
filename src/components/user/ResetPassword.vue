@@ -36,7 +36,7 @@ import { reactive, computed } from "vue";
 import { useVuelidate } from "@vuelidate/core";
 import { required, helpers, sameAs } from "@vuelidate/validators";
 import { useUserStore } from "../../stores/userStore";
-import Swal from "sweetalert2";
+import Swal from "@/plugins/sweetalert2";
 
 // Custom password validation
 const passwordComplexity = helpers.regex(

@@ -36,7 +36,7 @@
 import { reactive, onMounted } from "vue";
 import { useUserStore } from "../../stores/userStore";
 import notFoundImg from "@/assets/ImageNotAvailable02.webp";
-import Swal from "sweetalert2";
+import Swal from "@/plugins/sweetalert2";
 
 const userStore = useUserStore();
 const { user } = userStore;

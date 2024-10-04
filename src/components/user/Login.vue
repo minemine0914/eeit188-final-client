@@ -28,7 +28,7 @@ import { useVuelidate } from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
 import { useUserStore } from "../../stores/userStore";
 import { useRouter, useRoute } from "vue-router";
-import Swal from "sweetalert2";
+import Swal from "@/plugins/sweetalert2";
 
 const initialState = {
   email: null,

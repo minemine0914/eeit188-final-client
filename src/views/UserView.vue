@@ -125,7 +125,7 @@ import { ref } from "vue";
 import { useUserViewStore } from "../stores/userViewStore";
 import { useUserStore } from "../stores/userStore";
 import { storeToRefs } from "pinia";
-import Swal from "sweetalert2";
+import Swal from "@/plugins/sweetalert2";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
