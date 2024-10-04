@@ -7,8 +7,8 @@ import fs from "fs"; // 用於讀取 JSON 檔案
 
 // API 網址
 let eeitApiUrl;
-// eeitApiUrl = "https://localhost/api"; // 上線環境
-eeitApiUrl = "http://localhost:8080"; // 開發環境
+eeitApiUrl = "https://localhost/api"; // 上線環境
+// eeitApiUrl = "http://localhost:8080"; // 開發環境
 
 // 創建 axios 實例並設置 baseURL
 const apiClient = axios.create({
@@ -19,16 +19,13 @@ const apiClient = axios.create({
     }),
 });
 
-
 // 取得房源清單 (limit=100)
 // api url [GET] : /house/all?page=0&limit=100&dir=true&order=createdAt
 // response data: { content:[ { id: "", ... }, { ... }, ... ] }
 
-
 // 取得設施清單 (limit=100)
 // api url [GET] : /postulate/findAll?page=0&limit=100&dir=true&order=createdAt
 // response data: { content:[ { id: "", name: "", icon: "" }, { ... }, ... ] }
-
 
 // 編輯房源的設施清單 (隨機放置1~5個設施)
 // api url [PUT]: /house/${house.id}
@@ -41,8 +38,8 @@ async function getHouses() {
                 page: 0,
                 limit: 1000,
                 dir: true,
-                order: "createdAt"
-            }
+                order: "createdAt",
+            },
         });
         return response.data.content;
     } catch (error) {
@@ -58,8 +55,8 @@ async function getPostulates() {
                 page: 0,
                 limit: 100,
                 dir: true,
-                order: "createdAt"
-            }
+                order: "createdAt",
+            },
         });
         return response.data.content;
     } catch (error) {
@@ -77,11 +74,14 @@ function getRandomPostulates(postulates) {
 async function updateHousePostulates(house, postulateIds) {
     try {
         const response = await apiClient.put(`/house/${house.id}`, {
-            postulateIds: postulateIds
+            postulateIds: postulateIds,
         });
         console.log(`(${proccessingHouseCount}/${totalHouseCount}) 更新房源 ${house.id} 的設施清單成功`);
     } catch (error) {
-        console.error(`(${proccessingHouseCount}/${totalHouseCount}) 更新房源 ${house.id} 的設施清單失敗:`, error.response ? error.response.data : error.message);
+        console.error(
+            `(${proccessingHouseCount}/${totalHouseCount}) 更新房源 ${house.id} 的設施清單失敗:`,
+            error.response ? error.response.data : error.message
+        );
     }
 }
 

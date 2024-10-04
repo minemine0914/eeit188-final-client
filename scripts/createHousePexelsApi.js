@@ -8,8 +8,8 @@ import fs from "fs"; // 用於讀取 JSON 檔案
 
 // API 網址
 let eeitApiUrl;
-// eeitApiUrl = "https://localhost/api"; // 上線環境
-eeitApiUrl = "http://localhost:8080"; // 開發環境
+eeitApiUrl = "https://localhost/api"; // 上線環境
+// eeitApiUrl = "http://localhost:8080"; // 開發環境
 
 // 定義抓取使用者清單的參數
 const userParams = {
@@ -25,7 +25,7 @@ const args = process.argv.slice(2); // 去掉前兩個默認參數
 
 // 創建一個對象來存儲解析後的參數
 const params = {};
-args.forEach((arg) => {
+args.forEach(arg => {
     const [key, value] = arg.split("="); // 根據 "=" 分割
     if (key && value) {
         params[key.replace("--", "")] = value; // 去掉 "--" 前綴
@@ -61,7 +61,7 @@ const pexelsApiClient = axios.create({
 const cityCountyDataPath = "src/assets/CityCountyData.json";
 
 // 定義抓取使用者清單的函數
-const fetchUserList = async (params) => {
+const fetchUserList = async params => {
     try {
         const response = await apiClient.get("/user/find-users", { params });
         return response.data.users;
@@ -97,15 +97,13 @@ const getCoordinates = async (city, region) => {
             return null;
         }
     } catch (error) {
-        console.error(
-            `(${processingUserCount}/${foundUserCount}) Error fetching coordinates: ${error.message}`
-        );
+        console.error(`(${processingUserCount}/${foundUserCount}) Error fetching coordinates: ${error.message}`);
         return null;
     }
 };
 
 // 隨機偏移經緯度的函數
-const getRandomOffset = (maxOffset) => {
+const getRandomOffset = maxOffset => {
     // 隨機生成範圍在 -maxOffset 到 maxOffset 之間的數字
     const offset = Math.random() * maxOffset * 2 - maxOffset; // 偏移範圍：-maxOffset 到 +maxOffset
     return offset;
@@ -130,19 +128,7 @@ const generateRandomName = () => {
         "豪華",
         "生態",
     ];
-    const nouns = [
-        "公寓",
-        "別墅",
-        "套房",
-        "小屋",
-        "度假村",
-        "花園",
-        "城堡",
-        "宅邸",
-        "小型住宅",
-        "家庭旅館",
-        "豪宅",
-    ];
+    const nouns = ["公寓", "別墅", "套房", "小屋", "度假村", "花園", "城堡", "宅邸", "小型住宅", "家庭旅館", "豪宅"];
     const locations = [
         "海邊",
         "山上",
@@ -183,7 +169,7 @@ const generateRandomPrice = (min, max) => {
 };
 
 // 隨機生成房間數量
-const generateRandomRoomCount = (max) => {
+const generateRandomRoomCount = max => {
     return Math.floor(Math.random() * max) + 1; // 隨機生成 1 到 max 的房間數量
 };
 
@@ -198,7 +184,7 @@ const readCityCountyData = () => {
 };
 
 // 隨機生成房源資料的函數
-const generateHouseData = async (userId) => {
+const generateHouseData = async userId => {
     const data = readCityCountyData();
     const randomCity = data[Math.floor(Math.random() * data.length)];
     const randomArea = randomCity.AreaList[Math.floor(Math.random() * randomCity.AreaList.length)];
@@ -249,7 +235,7 @@ const generateHouseData = async (userId) => {
 };
 
 // 在 createHouse 函數中使用 generateHouseData
-const createHouse = async (user) => {
+const createHouse = async user => {
     const houseData = await generateHouseData(user.id); // 隨機生成房源數據
 
     try {
@@ -273,7 +259,6 @@ const imageCacheSize = 80; // 緩存的圖片數量
 
 // 獲取隨機圖片 URL 的函數
 const getRandomImageUrls = async (count = 7) => {
-    
     const selectedPhotos = [];
 
     // 優先使用緩存中的圖片
@@ -307,7 +292,7 @@ const getRandomImageUrls = async (count = 7) => {
             console.log(`[PexelsApi] 重新計算週期的時間: ${new Date(resetTime * 1000).toLocaleString()}`);
 
             if (photos.length > 0) {
-                imageCache.push(...photos.map((photo) => photo.src.large)); // 更新緩存
+                imageCache.push(...photos.map(photo => photo.src.large)); // 更新緩存
                 // 繼續選擇新圖片
                 while (selectedPhotos.length < count && imageCache.length > 0) {
                     const randomIndex = Math.floor(Math.random() * imageCache.length);
@@ -326,7 +311,7 @@ const getRandomImageUrls = async (count = 7) => {
 };
 
 // 從 URL 下載圖片並返回 Buffer 的函數
-const downloadImage = async (imageUrl) => {
+const downloadImage = async imageUrl => {
     try {
         const imageResponse = await axios.get(imageUrl, { responseType: "arraybuffer" });
         return Buffer.from(imageResponse.data, "binary");
@@ -337,7 +322,7 @@ const downloadImage = async (imageUrl) => {
 };
 
 // 更新上傳多張圖片的函數
-const uploadMultipleImages = async (houseId) => {
+const uploadMultipleImages = async houseId => {
     try {
         const formData = new FormData();
         formData.append("houseId", houseId);

@@ -2,21 +2,24 @@
     <div style="border:1px solid black; margin:50px;">
         <div>
             <div style="display: inline-block;">
-                <p>all users</p><textarea
-                    style="width: 25rem;height:500px;border:1px solid black;font-family: monospace;"
+                <p>users列表</p><textarea style="width: 25rem;height:500px;border:1px solid black;font-family: monospace;"
                     v-model="store.usersResult"></textarea>
             </div>
             <div style="display: inline-block;">
-                <p>all houses</p>
+                <p>houses列表</p>
                 <textarea style="width: 25rem;height:500px;border:1px solid black;font-family: monospace;"
                     v-model="store.housesResult"></textarea>
             </div>
         </div>
-
-        (1.抓取使用者清單<button @click="findAllUserString">先點我</button>
-        2.抓取房源清單<button @click="findAllHouse">再點我</button>
-        ) 3.產生假交易<button @click="crossInsertTransactionRecord">最後再點我</button>
-        <p>*{{ store.progress }}</p>
+        <p>**注意1和2要等到抓完資料(列表出現ID字串)才可以繼續下一步</p>
+        1. 抓取使用者清單<button @click="findAllUserString">先點我</button>
+        <br>
+        2. 抓取房源清單(會卡卡，稍等他一下)<button @click="findAllHouse">再點我</button>
+        <br>
+        3.1 產生假交易<button @click="crossInsertTransactionRecord">最後再點我</button>
+        <br>
+        3.2 隨機產生點擊/分享<button @click="generateClickAndShare">最後再點我</button>
+        <p>{{ store.progress }}</p>
     </div>
 </template>
 
@@ -39,6 +42,10 @@ const crossInsertTransactionRecord = () => {
 
     store.crossInsertTransactionRecord();
 };
+
+const generateClickAndShare = () => {
+    store.generateClickAndShare()
+}
 
 </script>
 
