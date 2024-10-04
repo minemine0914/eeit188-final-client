@@ -330,7 +330,7 @@ export default {
                     limit: itemsPerPage,
                     hostId: this.userStore.user.id,
                     dir: sortBy.length > 0 ? sortBy[0].order === "asc" : true,
-                    sort: sortBy.length > 0 ? sortBy[0].field : null,
+                    order: sortBy.length > 0 ? sortBy[0].key : null,
                 },
                 searchCondition // 合併動態搜尋條件
             );
