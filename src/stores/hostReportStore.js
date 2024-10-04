@@ -78,13 +78,16 @@ export const useHostReportStore = defineStore('hostReport', {
         // 0.找出所有host
         async findAllHost() {
             try {
-                const response = await api.get(`/user/find-hosts`);
-                this.users = response.data;
+                const response = await api.get(`/user/find-users?pageSize=1000`);
+                this.users = response.data.users;
+                this.users = this.users.filter(user => user.houseCount != 0)
+                console.log('找到的所有host = this.users', this.users)
+
                 // 0.1 修正user只有ID的問題，User ID->User物件
                 for (let i = 0; i < this.users.length; i++) { this.users[i] = await this.searchUserAgainByRecordId(this.users[i]); }
                 console.log('找到的所有host = this.users', this.users)
             } catch (error) {
-                console.error('Error fetching users:', error);
+                console.error('Error fetching hosts:', error);
             }
         },
 
