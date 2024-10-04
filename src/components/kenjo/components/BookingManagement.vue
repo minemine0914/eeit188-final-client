@@ -351,31 +351,31 @@ export default {
           if (response.data && Array.isArray(response.data.content)) {
             this.orders = response.data.content;
             // 檢查每個訂單，並記錄格式不正確或缺少資料的訂單
-            const invalidOrders = this.orders.filter(
-              (order) =>
-                typeof order !== "object" ||
-                order === null ||
-                !order.id ||
-                order.cashFlow === undefined ||
-                !order.house ||
-                !order.house.name ||
-                order.user
-            );
-              console.log(this.orders);
-              console.log(this.orderStatuses)
+            // const invalidOrders = this.orders.filter(
+            //   (order) =>
+            //     typeof order !== "object" ||
+            //     order === null ||
+            //     !order.id ||
+            //     order.cashFlow === undefined ||
+            //     !order.house ||
+            //     !order.house.name ||
+            //     order.user
+            // );
+              // console.log(this.orders);
+              // console.log(this.orderStatuses)
             //console.log('API 返回的完整資料:', response.data);
-            if (invalidOrders.length > 0) {
-              //console.error('以下訂單格式不正確或缺少房屋資料，將進行重新抓取:', invalidOrders);
-              // 確保重抓取時不會有 undefined 的 ID
-              const validIds = invalidOrders
-                .map((order) => order.id)
-                .filter((id) => id);
-              await Promise.all(validIds.map((id) => this.reFetchOrder(id)));
-            }
-            this.orders = response.data.content.map((oder) => ({
-              ...oder,
-              createdAt: this.formatDate(oder.createdAt),
-            }));
+            // if (invalidOrders.length > 0) {
+            //   //console.error('以下訂單格式不正確或缺少房屋資料，將進行重新抓取:', invalidOrders);
+            //   // 確保重抓取時不會有 undefined 的 ID
+            //   const validIds = invalidOrders
+            //     .map((order) => order.id)
+            //     .filter((id) => id);
+            //   await Promise.all(validIds.map((id) => this.reFetchOrder(id)));
+            // }
+            // this.orders = response.data.content.map((oder) => ({
+            //   ...oder,
+            //   createdAt: this.formatDate(oder.createdAt),
+            // }));
           } else {
             //console.error('API response is not in expected format:', response.data);
             this.orders = [];

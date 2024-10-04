@@ -437,7 +437,7 @@ import { useUserStore } from "@/stores/userStore";
 import { storeToRefs } from "pinia";
 import CouponCard from "@/components/home/CouponCard.vue";
 import { useHouseBookingStore } from "@/stores/houseBookingStore";
-import Swal from "sweetalert2";
+import Swal from "@/plugins/sweetalert2";
 // Use route, router
 const router = useRouter();
 const route = useRoute();
@@ -560,16 +560,8 @@ async function checkBookingDate() {
         Swal.fire({
             title: "請選擇日期",
             icon: "error",
-            buttonsStyling: false,
-            customClass: {
-                confirmButton:
-                    "v-btn v-btn--elevated v-theme--nomadTheme bg-brown-lighten-1 v-btn--density-default v-btn--size-large v-btn--variant-elevated",
-                cancelButton:
-                    "v-btn v-btn--elevated v-theme--nomadTheme bg-brown-lighten-1 v-btn--density-default v-btn--size-large v-btn--variant-elevated",
-            },
             showConfirmButton: false,
-            showCancelButton: true,
-            cancelButtonText: "重試",
+            showDenyButton: true,
         });
         isLoadingStepBtn.value = false;
         return false;
@@ -609,16 +601,8 @@ async function checkBookingDate() {
             title: "當前選擇的日期區間不可用",
             text: `原因: ${err?.response?.data}`,
             icon: "error",
-            buttonsStyling: false,
-            customClass: {
-                confirmButton:
-                    "v-btn v-btn--elevated v-theme--nomadTheme bg-brown-lighten-1 v-btn--density-default v-btn--size-large v-btn--variant-elevated",
-                cancelButton:
-                    "v-btn v-btn--elevated v-theme--nomadTheme bg-brown-lighten-1 v-btn--density-default v-btn--size-large v-btn--variant-elevated",
-            },
             showConfirmButton: false,
-            showCancelButton: true,
-            cancelButtonText: "重試",
+            showDenyButton: true,
         });
     }
 }

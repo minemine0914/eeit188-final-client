@@ -7,7 +7,8 @@ export const useCreateTransactionRecordStore = defineStore('createTransactionRec
     state: () => ({
         usersResult: '',
         housesResult: '',
-        dataAmount: 100,
+        dataAmountTxRecord: 100,
+        dataAmountClickShare: 1000,
         progress: '',
     }),
     actions: {
@@ -34,10 +35,10 @@ export const useCreateTransactionRecordStore = defineStore('createTransactionRec
         },
 
         async crossInsertTransactionRecord() {
-            for (let i = 0; i < this.dataAmount; i++) {
+            for (let i = 0; i < this.dataAmountTxRecord; i++) {
                 try {
-                    this.progress = `開始建立交易(${i + 1}/${this.dataAmount})`
-                    console.log(`開始建立交易(${i + 1}/${this.dataAmount})`)
+                    this.progress = `*開始建立交易(${i + 1}/${this.dataAmountTxRecord})`
+                    console.log(`開始建立交易(${i + 1}/${this.dataAmountTxRecord})`)
 
                     const houseId = this.housesResult[Math.floor(Math.random() * this.housesResult.length)];
                     const userId = this.usersResult[Math.floor(Math.random() * this.usersResult.length)];
@@ -70,12 +71,43 @@ export const useCreateTransactionRecordStore = defineStore('createTransactionRec
                     });
                     console.log('建立成功：', response.data)
                 } catch (error) {
-                    console.error("Error creating order:", error);
+                    console.error("Error creating txRecord:", error);
                     // throw error;
                 }
 
             }
-            this.progress = `已建立${this.dataAmount}筆資料`
+            this.progress = `=已建立${this.dataAmountTxRecord}筆交易紀錄`
+        },
+
+        async generateClickAndShare() {
+            for (let i = 0; i < this.dataAmountClickShare; i++) {
+                try {
+                    this.progress = `*開始建立點擊/分享(${i + 1}/${this.dataAmountClickShare})`
+                    console.log(`開始建立點擊/分享(${i + 1}/${this.dataAmountClickShare})`)
+
+                    const houseId = this.housesResult[Math.floor(Math.random() * this.housesResult.length)];
+                    const userId = this.usersResult[Math.floor(Math.random() * this.usersResult.length)];
+                    let clicked, liked, shared
+                    do {
+                        clicked = Math.random() > 0.5
+                        // liked = Math.random() > 0.5
+                        shared = Math.random() > 0.5
+                    }
+                    while (!clicked && !liked && !shared)
+
+                    const response = await api.put("/house/mongo/set-true", {
+                        houseId,
+                        userId,
+                        clicked,
+                        // liked,
+                        shared,
+                    });
+                    console.log('建立成功：', response.data)
+                } catch (error) {
+                    console.error("Error creating click and share:", error);
+                }
+            }
+            this.progress = `=已建立${this.dataAmountClickShare}點擊/分享`
         },
     }
 });
