@@ -1,12 +1,20 @@
 <!-- src/views/HostReport.vue -->
 <template>
-    <v-container class="mainBox">
+    <v-container>
         <!-- Loading Spinner -->
-        <div v-if="store.isLoading"
+        <!-- <div v-if="store.isLoading"
             style="position: fixed;right:5vw;top:20vh;transform: translate(-50%, -50%);z-index: 100;">
             <v-progress-circular indeterminate color="primary" class="ma-5" :size="100"
                 :width="18"></v-progress-circular>
-        </div>
+        </div> -->
+        <v-overlay :model-value="store.isLoading" class="align-center justify-center" :scrim="false" >
+            <v-progress-circular
+                color="brown"
+                size="100"
+                width="12"
+                indeterminate
+            ></v-progress-circular>
+        </v-overlay>
         <!-- main content -->
         <span class="font-weight-black text-brown-darken-1 text-h5" style="font-family: 'Tenor Sans'">
             NOMAD
@@ -79,13 +87,13 @@ onMounted(async () => {
 
 <style scoped>
 .mainBox {
-    width: 80vw;
+    /* width: 80vw;
     position: relative;
-    left: 0;
+    left: 0; */
 }
 
 .subBox {
-    width: 70vw;
+    /* width: 70vw; */
     background-color: rgba(211, 211, 211, 0.5)
 }
 
