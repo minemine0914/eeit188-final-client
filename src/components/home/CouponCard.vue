@@ -32,7 +32,12 @@
                 class="text-caption position-absolute left-0 bottom-0 w-100 mb-4"
                 :class="[isExpired ? 'opacity-30' : '']"
             >
-                {{ 100 - (coupon.discountRate * 100).toFixed(0) }} 折
+                {{
+                    parseFloat(((100 - coupon.discountRate * 100) / 10).toFixed(1)) % 1 === 0
+                        ? ((100 - coupon.discountRate * 100) / 10).toFixed(0)
+                        : ((100 - coupon.discountRate * 100) / 10).toFixed(1)
+                }}
+                折
             </div>
         </v-sheet>
         <v-sheet
@@ -53,7 +58,13 @@
                 折抵 NT ${{ coupon.discount }} 元
             </div>
             <div v-else class="text-caption" :class="[isExpired ? 'opacity-30' : '']">
-                折抵 {{ 100 - (coupon.discountRate * 100).toFixed(0) }} 折
+                折抵
+                {{
+                    parseFloat(((100 - coupon.discountRate * 100) / 10).toFixed(1)) % 1 === 0
+                        ? ((100 - coupon.discountRate * 100) / 10).toFixed(0)
+                        : ((100 - coupon.discountRate * 100) / 10).toFixed(1)
+                }}
+                折
             </div>
             <div class="text-caption" :class="[isExpired ? 'text-red' : '']">
                 使用期限: {{ expireDate.toLocaleDateString() }} {{ isExpired ? "(已過期)" : "" }}
