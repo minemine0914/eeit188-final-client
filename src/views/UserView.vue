@@ -122,7 +122,7 @@ import { ref } from "vue";
 import { useUserViewStore } from "../stores/userViewStore";
 import { useUserStore } from "../stores/userStore";
 import { storeToRefs } from "pinia";
-import Swal from "sweetalert2";
+import Swal from "@/plugins/sweetalert2";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
@@ -170,8 +170,6 @@ function handleLogout() {
         title: "請確認是否要登出?",
         icon: "question",
         showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
         confirmButtonText: "確定",
         cancelButtonText: "取消",
     }).then((result) => {
