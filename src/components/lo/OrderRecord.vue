@@ -185,8 +185,8 @@
 </template>
 
 <script>
-import axios from 'axios';
-
+//import axios from 'axios';
+import axios from "@/plugins/axios";
    
 export default {
   data() {
@@ -311,7 +311,7 @@ export default {
         console.log('User ID:', userId);
 
         try {
-            const response = await axios.get('http://localhost:8080/transcation_record/all', {
+            const response = await axios.get('/transcation_record/all', {
                 params: { page: 0, limit: 1000 }
             });
             console.log("API response content:", response.data.content);
@@ -364,7 +364,7 @@ export default {
     async updateStatusDeal() {
       try {
         const response = await axios.put(
-          `http://localhost:8080/transcation_record/${this.currentItem.id}`,
+          `/transcation_record/${this.currentItem.id}`,
           {
             deal: this.selectedStatus,
           }
@@ -411,7 +411,7 @@ export default {
 
     async deleteOrderConfirm() {
       try {
-        await axios.delete(`http://localhost:8080/transcation_record/${this.editedOrder.id}`);
+        await axios.delete(`/transcation_record/${this.editedOrder.id}`);
         this.orders.splice(this.editedIndex, 1);
         this.closeDelete();
       } catch (error) {
@@ -481,11 +481,11 @@ export default {
       try {
         if (this.editedIndex > -1) {
           // 更新現有訂單
-          await axios.put(`http://localhost:8080/transcation_record/${this.editedOrder.id}`, this.editedOrder);
+          await axios.put(`/transcation_record/${this.editedOrder.id}`, this.editedOrder);
           this.orders[this.editedIndex] = this.editedOrder; // 更新本地列表
         } else {
           // 創建新訂單
-          const response = await axios.post('http://localhost:8080/transcation_record', this.editedOrder);
+          const response = await axios.post('/transcation_record', this.editedOrder);
           this.orders.push(response.data); // 添加新訂單到本地列表
         }
         this.close();
@@ -498,7 +498,7 @@ export default {
     
     async reFetchOrder(orderId) {
       try {
-        const response = await axios.get(`http://localhost:8080/transcation_record/${orderId}`);
+        const response = await axios.get(`/transcation_record/${orderId}`);
         
         if (response.status === 200) {
           //console.log(`重新抓取訂單 ${orderId}:`, response.data);
@@ -523,35 +523,35 @@ export default {
       }
     },
     
-    async fetchUserHouses() {
-      try {
-        const response = await axios.get(`http://localhost:8080/find/${this.userId}/allHouses`); // 假設你有這個端點返回用戶所有房屋
-        return response.data; // 返回房屋數組
-      } catch (error) {
-        console.error('Error fetching user houses:', error);
-      }
-    },
+    // async fetchUserHouses() {
+    //   try {
+    //     const response = await axios.get(`http://localhost:8080/find/${this.userId}/allHouses`); // 假設你有這個端點返回用戶所有房屋
+    //     return response.data; // 返回房屋數組
+    //   } catch (error) {
+    //     console.error('Error fetching user houses:', error);
+    //   }
+    // },
 
-    async fetchOrdersForHouse(houseId) {
-      try {
-        const response = await axios.get(`http://localhost:8080/orders`, {
-          params: { houseId } // 根據房屋 ID 獲取訂單
-        });
-        return response.data; // 返回訂單數組
-      } catch (error) {
-        console.error('Error fetching orders for house:', error);
-      }
-    },
-    async fetchOrdersForUser() {
-      const houses = await this.fetchUserHouses();
-      if (houses && houses.length > 0) {
-        const ordersPromises = houses.map(house => this.fetchOrdersForHouse(house.id));
-        const ordersArrays = await Promise.all(ordersPromises);
+    // async fetchOrdersForHouse(houseId) {
+    //   try {
+    //     const response = await axios.get(`http://localhost:8080/orders`, {
+    //       params: { houseId } // 根據房屋 ID 獲取訂單
+    //     });
+    //     return response.data; // 返回訂單數組
+    //   } catch (error) {
+    //     console.error('Error fetching orders for house:', error);
+    //   }
+    // },
+    // async fetchOrdersForUser() {
+    //   const houses = await this.fetchUserHouses();
+    //   if (houses && houses.length > 0) {
+    //     const ordersPromises = houses.map(house => this.fetchOrdersForHouse(house.id));
+    //     const ordersArrays = await Promise.all(ordersPromises);
         
-        // 合併所有訂單
-        this.orders = [].concat(...ordersArrays);
-      }
-    },
+    //     // 合併所有訂單
+    //     this.orders = [].concat(...ordersArrays);
+    //   }
+    // },
     exportCSV() {
       const csvContent = this.generateCSV(this.orders); // 使用 orders
       const bom = '\uFEFF'; // 加入 BOM
