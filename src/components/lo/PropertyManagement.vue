@@ -166,19 +166,9 @@
               <!-- 價格設置 -->
               <v-text-field
                 label="每日價格"
-                v-model="currentItem.pricePerDay"
+                v-model="currentItem.price"
                 type="number"
                 required
-              ></v-text-field>
-              <v-text-field
-                label="每週價格"
-                v-model="currentItem.pricePerWeek"
-                type="number"
-              ></v-text-field>
-              <v-text-field
-                label="每月價格"
-                v-model="currentItem.pricePerMonth"
-                type="number"
               ></v-text-field>
 
               <!-- 額外設置 -->
