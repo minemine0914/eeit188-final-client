@@ -51,6 +51,7 @@
         </v-card-title>
 
         <v-card-subtitle>有{{ click }}人看過這間房源</v-card-subtitle>
+        <v-card-subtitle>此區間內訂房數：{{ store.itemsSource.length }}</v-card-subtitle>
 
         <v-spacer />
 

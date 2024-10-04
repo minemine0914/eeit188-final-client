@@ -9,10 +9,10 @@
             <v-tabs-window v-model="tab">
                 <v-tabs-window-item value="one">
                     <div class="chartContainer">
-                        <div class="chartContent">
+                        <div class="line">
                             <HouseIncome />
                         </div>
-                        <div class="chartContent">
+                        <div class="pie">
                             <GenderPie />
                         </div>
 
@@ -45,7 +45,11 @@ const tab = ref(null)
     align-items: center;
 }
 
-.chartContent {
+.line {
     width: 40%;
+}
+
+.pie {
+    width: 30%;
 }
 </style>

@@ -6,7 +6,7 @@
 <script setup>
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js'
 import { Line } from 'vue-chartjs'
-import { ref, nextTick, computed, onMounted } from 'vue';
+import { computed } from 'vue';
 import { useHostReportStore } from '@/stores/hostReportStore';
 import { useUserStore } from '@/stores/userStore';
 
@@ -21,10 +21,12 @@ const data = computed(() => {
   // Define an array of colors for each data point
   let cashFlowColor = '#f87979'
   const platformIncomeColor = '#d5cc4a'
+  const radius = 10
+  const borderWidth = 6
 
   let pointBackgroundColor = Array(store.records.length).fill(cashFlowColor);
   let pointBackgroundColorPlatform = Array(store.records.length).fill(platformIncomeColor);
-  let pointRadius = Array(store.records.length).fill(3);
+  let pointRadius = Array(store.records.length).fill(6);
 
   if (store.selectedPeriod === 'year') {
     store.labels.name = '年度'
@@ -32,7 +34,8 @@ const data = computed(() => {
 
     if (!store.allYear) {
       pointBackgroundColor[store.selectedYear - store.years[0]] = 'blue';
-      pointRadius[store.selectedYear - store.years[0]] = 8;
+      pointBackgroundColorPlatform[store.selectedYear - store.years[0]] = 'blue';
+      pointRadius[store.selectedYear - store.years[0]] = radius;
     }
 
   } else if (store.selectedPeriod === 'month') {
@@ -40,14 +43,16 @@ const data = computed(() => {
     store.labels.values = store.months
     if (!store.allMonth) {
       pointBackgroundColor[store.selectedMonth - 1] = 'blue';
-      pointRadius[store.selectedMonth - 1] = 8;
+      pointBackgroundColorPlatform[store.selectedMonth - 1] = 'blue';
+      pointRadius[store.selectedMonth - 1] = radius;
     }
   } else if (store.selectedPeriod === 'quarter') {
     store.labels.name = '季'
     store.labels.values = store.quarters
     if (!store.allQuarter) {
       pointBackgroundColor[store.selectedQuarter - 1] = 'blue';
-      pointRadius[store.selectedQuarter - 1] = 8;
+      pointBackgroundColorPlatform[store.selectedQuarter - 1] = 'blue';
+      pointRadius[store.selectedQuarter - 1] = radius;
     }
   }
 
@@ -94,16 +99,18 @@ const data = computed(() => {
     backgroundColor: cashFlowColor,
     borderColor: cashFlowColor,
     pointBackgroundColor, // Apply point colors here
+    borderWidth, // Set the line thickness here
     pointRadius,
     data: lineData // Adjust data mapping as needed
   }]
   // }
   if (userStore.user.role === 'admin') {
     datasets.push({
-      label: '金流',
+      label: '平台收入',
       backgroundColor: platformIncomeColor,
       borderColor: platformIncomeColor,
       pointBackgroundColorPlatform, // Apply point colors here
+      borderWidth, // Set the line thickness here
       pointRadius,
       data: lineDataPlatform // Adjust data mapping as needed
     })
@@ -122,45 +129,76 @@ const options = computed(() => ({
   responsive: true,
   plugins: {
     legend: {
-      position: '',
+      // position: '',
       position: 'top',
+      labels: {
+        font: {
+          size: 30, // Set font size for legend
+        },
+      },
     },
     tooltip: {
       callbacks: {
+        title: function (tooltipItems) {
+          // Get the x-axis label and add "月"
+          if (store.selectedPeriod === 'month')
+            return `${tooltipItems[0].label} 月`;
+          if (store.selectedPeriod === 'year')
+            return `${tooltipItems[0].label} 年`;
+        },
         label: function (tooltipItem) {
-          console.log(tooltipItem)
+          // console.log(tooltipItem)
           return `${tooltipItem.dataset.label}：${tooltipItem.raw}`;
         }
-      }
+      },
+      titleFont: {
+        size: 20, // Font size for tooltip title
+      },
+      bodyFont: {
+        size: 20, // Font size for tooltip body
+      },
     }
   },
   scales: {
     x: {
       title: {
         display: true,
-        text: store.labels.name
-      }
+        text: store.labels.name,
+        font: {
+          size: 36, // Set font size for x-axis label
+        },
+      },
+      ticks: {
+        font: {
+          size: 30, // Set font size for x-axis ticks
+        },
+      },
     },
     y: {
       title: {
         display: false,
         text: labelName
       },
+      ticks: {
+        font: {
+          size: 30, // Set font size for x-axis ticks
+        },
+      },
       beginAtZero: true
     }
   }
 }))
 
-onMounted(() => {
-  // if (store.selectedPeriod === 'year') {
-  //   store.recordsPrapared = store.turnToY(store.records);
-  //   store.recordsPraparedPlatform = store.turnToYPlatform(store.records);
-  // } else if (store.selectedPeriod === 'month') {
-  //   store.recordsPrapared = store.turnToYM(store.records);
-  //   store.recordsPraparedPlatform = store.turnToYMPlatform(store.records);
-  // } else if (store.selectedPeriod === 'quarter') {
-  //   store.recordsPrapared = store.turnToYQ(store.records);
-  //   store.recordsPraparedPlatform = store.turnToYQPlatform(store.records);
-  // }
-})
+// onMounted(() => {
+// if (store.selectedPeriod === 'year') {
+//   store.recordsPrapared = store.turnToY(store.records);
+//   store.recordsPraparedPlatform = store.turnToYPlatform(store.records);
+// } else if (store.selectedPeriod === 'month') {
+//   store.recordsPrapared = store.turnToYM(store.records);
+//   store.recordsPraparedPlatform = store.turnToYMPlatform(store.records);
+// } else if (store.selectedPeriod === 'quarter') {
+//   store.recordsPrapared = store.turnToYQ(store.records);
+//   store.recordsPraparedPlatform = store.turnToYQPlatform(store.records);
+// }
+// })
 </script>
