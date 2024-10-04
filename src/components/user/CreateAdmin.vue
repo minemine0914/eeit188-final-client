@@ -118,7 +118,7 @@ import {
 } from "@vuelidate/validators";
 import { VDateInput } from "vuetify/labs/VDateInput";
 import { useRouter } from "vue-router";
-import Swal from "sweetalert2";
+import Swal from "@/plugins/sweetalert2";
 
 const router = useRouter();
 

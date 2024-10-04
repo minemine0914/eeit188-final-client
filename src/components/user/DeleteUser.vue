@@ -14,7 +14,7 @@
 </template>
 <script setup>
 import { useUserStore } from "../../stores/userStore";
-import Swal from "sweetalert2";
+import Swal from "@/plugins/sweetalert2";
 
 const userStore = useUserStore();
 const { deleteUser, logout } = userStore;

@@ -58,7 +58,7 @@
 import { ref, computed, reactive } from "vue";
 import { QrcodeStream } from "vue-qrcode-reader";
 import api from "@/plugins/axios";
-import Swal from "sweetalert2";
+import Swal from "@/plugins/sweetalert2";
 import { useUserStore } from "../../stores/userStore";
 
 const userStore = useUserStore();

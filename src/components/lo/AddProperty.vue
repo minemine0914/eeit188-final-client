@@ -172,7 +172,9 @@
               label="臥室(床位)數量 *"
               v-model="property.bedroom"
               type="number"
-              :error-messages="$v.property.bedroom.$error ? ['不可小於一間'] : []"
+              :error-messages="
+                $v.property.bedroom.$error ? ['不可小於一間'] : []
+              "
               outlined
               required
             ></v-text-field>
@@ -182,7 +184,9 @@
               label="浴室數量 *"
               v-model="property.bathroom"
               type="number"
-              :error-messages="$v.property.bathroom.$error ? ['不可小於一間'] : []"
+              :error-messages="
+                $v.property.bathroom.$error ? ['不可小於一間'] : []
+              "
               outlined
               required
             ></v-text-field>
@@ -194,7 +198,9 @@
               label="廁所數量 *"
               v-model="property.restroom"
               type="number"
-              :error-messages="$v.property.restroom.$error ? ['不可小於一間'] : []"
+              :error-messages="
+                $v.property.restroom.$error ? ['不可小於一間'] : []
+              "
               outlined
               required
             ></v-text-field>
@@ -310,10 +316,10 @@
 import { ref, watch } from "vue";
 import useVuelidate from "@vuelidate/core";
 import { required, minValue, numeric } from "@vuelidate/validators";
-import Swal from "sweetalert2";
+import Swal from "@/plugins/sweetalert2";
 import { useHostManagementStore } from "@/stores/hostManagementStore";
 import { useUserStore } from "../../stores/userStore";
-import { useRouter } from 'vue-router';
+import { useRouter } from "vue-router";
 
 const router = useRouter();
 const userStore = useUserStore();
@@ -385,22 +391,22 @@ const rules = {
 const $v = useVuelidate(rules, { property });
 
 import cityData from "@/assets/CityCountyData.json";
-  
-  const cities = ref(cityData.map((city) => city.CityName));
-  
-  const districts = ref([]);
-  watch(
-    () => property.value.city,
-    (newCity) => {
-      const selectedCity = cityData.find((city) => city.CityName === newCity);
-      districts.value = selectedCity
-        ? selectedCity.AreaList.map((area) => area.AreaName)
-        : [];
-      if (!districts.value.includes(property.value.region)) {
-        property.value.region = "";
-      }
+
+const cities = ref(cityData.map((city) => city.CityName));
+
+const districts = ref([]);
+watch(
+  () => property.value.city,
+  (newCity) => {
+    const selectedCity = cityData.find((city) => city.CityName === newCity);
+    districts.value = selectedCity
+      ? selectedCity.AreaList.map((area) => area.AreaName)
+      : [];
+    if (!districts.value.includes(property.value.region)) {
+      property.value.region = "";
     }
-  );
+  }
+);
 // 狀態管理
 const hostManagementStore = useHostManagementStore();
 const isSubmitting = ref(false);

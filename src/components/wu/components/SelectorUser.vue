@@ -102,14 +102,15 @@ const items = computed(() => {
         );
     }
     maxHouseCount.value = filtered.reduce((max, item) => {
-        return item?.houses?.length > max ? item?.houses?.length : max;
+        return item?.houseCount > max ? item?.houseCount : max;
     }, 0);
-    return filtered.map(item => {
-        return {
-            ...item,
-            'houseCount': item?.houses?.length,
-        }
-    })
+    return filtered
+    // return filtered.map(item => {
+    //     return {
+    //         ...item,
+    //         'houseCount': item?.houses?.length,
+    //     }
+    // })
 });
 
 const fetchHouses = async (userId) => {
