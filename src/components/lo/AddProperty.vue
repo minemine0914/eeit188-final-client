@@ -330,7 +330,7 @@ const property = ref({
   address: "",
   latitudeX: null,
   longitudeY: null,
-  price: 0,
+  price: 1,
   // pricePerDay: 0,
   // pricePerWeek: 0,
   // pricePerMonth: 0,
