@@ -5,8 +5,8 @@ import fs from "fs"; // 用於讀取 JSON 檔案
 
 // API 網址
 let eeitApiUrl;
-// eeitApiUrl = "https://localhost/api"; // 上線環境
-eeitApiUrl = "http://localhost:8080"; // 開發環境
+eeitApiUrl = "https://localhost/api"; // 上線環境
+// eeitApiUrl = "http://localhost:8080"; // 開發環境
 
 // 創建 axios 實例並設置 baseURL
 const apiClient = axios.create({
@@ -129,11 +129,11 @@ const preCreateDiscussTemplates = [
 async function addRandomDiscuss() {
     try {
         // 取得使用者清單
-        const usersResponse = await apiClient.get('/user/find-users?pageNo=0&pageSize=500');
+        const usersResponse = await apiClient.get("/user/find-users?pageNo=0&pageSize=500");
         const users = usersResponse.data.users;
 
         // 取得房源清單
-        const housesResponse = await apiClient.get('/house/all?page=0&limit=500&dir=true&order=createdAt');
+        const housesResponse = await apiClient.get("/house/all?page=0&limit=500&dir=true&order=createdAt");
         const houses = housesResponse.data.content;
 
         for (let index = 0; index < users.length; index++) {
@@ -145,7 +145,8 @@ async function addRandomDiscuss() {
 
             for (let i = 0; i < numberOfReviews; i++) {
                 const randomHouse = houses[Math.floor(Math.random() * houses.length)];
-                const randomTemplate = preCreateDiscussTemplates[Math.floor(Math.random() * preCreateDiscussTemplates.length)];
+                const randomTemplate =
+                    preCreateDiscussTemplates[Math.floor(Math.random() * preCreateDiscussTemplates.length)];
 
                 const discussData = {
                     houseId: randomHouse.id,
@@ -156,12 +157,16 @@ async function addRandomDiscuss() {
                 };
 
                 // 發送 POST 請求新增評論
-                await apiClient.post('/discuss/', discussData);
-                console.log(`(${index + 1} / ${users.length}) 成功新增評論: ${discussData.discuss}，分數: ${discussData.score}，房源: ${randomHouse.name}[${randomHouse.id}]`);
+                await apiClient.post("/discuss/", discussData);
+                console.log(
+                    `(${index + 1} / ${users.length}) 成功新增評論: ${discussData.discuss}，分數: ${
+                        discussData.score
+                    }，房源: ${randomHouse.name}[${randomHouse.id}]`
+                );
             }
         }
     } catch (error) {
-        console.error('新增評論時出錯:', error);
+        console.error("新增評論時出錯:", error);
     }
 }
 

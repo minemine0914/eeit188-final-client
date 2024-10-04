@@ -7,8 +7,8 @@ import fs from "fs"; // 用於讀取 JSON 檔案
 
 // API 網址
 let eeitApiUrl;
-// eeitApiUrl = "https://localhost/api"; // 上線環境
-eeitApiUrl = "http://localhost:8080"; // 開發環境
+eeitApiUrl = "https://localhost/api"; // 上線環境
+// eeitApiUrl = "http://localhost:8080"; // 開發環境
 
 // 創建 axios 實例並設置 baseURL
 const apiClient = axios.create({

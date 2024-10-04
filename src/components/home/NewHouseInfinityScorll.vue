@@ -13,16 +13,13 @@
             </v-btn>
         </v-sheet>
         <v-infinite-scroll
-            class="flex-grow-1"
+            class="flex-grow-1 overflow-x-hidden"
             style="min-height: 360px"
             direction="horizontal"
             @load="loadHotHouse"
             ref="infinityScrollRef"
         >
-            <template
-                v-for="(house, index) in displayedHouses"
-                :key="house.houseDetails?.id || index"
-            >
+            <template v-for="(house, index) in displayedHouses" :key="house.houseDetails?.id || index">
                 <HouseCard
                     v-if="!house.isLoading"
                     :house="house.houseDetails"
@@ -33,18 +30,14 @@
                 />
                 <v-card v-else height="360" min-width="320" elevation="0">
                     <v-card-item class="pt-4">
-                        <v-sheet
-                            color="transparent"
-                            class="overflow-hidden"
-                            rounded="lg"
-                            height="200"
-                        >
+                        <v-sheet color="transparent" class="overflow-hidden" rounded="lg" height="200">
                             <v-skeleton-loader class="mx-auto h-100" type="image" />
                         </v-sheet>
                     </v-card-item>
                     <v-skeleton-loader type="list-item-three-line" />
                 </v-card>
             </template>
+            <template v-slot:empty></template>
         </v-infinite-scroll>
         <v-sheet class="d-flex flex-column align-self-stretch">
             <v-btn
