@@ -2,12 +2,19 @@
     <v-container>
         <v-row>
             <v-col cols="12">
-                <v-card elevation="3">
-                    <v-card-title class="text-h5 text-center pb-0"> 請掃描 入住 QRCode </v-card-title>
+                <v-card color="brown-lighten-5">
+                    <v-card-title class="text-h5 text-center pb-0">
+                        請掃描 入住 QRCode
+                    </v-card-title>
                     <!-- QRCode View -->
                     <v-card-item>
                         <v-responsive :aspect-ratio="16 / 9">
-                            <v-sheet class="w-100 h-100 overflow-hidden position-relative" rounded="lg" color="rgba(0,0,0,0)" style="z-index: 100;">
+                            <v-sheet
+                                class="w-100 h-100 overflow-hidden position-relative"
+                                rounded="lg"
+                                color="rgba(0,0,0,0)"
+                                style="z-index: 100"
+                            >
                                 <qrcode-stream
                                     :constraints="selectedConstraints"
                                     :track="trackFunctionSelected.fn"
@@ -17,7 +24,12 @@
                                     @camera-on="onCameraReady"
                                 />
                             </v-sheet>
-                            <v-sheet class="d-flex flex-row justify-center align-center w-100 h-100 overflow-hidden position-absolute top-0 left-0" rounded="lg" color="grey-darken-2" style="z-index: 99;">
+                            <v-sheet
+                                class="d-flex flex-row justify-center align-center w-100 h-100 overflow-hidden position-absolute top-0 left-0"
+                                rounded="lg"
+                                color="grey-darken-2"
+                                style="z-index: 99"
+                            >
                                 <div class="text-h4">掃描裝置啟動中 請稍候</div>
                             </v-sheet>
                         </v-responsive>
@@ -32,15 +44,15 @@
                 </v-card>
             </v-col>
             <v-col cols="12">
-                <v-card title="掃描設定">
+                <v-card title="掃描設定" color="brown-lighten-5">
                     <v-card-item class="pt-0">
-                        <v-sheet class="d-flex flex-row ga-1 pt-2">
+                        <v-sheet class="d-flex flex-row ga-1 pt-2" color="transparent">
                             <v-select
                                 v-model="selectedConstraints"
                                 :items="constraintOptions"
                                 item-title="label"
                                 item-value="constraints"
-                                prefix="掃描裝置:"
+                                label="掃描裝置"
                                 variant="outlined"
                             >
                             </v-select>
@@ -49,7 +61,7 @@
                                 :items="trackFunctionOptions"
                                 item-title="text"
                                 item-value="value"
-                                prefix="掃描顯示樣式:"
+                                label="掃描樣式"
                                 variant="outlined"
                             >
                             </v-select>
@@ -188,6 +200,7 @@ const trackFunctionSelected = ref(trackFunctionOptions[1]);
 
 /*** barcode formats ***/
 const barcodeFormats = ref([
+    { name: "qr_code", selected: true },
     { name: "aztec", selected: false },
     { name: "code_128", selected: false },
     { name: "code_39", selected: false },
@@ -203,7 +216,6 @@ const barcodeFormats = ref([
     { name: "maxi_code", selected: false },
     { name: "micro_qr_code", selected: false },
     { name: "pdf417", selected: false },
-    { name: "qr_code", selected: true },
     { name: "rm_qr_code", selected: false },
     { name: "upc_a", selected: false },
     { name: "upc_e", selected: false },

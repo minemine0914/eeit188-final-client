@@ -1,73 +1,78 @@
 <template>
-    <!-- 訂單管理表格 (分頁) -->
-    <v-data-table-server
-        :items-per-page="itemsPerPage"
-        :items-length="totalItems"
-        :search="search"
-        :loading="loading"
-        :headers="headers"
-        :items="orders"
-        :items-per-page-options="[10, 20, 30, 50, 100, 1000]"
-        @update:options="fetchOrder"
-    >
-        <template v-slot:item.deal="{ item }">
-            <v-chip :color="getStatusColor(item.deal)" size="small" class="text-uppercase">
-                {{ getStatusText(item.deal) }}
-            </v-chip>
-        </template>
+    <v-container>
+        <!-- 訂單管理表格 (分頁) -->
+        <v-data-table-server
+            :items-per-page="itemsPerPage"
+            :items-length="totalItems"
+            :search="search"
+            :loading="loading"
+            :headers="headers"
+            :items="orders"
+            :items-per-page-options="[10, 20, 30, 50, 100, 1000]"
+            show-current-page
+            @update:options="fetchOrder"
+        >
+            <template v-slot:item.deal="{ item }">
+                <v-chip :color="getStatusColor(item.deal)" size="small" class="text-uppercase">
+                    {{ getStatusText(item.deal) }}
+                </v-chip>
+            </template>
 
-        <template v-slot:item.house="{ item }">
-            <div @click.stop="$router.push(`/house/${item.house.id}`)" class="cursor-pointer">
-                {{ item.house.name }}
-            </div>
-        </template>
-        <template v-slot:item.user="{ item }">
-            <div>{{ item.user.name }}</div>
-        </template>
+            <template v-slot:item.house="{ item }">
+                <div @click.stop="$router.push(`/house/${item.house.id}`)" class="cursor-pointer">
+                    {{ item.house.name }}
+                </div>
+            </template>
+            <template v-slot:item.user="{ item }">
+                <div>{{ item.user.name }}</div>
+            </template>
 
-        <template v-slot:top>
-            <v-toolbar flat>
-                <v-toolbar-title>訂單管理</v-toolbar-title>
-                <!-- 搜尋欄位下拉選單 -->
-                <v-select
-                prefix="搜尋條件:"
-                    v-model="selectedField"
-                    :items="[
-                        { title: '金額', value: 'cashFlow' },
-                        { title: '房源名稱', value: 'houseName' },
-                        { title: '訂單編號', value: 'id' },
-                    ]"
-                    density="compact"
-                    label="選擇搜尋欄位"
-                    variant="solo-filled"
-                    flat
-                    hide-details
-                    single-line
-                    :style="{ width: '30px' }"
-                ></v-select>
-                <v-text-field
-                    density="compact"
-                    label="查詢"
-                    prepend-inner-icon="mdi-magnify"
-                    variant="solo-filled"
-                    flat
-                    hide-details
-                    single-line
-                    :style="{ width: '200px' }"
-                    @blur="onSearchTextFieldUpdate"
-                    @keyup.enter="onSearchTextFieldUpdate"
-                    clearable
-                ></v-text-field>
-                <!-- 匯出 CSV 按鈕 -->
-                <v-btn color="success" @click="exportCSV">匯出 CSV</v-btn>
-            </v-toolbar>
-        </template>
+            <template v-slot:top>
+                <v-toolbar flat rounded="lg" color="brown-lighten-5">
+                    <v-toolbar-title>訂單管理</v-toolbar-title>
+                    <!-- 搜尋欄位下拉選單 -->
+                     <v-sheet color="transparent" class="d-flex flex-row flex-grow-1 ga-2 mr-2">
+                         <v-select
+                             prefix="搜尋欄位:"
+                             v-model="selectedField"
+                             :items="[
+                                 { title: '金額', value: 'cashFlow' },
+                                 { title: '房源名稱', value: 'houseName' },
+                                 { title: '訂單編號', value: 'id' },
+                             ]"
+                             density="compact"
+                             label="選擇搜尋欄位"
+                             variant="solo-filled"
+                             flat
+                             hide-details
+                             single-line
+                             :style="{ width: '30px' }"
+                         ></v-select>
+                         <v-text-field
+                             density="compact"
+                             label="查詢"
+                             prepend-inner-icon="mdi-magnify"
+                             variant="solo-filled"
+                             flat
+                             hide-details
+                             single-line
+                             :style="{ width: '200px' }"
+                             @blur="onSearchTextFieldUpdate"
+                             @keyup.enter="onSearchTextFieldUpdate"
+                             clearable
+                         ></v-text-field>
+                         <!-- 匯出 CSV 按鈕 -->
+                         <v-btn color="success" @click="exportCSV" variant="tonal" size="large">匯出 CSV</v-btn>
+                     </v-sheet>
+                </v-toolbar>
+            </template>
 
-        <template v-slot:item.actions="{ item }">
-            <v-icon class="me-2" size="small" @click="openDeal(item)"> mdi-pencil </v-icon>
-            <v-icon class="me-2" size="small" @click="openOrder(item)"> mdi-eye </v-icon>
-        </template>
-    </v-data-table-server>
+            <template v-slot:item.actions="{ item }">
+                <v-icon class="me-2" size="small" @click="openDeal(item)"> mdi-pencil </v-icon>
+                <v-icon class="me-2" size="small" @click="openOrder(item)"> mdi-eye </v-icon>
+            </template>
+        </v-data-table-server>
+    </v-container>
 
     <!-- 顯示訂單資訊 -->
     <v-dialog v-model="dialog" max-width="500px">
