@@ -13,7 +13,7 @@
       :headers="promotionHeaders"
       :items="promotions"
       item-key="id"
-      :items-per-page="5"
+       :items-per-page="itemsPerPage"
     >
       <template v-slot:header.id>
         <div class="text-center">折扣碼</div>
@@ -29,7 +29,7 @@
         <div class="text-center">活動名稱</div>
       </template>
       <template v-slot:item.discountRate="{ item }">
-        <div class="text-center">{{ (item.discountRate ).toFixed(0) }}%</div>
+        <div class="text-center">{{ (item.discountRate ).toFixed(2) * 100 }}%</div>
       </template>
       <template v-slot:header.discountRate>
         <div class="text-center">折扣比率</div>
@@ -208,6 +208,9 @@ const currentDiscountCode = ref({ discount: '', expire: '' });
 const userIds = ref([]);
 const users = ref([]);
 const assignToAllUsers = ref(false);
+const currentPage = ref(0); // 注意：後端頁碼通常從0開始
+const itemsPerPage = ref(5); // 每頁顯示的項目數量
+const totalItems = ref(0); // 總項目數
 
 const promotionHeaders = [
   { text: '折扣碼', value: 'id' },
@@ -256,6 +259,7 @@ const discountCodeHeaders = [
         ...promotion,
         createdAt: formatDate(promotion.createdAt)
       }));
+      totalItems.value = response.data.totalElements;
     } catch (error) {
       console.error('Error fetching promotions:', error);
     }
@@ -268,6 +272,7 @@ const discountCodeHeaders = [
         ...discountCode,
         createdAt: formatDate(discountCode.createdAt)
       }));
+      totalItems.value = response.data.totalElements; 
     } catch (error) {
       console.error('Error fetching discount codes:', error);
     }
@@ -413,12 +418,12 @@ const saveDiscountCode = async () => {
       }
     };
     
-    
-onMounted(() => {
-  fetchUsers();
-  fetchPromotions();
-  fetchDiscountCodes();
-});
+        
+    onMounted(() => {
+      fetchUsers();
+      fetchPromotions();
+      fetchDiscountCodes();
+    });
 </script>
 
 <style scoped>

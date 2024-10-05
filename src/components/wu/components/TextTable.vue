@@ -51,6 +51,7 @@
         </v-card-title>
 
         <v-card-subtitle>有{{ click }}人看過這間房源</v-card-subtitle>
+        <v-card-subtitle>此區間內訂房數：{{ store.itemsSource.length }}</v-card-subtitle>
 
         <v-spacer />
 
@@ -124,21 +125,21 @@ let headers = []
 if (store.loginUser.role === 'normal') {
     headers = [
         { title: '訂單成立時間', value: 'createdAt', sortable: true },
-        { title: '訂房者名稱', value: 'bookerName', sortable: true },
-        { title: '性別', value: 'bookerGender', sortable: true },
         { title: '金額', value: 'cashFlow', sortable: true, align: "end" },
         { title: '評分', value: 'score', sortable: true },
+        { title: '訂房者名稱', value: 'bookerName', sortable: true },
+        { title: '性別', value: 'bookerGender', sortable: true },
         // { title: '', value: '', sortable: false, width: '100px' }, // 空白欄 調整排版用
     ];
 } else if (store.loginUser.role === 'admin') {
     headers = [
+        { title: '訂單成立時間', value: 'createdAt', sortable: true, width: '150px' },
+        { title: '平台收入', value: 'platformIncome', sortable: true, width: '50px', align: "end" },
+        { title: '交易金額', value: 'cashFlow', sortable: true, width: '100px', align: "end" },
+        { title: '評分', value: 'score', sortable: true, width: '200px', align: "center" },
         { title: '訂房者ID', value: 'bookerId', sortable: true, width: '80px' },
-        { title: '訂單成立時間', value: 'createdAt', sortable: true, width: '210px' },
         { title: '訂房者名稱', value: 'bookerName', sortable: true, width: '150px' },
         { title: '性別', value: 'bookerGender', sortable: true, width: '100px' },
-        { title: '平台收入', value: 'platformIncome', sortable: true, width: '250px', align: "end" },
-        { title: '交易金額', value: 'cashFlow', sortable: true, width: '100px', align: "end" },
-        { title: '評分', value: 'score', sortable: true, width: '200px' },
         // { title: '', value: 'postulate', sortable: false, width: '100px' }, // 空白欄 調整排版用
     ];
 }

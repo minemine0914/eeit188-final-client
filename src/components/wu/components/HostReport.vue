@@ -1,12 +1,16 @@
 <!-- src/views/HostReport.vue -->
 <template>
-    <v-container class="mainBox">
+    <v-overlay :model-value="store.isLoading" class="d-flex align-center justify-center fullscreen-overlay"
+        :scrim="false">
+        <v-progress-circular color="brown" size="100" width="12" indeterminate></v-progress-circular>
+    </v-overlay>
+    <v-container>
         <!-- Loading Spinner -->
-        <div v-if="store.isLoading"
+        <!-- <div v-if="store.isLoading"
             style="position: fixed;right:5vw;top:20vh;transform: translate(-50%, -50%);z-index: 100;">
             <v-progress-circular indeterminate color="primary" class="ma-5" :size="100"
                 :width="18"></v-progress-circular>
-        </div>
+        </div> -->
         <!-- main content -->
         <span class="font-weight-black text-brown-darken-1 text-h5" style="font-family: 'Tenor Sans'">
             NOMAD
@@ -14,6 +18,7 @@
         <h2 style="display:inline"> 分析報表</h2>
         <v-spacer></v-spacer>
         <v-card class="subBox">
+
             <v-card-title>您好，{{ store.loginUser.name }}，歡迎使用本系統
                 <template v-if="store.houses[0]?.id !== '' && store.houses[0]?.name !== 'NO HOUSES'">
                     <Selector />
@@ -38,7 +43,9 @@
                 </v-card-text>
             </template>
         </v-card>
+
     </v-container>
+
 </template>
 
 <script setup>
@@ -78,14 +85,23 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.mainBox {
-    width: 80vw;
-    position: relative;
+.fullscreen-overlay {
+    position: fixed !important;
+    top: 0;
     left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999;
+}
+
+.mainBox {
+    /* width: 80vw;
+    position: relative;
+    left: 0; */
 }
 
 .subBox {
-    width: 70vw;
+    /* width: 70vw; */
     background-color: rgba(211, 211, 211, 0.5)
 }
 

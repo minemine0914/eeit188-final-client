@@ -275,6 +275,16 @@ export const useHostManagementStore = defineStore("hostManagement", () => {
     }
   }
 
+  async function fetchHostCountDetail(hostId) {
+    try {
+      const response = await api.get(`/house/host-count-detail/${hostId}`);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+      throw error;
+    }
+  }
+
   return {
     properties,
     reviews,
@@ -295,5 +305,6 @@ export const useHostManagementStore = defineStore("hostManagement", () => {
     fetchAllhouse,
     fetchHouseById,
     countAllhouse,
+    fetchHostCountDetail,
   };
 });
