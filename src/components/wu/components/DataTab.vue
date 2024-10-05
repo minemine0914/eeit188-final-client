@@ -1,8 +1,8 @@
 <template>
     <v-card>
         <v-tabs v-model="tab" align-tabs="left" bg-color="primary" grow>
-            <v-tab value="one">圖表</v-tab>
-            <v-tab value="two">表格</v-tab>
+            <v-tab value="one" class="text-h5">圖表</v-tab>
+            <v-tab value="two" class="text-h5">表格</v-tab>
         </v-tabs>
 
         <v-card-text>
