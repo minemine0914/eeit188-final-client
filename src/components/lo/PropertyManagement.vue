@@ -117,20 +117,27 @@
             @update:options="loadItems"
             :search="search"
             show-current-page
+            :sort-by="[{key: 'createdAt', order: 'asc'}]"
         >
-            <!--狀態欄位-->
+            <!--欄位 房源名稱-->
             <template v-slot:item.name="{ item }">
                 <div class="cursor-pointer" @click="handleClick(item)">
                     {{ item.name }}
                 </div>
             </template>
-            <!--狀態欄位-->
+            <!--欄位 建立時間-->
+            <template v-slot:item.createdAt="{ item }">
+                <div class="cursor-pointer" @click="handleClick(item)">
+                    {{ new Date(item.createdAt).toLocaleString() }}
+                </div>
+            </template>
+            <!--欄位 平台審核-->
             <template v-slot:item.review="{ item }">
                 <v-chip :color="getReviewColor(item.review)" size="small" class="text-uppercase">
                     {{ getReviewText(item.review) }}
                 </v-chip>
             </template>
-            <!--狀態欄位-->
+            <!--欄位 刊登狀態-->
             <template v-slot:item.show="{ item }">
                 <v-sheet color="transparent" class="d-flex flex-row align-center ga-2">
                     <v-icon
@@ -155,6 +162,7 @@
                     </v-switch>
                 </v-sheet>
             </template>
+            <!--欄位 房源操作-->
             <template v-slot:item.actions="{ item }">
                 <v-sheet
                     color="transparent"
@@ -370,8 +378,9 @@ watch(
 // 表格標題
 const headers = [
     { title: "房源名稱", key: "name", sortable: false },
-    { title: "平台審核", key: "review" },
-    { title: "刊登狀態", key: "show" },
+    { title: "建立時間", key: "createdAt", sortable: true, sort: true },
+    { title: "平台審核", key: "review", sortable: true },
+    { title: "刊登狀態", key: "show", sortable: true },
     { title: "房源操作", key: "actions", sortable: false },
 ];
 
