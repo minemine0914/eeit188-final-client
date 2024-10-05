@@ -419,22 +419,38 @@ async function loadItems({ page, itemsPerPage, sortBy }) {
 
 // 刪除房源
 const deleteItem = async (item) => {
-    const checked = confirm("是否確定要刪除此房源？");
+  const result = await Swal.fire({
+    title: '是否確定要刪除此房源？',
+    text: "此操作將無法恢復！",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: '確定',
+    cancelButtonText: '取消'
+  });
 
-    if (checked) {
-        try {
-            await hostManagementStore.deleteProperty(item.id);
-            // house.houses = [];
-            // house.houses.push(...(await hostManagementStore.fetchAllhouse(user.id)));
-            // totalProperties.value = await hostManagementStore.countAllhouse(user.id);
-            await reloadHostCountDetail();
-            alert("已刪除指定房源");
-        } catch (error) {
-            console.error("刪除失敗:", error);
-            alert("刪除失敗，請稍後再試");
-        }
+  if (result.isConfirmed) {
+    try {
+      await hostManagementStore.deleteProperty(item.id);
+      house.houses = [];
+      house.houses.push(...(await hostManagementStore.fetchAllhouse(user.id)));
+      totalProperties.value = await hostManagementStore.countAllhouse(user.id);
+
+      Swal.fire(
+        '已刪除！',
+        '指定房源已成功刪除。',
+        'success'
+      );
+    } catch (error) {
+      console.error("刪除失敗:", error);
+      Swal.fire(
+        '刪除失敗',
+        '刪除房源時出現錯誤，請稍後再試。',
+        'error'
+      );
     }
-};
+};}
 
 const goToEditPropertyImage = (propertyId) => {
     router.push(`/host/edit-property/${propertyId}`);
@@ -583,6 +599,7 @@ async function reloadHostCountDetail() {
 onMounted(async () => {
     await reloadHostCountDetail();
 });
+
 </script>
 
 <style scoped>
