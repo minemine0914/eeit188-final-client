@@ -1,203 +1,223 @@
 <template>
-  <v-container>
-    <!-- 統計卡片 -->
-    <v-row>
-      <v-col cols="12" md="4">
-        <v-card>
-          <v-card-title>總房源數</v-card-title>
-          <v-card-text>{{ totalProperties }} 間</v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
+    <v-container>
+        <!-- 統計卡片 -->
+        <v-row class="d-flex flex-row">
+            <v-col cols="12" md="4" class="flex-grow-1">
+                <v-card class="h-100" color="brown-lighten-5">
+                    <v-card-title>總房源數</v-card-title>
+                    <v-card-item class="pt-0">
+                        <v-sheet
+                            class="d-flex flex-row justify-center flex-nowrap"
+                            color="transparent"
+                        >
+                            <v-sheet color="transparent" class="flex-grow-1 text-center">
+                                <span class="text-h6 px-1">{{ hosuCountDetail.totalHouses }}</span
+                                >間
+                            </v-sheet>
+                        </v-sheet>
+                    </v-card-item>
+                </v-card>
+            </v-col>
+            <v-col cols="12" md="4" class="flex-grow-1">
+                <v-card class="h-100" color="brown-lighten-5">
+                    <v-card-title>審核狀態</v-card-title>
+                    <v-card-item class="pt-0">
+                        <v-sheet
+                            class="d-flex flex-row justify-center flex-nowrap"
+                            color="transparent"
+                        >
+                            <v-sheet color="transparent" class="flex-grow-1 text-center"
+                                >待審核<span class="text-h6 px-1">{{ hosuCountDetail.reviewNull }}</span
+                                >間</v-sheet
+                            >
+                            <v-sheet color="transparent" class="flex-grow-1 text-center"
+                                >未通過<span class="text-h6 px-1">{{ hosuCountDetail.reviewFalse }}</span
+                                >間</v-sheet
+                            >
+                            <v-sheet color="transparent" class="flex-grow-1 text-center"
+                                >已通過<span class="text-h6 px-1">{{ hosuCountDetail.reviewTrue }}</span
+                                >間</v-sheet
+                            >
+                        </v-sheet>
+                    </v-card-item>
+                </v-card>
+            </v-col>
+            <v-col cols="12" md="4" class="flex-grow-1">
+                <v-card class="h-100" color="brown-lighten-5">
+                    <v-card-title>上架狀態</v-card-title>
+                    <v-card-item class="pt-0">
+                        <v-sheet
+                            class="d-flex flex-row justify-center flex-nowrap"
+                            color="transparent"
+                        >
+                            <v-sheet color="transparent" class="flex-grow-1 text-center"
+                                >刊登中<span class="text-h6 px-1">{{ hosuCountDetail.showTrue }}</span
+                                >間</v-sheet
+                            >
+                            <v-sheet color="transparent" class="flex-grow-1 text-center"
+                                >下架中<span class="text-h6 px-1">{{ hosuCountDetail.showFalse }}</span
+                                >間</v-sheet
+                            >
+                        </v-sheet>
+                    </v-card-item>
+                </v-card>
+            </v-col>
+        </v-row>
 
-    <!-- 房源管理表格 -->
-    <v-row>
-      <v-col cols="12">
-        <v-data-table
-          :headers="headers"
-          :items="house.houses"
-          class="elevation-1"
+        <!-- 房源管理表格 -->
+        <v-data-table-server
+            class="elevation-1 mt-3"
+            v-model:items-per-page="itemsPerPage"
+            :headers="headers"
+            :items="houseList"
+            :items-length="totalItems"
+            :loading="loading"
+            :items-per-page-options="[10, 20, 30, 50, 100, 1000]"
+            item-value="name"
+            @update:options="loadItems"
+            :search="search"
         >
-          <template v-slot:item.name="{ item }">
-            <v-text class="title-name" @click="handleClick(item)">
-              {{ item.name }}
-            </v-text>
-          </template>
-          <template v-slot:item.review="{ item }">
             <!--狀態欄位-->
-            <v-chip
-              :color="getReviewColor(item.review)"
-              size="small"
-              class="text-uppercase"
-            >
-              {{ getReviewText(item.review) }}
-            </v-chip>
-          </template>
-          <template v-slot:item.show="{ item }">
+            <template v-slot:item.name="{ item }">
+                <div class="cursor-pointer" @click="handleClick(item)">
+                    {{ item.name }}
+                </div>
+            </template>
             <!--狀態欄位-->
-            <v-chip
-              :color="getStatusColor(item.show)"
-              size="small"
-              class="text-uppercase"
-            >
-              {{ getStatusText(item.show) }}
-            </v-chip>
-          </template>
-          <template v-slot:item.actions="{ item }">
-            <v-icon @click="openDialog(item)" class="me-2" small>
-              mdi-pencil
-            </v-icon>
-            <v-btn color="primary" @click="openUpdateDialog(item)">編輯</v-btn>
-            <v-btn color="error" @click="deleteItem(item)">刪除</v-btn>
-
-            <v-btn color="info" @click="goToEditPropertyImage(item.id)"
-              >圖片管理</v-btn
-            >
-          </template>
-        </v-data-table>
-
-        <!--狀態修改彈出視窗-->
-        <v-dialog v-model="dialog" max-width="290">
-          <v-card>
+            <template v-slot:item.review="{ item }">
+                <v-chip :color="getReviewColor(item.review)" size="small" class="text-uppercase">
+                    {{ getReviewText(item.review) }}
+                </v-chip>
+            </template>
+            <!--狀態欄位-->
+            <template v-slot:item.show="{ item }">
+                <v-chip :color="getStatusColor(item.show)" size="small" class="text-uppercase">
+                    {{ getStatusText(item.show) }}
+                </v-chip>
+            </template>
+            <template v-slot:item.actions="{ item }">
+                <v-icon @click="openDialog(item)" class="me-2" small icon="mdi-pencil"></v-icon>
+                <v-btn color="primary" @click="openUpdateDialog(item)">編輯</v-btn>
+                <v-btn color="error" @click="deleteItem(item)">刪除</v-btn>
+                <v-btn color="info" @click="goToEditPropertyImage(item.id)">圖片管理</v-btn>
+            </template>
+        </v-data-table-server>
+    </v-container>
+    <!--狀態修改彈出視窗-->
+    <v-dialog v-model="dialog" max-width="290">
+        <v-card>
             <v-card-title class="headline">選擇狀態</v-card-title>
             <v-card-text>
-              <v-radio-group v-model="selectedStatus">
-                <v-radio label="上架" :value="true"></v-radio>
-                <v-radio label="下架" :value="false"></v-radio>
-              </v-radio-group>
+                <v-radio-group v-model="selectedStatus">
+                    <v-radio label="上架" :value="true"></v-radio>
+                    <v-radio label="下架" :value="false"></v-radio>
+                </v-radio-group>
             </v-card-text>
             <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn @click="updateStatus" color="primary">確認</v-btn>
-              <v-btn @click="resetDialog" color="grey">取消</v-btn>
+                <v-spacer></v-spacer>
+                <v-btn @click="updateStatus" color="primary">確認</v-btn>
+                <v-btn @click="resetDialog" color="grey">取消</v-btn>
             </v-card-actions>
-          </v-card>
-        </v-dialog>
+        </v-card>
+    </v-dialog>
 
-        <!--房源詳細資訊修改彈出視窗-->
-        <v-dialog v-model="updateDialog" max-width="290">
-          <v-card class="submit-card">
+    <!--房源詳細資訊修改彈出視窗-->
+    <v-dialog v-model="updateDialog" max-width="290">
+        <v-card class="submit-card">
             <v-form class="update-form" @submit.prevent="submitForm">
-              <!-- 房源名稱 -->
-              <v-text-field
-                label="房源名稱"
-                v-model="currentItem.name"
-                required
-              ></v-text-field>
+                <!-- 房源名稱 -->
+                <v-text-field label="房源名稱" v-model="currentItem.name" required></v-text-field>
 
-              <!-- 房源類別 -->
-              <v-select
-                :items="categories"
-                label="房源類別"
-                v-model="currentItem.category"
-                required
-              ></v-select>
+                <!-- 房源類別 -->
+                <v-select
+                    :items="categories"
+                    label="房源類別"
+                    v-model="currentItem.category"
+                    required
+                ></v-select>
 
-              <!-- 房源描述 -->
-              <v-textarea
-                label="房源描述"
-                v-model="currentItem.information"
-                rows="3"
-                required
-              ></v-textarea>
+                <!-- 房源描述 -->
+                <v-textarea
+                    label="房源描述"
+                    v-model="currentItem.information"
+                    rows="3"
+                    required
+                ></v-textarea>
 
-              <!-- 地址欄位 -->
-              <v-select
-                :items="countries"
-                label="國家"
-                v-model="currentItem.country"
-                required
-                outlined
-              ></v-select>
-              <v-select
-                :items="cities"
-                label="城市"
-                v-model="currentItem.city"
-                required
-                outlined
-              ></v-select>
-              <v-select
-                :items="districts"
-                label="行政區"
-                v-model="currentItem.region"
-                required
-                outlined
-              ></v-select>
-              <v-text-field
-                label="街道與門牌號碼"
-                v-model="currentItem.address"
-                required
-              ></v-text-field>
+                <!-- 地址欄位 -->
+                <v-select
+                    :items="countries"
+                    label="國家"
+                    v-model="currentItem.country"
+                    required
+                    outlined
+                ></v-select>
+                <v-select
+                    :items="cities"
+                    label="城市"
+                    v-model="currentItem.city"
+                    required
+                    outlined
+                ></v-select>
+                <v-select
+                    :items="districts"
+                    label="行政區"
+                    v-model="currentItem.region"
+                    required
+                    outlined
+                ></v-select>
+                <v-text-field
+                    label="街道與門牌號碼"
+                    v-model="currentItem.address"
+                    required
+                ></v-text-field>
 
-              <!-- 經緯度自動生成 -->
-              <v-text-field
-                label="經度"
-                v-model="currentItem.latitudeX"
-                readonly
-              ></v-text-field>
-              <v-text-field
-                label="緯度"
-                v-model="currentItem.longitudeY"
-                readonly
-              ></v-text-field>
+                <!-- 經緯度自動生成 -->
+                <v-text-field label="經度" v-model="currentItem.latitudeX" readonly></v-text-field>
+                <v-text-field label="緯度" v-model="currentItem.longitudeY" readonly></v-text-field>
 
-              <!-- 房間設置 -->
-              <v-text-field
-                label="客廳數量"
-                v-model="currentItem.livingDiningRoom"
-                type="number"
-              ></v-text-field>
-              <v-text-field
-                label="臥室數量"
-                v-model="currentItem.bedroom"
-                type="number"
-              ></v-text-field>
-              <v-text-field
-                label="浴室數量"
-                v-model="currentItem.bathroom"
-                type="number"
-              ></v-text-field>
-              <v-text-field
-                label="廁所數量"
-                v-model="currentItem.restroom"
-                type="number"
-              ></v-text-field>
+                <!-- 房間設置 -->
+                <v-text-field
+                    label="客廳數量"
+                    v-model="currentItem.livingDiningRoom"
+                    type="number"
+                ></v-text-field>
+                <v-text-field
+                    label="臥室數量"
+                    v-model="currentItem.bedroom"
+                    type="number"
+                ></v-text-field>
+                <v-text-field
+                    label="浴室數量"
+                    v-model="currentItem.bathroom"
+                    type="number"
+                ></v-text-field>
+                <v-text-field
+                    label="廁所數量"
+                    v-model="currentItem.restroom"
+                    type="number"
+                ></v-text-field>
 
-              <!-- 價格設置 -->
-              <v-text-field
-                label="每日價格"
-                v-model="currentItem.price"
-                type="number"
-                required
-              ></v-text-field>
+                <!-- 價格設置 -->
+                <v-text-field
+                    label="每日價格"
+                    v-model="currentItem.price"
+                    type="number"
+                    required
+                ></v-text-field>
 
-              <!-- 額外設置 -->
-              <v-checkbox
-                label="允許寵物"
-                v-model="currentItem.pet"
-              ></v-checkbox>
-              <v-checkbox
-                label="允許吸煙"
-                v-model="currentItem.smoke"
-              ></v-checkbox>
-              <v-checkbox
-                label="廚房"
-                v-model="currentItem.kitchen"
-              ></v-checkbox>
-              <v-checkbox
-                label="陽台"
-                v-model="currentItem.balcony"
-              ></v-checkbox>
+                <!-- 額外設置 -->
+                <v-checkbox label="允許寵物" v-model="currentItem.pet"></v-checkbox>
+                <v-checkbox label="允許吸煙" v-model="currentItem.smoke"></v-checkbox>
+                <v-checkbox label="廚房" v-model="currentItem.kitchen"></v-checkbox>
+                <v-checkbox label="陽台" v-model="currentItem.balcony"></v-checkbox>
 
-              <!-- 提交按鈕 -->
-              <v-btn class="btn" type="submit" color="primary">提交</v-btn>
-              <v-btn class="btn" @click="resetUpdateDialog">取消</v-btn>
+                <!-- 提交按鈕 -->
+                <v-btn class="btn" type="submit" color="primary">提交</v-btn>
+                <v-btn class="btn" @click="resetUpdateDialog">取消</v-btn>
             </v-form>
-          </v-card>
-        </v-dialog>
-      </v-col>
-    </v-row>
-  </v-container>
+        </v-card>
+    </v-dialog>
 </template>
 
 <script setup>
@@ -205,33 +225,37 @@ import { reactive, ref, onMounted, watch } from "vue";
 import { useHostManagementStore } from "@/stores/hostManagementStore";
 import { useRouter } from "vue-router";
 import { useUserStore } from "../../stores/userStore";
+import { storeToRefs } from "pinia";
 import Swal from "@/plugins/sweetalert2";
 import axios from "@/plugins/axios.js";
 
 const userStore = useUserStore();
-const { user } = userStore;
+const { user } = storeToRefs(userStore);
 
 const router = useRouter();
 const hostManagementStore = useHostManagementStore();
 
+const totalItems = ref(0);
+const loading = ref(true);
+const itemsPerPage = ref(10);
+const hosuCountDetail = ref({
+    showFalse: 0,
+    showTrue: 0,
+    reviewNull: 0,
+    totalHouses: 0,
+    reviewFalse: 0,
+    reviewTrue: 0,
+});
+const search = ref("");
+
 // 統計數據
-const totalProperties = ref(0);
+// const totalProperties = ref(0);
 
 // 房源列表
-const house = reactive({
-  houses: [],
-});
+const houseList = ref([]);
 
 // 房源類別選項
-const categories = [
-  "公寓",
-  "度假別墅",
-  "包棟民宿",
-  "旅店",
-  "露營地",
-  "酒店式公寓",
-  "其他",
-];
+const categories = ["公寓", "度假別墅", "包棟民宿", "旅店", "露營地", "酒店式公寓", "其他"];
 const countries = ["臺灣"];
 
 import cityData from "@/assets/CityCountyData.json";
@@ -244,215 +268,218 @@ const currentItem = ref({});
 
 // 監聽 city 的變化以更新對應的區域（行政區）
 watch(
-  () => currentItem.value.city,
-  (newCity) => {
-    const selectedCity = cityData.find((city) => city.CityName === newCity);
-    districts.value = selectedCity
-      ? selectedCity.AreaList.map((area) => area.AreaName)
-      : [];
-    if (!districts.value.includes(currentItem.value.region)) {
-      currentItem.value.region = "";
+    () => currentItem.value.city,
+    (newCity) => {
+        const selectedCity = cityData.find((city) => city.CityName === newCity);
+        districts.value = selectedCity ? selectedCity.AreaList.map((area) => area.AreaName) : [];
+        if (!districts.value.includes(currentItem.value.region)) {
+            currentItem.value.region = "";
+        }
     }
-  }
 );
 
 // 表格標題
 const headers = [
-  { title: "名稱", key: "name" },
-  { title: "審核", key: "review" },
-  { title: "狀態", key: "show" },
-  { title: "操作", key: "actions", sortable: false },
+    { title: "房源名稱", key: "name", sortable: false },
+    { title: "審核", key: "review" },
+    { title: "狀態", key: "show" },
+    { title: "操作", key: "actions", sortable: false },
 ];
 
 const dialog = ref(false);
 const updateDialog = ref(false);
 const selectedStatus = ref(null);
 
-// 更新統計數據
-const updateStatistics = (propertyList) => {
-  availableProperties.value = propertyList.filter(
-    (p) => p.status === "available"
-  ).length;
-  bookedProperties.value = propertyList.filter(
-    (p) => p.status === "booked"
-  ).length;
-  totalProperties.value = propertyList.length;
-};
+async function loadItems({ page, itemsPerPage, sortBy }) {
+    loading.value = true;
+    const requestData = Object.assign({
+        page: page - 1,
+        limit: itemsPerPage,
+        userId: user.value.id,
+        dir: sortBy.length > 0 ? sortBy[0].order === "asc" : true,
+        order: sortBy.length > 0 ? sortBy[0].key : null,
+    });
+    try {
+        const response = await axios.post("/house/search", requestData);
+        console.log("Fetch Order success: ", response.data);
+        totalItems.value = response.data.totalElements;
+        houseList.value = response.data.content;
+    } catch (error) {
+        console.error("Fetch Order error: Status code: ", error.response.status);
+        // Handle error (e.g., show error message to user)
+    } finally {
+        loading.value = false;
+    }
+}
 
-// 取得房源列表並更新統計數據
-onMounted(async () => {
-  house.houses.push(...(await hostManagementStore.fetchAllhouse(user.id)));
-  totalProperties.value = await hostManagementStore.countAllhouse(user.id);
-});
+// 更新統計數據
+// const updateStatistics = (propertyList) => {
+//     availableProperties.value = propertyList.filter((p) => p.status === "available").length;
+//     bookedProperties.value = propertyList.filter((p) => p.status === "booked").length;
+//     totalProperties.value = propertyList.length;
+// };
 
 // 刪除房源
 const deleteItem = async (item) => {
-  const checked = confirm("是否確定要刪除此房源？");
+    const checked = confirm("是否確定要刪除此房源？");
 
-  if (checked) {
-    try {
-      await hostManagementStore.deleteProperty(item.id);
-      house.houses = [];
-      house.houses.push(...(await hostManagementStore.fetchAllhouse(user.id)));
-      totalProperties.value = await hostManagementStore.countAllhouse(user.id);
-      alert("已刪除指定房源");
-    } catch (error) {
-      console.error("刪除失敗:", error);
-      alert("刪除失敗，請稍後再試");
+    if (checked) {
+        try {
+            await hostManagementStore.deleteProperty(item.id);
+            // house.houses = [];
+            // house.houses.push(...(await hostManagementStore.fetchAllhouse(user.id)));
+            // totalProperties.value = await hostManagementStore.countAllhouse(user.id);
+            await reloadHostCountDetail();
+            alert("已刪除指定房源");
+        } catch (error) {
+            console.error("刪除失敗:", error);
+            alert("刪除失敗，請稍後再試");
+        }
     }
-  }
 };
 
 const goToEditPropertyImage = (propertyId) => {
-  router.push(`/host/edit-property/${propertyId}`);
+    router.push(`/host/edit-property/${propertyId}`);
 };
 
 // 處理彈出視窗
 function openDialog(item) {
-  currentItem.value = item;
-  selectedStatus.value = item.show;
-  dialog.value = true;
+    currentItem.value = JSON.parse(JSON.stringify(item));
+    selectedStatus.value = item.show;
+    dialog.value = true;
 }
 
 function openUpdateDialog(item) {
-  currentItem.value = item;
-  updateDialog.value = true;
+    currentItem.value = JSON.parse(JSON.stringify(item));
+    updateDialog.value = true;
 }
 
 function resetDialog() {
-  selectedStatus.value = null;
-  dialog.value = false;
+    selectedStatus.value = null;
+    dialog.value = false;
 }
 
 function resetUpdateDialog() {
-  updateDialog.value = false;
+    updateDialog.value = false;
 }
 
 function getStatusColor(show) {
-  switch (show) {
-    case true:
-      return "green";
-    case false:
-      return "orange";
-    default:
-      return "green";
-  }
+    switch (show) {
+        case true:
+            return "green";
+        case false:
+            return "orange";
+        default:
+            return "green";
+    }
 }
 
 function getStatusText(show) {
-  switch (show) {
-    case true:
-      return "刊登中";
-    case false:
-      return "下架中";
-    default:
-      return "刊登中";
-  }
+    switch (show) {
+        case true:
+            return "刊登中";
+        case false:
+            return "下架中";
+        default:
+            return "刊登中";
+    }
 }
 
 function getReviewColor(review) {
-  switch (review) {
-    case null:
-      return "orange"; // 待審核
-    case true:
-      return "green"; // 審核通過
-    case false:
-      return "red"; // 審核失敗
-    default:
-      return "grey"; // 未知狀態
-  }
+    switch (review) {
+        case null:
+            return "orange"; // 待審核
+        case true:
+            return "green"; // 審核通過
+        case false:
+            return "red"; // 審核失敗
+        default:
+            return "grey"; // 未知狀態
+    }
 }
 
 function getReviewText(review) {
-  switch (review) {
-    case null:
-      return "待審核";
-    case true:
-      return "審核通過";
-    case false:
-      return "審核失敗";
-    default:
-      return "確認中";
-  }
+    switch (review) {
+        case null:
+            return "待審核";
+        case true:
+            return "審核通過";
+        case false:
+            return "審核失敗";
+        default:
+            return "確認中";
+    }
 }
 
 const updateStatus = async () => {
-  try {
-    const response = await axios.put(`/house/${currentItem.value.id}`, {
-      show: selectedStatus.value,
-    });
+    try {
+        const response = await axios.put(`/house/${currentItem.value.id}`, {
+            show: selectedStatus.value,
+        });
 
-    if (response.status === 200) {
-      currentItem.value.show = selectedStatus.value;
-      dialog.value = false;
+        if (response.status === 200) {
+            currentItem.value.show = selectedStatus.value;
+            dialog.value = false;
+        }
+        await reloadHostCountDetail();
+    } catch (error) {
+        console.error("Error updating status:", error);
     }
-  } catch (error) {
-    console.error("Error updating status:", error);
-  }
 };
 
 const submitForm = async () => {
-  try {
-    await hostManagementStore.updateProperty(
-      currentItem.value.id,
-      currentItem.value
-    );
+    try {
+        await hostManagementStore.updateProperty(currentItem.value.id, currentItem.value);
 
-    Swal.fire({
-      icon: "success",
-      title: "房源已修改成功！",
-    });
+        Swal.fire({
+            icon: "success",
+            title: "房源已修改成功！",
+        });
 
-    updateDialog.value = false;
-  } catch (error) {
-    console.error("修改失敗", error);
-    Swal.fire({
-      icon: "error",
-      title: "修改失敗",
-      text: "請稍後再試",
-    });
-  }
+        updateDialog.value = false;
+        await reloadHostCountDetail();
+    } catch (error) {
+        console.error("修改失敗", error);
+        Swal.fire({
+            icon: "error",
+            title: "修改失敗",
+            text: "請稍後再試",
+        });
+    }
 };
 
 function handleClick(item) {
-  const url = `/house/${item.id}`;
-  window.open(url, "_blank");
+    const url = `/house/${item.id}`;
+    window.open(url, "_blank");
 }
 
-// watch(dialog, (val) => {
-//   if (!val) close();
-// });
+async function reloadHostCountDetail() {
+    Object.assign(
+        hosuCountDetail.value,
+        await hostManagementStore.fetchHostCountDetail(user.value.id)
+    );
+    search.value = new Date().getTime().toString();
+}
 
-// watch(dialog, (val) => {
-//   if (!val) selectedStatus.value = null;
-// });
-
-// watch(updateDialog, (val) => {
-//   if (!val) close();
-// });
-
-// watch(updateDialog, (val) => {
-//   if (!val) selectedStatus.value = null;
-// });
+// 取得房源列表並更新統計數據
+onMounted(async () => {
+    await reloadHostCountDetail();
+});
 </script>
 
 <style scoped>
-.title-name {
-  cursor: pointer;
-}
-
 .submit-card {
-  width: 600px;
-  padding: 50px;
+    width: 600px;
+    padding: 50px;
 }
 
 .update-form {
-  display: flex;
-  flex-direction: column;
+    display: flex;
+    flex-direction: column;
 }
 
 .btn {
-  width: 50px;
-  margin: 10px;
+    width: 50px;
+    margin: 10px;
 }
 </style>
