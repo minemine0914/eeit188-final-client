@@ -7,6 +7,16 @@
                     <v-card-title>總房源數</v-card-title>
                     <v-card-item class="pt-0">
                         <v-sheet
+                            v-if="hosuCountDetail.totalHouses == null"
+                            class="d-flex flex-row justify-center flex-nowrap"
+                            color="transparent"
+                        >
+                            <v-sheet color="transparent" class="flex-grow-1 text-center">
+                                <span class="text-h6 px-1">載入中...</span>
+                            </v-sheet>
+                        </v-sheet>
+                        <v-sheet
+                            v-else
                             class="d-flex flex-row justify-center flex-nowrap"
                             color="transparent"
                         >
@@ -23,6 +33,16 @@
                     <v-card-title>審核狀態</v-card-title>
                     <v-card-item class="pt-0">
                         <v-sheet
+                            v-if="hosuCountDetail.totalHouses == null"
+                            class="d-flex flex-row justify-center flex-nowrap"
+                            color="transparent"
+                        >
+                            <v-sheet color="transparent" class="flex-grow-1 text-center">
+                                <span class="text-h6 px-1">載入中...</span>
+                            </v-sheet>
+                        </v-sheet>
+                        <v-sheet
+                            v-else
                             class="d-flex flex-row justify-center flex-nowrap"
                             color="transparent"
                         >
@@ -53,6 +73,16 @@
                     <v-card-title>上架狀態</v-card-title>
                     <v-card-item class="pt-0">
                         <v-sheet
+                            v-if="hosuCountDetail.totalHouses == null"
+                            class="d-flex flex-row justify-center flex-nowrap"
+                            color="transparent"
+                        >
+                            <v-sheet color="transparent" class="flex-grow-1 text-center">
+                                <span class="text-h6 px-1">載入中...</span>
+                            </v-sheet>
+                        </v-sheet>
+                        <v-sheet
+                            v-else
                             class="d-flex flex-row justify-center flex-nowrap"
                             color="transparent"
                         >
@@ -83,9 +113,10 @@
             :items-length="totalItems"
             :loading="loading"
             :items-per-page-options="[10, 20, 30, 50, 100, 1000]"
-            item-value="name"
+            item-value="id"
             @update:options="loadItems"
             :search="search"
+            show-current-page
         >
             <!--狀態欄位-->
             <template v-slot:item.name="{ item }">
@@ -102,7 +133,13 @@
             <!--狀態欄位-->
             <template v-slot:item.show="{ item }">
                 <v-sheet color="transparent" class="d-flex flex-row align-center ga-2">
-                    <v-icon v-if="false" @click="openDialog(item)" class="me-2" small icon="mdi-pencil"></v-icon>
+                    <v-icon
+                        v-if="false"
+                        @click="openDialog(item)"
+                        class="me-2"
+                        small
+                        icon="mdi-pencil"
+                    ></v-icon>
                     <v-chip :color="getStatusColor(item.show)" size="small">
                         {{ getStatusText(item.show) }}
                     </v-chip>
@@ -291,12 +328,12 @@ const loading = ref(true);
 const isLoadingSwitch = ref(false);
 const itemsPerPage = ref(10);
 const hosuCountDetail = ref({
-    showFalse: 0,
-    showTrue: 0,
-    reviewNull: 0,
-    totalHouses: 0,
-    reviewFalse: 0,
-    reviewTrue: 0,
+    showFalse: null,
+    showTrue: null,
+    reviewNull: null,
+    totalHouses: null,
+    reviewFalse: null,
+    reviewTrue: null,
 });
 const search = ref("");
 
