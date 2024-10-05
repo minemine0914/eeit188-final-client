@@ -27,15 +27,21 @@
                             color="transparent"
                         >
                             <v-sheet color="transparent" class="flex-grow-1 text-center"
-                                >待審核<span class="text-h6 px-1">{{ hosuCountDetail.reviewNull }}</span
+                                >待審核<span class="text-h6 px-1">{{
+                                    hosuCountDetail.reviewNull
+                                }}</span
                                 >間</v-sheet
                             >
                             <v-sheet color="transparent" class="flex-grow-1 text-center"
-                                >未通過<span class="text-h6 px-1">{{ hosuCountDetail.reviewFalse }}</span
+                                >未通過<span class="text-h6 px-1">{{
+                                    hosuCountDetail.reviewFalse
+                                }}</span
                                 >間</v-sheet
                             >
                             <v-sheet color="transparent" class="flex-grow-1 text-center"
-                                >已通過<span class="text-h6 px-1">{{ hosuCountDetail.reviewTrue }}</span
+                                >已通過<span class="text-h6 px-1">{{
+                                    hosuCountDetail.reviewTrue
+                                }}</span
                                 >間</v-sheet
                             >
                         </v-sheet>
@@ -51,11 +57,15 @@
                             color="transparent"
                         >
                             <v-sheet color="transparent" class="flex-grow-1 text-center"
-                                >刊登中<span class="text-h6 px-1">{{ hosuCountDetail.showTrue }}</span
+                                >刊登中<span class="text-h6 px-1">{{
+                                    hosuCountDetail.showTrue
+                                }}</span
                                 >間</v-sheet
                             >
                             <v-sheet color="transparent" class="flex-grow-1 text-center"
-                                >下架中<span class="text-h6 px-1">{{ hosuCountDetail.showFalse }}</span
+                                >下架中<span class="text-h6 px-1">{{
+                                    hosuCountDetail.showFalse
+                                }}</span
                                 >間</v-sheet
                             >
                         </v-sheet>
@@ -91,15 +101,56 @@
             </template>
             <!--狀態欄位-->
             <template v-slot:item.show="{ item }">
-                <v-chip :color="getStatusColor(item.show)" size="small" class="text-uppercase">
-                    {{ getStatusText(item.show) }}
-                </v-chip>
+                <v-sheet color="transparent" class="d-flex flex-row align-center ga-2">
+                    <v-icon v-if="false" @click="openDialog(item)" class="me-2" small icon="mdi-pencil"></v-icon>
+                    <v-chip :color="getStatusColor(item.show)" size="small">
+                        {{ getStatusText(item.show) }}
+                    </v-chip>
+                    <v-switch
+                        :model-value="item.show"
+                        hide-details
+                        inline
+                        :loading="isLoadingSwitch"
+                        :readonly="isLoadingSwitch"
+                        :color="item.show ? 'green-lighten-2' : ''"
+                        @update:model-value="updateStatusBySwitche(item.id, !item.show)"
+                    >
+                    </v-switch>
+                </v-sheet>
             </template>
             <template v-slot:item.actions="{ item }">
-                <v-icon @click="openDialog(item)" class="me-2" small icon="mdi-pencil"></v-icon>
-                <v-btn color="primary" @click="openUpdateDialog(item)">編輯</v-btn>
-                <v-btn color="error" @click="deleteItem(item)">刪除</v-btn>
-                <v-btn color="info" @click="goToEditPropertyImage(item.id)">圖片管理</v-btn>
+                <v-sheet
+                    color="transparent"
+                    class="d-flex flex-row justify-start aligm-center ga-1"
+                >
+                    <v-btn
+                        prepend-icon="mdi-pencil"
+                        color="primary"
+                        @click="openUpdateDialog(item)"
+                        density="comfortable"
+                        variant="outlined"
+                        rounded="xl"
+                        >編輯</v-btn
+                    >
+                    <v-btn
+                        prepend-icon="mdi-delete"
+                        color="error"
+                        @click="deleteItem(item)"
+                        density="comfortable"
+                        variant="outlined"
+                        rounded="xl"
+                        >刪除</v-btn
+                    >
+                    <v-btn
+                        prepend-icon="mdi-image-edit"
+                        color="info"
+                        @click="goToEditPropertyImage(item.id)"
+                        density="comfortable"
+                        variant="outlined"
+                        rounded="xl"
+                        >圖片管理</v-btn
+                    >
+                </v-sheet>
             </template>
         </v-data-table-server>
     </v-container>
@@ -237,6 +288,7 @@ const hostManagementStore = useHostManagementStore();
 
 const totalItems = ref(0);
 const loading = ref(true);
+const isLoadingSwitch = ref(false);
 const itemsPerPage = ref(10);
 const hosuCountDetail = ref({
     showFalse: 0,
@@ -281,9 +333,9 @@ watch(
 // 表格標題
 const headers = [
     { title: "房源名稱", key: "name", sortable: false },
-    { title: "審核", key: "review" },
-    { title: "狀態", key: "show" },
-    { title: "操作", key: "actions", sortable: false },
+    { title: "平台審核", key: "review" },
+    { title: "刊登狀態", key: "show" },
+    { title: "房源操作", key: "actions", sortable: false },
 ];
 
 const dialog = ref(false);
@@ -424,6 +476,26 @@ const updateStatus = async () => {
         await reloadHostCountDetail();
     } catch (error) {
         console.error("Error updating status:", error);
+    }
+};
+
+const updateStatusBySwitche = async (houseId, show) => {
+    isLoadingSwitch.value = true;
+    try {
+        const response = await axios.put(`/house/${houseId}`, {
+            show: show,
+        });
+
+        if (response.status === 200) {
+            currentItem.value.show = selectedStatus.value;
+            dialog.value = false;
+        }
+
+        await reloadHostCountDetail();
+    } catch (error) {
+        console.error("Error updating status:", error);
+    } finally {
+        isLoadingSwitch.value = false;
     }
 };
 
