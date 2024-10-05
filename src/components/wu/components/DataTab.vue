@@ -1,18 +1,18 @@
 <template>
     <v-card>
         <v-tabs v-model="tab" align-tabs="left" bg-color="primary" grow>
-            <v-tab value="one">圖表</v-tab>
-            <v-tab value="two">表格</v-tab>
+            <v-tab value="one" class="text-h5">圖表</v-tab>
+            <v-tab value="two" class="text-h5">表格</v-tab>
         </v-tabs>
 
         <v-card-text>
             <v-tabs-window v-model="tab">
                 <v-tabs-window-item value="one">
                     <div class="chartContainer">
-                        <div class="chartContent">
+                        <div class="line">
                             <HouseIncome />
                         </div>
-                        <div class="chartContent">
+                        <div class="pie">
                             <GenderPie />
                         </div>
 
@@ -45,7 +45,11 @@ const tab = ref(null)
     align-items: center;
 }
 
-.chartContent {
+.line {
     width: 40%;
+}
+
+.pie {
+    width: 30%;
 }
 </style>

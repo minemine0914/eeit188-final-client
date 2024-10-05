@@ -84,13 +84,13 @@ onMounted(async () => {
 }
 
 .mainBox {
-    width: 80vw;
+    /* width: 80vw;
     position: relative;
-    left: 0;
+    left: 0; */
 }
 
 .subBox {
-    width: 70vw;
+    /* width: 70vw; */
     background-color: rgba(211, 211, 211, 0.5)
 }
 </style>
