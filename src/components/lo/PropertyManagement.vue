@@ -441,7 +441,7 @@ const deleteItem = async (item) => {
         'error'
       );
     }
-};
+};}
 
 const goToEditPropertyImage = (propertyId) => {
     router.push(`/host/edit-property/${propertyId}`);
@@ -590,7 +590,7 @@ async function reloadHostCountDetail() {
 onMounted(async () => {
     await reloadHostCountDetail();
 });
-}
+
 </script>
 
 <style scoped>
