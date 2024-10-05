@@ -287,18 +287,36 @@ onMounted(async () => {
 
 // 刪除房源
 const deleteItem = async (item) => {
-  const checked = confirm("是否確定要刪除此房源？");
+  const result = await Swal.fire({
+    title: '是否確定要刪除此房源？',
+    text: "此操作將無法恢復！",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: '確定',
+    cancelButtonText: '取消'
+  });
 
-  if (checked) {
+  if (result.isConfirmed) {
     try {
       await hostManagementStore.deleteProperty(item.id);
       house.houses = [];
       house.houses.push(...(await hostManagementStore.fetchAllhouse(user.id)));
       totalProperties.value = await hostManagementStore.countAllhouse(user.id);
-      alert("已刪除指定房源");
+
+      Swal.fire(
+        '已刪除！',
+        '指定房源已成功刪除。',
+        'success'
+      );
     } catch (error) {
       console.error("刪除失敗:", error);
-      alert("刪除失敗，請稍後再試");
+      Swal.fire(
+        '刪除失敗',
+        '刪除房源時出現錯誤，請稍後再試。',
+        'error'
+      );
     }
   }
 };
