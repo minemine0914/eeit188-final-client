@@ -424,8 +424,6 @@ const deleteItem = async (item) => {
     text: "此操作將無法恢復！",
     icon: 'warning',
     showCancelButton: true,
-    confirmButtonColor: '#3085d6',
-    cancelButtonColor: '#d33',
     confirmButtonText: '確定',
     cancelButtonText: '取消'
   });
@@ -433,15 +431,12 @@ const deleteItem = async (item) => {
   if (result.isConfirmed) {
     try {
       await hostManagementStore.deleteProperty(item.id);
-      house.houses = [];
-      house.houses.push(...(await hostManagementStore.fetchAllhouse(user.id)));
-      totalProperties.value = await hostManagementStore.countAllhouse(user.id);
-
       Swal.fire(
         '已刪除！',
         '指定房源已成功刪除。',
         'success'
       );
+      await reloadHostCountDetail();
     } catch (error) {
       console.error("刪除失敗:", error);
       Swal.fire(
