@@ -25,12 +25,19 @@
                                 />
                             </v-sheet>
                             <v-sheet
-                                class="d-flex flex-row justify-center align-center w-100 h-100 overflow-hidden position-absolute top-0 left-0"
+                                class="d-flex flex-column justify-center align-center w-100 h-100 overflow-hidden position-absolute top-0 left-0"
                                 rounded="lg"
                                 color="grey-darken-2"
                                 style="z-index: 99"
                             >
-                                <div class="text-h4">掃描裝置啟動中 請稍候</div>
+                                <v-progress-circular
+                                    :size="70"
+                                    :width="7"
+                                    color="white"
+                                    indeterminate
+                                ></v-progress-circular>
+                                <div class="text-h5 mt-3">掃描裝置啟動中</div>
+                                <div class="text-h5 mt-1">請稍候...</div>
                             </v-sheet>
                         </v-responsive>
                     </v-card-item>
@@ -44,7 +51,7 @@
                 </v-card>
             </v-col>
             <v-col cols="12">
-                <v-card title="掃描設定" color="brown-lighten-5">
+                <v-card title="掃描設定" color="brown-lighten-5" prepend-icon="mdi-cog-outline">
                     <v-card-item class="pt-0">
                         <v-sheet class="d-flex flex-row ga-1 pt-2" color="transparent">
                             <v-select
