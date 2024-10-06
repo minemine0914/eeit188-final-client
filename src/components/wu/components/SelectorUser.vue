@@ -13,7 +13,8 @@
         </v-card-title>
 
         <v-data-table v-model:search="search" v-model="store.selectedUserId" :headers="headers" :items="items"
-            item-value="id" select-strategy="single" show-select @change="fetchHouses(store.selectedUserId[0])">
+            item-value="id" select-strategy="single" show-select @change="fetchHouses(store.selectedUserId[0])"
+            class="text-h6">
 
             <template v-slot:item.name="{ item }">
                 <v-img :src="item.avatarBase64 ? item.avatarBase64 : emptyUserAvavtarImage" width="1rem"
