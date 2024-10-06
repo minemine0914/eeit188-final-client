@@ -13,7 +13,8 @@
         </v-card-title>
 
         <v-data-table class="text-h6" v-model:search="search" v-model="store.selectedHouseId" :headers="headers"
-            :items="items" item-value="id" select-strategy="single" show-select @change="update">
+            :items="items" :items-per-page="itemsPerPage" :items-per-page-options="itemsPerPageOptions" item-value="id"
+            select-strategy="single" show-select @change="update">
 
             <template v-slot:item.show="{ item }">
                 <v-chip v-if="item.show" color="green" size="small" class="text-uppercase text-h6">
@@ -182,6 +183,9 @@ if (userStore.user.role === 'normal') {
         { title: '', value: '', width: '100px' }, // 空白欄 調整排版用
     ];
 }
+
+const itemsPerPage = 5 // Default items per page
+const itemsPerPageOptions = [3, 5, 10, 25, 50, 100, -1] // Options for per-page selector
 
 const items = computed(() => {
     // console.log('is', store.itemsSource)
