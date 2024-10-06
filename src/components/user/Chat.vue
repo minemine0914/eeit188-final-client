@@ -12,7 +12,7 @@
           >
             <div class="chat-recored-part">
               <div class="chat-recored-title">
-                <v-list-item-avatar>
+                <v-avatar class="avatar" size="50">
                   <v-img
                     v-if="!item?.avatar || item?.avatar === null"
                     :src="defaultAvatar"
@@ -25,7 +25,7 @@
                     width="50px"
                     alt=""
                   ></v-img>
-                </v-list-item-avatar>
+                </v-avatar>
                 <v-list-item-content>
                   <v-list-item-title>{{ item?.title }}</v-list-item-title>
                 </v-list-item-content>
