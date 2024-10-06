@@ -213,7 +213,7 @@ const routes = [
         },
       },
       {
-        path: "/system/reset-password",
+        path: "reset-password",
         name: "AdminResetPassword",
         component: () =>
           import("@/pages/system/AdminResetPasswordFromEmailLinkPage.vue"),
