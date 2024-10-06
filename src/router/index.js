@@ -170,8 +170,8 @@ const routes = [
         meta: { title: "Nomad 系統管理", requiresAuth: true, role: "admin" },
         children: [
             {
-                path: "", // Default
-                name: "Dashboard",
+                path: "",
+                name: "SystemDashboard",
                 component: () => import("@/components/kenjo/Home.vue"),
                 children: [
                     {
