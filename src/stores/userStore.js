@@ -83,7 +83,6 @@ export const useUserStore = defineStore(
           data: loginData,
         });
         jwtToken.value = response.data.token;
-
         await reloadUser();
       } catch (error) {
         console.error(error);
@@ -113,10 +112,10 @@ export const useUserStore = defineStore(
       });
     }
 
-    function adminLogout() {
-      resetJWTTokenAndUser();
-      router.push("/system");
-    }
+    // function adminLogout() {
+    //   resetJWTTokenAndUser();
+    //   router.push("/system");
+    // }
 
     async function reloadUser() {
       console.log("Reloading user info...");
