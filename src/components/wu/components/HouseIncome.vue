@@ -181,7 +181,7 @@ const options = computed(() => ({
       },
       ticks: {
         font: {
-          size: 30, // Set font size for x-axis ticks
+          size: 24, // Set font size for x-axis ticks
         },
       },
       beginAtZero: true

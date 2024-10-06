@@ -46,7 +46,7 @@ const tab = ref(null)
 }
 
 .line {
-    width: 40%;
+    width: 60%;
 }
 
 .pie {
