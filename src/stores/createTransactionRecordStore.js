@@ -65,16 +65,23 @@ export const useCreateTransactionRecordStore = defineStore('createTransactionRec
                     // console.log(date)
 
                     let longTime = Date.now() - Math.random() * 86400 * 1000 * 365 * 3 // 訂房起始日設為3年內開始
-                    let startDate = new Date(longTime)
-                    let endDate = new Date(longTime + Math.random() * 86400 * 1000 * 5) // 住1~5天
+                    let createdAt = new Date(longTime)
 
-                    console.log('RRRRRR', [startDate, endDate])
+                    let startedLomgTime = longTime + 86400 * 1000 * (6 + Math.random() * 2) // 訂房後6~8天入住
+                    let startDate = new Date(startedLomgTime)
+
+                    let endedLongTime = startedLomgTime + 86400 * 1000 * (1 + Math.random() * 5)// 住1~5天
+                    let endDate = new Date(endedLongTime)
+
+                    let dateRange = [startDate, endDate]
+
+                    console.log('入住時間區間：', dateRange)
                     const response = await api.post("/payment/booking-house", {
-                        houseId: houseId,
-                        userId: userId,
+                        houseId,
+                        userId,
                         // couponId: couponId ? couponId : null,
-                        dateRange: [startDate, endDate],
-                        createdAt: startDate,
+                        dateRange,
+                        createdAt,
                     });
                     console.log('建立成功：', response.data)
                 } catch (error) {

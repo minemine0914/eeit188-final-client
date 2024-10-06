@@ -28,7 +28,9 @@
                     <DataTab />
                 </div>
 
-                <p v-else>查無資料</p>
+                <p v-else class="font-weight-black text-h5">
+                    <v-icon icon="mdi-alert-circle-outline" />查無資料
+                </p>
             </v-card-text>
         </v-card>
     </v-container>

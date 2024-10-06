@@ -77,6 +77,20 @@
                 {{ item.formattedCreatedAt }} <!-- Display formatted date -->
             </template>
 
+            <template v-slot:item.startedAt="{ item }">
+                <template v-if="item.startedAt">
+                    {{ store.formatDate(item.startedAt) }}
+                </template>
+                <template v-else>--</template>
+            </template>
+
+            <template v-slot:item.endedAt="{ item }">
+                <template v-if="item.endedAt">
+                    {{ store.formatDate(item.endedAt) }}
+                </template>
+                <template v-else>--</template>
+            </template>
+
             <template v-slot:item.score="{ item }">
                 <template v-if="item.score">
                     <v-rating :model-value="item.score" color="orange-darken-2" density="compact" size="small"
@@ -125,7 +139,9 @@ let headers = []
 if (store.loginUser.role === 'normal') {
     headers = [
         { title: '訂單成立時間', value: 'createdAt', sortable: true },
-        { title: '金額', value: 'cashFlow', sortable: true, align: "end" },
+        { title: '金額', value: 'cashFlow', sortable: true, align: "end", width: "100px" },
+        { title: '預計入住時間', value: 'startedAt', sortable: true },
+        { title: '預計退房時間', value: 'endedAt', sortable: true },
         { title: '評分', value: 'score', sortable: true },
         { title: '訂房者名稱', value: 'bookerName', sortable: true },
         { title: '性別', value: 'bookerGender', sortable: true },
@@ -136,6 +152,8 @@ if (store.loginUser.role === 'normal') {
         { title: '訂單成立時間', value: 'createdAt', sortable: true, width: '150px' },
         { title: '平台收入', value: 'platformIncome', sortable: true, width: '50px', align: "end" },
         { title: '交易金額', value: 'cashFlow', sortable: true, width: '100px', align: "end" },
+        { title: '預計入住時間', value: 'startedAt', sortable: true, width: '150px' },
+        { title: '預計退房時間', value: 'endedAt', sortable: true, width: '150px' },
         { title: '評分', value: 'score', sortable: true, width: '200px', align: "center" },
         { title: '訂房者ID', value: 'bookerId', sortable: true, width: '80px' },
         { title: '訂房者名稱', value: 'bookerName', sortable: true, width: '150px' },
@@ -172,6 +190,8 @@ const items = computed(() => {
             (item.user?.id && item.user.id.toLowerCase().includes(searchLower)) ||
             (item.cashFlow.toString().includes(searchLower)) ||
             (item.createdAt.includes(searchLower)) ||
+            (item?.ticket.startedAt.includes(searchLower)) ||
+            (item?.ticket.endedAt.includes(searchLower)) ||
             (item.userGender && item.userGender.includes(searchLower)) // Add other fields as needed
         );
     }
@@ -201,6 +221,8 @@ const items = computed(() => {
             'cashFlow': item?.cashFlow,
             'platformIncome': item.platformIncome,
             'createdAt': new Date(item?.createdAt),
+            'startedAt': new Date(item?.ticket?.startedAt),
+            'endedAt': new Date(item?.ticket?.endedAt),
             'formattedCreatedAt': `${new Date(item.createdAt).getFullYear()}年${String(new Date(item.createdAt).getMonth() + 1).padStart(2,
                 '0')}月${String(new Date(item.createdAt).getDate()).padStart(2, '0')}日 ${String(new
                     Date(item.createdAt).getHours()).padStart(2, '0')}:${String(new
