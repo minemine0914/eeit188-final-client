@@ -1,5 +1,5 @@
 <template>
-  <Line :data="data" :options="options" />
+  <Line :data="data" :options="options" class="h-100" />
   <!-- <p>{{ store.selectedMonth }}月營業額：</p> -->
 </template>
 
@@ -10,7 +10,7 @@ import { computed } from 'vue';
 import { useHostReportStore } from '@/stores/hostReportStore';
 import { useUserStore } from '@/stores/userStore';
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 const store = useHostReportStore()
 const userStore = useUserStore()
@@ -127,6 +127,7 @@ const data = computed(() => {
 // Chart options
 const options = computed(() => ({
   responsive: true,
+  maintainAspectRatio: false,
   plugins: {
     legend: {
       // position: '',
@@ -136,6 +137,7 @@ const options = computed(() => ({
           size: 30, // Set font size for legend
         },
       },
+      
     },
     tooltip: {
       callbacks: {
