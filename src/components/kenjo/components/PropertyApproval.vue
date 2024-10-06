@@ -4,42 +4,41 @@
   //review 判斷欄位 >>需要新增
 */ -->
 <template>
-    <v-toolbar flat>
-        <v-toolbar-title>房源審核</v-toolbar-title>
-        <!-- 搜尋欄位下拉選單 -->
-        <v-sheet color="transparent" class="d-flex flex-row flex-grow-1 ga-2 mr-2">
-            <v-select
-                prefix="搜尋欄位:"
-                v-model="selectedField"
-                :items="[
-                    { title: '房源名稱', value: 'name' },
-                    { title: '房東', value: 'userName' },
-                ]"
-                density="compact"
-                label="選擇搜尋欄位"
-                variant="solo-filled"
-                flat
-                hide-details
-                single-line
-                :style="{ width: '30px' }"
-            ></v-select>
-            <v-text-field
-                density="compact"
-                label="查詢"
-                prepend-inner-icon="mdi-magnify"
-                variant="solo-filled"
-                flat
-                hide-details
-                single-line
-                :style="{ width: '200px' }"
-                @blur="onSearchTextFieldUpdate"
-                @keyup.enter="onSearchTextFieldUpdate"
-                clearable
-            ></v-text-field>
-        </v-sheet>
-    </v-toolbar>
-
-    <div>
+    <v-container fluid>
+        <v-toolbar flat rounded="lg"  color="brown-lighten-5">
+            <v-toolbar-title>房源審核</v-toolbar-title>
+            <!-- 搜尋欄位下拉選單 -->
+            <v-sheet color="transparent" class="d-flex flex-row flex-grow-1 ga-2 mr-2">
+                <v-select
+                    prefix="搜尋欄位:"
+                    v-model="selectedField"
+                    :items="[
+                        { title: '房源名稱', value: 'name' },
+                        { title: '房東', value: 'userName' },
+                    ]"
+                    density="compact"
+                    label="選擇搜尋欄位"
+                    variant="solo-filled"
+                    flat
+                    hide-details
+                    single-line
+                    :style="{ width: '30px' }"
+                ></v-select>
+                <v-text-field
+                    density="compact"
+                    label="查詢"
+                    prepend-inner-icon="mdi-magnify"
+                    variant="solo-filled"
+                    flat
+                    hide-details
+                    single-line
+                    :style="{ width: '200px' }"
+                    @blur="onSearchTextFieldUpdate"
+                    @keyup.enter="onSearchTextFieldUpdate"
+                    clearable
+                ></v-text-field>
+            </v-sheet>
+        </v-toolbar>
         <v-data-table-server
             :search="search"
             :expanded="expanded"
@@ -53,15 +52,17 @@
             show-current-page
             @update:options="fetchHouses"
         >
-            <template v-slot:item.createdAt="{item}">{{new Date(item.createdAt).toLocaleString()}}</template>
+            <template v-slot:item.createdAt="{ item }">{{
+                new Date(item.createdAt).toLocaleString()
+            }}</template>
             <template v-slot:item.review="{ item }">
                 <!--狀態欄位-->
                 <v-chip :color="getStatusColor(item.review)" size="small" class="text-uppercase">
                     {{ getStatusText(item.review) }}
                 </v-chip>
                 <!-- <v-btn @click="openDialog(item)" small color="primary">
-        修改
-    </v-btn> -->
+            修改
+        </v-btn> -->
             </template>
             <template v-slot:item.actions="{ item }">
                 <v-icon @click="openDialog(item)" class="me-2" small> mdi-pencil </v-icon>
@@ -84,7 +85,7 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
-    </div>
+    </v-container>
 </template>
 
 <script>

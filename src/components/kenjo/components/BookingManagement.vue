@@ -12,221 +12,224 @@
 */ -->
 
 <template>
-    <v-data-table-server
-        :headers="headers"
-        :items="orders"
-        :items-per-page="itemsPerPage"
-        :items-length="totalItems"
-        :search="search"
-        :loading="loading"
-        :items-per-page-options="[10, 20, 30, 50, 100, 1000]"
-        show-current-page
-        @update:options="fetchOrder"
-    >
-        <template v-slot:top>
-            <v-toolbar flat>
-                <v-toolbar-title>訂單管理</v-toolbar-title>
-                <v-divider class="mx-4" inset vertical></v-divider>
-                <v-spacer></v-spacer>
-                <v-text-field
-                    v-model="search"
-                    density="compact"
-                    label="查詢"
-                    prepend-inner-icon="mdi-magnify"
-                    variant="solo-filled"
-                    flat
-                    hide-details
-                    single-line
-                    :style="{ width: '200px' }"
-                ></v-text-field>
+    <v-container fluid>
+        <v-data-table-server
+            :headers="headers"
+            :items="orders"
+            :items-per-page="itemsPerPage"
+            :items-length="totalItems"
+            :search="search"
+            :loading="loading"
+            :items-per-page-options="[10, 20, 30, 50, 100, 1000]"
+            show-current-page
+            @update:options="fetchOrder"
+        >
+            <template v-slot:top>
+                <v-toolbar flat rounded="lg" color="brown-lighten-5">
+                    <v-toolbar-title>訂單管理</v-toolbar-title>
+                    <v-divider class="mx-4" inset vertical></v-divider>
+                    <v-spacer></v-spacer>
+                    <v-text-field
+                        v-model="search"
+                        density="compact"
+                        label="查詢"
+                        prepend-inner-icon="mdi-magnify"
+                        variant="solo-filled"
+                        flat
+                        hide-details
+                        single-line
+                        :style="{ width: '200px' }"
+                    ></v-text-field>
+    
+                    <!-- 編輯訂單對話框 -->
+                    <v-dialog v-model="dialog" max-width="500px">
+                        <v-card>
+                            <v-card-title>
+                                <span class="text-h5">{{ formTitle }}</span>
+                            </v-card-title>
+                            <v-card-text>
+                                <v-container>
+                                    <v-row>
+                                        <v-col cols="12" v-if="editedIndex !== -1">
+                                            <v-text-field
+                                                v-model="editedOrder.id"
+                                                label="訂單編號"
+                                                readonly
+                                            ></v-text-field>
+                                        </v-col>
+                                        <v-col cols="12" md="6" sm="6">
+                                            <v-text-field
+                                                v-model="editedOrder.house.name"
+                                                label="房屋ID"
+                                                @click="showPropertyId"
+                                                readonly
+                                            ></v-text-field>
+                                        </v-col>
+                                        <v-col cols="12" md="6" sm="6">
+                                            <v-text-field
+                                                v-model="editedOrder.createdAt"
+                                                label="下單時間"
+                                                readonly
+                                            ></v-text-field>
+                                        </v-col>
+                                        <v-col cols="12" md="6" sm="6">
+                                            <v-text-field
+                                                v-model="editedOrder.user.name"
+                                                label="房客資訊"
+                                                @click="showGuestInfo"
+                                                readonly
+                                            ></v-text-field>
+                                        </v-col>
+                                        <v-col cols="12" md="6" sm="6">
+                                            <v-text-field
+                                                v-model="editedOrder.house.userName"
+                                                label="房東資訊"
+                                                @click="showHostInfo"
+                                                readonly
+                                            ></v-text-field>
+                                        </v-col>
+                                        <v-col cols="12" md="6" sm="6">
+                                            <v-text-field
+                                                v-model="editedOrder.cashFlow"
+                                                label="金額"
+                                                type="number"
+                                                readonly
+                                            ></v-text-field>
+                                        </v-col>
+                                        <v-col cols="12" md="6" sm="6">
+                                            <v-text-field
+                                                v-model="editedOrder.deal"
+                                                label="訂單狀態"
+                                                readonly
+                                            ></v-text-field>
+                                        </v-col>
+                                    </v-row>
+                                </v-container>
+                            </v-card-text>
+                            <v-card-actions>
+                                <v-spacer></v-spacer>
+                                <v-btn color="blue-darken-1" variant="text" @click="close">
+                                    取消
+                                </v-btn>
+                                <v-btn color="blue-darken-1" variant="text" @click="save"> 儲存 </v-btn>
+                            </v-card-actions>
+                        </v-card>
+                    </v-dialog>
+    
+                    <!-- 刪除確認對話框 -->
+                    <v-dialog v-model="dialogDelete" max-width="500px">
+                        <v-card>
+                            <v-card-title class="text-h5">確定要刪除?</v-card-title>
+                            <v-card-actions>
+                                <v-spacer></v-spacer>
+                                <v-btn color="blue-darken-1" variant="text" @click="closeDelete"
+                                    >取消</v-btn
+                                >
+                                <v-btn color="blue-darken-1" variant="text" @click="deleteOrderConfirm"
+                                    >刪除</v-btn
+                                >
+                                <v-spacer></v-spacer>
+                            </v-card-actions>
+                        </v-card>
+                    </v-dialog>
+    
+                    <v-dialog v-model="DDeal" max-width="290">
+                        <v-card>
+                            <v-card-title class="headline">選擇狀態</v-card-title>
+                            <v-card-text>
+                                <v-radio-group v-model="selectedStatus">
+                                    <v-radio
+                                        :label="orderStatuses.CANCELLED"
+                                        :value="orderStatuses.CANCELLED"
+                                    ></v-radio>
+                                    <v-radio
+                                        :label="orderStatuses.PAID"
+                                        :value="orderStatuses.PAID"
+                                    ></v-radio>
+                                    <v-radio
+                                        :label="orderStatuses.UNPAID"
+                                        :value="orderStatuses.UNPAID"
+                                    ></v-radio>
+                                </v-radio-group>
+                            </v-card-text>
+                            <v-card-actions>
+                                <v-spacer></v-spacer>
+                                <v-btn @click="updateStatusDeal" color="primary">確認</v-btn>
+                                <v-btn @click="resetDeal" color="grey">取消</v-btn>
+                            </v-card-actions>
+                        </v-card>
+                    </v-dialog>
+                    <!-- 房東資訊對話框 -->
+                    <v-dialog v-model="dialogHostInfo" max-width="500px">
+                        <v-card>
+                            <v-card-title class="text-h5">房東資訊</v-card-title>
+                            <v-card-text>
+                                <p>姓名:{{ hostInfo.name }}</p>
+                                <!-- <p>聯絡方法:</p> -->
+                                <p>電話:{{ hostInfo.phone }}</p>
+                                <p>信箱:{{ hostInfo.email }}</p>
+                            </v-card-text>
+                            <v-card-actions>
+                                <v-spacer></v-spacer>
+                                <v-btn color="blue-darken-1" variant="text" @click="closeHostInfo"
+                                    >關閉</v-btn
+                                >
+                                <v-spacer></v-spacer>
+                            </v-card-actions>
+                        </v-card>
+                    </v-dialog>
+    
+                    <!-- 房客資訊對話框 -->
+                    <v-dialog v-model="dialogGuestInfo" max-width="500px">
+                        <v-card>
+                            <v-card-title class="text-h5">房客資訊</v-card-title>
+                            <v-card-text>
+                                <p>姓名:{{ guestInfo.name }}</p>
+                                <!-- <p>聯絡方法:</p> -->
+                                <p>電話:{{ guestInfo.phone }}</p>
+                                <p>信箱:{{ guestInfo.email }}</p>
+                            </v-card-text>
+                            <v-card-actions>
+                                <v-spacer></v-spacer>
+                                <v-btn color="blue-darken-1" variant="text" @click="closeGuestInfo"
+                                    >關閉</v-btn
+                                >
+                                <v-spacer></v-spacer>
+                            </v-card-actions>
+                        </v-card>
+                    </v-dialog>
+    
+                    <!-- 房屋資訊對話框 -->
+                    <v-dialog v-model="dialogPropertyId" max-width="500px">
+                        <v-card>
+                            <v-card-title class="text-h5">房屋資訊</v-card-title>
+                            <v-card-text>
+                                <p>名稱:{{ propertyInfo.name }}</p>
+                                <p>城市:{{ propertyInfo.city }}</p>
+                                <p>地址:{{ propertyInfo.location }}</p>
+                                <p>類型:{{ propertyInfo.category }}</p>
+                                <p>每晚價格:{{ propertyInfo.price }}</p>
+                            </v-card-text>
+                            <v-card-actions>
+                                <v-spacer></v-spacer>
+                                <v-btn color="blue-darken-1" variant="text" @click="closePropertyId"
+                                    >關閉</v-btn
+                                >
+                                <v-spacer></v-spacer>
+                            </v-card-actions>
+                        </v-card>
+                    </v-dialog>
+                </v-toolbar>
+            </template>
+    
+            <template v-slot:item.actions="{ item }">
+                <v-icon class="me-2" size="small" @click="openDeal(item)"> mdi-pencil </v-icon>
+                <v-icon class="me-2" size="small" @click="openOrder(item)"> mdi-eye </v-icon>
+                <!-- <v-icon size="small" @click="deleteOrder(item)"> mdi-delete </v-icon> -->
+            </template>
+        </v-data-table-server>
 
-                <!-- 編輯訂單對話框 -->
-                <v-dialog v-model="dialog" max-width="500px">
-                    <v-card>
-                        <v-card-title>
-                            <span class="text-h5">{{ formTitle }}</span>
-                        </v-card-title>
-                        <v-card-text>
-                            <v-container>
-                                <v-row>
-                                    <v-col cols="12" v-if="editedIndex !== -1">
-                                        <v-text-field
-                                            v-model="editedOrder.id"
-                                            label="訂單編號"
-                                            readonly
-                                        ></v-text-field>
-                                    </v-col>
-                                    <v-col cols="12" md="6" sm="6">
-                                        <v-text-field
-                                            v-model="editedOrder.house.name"
-                                            label="房屋ID"
-                                            @click="showPropertyId"
-                                            readonly
-                                        ></v-text-field>
-                                    </v-col>
-                                    <v-col cols="12" md="6" sm="6">
-                                        <v-text-field
-                                            v-model="editedOrder.createdAt"
-                                            label="下單時間"
-                                            readonly
-                                        ></v-text-field>
-                                    </v-col>
-                                    <v-col cols="12" md="6" sm="6">
-                                        <v-text-field
-                                            v-model="editedOrder.user.name"
-                                            label="房客資訊"
-                                            @click="showGuestInfo"
-                                            readonly
-                                        ></v-text-field>
-                                    </v-col>
-                                    <v-col cols="12" md="6" sm="6">
-                                        <v-text-field
-                                            v-model="editedOrder.house.userName"
-                                            label="房東資訊"
-                                            @click="showHostInfo"
-                                            readonly
-                                        ></v-text-field>
-                                    </v-col>
-                                    <v-col cols="12" md="6" sm="6">
-                                        <v-text-field
-                                            v-model="editedOrder.cashFlow"
-                                            label="金額"
-                                            type="number"
-                                            readonly
-                                        ></v-text-field>
-                                    </v-col>
-                                    <v-col cols="12" md="6" sm="6">
-                                        <v-text-field
-                                            v-model="editedOrder.deal"
-                                            label="訂單狀態"
-                                            readonly
-                                        ></v-text-field>
-                                    </v-col>
-                                </v-row>
-                            </v-container>
-                        </v-card-text>
-                        <v-card-actions>
-                            <v-spacer></v-spacer>
-                            <v-btn color="blue-darken-1" variant="text" @click="close">
-                                取消
-                            </v-btn>
-                            <v-btn color="blue-darken-1" variant="text" @click="save"> 儲存 </v-btn>
-                        </v-card-actions>
-                    </v-card>
-                </v-dialog>
-
-                <!-- 刪除確認對話框 -->
-                <v-dialog v-model="dialogDelete" max-width="500px">
-                    <v-card>
-                        <v-card-title class="text-h5">確定要刪除?</v-card-title>
-                        <v-card-actions>
-                            <v-spacer></v-spacer>
-                            <v-btn color="blue-darken-1" variant="text" @click="closeDelete"
-                                >取消</v-btn
-                            >
-                            <v-btn color="blue-darken-1" variant="text" @click="deleteOrderConfirm"
-                                >刪除</v-btn
-                            >
-                            <v-spacer></v-spacer>
-                        </v-card-actions>
-                    </v-card>
-                </v-dialog>
-
-                <v-dialog v-model="DDeal" max-width="290">
-                    <v-card>
-                        <v-card-title class="headline">選擇狀態</v-card-title>
-                        <v-card-text>
-                            <v-radio-group v-model="selectedStatus">
-                                <v-radio
-                                    :label="orderStatuses.CANCELLED"
-                                    :value="orderStatuses.CANCELLED"
-                                ></v-radio>
-                                <v-radio
-                                    :label="orderStatuses.PAID"
-                                    :value="orderStatuses.PAID"
-                                ></v-radio>
-                                <v-radio
-                                    :label="orderStatuses.UNPAID"
-                                    :value="orderStatuses.UNPAID"
-                                ></v-radio>
-                            </v-radio-group>
-                        </v-card-text>
-                        <v-card-actions>
-                            <v-spacer></v-spacer>
-                            <v-btn @click="updateStatusDeal" color="primary">確認</v-btn>
-                            <v-btn @click="resetDeal" color="grey">取消</v-btn>
-                        </v-card-actions>
-                    </v-card>
-                </v-dialog>
-                <!-- 房東資訊對話框 -->
-                <v-dialog v-model="dialogHostInfo" max-width="500px">
-                    <v-card>
-                        <v-card-title class="text-h5">房東資訊</v-card-title>
-                        <v-card-text>
-                            <p>姓名:{{ hostInfo.name }}</p>
-                            <!-- <p>聯絡方法:</p> -->
-                            <p>電話:{{ hostInfo.phone }}</p>
-                            <p>信箱:{{ hostInfo.email }}</p>
-                        </v-card-text>
-                        <v-card-actions>
-                            <v-spacer></v-spacer>
-                            <v-btn color="blue-darken-1" variant="text" @click="closeHostInfo"
-                                >關閉</v-btn
-                            >
-                            <v-spacer></v-spacer>
-                        </v-card-actions>
-                    </v-card>
-                </v-dialog>
-
-                <!-- 房客資訊對話框 -->
-                <v-dialog v-model="dialogGuestInfo" max-width="500px">
-                    <v-card>
-                        <v-card-title class="text-h5">房客資訊</v-card-title>
-                        <v-card-text>
-                            <p>姓名:{{ guestInfo.name }}</p>
-                            <!-- <p>聯絡方法:</p> -->
-                            <p>電話:{{ guestInfo.phone }}</p>
-                            <p>信箱:{{ guestInfo.email }}</p>
-                        </v-card-text>
-                        <v-card-actions>
-                            <v-spacer></v-spacer>
-                            <v-btn color="blue-darken-1" variant="text" @click="closeGuestInfo"
-                                >關閉</v-btn
-                            >
-                            <v-spacer></v-spacer>
-                        </v-card-actions>
-                    </v-card>
-                </v-dialog>
-
-                <!-- 房屋資訊對話框 -->
-                <v-dialog v-model="dialogPropertyId" max-width="500px">
-                    <v-card>
-                        <v-card-title class="text-h5">房屋資訊</v-card-title>
-                        <v-card-text>
-                            <p>名稱:{{ propertyInfo.name }}</p>
-                            <p>城市:{{ propertyInfo.city }}</p>
-                            <p>地址:{{ propertyInfo.location }}</p>
-                            <p>類型:{{ propertyInfo.category }}</p>
-                            <p>每晚價格:{{ propertyInfo.price }}</p>
-                        </v-card-text>
-                        <v-card-actions>
-                            <v-spacer></v-spacer>
-                            <v-btn color="blue-darken-1" variant="text" @click="closePropertyId"
-                                >關閉</v-btn
-                            >
-                            <v-spacer></v-spacer>
-                        </v-card-actions>
-                    </v-card>
-                </v-dialog>
-            </v-toolbar>
-        </template>
-
-        <template v-slot:item.actions="{ item }">
-            <v-icon class="me-2" size="small" @click="openDeal(item)"> mdi-pencil </v-icon>
-            <v-icon class="me-2" size="small" @click="openOrder(item)"> mdi-eye </v-icon>
-            <!-- <v-icon size="small" @click="deleteOrder(item)"> mdi-delete </v-icon> -->
-        </template>
-    </v-data-table-server>
+    </v-container>
 </template>
 
 <script>

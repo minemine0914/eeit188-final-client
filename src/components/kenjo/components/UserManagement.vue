@@ -1,165 +1,170 @@
 <template>
-    <v-data-table-server
-        :headers="headers"
-        :items="users"
-        :items-per-page="itemsPerPage"
-        :items-length="totalItems"
-        :search="search"
-        :loading="loading"
-        :items-per-page-options="[10, 20, 30, 50, 100, 1000]"
-        show-current-page
-        @update:options="fetchUsers"
-    >
-        <template v-slot:top>
-            <v-toolbar flat>
-                <v-toolbar-title>使用者管理</v-toolbar-title>
-                <v-sheet color="transparent" class="d-flex flex-row flex-grow-1 ga-2 mr-2">
-                    <v-select
-                        prefix="搜尋欄位:"
-                        v-model="selectedField"
-                        :items="[{ title: '使用者名稱', value: 'name' }]"
-                        density="compact"
-                        label="選擇搜尋欄位"
-                        variant="solo-filled"
-                        flat
-                        hide-details
-                        single-line
-                        :style="{ width: '30px' }"
-                    ></v-select>
-                    <v-text-field
-                        density="compact"
-                        label="查詢"
-                        prepend-inner-icon="mdi-magnify"
-                        variant="solo-filled"
-                        flat
-                        hide-details
-                        single-line
-                        :style="{ width: '200px' }"
-                        @blur="onSearchTextFieldUpdate"
-                        @keyup.enter="onSearchTextFieldUpdate"
-                        clearable
-                    ></v-text-field>
-                </v-sheet>
-                <v-dialog v-model="dialog" max-width="500px">
-                    <!-- <template v-slot:activator="{ props }">
-                        <v-btn class="mb-2" color="primary" dark v-bind="props">
-                            新增
-                        </v-btn>
-                    </template> -->
-                    <v-card>
-                        <v-card-title>
-                            <span class="text-h5">{{ formTitle }}</span>
-                        </v-card-title>
-                        <v-card-text>
-                            <v-container>
-                                <v-row>
-                                    <v-col cols="12" v-if="editedIndex !== -1">
-                                        <v-text-field
-                                            v-model="editedUser.id"
-                                            label="編號"
-                                            readonly
-                                        ></v-text-field>
-                                    </v-col>
-                                    <v-col cols="12" md="4" sm="6">
-                                        <v-text-field
-                                            v-model="editedUser.name"
-                                            label="名字"
-                                            readonly
-                                        ></v-text-field>
-                                    </v-col>
-                                    <v-col cols="12" md="4" sm="6">
-                                        <v-text-field
-                                            v-model="editedUser.gender"
-                                            label="性別"
-                                            readonly
-                                        ></v-text-field>
-                                    </v-col>
-                                    <v-col cols="12" md="4" sm="6">
-                                        <v-text-field
-                                            v-model="editedUser.birthday"
-                                            label="生日"
-                                            readonly
-                                        ></v-text-field>
-                                    </v-col>
-                                    <v-col cols="12" md="4" sm="6">
-                                        <v-text-field
-                                            v-model="editedUser.mobilePhone"
-                                            label="手機電話"
-                                            readonly
-                                        ></v-text-field>
-                                    </v-col>
-                                    <v-col cols="12" md="4" sm="6">
-                                        <v-text-field
-                                            v-model="editedUser.role"
-                                            label="身分"
-                                            readonly
-                                        ></v-text-field>
-                                    </v-col>
-                                    <v-col cols="12" md="4" sm="6">
-                                        <v-text-field
-                                            v-model="editedUser.createdAt"
-                                            label="建立時間"
-                                            readonly
-                                        ></v-text-field>
-                                    </v-col>
-                                    <v-col cols="12">
-                                        <v-text-field
-                                            v-model="editedUser.email"
-                                            label="信箱"
-                                            readonly
-                                        ></v-text-field>
-                                    </v-col>
-                                    <v-col cols="12" md="12" sm="6">
-                                        <v-text-field
-                                            v-model="editedUser.address"
-                                            label="地址"
-                                            readonly
-                                        ></v-text-field>
-                                    </v-col>
-                                </v-row>
-                            </v-container>
-                        </v-card-text>
-                        <v-card-actions>
-                            <v-spacer></v-spacer>
-                            <v-btn color="blue-darken-1" variant="text" @click="close">
-                                關閉
+    <v-container fluid>
+        <v-data-table-server
+            :headers="headers"
+            :items="users"
+            :items-per-page="itemsPerPage"
+            :items-length="totalItems"
+            :search="search"
+            :loading="loading"
+            :items-per-page-options="[10, 20, 30, 50, 100, 1000]"
+            show-current-page
+            @update:options="fetchUsers"
+        >
+            <template v-slot:top>
+                <v-toolbar flat rounded="lg" color="brown-lighten-5">
+                    <v-toolbar-title>使用者管理</v-toolbar-title>
+                    <v-sheet color="transparent" class="d-flex flex-row flex-grow-1 ga-2 mr-2">
+                        <v-select
+                            prefix="搜尋欄位:"
+                            v-model="selectedField"
+                            :items="[{ title: '使用者名稱', value: 'name' }]"
+                            density="compact"
+                            label="選擇搜尋欄位"
+                            variant="solo-filled"
+                            flat
+                            hide-details
+                            single-line
+                            :style="{ width: '30px' }"
+                        ></v-select>
+                        <v-text-field
+                            density="compact"
+                            label="查詢"
+                            prepend-inner-icon="mdi-magnify"
+                            variant="solo-filled"
+                            flat
+                            hide-details
+                            single-line
+                            :style="{ width: '200px' }"
+                            @blur="onSearchTextFieldUpdate"
+                            @keyup.enter="onSearchTextFieldUpdate"
+                            clearable
+                        ></v-text-field>
+                    </v-sheet>
+                    <v-dialog v-model="dialog" max-width="500px">
+                        <!-- <template v-slot:activator="{ props }">
+                            <v-btn class="mb-2" color="primary" dark v-bind="props">
+                                新增
                             </v-btn>
-                            <!-- <v-btn color="blue-darken-1" variant="text" @click="save">
-                                儲存
-                            </v-btn> -->
-                        </v-card-actions>
-                    </v-card>
-                </v-dialog>
-                <v-dialog v-model="dialogDelete" max-width="500px">
-                    <v-card>
-                        <v-card-title class="text-h5">確定要刪除?</v-card-title>
-                        <v-card-actions>
-                            <v-spacer></v-spacer>
-                            <v-btn color="blue-darken-1" variant="text" @click="closeDelete"
-                                >取消</v-btn
-                            >
-                            <v-btn color="blue-darken-1" variant="text" @click="deleteUserConfirm"
-                                >刪除</v-btn
-                            >
-                            <v-spacer></v-spacer>
-                        </v-card-actions>
-                    </v-card>
-                </v-dialog>
-            </v-toolbar>
-        </template>
-        <template v-slot:item.birthday="{ item }">
-            {{ new Date(item.birthday).toLocaleDateString() }}
-        </template>
-        <template v-slot:item.createdAt="{ item }">
-            {{ new Date(item.createdAt).toLocaleString() }}
-        </template>
-        <template v-slot:item.actions="{ item }">
-            <v-icon class="me-2" size="small" @click="editUser(item)"> mdi-eye </v-icon>
-            <!-- <v-icon size="small" @click="deleteUser(item)">
-                mdi-delete
-            </v-icon> -->
-        </template>
-    </v-data-table-server>
+                        </template> -->
+                        <v-card>
+                            <v-card-title>
+                                <span class="text-h5">{{ formTitle }}</span>
+                            </v-card-title>
+                            <v-card-text>
+                                <v-container>
+                                    <v-row>
+                                        <v-col cols="12" v-if="editedIndex !== -1">
+                                            <v-text-field
+                                                v-model="editedUser.id"
+                                                label="編號"
+                                                readonly
+                                            ></v-text-field>
+                                        </v-col>
+                                        <v-col cols="12" md="4" sm="6">
+                                            <v-text-field
+                                                v-model="editedUser.name"
+                                                label="名字"
+                                                readonly
+                                            ></v-text-field>
+                                        </v-col>
+                                        <v-col cols="12" md="4" sm="6">
+                                            <v-text-field
+                                                v-model="editedUser.gender"
+                                                label="性別"
+                                                readonly
+                                            ></v-text-field>
+                                        </v-col>
+                                        <v-col cols="12" md="4" sm="6">
+                                            <v-text-field
+                                                v-model="editedUser.birthday"
+                                                label="生日"
+                                                readonly
+                                            ></v-text-field>
+                                        </v-col>
+                                        <v-col cols="12" md="4" sm="6">
+                                            <v-text-field
+                                                v-model="editedUser.mobilePhone"
+                                                label="手機電話"
+                                                readonly
+                                            ></v-text-field>
+                                        </v-col>
+                                        <v-col cols="12" md="4" sm="6">
+                                            <v-text-field
+                                                v-model="editedUser.role"
+                                                label="身分"
+                                                readonly
+                                            ></v-text-field>
+                                        </v-col>
+                                        <v-col cols="12" md="4" sm="6">
+                                            <v-text-field
+                                                v-model="editedUser.createdAt"
+                                                label="建立時間"
+                                                readonly
+                                            ></v-text-field>
+                                        </v-col>
+                                        <v-col cols="12">
+                                            <v-text-field
+                                                v-model="editedUser.email"
+                                                label="信箱"
+                                                readonly
+                                            ></v-text-field>
+                                        </v-col>
+                                        <v-col cols="12" md="12" sm="6">
+                                            <v-text-field
+                                                v-model="editedUser.address"
+                                                label="地址"
+                                                readonly
+                                            ></v-text-field>
+                                        </v-col>
+                                    </v-row>
+                                </v-container>
+                            </v-card-text>
+                            <v-card-actions>
+                                <v-spacer></v-spacer>
+                                <v-btn color="blue-darken-1" variant="text" @click="close">
+                                    關閉
+                                </v-btn>
+                                <!-- <v-btn color="blue-darken-1" variant="text" @click="save">
+                                    儲存
+                                </v-btn> -->
+                            </v-card-actions>
+                        </v-card>
+                    </v-dialog>
+                    <v-dialog v-model="dialogDelete" max-width="500px">
+                        <v-card>
+                            <v-card-title class="text-h5">確定要刪除?</v-card-title>
+                            <v-card-actions>
+                                <v-spacer></v-spacer>
+                                <v-btn color="blue-darken-1" variant="text" @click="closeDelete"
+                                    >取消</v-btn
+                                >
+                                <v-btn
+                                    color="blue-darken-1"
+                                    variant="text"
+                                    @click="deleteUserConfirm"
+                                    >刪除</v-btn
+                                >
+                                <v-spacer></v-spacer>
+                            </v-card-actions>
+                        </v-card>
+                    </v-dialog>
+                </v-toolbar>
+            </template>
+            <template v-slot:item.birthday="{ item }">
+                {{ new Date(item.birthday).toLocaleDateString() }}
+            </template>
+            <template v-slot:item.createdAt="{ item }">
+                {{ new Date(item.createdAt).toLocaleString() }}
+            </template>
+            <template v-slot:item.actions="{ item }">
+                <v-icon class="me-2" size="small" @click="editUser(item)"> mdi-eye </v-icon>
+                <!-- <v-icon size="small" @click="deleteUser(item)">
+                    mdi-delete
+                </v-icon> -->
+            </template>
+        </v-data-table-server>
+    </v-container>
 </template>
 
 <script>
@@ -262,7 +267,7 @@ export default {
                 searchCondition
             );
             try {
-                const response = await axios.post("/user/find-condition", requestData );
+                const response = await axios.post("/user/find-condition", requestData);
                 console.log("Fetch Order success: ", response.data);
                 this.totalItems = response.data.totalElements;
                 this.users = response.data.users;

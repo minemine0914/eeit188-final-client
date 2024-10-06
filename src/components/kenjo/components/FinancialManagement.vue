@@ -1,8 +1,7 @@
 <template>
-    <v-container>
-        <v-sheet class="overflow-hidden" rounded="lg">
-            <v-toolbar flat>
-                <v-toolbar-title>金額管理</v-toolbar-title>
+    <v-container fluid>
+            <v-toolbar flat rounded="lg" color="brown-lighten-5">
+                <v-toolbar-title>當日金流</v-toolbar-title>
                 <v-sheet class="d-flex flex-row justify-center align-center ga-3 mr-3" color="transparent">
                     <v-select
                         v-model="selectedYear"
@@ -33,7 +32,6 @@
                     <v-btn color="success" @click="exportCSV" size="large" variant="tonal">匯出 CSV</v-btn>
                 </v-sheet>
             </v-toolbar>
-        </v-sheet>
 
         <v-data-table
             :headers="headers"
