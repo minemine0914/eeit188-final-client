@@ -26,44 +26,47 @@
             <template v-slot:item.user="{ item }">
                 <div>{{ item.user.name }}</div>
             </template>
+            <template v-slot:item.createdAt="{ item }">
+                <div>{{ new Date(item.createdAt).toLocaleString() }}</div>
+            </template>
 
             <template v-slot:top>
                 <v-toolbar flat rounded="lg" color="brown-lighten-5">
                     <v-toolbar-title>訂單管理</v-toolbar-title>
                     <!-- 搜尋欄位下拉選單 -->
-                     <v-sheet color="transparent" class="d-flex flex-row flex-grow-1 ga-2 mr-2">
-                         <v-select
-                             prefix="搜尋欄位:"
-                             v-model="selectedField"
-                             :items="[
-                                 { title: '金額', value: 'cashFlow' },
-                                 { title: '房源名稱', value: 'houseName' },
-                                 { title: '訂單編號', value: 'id' },
-                             ]"
-                             density="compact"
-                             label="選擇搜尋欄位"
-                             variant="solo-filled"
-                             flat
-                             hide-details
-                             single-line
-                             :style="{ width: '30px' }"
-                         ></v-select>
-                         <v-text-field
-                             density="compact"
-                             label="查詢"
-                             prepend-inner-icon="mdi-magnify"
-                             variant="solo-filled"
-                             flat
-                             hide-details
-                             single-line
-                             :style="{ width: '200px' }"
-                             @blur="onSearchTextFieldUpdate"
-                             @keyup.enter="onSearchTextFieldUpdate"
-                             clearable
-                         ></v-text-field>
-                         <!-- 匯出 CSV 按鈕 -->
-                         <v-btn color="success" @click="exportCSV" variant="tonal" size="large">匯出 CSV</v-btn>
-                     </v-sheet>
+                    <v-sheet color="transparent" class="d-flex flex-row flex-grow-1 ga-2 mr-2">
+                        <v-select
+                            prefix="搜尋欄位:"
+                            v-model="selectedField"
+                            :items="[
+                                { title: '金額', value: 'cashFlow' },
+                                { title: '房源名稱', value: 'houseName' },
+                                { title: '訂單編號', value: 'id' },
+                            ]"
+                            density="compact"
+                            label="選擇搜尋欄位"
+                            variant="solo-filled"
+                            flat
+                            hide-details
+                            single-line
+                            :style="{ width: '30px' }"
+                        ></v-select>
+                        <v-text-field
+                            density="compact"
+                            label="查詢"
+                            prepend-inner-icon="mdi-magnify"
+                            variant="solo-filled"
+                            flat
+                            hide-details
+                            single-line
+                            :style="{ width: '200px' }"
+                            @blur="onSearchTextFieldUpdate"
+                            @keyup.enter="onSearchTextFieldUpdate"
+                            clearable
+                        ></v-text-field>
+                        <!-- 匯出 CSV 按鈕 -->
+                        <v-btn color="success" @click="exportCSV" variant="tonal" size="large">匯出 CSV</v-btn>
+                    </v-sheet>
                 </v-toolbar>
             </template>
 
@@ -81,89 +84,50 @@
                 <span class="text-h5">{{ formTitle }}</span>
             </v-card-title>
             <v-card-text>
-                <v-container>
-                    <v-row>
-                        <v-col cols="12" v-if="editedIndex !== -1">
-                            <v-text-field
-                                v-model="editedOrder.id"
-                                label="訂單編號"
-                                readonly
-                            ></v-text-field>
-                        </v-col>
-                        <v-col cols="12" md="6" sm="6">
-                            <v-text-field
-                                v-model="editedOrder.house.name"
-                                label="房源名稱"
-                                readonly
-                            ></v-text-field>
-                        </v-col>
-                        <v-col cols="12" md="6" sm="6">
-                            <v-text-field
-                                v-model="editedOrder.ticket.people"
-                                label="人數"
-                                type="number"
-                                readonly
-                            ></v-text-field>
-                        </v-col>
-                        <v-col cols="12" md="6" sm="6">
-                            <v-text-field
-                                v-model="editedOrder.user.name"
-                                label="房客名稱"
-                                readonly
-                            ></v-text-field>
-                        </v-col>
-                        <v-col cols="12" md="6" sm="6">
-                            <v-text-field
-                                v-model="editedOrder.user.phone"
-                                label="連絡電話"
-                                readonly
-                            ></v-text-field>
-                        </v-col>
-                        <v-col cols="12" md="6" sm="6">
-                            <v-text-field
-                                v-model="editedOrder.user.email"
-                                label="信箱"
-                                readonly
-                            ></v-text-field>
-                        </v-col>
-                        <v-col cols="12" md="6" sm="6">
-                            <v-text-field
-                                v-model="editedOrder.cashFlow"
-                                label="金額"
-                                type="number"
-                                readonly
-                            ></v-text-field>
-                        </v-col>
-                        <v-col cols="12" md="6" sm="6">
-                            <v-text-field
-                                v-model="editedOrder.startedAt"
-                                label="入住時間"
-                                readonly
-                            ></v-text-field>
-                        </v-col>
-                        <v-col cols="12" md="6" sm="6">
-                            <v-text-field
-                                v-model="editedOrder.endedAt"
-                                label="退房時間"
-                                readonly
-                            ></v-text-field>
-                        </v-col>
-                        <v-col cols="12" md="6" sm="6">
-                            <v-text-field
-                                v-model="editedOrder.createdAt"
-                                label="下單時間"
-                                readonly
-                            ></v-text-field>
-                        </v-col>
-                        <v-col cols="12" md="6" sm="6">
-                            <v-text-field
-                                v-model="editedOrder.deal"
-                                label="訂單狀態"
-                                readonly
-                            ></v-text-field>
-                        </v-col>
-                    </v-row>
-                </v-container>
+                <v-row>
+                    <v-col cols="12" v-if="editedIndex !== -1">
+                        <v-text-field v-model="editedOrder.id" label="訂單編號" readonly></v-text-field>
+                    </v-col>
+                    <v-col cols="12">
+                        <v-text-field v-model="editedOrder.house.name" label="房源名稱" readonly></v-text-field>
+                    </v-col>
+                    <v-col cols="12" md="6" sm="6">
+                        <v-text-field v-model="editedOrder.user.name" label="房客名稱" readonly></v-text-field>
+                    </v-col>
+                    <v-col cols="12" md="6" sm="6">
+                        <v-text-field v-model="editedOrder.user.mobilePhone" label="連絡電話" readonly></v-text-field>
+                    </v-col>
+                    <v-col cols="12" md="6" sm="6">
+                        <v-text-field v-model="editedOrder.user.email" label="信箱" readonly></v-text-field>
+                    </v-col>
+                    <v-col cols="12" md="6" sm="6">
+                        <v-text-field v-model="editedOrder.cashFlow" label="金額" type="number" readonly></v-text-field>
+                    </v-col>
+                    <v-col cols="12" md="6" sm="6">
+                        <v-text-field
+                            :model-value="new Date(editedOrder.ticket.startedAt).toLocaleString()"
+                            label="入住時間"
+                            readonly
+                        ></v-text-field>
+                    </v-col>
+                    <v-col cols="12" md="6" sm="6">
+                        <v-text-field
+                            :model-value="new Date(editedOrder.ticket.endedAt).toLocaleString()"
+                            label="退房時間"
+                            readonly
+                        ></v-text-field>
+                    </v-col>
+                    <v-col cols="12" md="6" sm="6">
+                        <v-text-field
+                            :model-value="new Date(editedOrder.createdAt).toLocaleString()"
+                            label="下單時間"
+                            readonly
+                        ></v-text-field>
+                    </v-col>
+                    <v-col cols="12" md="6" sm="6">
+                        <v-text-field v-model="editedOrder.deal" label="訂單狀態" readonly></v-text-field>
+                    </v-col>
+                </v-row>
             </v-card-text>
             <v-card-actions>
                 <v-spacer></v-spacer>
@@ -190,10 +154,7 @@
             <v-card-title class="headline">選擇狀態</v-card-title>
             <v-card-text>
                 <v-radio-group v-model="selectedStatus">
-                    <v-radio
-                        :label="orderStatuses.CANCELLED"
-                        :value="orderStatuses.CANCELLED"
-                    ></v-radio>
+                    <v-radio :label="orderStatuses.CANCELLED" :value="orderStatuses.CANCELLED"></v-radio>
                     <v-radio :label="orderStatuses.PAID" :value="orderStatuses.PAID"></v-radio>
                     <v-radio :label="orderStatuses.UNPAID" :value="orderStatuses.UNPAID"></v-radio>
                 </v-radio-group>
@@ -553,22 +514,20 @@ export default {
         },
 
         generateCSV(data) {
-            const filteredHeaders = this.headers.filter((header) => header.key !== "actions"); // 不列印出 actions 欄位
-            const headers = filteredHeaders.map((header) => `"${header.title}"`).join(",") + "\n";
+            const filteredHeaders = this.headers.filter(header => header.key !== "actions"); // 不列印出 actions 欄位
+            const headers = filteredHeaders.map(header => `"${header.title}"`).join(",") + "\n";
 
             const rows = data
-                .map((item) =>
+                .map(item =>
                     filteredHeaders
-                        .map((header) => {
+                        .map(header => {
                             const keys = header.key.split(".");
                             let value = item;
-                            keys.forEach((key) => {
+                            keys.forEach(key => {
                                 value = value ? value[key] : "";
                             });
                             return `"${
-                                value !== undefined && value !== null
-                                    ? value.toString().replace(/"/g, '""')
-                                    : ""
+                                value !== undefined && value !== null ? value.toString().replace(/"/g, '""') : ""
                             }"`;
                         })
                         .join(",")
