@@ -17,11 +17,12 @@
         lg="3"
         class="d-flex flex-column align-center mb-4"
       >
-        <v-card>
+        <v-card class="w-100">
           <v-img
             :src="imageUrl(image.id)"
             :alt="'Image ' + image?.id"
             height="200px"
+            cover
             class="align-center"
           ></v-img>
           <v-card-actions>
@@ -29,7 +30,6 @@
               color="error"
               block
               @click="removeImage(image?.id)"
-              class="mt-2"
             >
               移除圖片
             </v-btn>
@@ -147,7 +147,4 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.v-img {
-  border-radius: 8px;
-}
 </style>

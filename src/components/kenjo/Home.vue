@@ -1,6 +1,6 @@
 <template>
     <div>
-      <h1>Home</h1>
+      <h1></h1>
       <nav>
         <router-link to="/system/BookingManagement"><v-btn>訂單</v-btn></router-link>
         <router-link to="/system/UserManagement"><v-btn>使用者</v-btn></router-link>

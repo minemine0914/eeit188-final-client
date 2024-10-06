@@ -41,7 +41,12 @@ export const useCreateTransactionRecordStore = defineStore('createTransactionRec
                     this.progress = `*開始建立交易(${i + 1}/${this.dataAmountTxRecord})`
                     console.log(`開始建立交易(${i + 1}/${this.dataAmountTxRecord})`)
 
-                    const houseId = this.housesResult[Math.floor(Math.random() * this.housesResult.length)];
+                    let houseId
+                    if (!this.house) {
+                        houseId = this.housesResult[Math.floor(Math.random() * this.housesResult.length)];
+                    } else {
+                        houseId = this.house;
+                    }
                     const userId = this.usersResult[Math.floor(Math.random() * this.usersResult.length)];
                     // let cashflow = Math.random() * 10000
                     // console.log(new Date(Date.now() - Math.random() * 86400 * 1000 * 365 * 10))
@@ -84,8 +89,8 @@ export const useCreateTransactionRecordStore = defineStore('createTransactionRec
         async generateClickAndShare() {
             for (let i = 0; i < this.dataAmountClickShare; i++) {
                 try {
-                    this.progress = `*開始建立點擊/分享(${i + 1}/${this.dataAmountClickShare})`
-                    console.log(`開始建立點擊/分享(${i + 1}/${this.dataAmountClickShare})`)
+                    this.progress = `*開始建立點擊/分享/評分(${i + 1}/${this.dataAmountClickShare})`
+                    console.log(`開始建立點擊/分享/評分(${i + 1}/${this.dataAmountClickShare})`)
 
                     let houseId
                     if (!this.house) {
@@ -94,11 +99,12 @@ export const useCreateTransactionRecordStore = defineStore('createTransactionRec
                         houseId = this.house;
                     }
                     const userId = this.usersResult[Math.floor(Math.random() * this.usersResult.length)];
-                    let clicked, liked, shared
+                    let clicked, liked, shared, score
                     do {
                         clicked = Math.random() > 0.5
                         // liked = Math.random() > 0.5
                         shared = Math.random() > 0.5
+                        score = Math.floor(Math.random() * 5 + 1)
                     }
                     while (!clicked && !liked && !shared)
 
@@ -108,6 +114,7 @@ export const useCreateTransactionRecordStore = defineStore('createTransactionRec
                         clicked,
                         // liked,
                         shared,
+                        score
                     });
                     console.log('建立成功：', response.data)
                 } catch (error) {

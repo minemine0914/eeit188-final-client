@@ -185,31 +185,36 @@ const items = computed(() => {
     else {
         const searchLower = search.value.toLowerCase();
 
-        filtered = store.houses.filter(item =>
-            (item?.category?.toLowerCase().includes(searchLower)) ||
-            (item?.id?.toLowerCase().includes(searchLower)) ||
-            (item?.name?.toLowerCase().includes(searchLower)) ||
-            (item?.country?.toLowerCase().includes(searchLower)) ||
-            (item?.city?.toLowerCase().includes(searchLower)) ||
-            (item?.region?.toLowerCase().includes(searchLower)) ||
-            (item?.address?.toLowerCase().includes(searchLower)) ||
-            (item?.show?.toString().includes(searchLower)) ||
-            (item?.review?.toString().includes(searchLower)) ||
-            (item?.averageScore.toString().includes(searchLower)) ||
-            (item?.click?.toString().includes(searchLower)) ||
-            (item?.share?.toString().includes(searchLower)) ||
-            (item?.pricePerDay?.toString().includes(searchLower)) ||
-            (item?.adult?.toString().includes(searchLower)) ||
-            (item?.child?.toString().includes(searchLower)) ||
-            (item?.livingDiningRoom?.toString().includes(searchLower)) ||
-            (item?.bedroom?.toString().includes(searchLower)) ||
-            (item?.restroom?.toString().includes(searchLower)) ||
-            (item?.bathroom?.toString().includes(searchLower)) ||
-            (item?.balcony?.toString().includes(searchLower)) ||
-            (item?.kitchen?.toString().includes(searchLower)) ||
-            (item?.pet?.toString().includes(searchLower)) ||
-            (item?.smoke?.toString().includes(searchLower)) ||
-            (item?.createdAt?.includes(searchLower))
+        filtered = store.houses.filter(item => {
+            const fullAddress = `${item.country} ${item.city} ${item.region} ${item.address}`;
+            return (
+                (item?.category?.toLowerCase().includes(searchLower)) ||
+                (item?.id?.toLowerCase().includes(searchLower)) ||
+                (item?.name?.toLowerCase().includes(searchLower)) ||
+                (fullAddress.includes(searchLower)) || // Check against fullAddress
+                (item?.country?.toLowerCase().includes(searchLower)) ||
+                (item?.city?.toLowerCase().includes(searchLower)) ||
+                (item?.region?.toLowerCase().includes(searchLower)) ||
+                (item?.address?.toLowerCase().includes(searchLower)) ||
+                (item?.show?.toString().includes(searchLower)) ||
+                (item?.review?.toString().includes(searchLower)) ||
+                (item?.averageScore.toString().includes(searchLower)) ||
+                (item?.click?.toString().includes(searchLower)) ||
+                (item?.share?.toString().includes(searchLower)) ||
+                (item?.pricePerDay?.toString().includes(searchLower)) ||
+                (item?.adult?.toString().includes(searchLower)) ||
+                (item?.child?.toString().includes(searchLower)) ||
+                (item?.livingDiningRoom?.toString().includes(searchLower)) ||
+                (item?.bedroom?.toString().includes(searchLower)) ||
+                (item?.restroom?.toString().includes(searchLower)) ||
+                (item?.bathroom?.toString().includes(searchLower)) ||
+                (item?.balcony?.toString().includes(searchLower)) ||
+                (item?.kitchen?.toString().includes(searchLower)) ||
+                (item?.pet?.toString().includes(searchLower)) ||
+                (item?.smoke?.toString().includes(searchLower)) ||
+                (item?.createdAt?.includes(searchLower))
+            )
+        }
         );
     }
     return filtered

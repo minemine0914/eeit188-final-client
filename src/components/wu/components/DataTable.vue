@@ -4,7 +4,24 @@
         <h2>查詢結果</h2>
         <div>
             <!-- Radio Buttons for selecting Month or Quarter -->
-            <div>
+            <v-radio-group v-model="store.selectedPeriod" inline color="brown-darken-3">
+                <v-radio value="year" base-color="brown-darken-3">
+                    <template v-slot:label>
+                        <span class="text-black text-h5 font-weight-bold">以年顯示</span>
+                    </template>
+                </v-radio>
+                <v-radio value="month" base-color="brown-darken-3">
+                    <template v-slot:label>
+                        <span class="text-black text-h5 font-weight-bold">以月顯示</span>
+                    </template>
+                </v-radio>
+                <v-radio value="quarter" base-color="brown-darken-3">
+                    <template v-slot:label>
+                        <span class="text-black text-h5 font-weight-bold">以季顯示</span>
+                    </template>
+                </v-radio>
+            </v-radio-group>
+            <!-- <div>
                 <input type="radio" id="monthOrQuarter_year" value="year" v-model="store.selectedPeriod"
                     @change="store.allMonth = true">
                 <label for="monthOrQuarter_year">以年顯示</label>
@@ -14,44 +31,45 @@
 
                 <input type="radio" id="monthOrQuarter_quarter" value="quarter" v-model="store.selectedPeriod">
                 <label for="monthOrQuarter_quarter">以季顯示</label>
-            </div>
+            </div> -->
 
             <!-- Conditionally render content based on selected period -->
             <div>
-                <input id="allYear" type="checkbox" v-model="store.allYear"><label for="allYear">顯示所有年度的資料</label>
-                &nbsp;
-                <label for="yearRange">選擇年份：</label>
-                <select id="yearRange" v-model="store.selectedYear" :disabled="store.allYear">
-                    <!-- <select id="yearRange" v-model="store.selectedYear" @change="updateRecordView('year')"> -->
-                    <option v-for="year, key in store.years" :key="key" :value="year">{{ year }}</option>
-                </select>
+                <div class="flexBox">
+                    <v-checkbox-btn v-model="store.allYear" inline class="pe-2" color="brown-darken-3">
+                        <template v-slot:label>
+                            <span class="text-black text-h5 font-weight-bold">顯示所有年度的資料</span>
+                        </template>
+                    </v-checkbox-btn>
+                    <v-select :items="store.years" v-model="store.selectedYear" :disabled="store.allYear" inline
+                        label="選擇年分" class="text-black font-weight-bold"></v-select>
+                </div>
+
                 <div v-if="store.selectedPeriod === 'year'">
                     <!-- Content for Year -->
                 </div>
-                <div v-if="store.selectedPeriod === 'month'">
+                <div v-if="store.selectedPeriod === 'month'" class="flexBox">
                     <!-- Content for Month -->
-                    <input id="allMonth" type="checkbox" v-model="store.allMonth"><label
-                        for="allMonth">顯示所有月份的資料</label>
-                    &nbsp;
-                    <label for="monthRange">選擇月份：</label>
-                    <select id="monthRange" v-model="store.selectedMonth" :disabled="store.allMonth">
-                        <option v-for="month, key in 12" :key="key" :value="month">{{ month }}</option>
-                    </select>
+                    <v-checkbox-btn v-model="store.allMonth" inline class="pe-2" color="brown-darken-3">
+                        <template v-slot:label>
+                            <span class="text-black text-h5 font-weight-bold">顯示所有月份的資料</span>
+                        </template>
+                    </v-checkbox-btn>
+                    <v-select :items="months" v-model="store.selectedMonth" :disabled="store.allMonth" inline
+                        label="選擇月份：" class="text-black font-weight-bold"></v-select>
                 </div>
-                <div v-if="store.selectedPeriod === 'quarter'">
+                <div v-if="store.selectedPeriod === 'quarter'" class="flexBox">
                     <!-- Content for Quarter -->
-                    <input id="allQuarter" type="checkbox" v-model="store.allQuarter"><label
-                        for="allQuarter">顯示所有季度的資料</label>
-                    &nbsp;
-                    <label for="quarterRange">選擇季度：</label>
-                    <select id="quarterRange" v-model="store.selectedQuarter" :disabled="store.allQuarter">
-                        <option v-for="quarter, key in 4" :key="key" :value="quarter">{{ quarter }}</option>
-                    </select>
-
+                    <v-checkbox-btn v-model="store.allQuarter" inline class="pe-2" color="brown-darken-3">
+                        <template v-slot:label>
+                            <span class="text-black text-h5 font-weight-bold">顯示所有季度的資料</span>
+                        </template>
+                    </v-checkbox-btn>
+                    <v-select :items="quarters" v-model="store.selectedQuarter" :disabled="store.allQuarter" inline
+                        label="選擇季度：" class="text-black font-weight-bold"></v-select>
                 </div>
             </div>
         </div>
-
     </div>
 </template>
 
@@ -61,41 +79,32 @@ import { useHostReportStore } from '@/stores/hostReportStore';
 
 const store = useHostReportStore()
 
-// Function to prepare records based on selected period
-const prepareRecords = (newValue) => {
-    if (store.selectedPeriod === 'year') {
-        store.recordsPrapared = store.turnToY(store.records);
-        console.log('SRP', store.recordsPrapared);
-    } else if (store.selectedPeriod === 'month') {
-        store.recordsPrapared = store.turnToYM(store.records);
-    } else if (store.selectedPeriod === 'quarter') {
-        store.recordsPrapared = store.turnToYQ(store.records);
+const months = Array.from({ length: 12 }, (_, i) => i + 1)
+const quarters = Array.from({ length: 4 }, (_, i) => i + 1)
+
+watch(
+    () => store.selectedPeriod,
+    (newValue) => {
+        if (newValue) {
+            store.allMonth = true;
+            store.allQuarter = true;
+        }
     }
-};
-
-// Watchers for selectedPeriod, selectedHouseId, and selectedUserId
-watch(() => store.selectedPeriod, prepareRecords);
-watch(() => store.selectedHouseId, prepareRecords);
-watch(() => store.selectedUserId, prepareRecords);
-
+);
 </script>
 
-<style lang="css" scoped>
-table,
-th,
-td {
-    border: 1px solid black;
-}
-
+<style scoped>
 select {
     padding: 5px 10px;
     border: 1px solid black;
 }
 
-.chartContainer {
+.flexBox {
     display: flex;
-    justify-content: left;
-    align-items: center;
-    flex-direction: row;
+}
+
+.v-select {
+    margin-left: 20px;
+    max-width: 150px;
 }
 </style>
