@@ -142,7 +142,7 @@ if (store.loginUser.role === 'normal') {
         { title: '金額', value: 'cashFlow', sortable: true, align: "end", width: "100px" },
         { title: '預計入住時間', value: 'startedAt', sortable: true },
         { title: '預計退房時間', value: 'endedAt', sortable: true },
-        { title: '評分', value: 'score', sortable: true },
+        { title: '　評分', value: 'score', sortable: true, align: "center" },
         { title: '訂房者名稱', value: 'bookerName', sortable: true },
         { title: '性別', value: 'bookerGender', sortable: true },
         // { title: '', value: '', sortable: false, width: '100px' }, // 空白欄 調整排版用
@@ -150,11 +150,11 @@ if (store.loginUser.role === 'normal') {
 } else if (store.loginUser.role === 'admin') {
     headers = [
         { title: '訂單成立時間', value: 'createdAt', sortable: true, width: '150px' },
-        { title: '平台收入', value: 'platformIncome', sortable: true, width: '50px', align: "end" },
-        { title: '交易金額', value: 'cashFlow', sortable: true, width: '100px', align: "end" },
+        { title: '平台收入', value: 'platformIncome', sortable: true, width: '120px', align: "end" },
+        { title: '交易金額', value: 'cashFlow', sortable: true, width: '120px', align: "end" },
         { title: '預計入住時間', value: 'startedAt', sortable: true, width: '150px' },
         { title: '預計退房時間', value: 'endedAt', sortable: true, width: '150px' },
-        { title: '評分', value: 'score', sortable: true, width: '200px', align: "center" },
+        { title: '　評分', value: 'score', sortable: true, width: '100px', align: "center" },
         { title: '訂房者ID', value: 'bookerId', sortable: true, width: '80px' },
         { title: '訂房者名稱', value: 'bookerName', sortable: true, width: '150px' },
         { title: '性別', value: 'bookerGender', sortable: true, width: '100px' },
