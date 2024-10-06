@@ -19,7 +19,7 @@
         <v-spacer></v-spacer>
         <v-card class="subBox">
 
-            <v-card-title>您好，{{ store.loginUser.name }}，歡迎使用本系統
+            <v-card-title class="text-h5">您好，{{ store.loginUser.name }}，歡迎使用本系統
                 <template v-if="store.houses[0]?.id !== '' && store.houses[0]?.name !== 'NO HOUSES'">
                     <Selector />
                 </template>
