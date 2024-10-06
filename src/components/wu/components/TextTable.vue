@@ -75,11 +75,20 @@
             :items-per-page-options="itemsPerPageOptions">
             <template v-slot:item.createdAt="{ item }">
                 {{ item.formattedCreatedAt }} <!-- Display formatted date -->
+                <v-chip v-if="item.startedAt > new Date()" color="red">
+                    未入住
+                </v-chip>
+                <v-chip v-else-if="item.endedAt < new Date()" color="orange">
+                    已退房
+                </v-chip>
+                <v-chip v-else color="green">
+                    入住中
+                </v-chip>
             </template>
 
             <template v-slot:item.startedAt="{ item }">
                 <template v-if="item.startedAt">
-                    {{ store.formatDate(item.startedAt) }}
+                    {{ store.formatDate(item.startedAt) }}+
                 </template>
                 <template v-else>--</template>
             </template>
