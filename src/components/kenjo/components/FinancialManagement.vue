@@ -1,40 +1,39 @@
 <template>
     <v-container>
-        <v-toolbar flat>
-            <v-toolbar-title>金額管理</v-toolbar-title>
-            <v-text-field
-                v-model="search"
-                density="compact"
-                label="查詢"
-                prepend-inner-icon="mdi-magnify"
-                variant="solo-filled"
-                flat
-                hide-details
-                single-line
-                :style="{ width: '200px' }"
-            ></v-text-field>
-        </v-toolbar>
-        <v-toolbar>
-            <v-select
-                v-model="selectedYear"
-                :items="years"
-                label="選擇年份"
-                @change="filterByYear"
-                :style="{ width: '200px' }"
-            ></v-select>
-            <v-select
-                v-model="selectedMonth"
-                :items="months"
-                label="選擇月份"
-                @change="filterByMonth"
-                :style="{ width: '200px' }"
-            ></v-select>
-            <!-- <v-btn color="primary" @click="clearFilters">查詢全部訂單</v-btn> -->
-            <v-btn color="secondary" @click="printData">列印</v-btn>
-            <!-- 新增列印按鈕 -->
-            <v-btn color="success" @click="exportCSV">匯出 CSV</v-btn>
-            <!-- 匯出 CSV 按鈕 -->
-        </v-toolbar>
+        <v-sheet class="overflow-hidden" rounded="lg">
+            <v-toolbar flat>
+                <v-toolbar-title>金額管理</v-toolbar-title>
+                <v-sheet class="d-flex flex-row justify-center align-center ga-3 mr-3" color="transparent">
+                    <v-select
+                        v-model="selectedYear"
+                        :items="years"
+                        label="選擇年份"
+                        hide-details
+                        @change="filterByYear"
+                        :style="{ width: '200px' }"
+                        variant="solo-filled"
+                        density="compact"
+                        flat
+                    ></v-select>
+                    <v-select
+                        v-model="selectedMonth"
+                        :items="months"
+                        label="選擇月份"
+                        hide-details
+                        @change="filterByMonth"
+                        :style="{ width: '200px' }"
+                        variant="solo-filled"
+                        density="compact"
+                        flat
+                    ></v-select>
+                    <!-- <v-btn color="primary" @click="clearFilters">查詢全部訂單</v-btn> -->
+                    <!-- 新增列印按鈕 -->
+                    <v-btn color="secondary" @click="printData" size="large" variant="tonal">列印</v-btn>
+                    <!-- 匯出 CSV 按鈕 -->
+                    <v-btn color="success" @click="exportCSV" size="large" variant="tonal">匯出 CSV</v-btn>
+                </v-sheet>
+            </v-toolbar>
+        </v-sheet>
 
         <v-data-table
             :headers="headers"
