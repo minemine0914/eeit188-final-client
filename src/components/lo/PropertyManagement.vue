@@ -296,7 +296,7 @@
 
                 <!-- 價格設置 -->
                 <v-text-field
-                    label="每日價格"
+                    label="每晚價格(NTD/元)"
                     v-model="currentItem.price"
                     type="number"
                     required
