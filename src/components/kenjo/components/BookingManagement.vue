@@ -27,7 +27,6 @@
             <template v-slot:top>
                 <v-toolbar flat rounded="lg" color="brown-lighten-5">
                     <v-toolbar-title>訂單管理</v-toolbar-title>
-                    <v-divider class="mx-4" inset vertical></v-divider>
                     <v-spacer></v-spacer>
                     <v-text-field
                         v-model="search"
@@ -67,7 +66,7 @@
                                         </v-col>
                                         <v-col cols="12" md="6" sm="6">
                                             <v-text-field
-                                                v-model="editedOrder.createdAt"
+                                                :model-value="new Date(editedOrder.createdAt).toLocaleString()"
                                                 label="下單時間"
                                                 readonly
                                             ></v-text-field>
@@ -221,7 +220,9 @@
                     </v-dialog>
                 </v-toolbar>
             </template>
-    
+            <template v-slot:item.createdAt="{ item }">
+                {{ new Date(item.createdAt).toLocaleString() }}
+            </template>
             <template v-slot:item.actions="{ item }">
                 <v-icon class="me-2" size="small" @click="openDeal(item)"> mdi-pencil </v-icon>
                 <v-icon class="me-2" size="small" @click="openOrder(item)"> mdi-eye </v-icon>
