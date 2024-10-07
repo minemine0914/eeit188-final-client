@@ -19,6 +19,15 @@
                     >FORGOT PASSWORD</v-sheet
                 >
             </v-sheet>
+            <v-btn
+                class="ml-0 mt-2 position-absolute top-0 left-0"
+                flat
+                rounded="pill"
+                prepend-icon="mdi-chevron-left"
+                variant="plain"
+                size="small"
+                @click="$router.push('/login')"
+            >返回登入</v-btn>
         </v-card-item>
         <v-card-item class="px-7 pb-7 pt-4">
             <v-sheet class="d-flex flex-column ga-3 pt-3">
