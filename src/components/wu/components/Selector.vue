@@ -12,14 +12,15 @@
                 variant="solo-filled" flat hide-details single-line />
         </v-card-title>
 
-        <v-data-table v-model:search="search" v-model="store.selectedHouseId" :headers="headers" :items="items"
-            item-value="id" select-strategy="single" show-select @change="update">
+        <v-data-table class="text-h6" v-model:search="search" v-model="store.selectedHouseId" :headers="headers"
+            :items="items" :items-per-page="itemsPerPage" :items-per-page-options="itemsPerPageOptions" item-value="id"
+            select-strategy="single" show-select @change="update">
 
             <template v-slot:item.show="{ item }">
-                <v-chip v-if="item.show" color="green" size="small" class="text-uppercase">
+                <v-chip v-if="item.show" color="green" size="small" class="text-uppercase text-h6">
                     公開中
                 </v-chip>
-                <v-chip v-else color="orange" size="small" class="text-uppercase">
+                <v-chip v-else color="orange" size="small" class="text-uppercase text-h6">
                     不公開
                 </v-chip>
             </template>
@@ -37,33 +38,38 @@
             </template>
 
             <template v-slot:item.review="{ item }">
-                <v-chip :color="getStatusColor(item.review)" size="small" class="text-uppercase">
+                <v-chip :color="getStatusColor(item.review)" size="small" class="text-uppercase text-h6">
                     {{ getStatusText(item.review) }}
                 </v-chip>
             </template>
 
             <template v-slot:item.pet="{ item }">
-                <v-chip v-if="item.pet" variant="outlined" prepend-icon="mdi-paw" color="green">
+                <v-chip v-if="item.pet" variant="outlined" prepend-icon="mdi-paw" color="green" class="text-h6">
                     可攜帶寵物 </v-chip>
-                <v-chip v-else variant="outlined" prepend-icon="mdi-paw-off" color="red"> 禁止寵物 </v-chip>
+                <v-chip v-else variant="outlined" prepend-icon="mdi-paw-off" color="red" class="text-h6"> 禁止寵物 </v-chip>
             </template>
 
             <template v-slot:item.smoke="{ item }">
-                <v-chip v-if="item.smoke" variant="outlined" prepend-icon="mdi-smoking" color="green"> 可吸菸
+                <v-chip v-if="item.smoke" variant="outlined" prepend-icon="mdi-smoking" color="green" class="text-h6">
+                    可吸菸
                 </v-chip>
-                <v-chip v-else variant="outlined" prepend-icon="mdi-smoking-off" color="red"> 禁止吸菸 </v-chip>
+                <v-chip v-else variant="outlined" prepend-icon="mdi-smoking-off" color="red" class="text-h6"> 禁止吸菸
+                </v-chip>
             </template>
 
             <template v-slot:item.kitchen="{ item }">
-                <v-chip v-if="item.kitchen" variant="outlined" prepend-icon="mdi-gas-burner" color="green"> 附設廚房
+                <v-chip v-if="item.kitchen" variant="outlined" prepend-icon="mdi-gas-burner" color="green"
+                    class="text-h6"> 附設廚房
                 </v-chip>
-                <v-chip v-else variant="outlined" prepend-icon="mdi-gas-burner" color="red"> 無廚房 </v-chip>
+                <v-chip v-else variant="outlined" prepend-icon="mdi-gas-burner" color="red" class="text-h6"> 無廚房
+                </v-chip>
             </template>
 
             <template v-slot:item.balcony="{ item }">
-                <v-chip v-if="item.balcony" variant="outlined" prepend-icon="mdi-balcony" color="green"> 附設陽台
+                <v-chip v-if="item.balcony" variant="outlined" prepend-icon="mdi-balcony" color="green" class="text-h6">
+                    附設陽台
                 </v-chip>
-                <v-chip v-else variant="outlined" prepend-icon="mdi-balcony" color="red"> 無陽台 </v-chip>
+                <v-chip v-else variant="outlined" prepend-icon="mdi-balcony" color="red" class="text-h6"> 無陽台 </v-chip>
             </template>
 
             <template v-slot:item.fullAddress="{ item }">
@@ -93,7 +99,7 @@
             </template>
 
             <template v-slot:item.averageScore="{ item }">
-                <v-rating :model-value="item.averageScore" color="orange-darken-2" density="compact" size="small"
+                <v-rating :model-value="item.averageScore" color="orange-darken-2" density="compact" size="medium"
                     readonly></v-rating>
             </template>
 
@@ -177,6 +183,9 @@ if (userStore.user.role === 'normal') {
         { title: '', value: '', width: '100px' }, // 空白欄 調整排版用
     ];
 }
+
+const itemsPerPage = 5 // Default items per page
+const itemsPerPageOptions = [3, 5, 10, 25, 50, 100, -1] // Options for per-page selector
 
 const items = computed(() => {
     // console.log('is', store.itemsSource)

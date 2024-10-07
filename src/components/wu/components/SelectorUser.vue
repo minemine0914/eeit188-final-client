@@ -13,11 +13,14 @@
         </v-card-title>
 
         <v-data-table v-model:search="search" v-model="store.selectedUserId" :headers="headers" :items="items"
-            item-value="id" select-strategy="single" show-select @change="fetchHouses(store.selectedUserId[0])">
+            :items-per-page="itemsPerPage" :items-per-page-options="itemsPerPageOptions" item-value="id"
+            select-strategy="single" show-select @change="fetchHouses(store.selectedUserId[0])" class="text-h6">
 
             <template v-slot:item.name="{ item }">
-                <v-img :src="item.avatarBase64 ? item.avatarBase64 : emptyUserAvavtarImage" width="1rem"
-                    class="avatar" />{{ item.name }}
+                <v-avatar size="1.5rem">
+                    <v-img :src="item.avatarBase64 ? item.avatarBase64 : emptyUserAvavtarImage" />
+                </v-avatar>
+                &nbsp;{{ item.name }}
                 <v-icon icon="mdi-crown" color="orange" v-if="item.houseCount == maxHouseCount" />
             </template>
 
@@ -71,6 +74,8 @@ const store = useHostReportStore()
 const search = ref('');
 const maxHouseCount = ref(0)
 
+const itemsPerPage = 5 // Default items per page
+const itemsPerPageOptions = [3, 5, 10, 25, 50, 100, -1] // Options for per-page selector
 
 let headers = [
     { title: '', value: 'pics', width: '20px' }, // Disable sorting for pics

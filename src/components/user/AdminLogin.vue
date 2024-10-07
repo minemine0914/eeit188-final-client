@@ -70,7 +70,7 @@ const submit = async () => {
       title: "登入成功!",
       icon: "success",
     });
-    router.push(route.query.redirect || "/system");
+    router.push(route.query.redirect || "/system/BookingManagement");
   } catch (error) {
     Swal.fire({
       title: "登入失敗，請確認email及密碼",
