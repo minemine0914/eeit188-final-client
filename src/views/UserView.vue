@@ -22,7 +22,6 @@
           </v-sheet>
         </v-sheet>
       </v-app-bar-title>
-      <v-spacer></v-spacer>
       <template v-slot:append>
         <v-btn
           v-if="!jwtToken"

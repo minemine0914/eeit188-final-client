@@ -11,12 +11,12 @@
             <NomadSvg height="230px" class="position-absolute opacity-40" style="top: 35px" />
             <div class="position-absolute" style="top: 125px">
                 <div
-                    class="text-h3 font-weight-black mb-3 opacity-80"
+                    class="text-h3 font-weight-black mb-3 opacity-80 text-center"
                     style="font-family: 'Tenor Sans'"
                 >
                     NOMAD
                 </div>
-                <div class="subheading font-weight-regular opacity-90">
+                <div class="subheading font-weight-regular opacity-90 text-center">
                     住宿 旅遊 重新定義居住自由
                 </div>
             </div>
