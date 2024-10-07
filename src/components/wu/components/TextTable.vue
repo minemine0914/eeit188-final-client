@@ -91,7 +91,7 @@
 
             <template v-slot:item.startedAt="{ item }">
                 <template v-if="item.startedAt">
-                    {{ store.formatDate(item.startedAt) }}+
+                    {{ store.formatDate(item.startedAt) }}
                 </template>
                 <template v-else>--</template>
             </template>
