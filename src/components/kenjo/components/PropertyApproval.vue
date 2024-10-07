@@ -44,7 +44,7 @@
             :expanded="expanded"
             :headers="headers"
             :items="houses"
-            item-value="name"
+            item-value="id"
             :items-per-page="itemsPerPage"
             :items-length="totalItems"
             :loading="loading"
