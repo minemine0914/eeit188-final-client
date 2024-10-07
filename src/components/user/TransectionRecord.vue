@@ -2,7 +2,7 @@
   <div class="record-container" @scroll="handleScroll">
     <v-card v-if="ticket?.tickets.length === 0" class="mx-auto mb-5" subtitle="您目前沒有任何交易紀錄" width="600"
       height="50"></v-card>
-    <v-card v-for="t in ticket?.tickets" :key="t" class="mx-auto mb-5 custom-card" color="grey-lighten-3" width="600"
+    <v-card v-for="t in ticket?.tickets" :key="t" class="mx-auto mb-5 custom-card" color="grey-lighten-3" width="700"
       min-height="150">
       <div class="content">
         <v-card-subtitle class="custom-subtitle pa-0">{{
@@ -189,7 +189,7 @@ const formatDate = (dateString) => {
 
 <style scoped>
 .record-container {
-  width: 650px;
+  width: 700px;
   height: 700px;
   max-height: 700px;
   overflow-y: auto;
