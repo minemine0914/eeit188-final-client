@@ -33,11 +33,6 @@
         }}</v-card-subtitle>
         <v-card-text class="bg-surface-light pt-4">
           <div class="image" @click="handleClick(house)">
-            <v-img
-              v-if="house?.images.length === 0"
-              src="src/assets/ImageNotAvailable02.webp"
-            ></v-img>
-            <v-img :src="house?.images[0]"></v-img>
           </div>
           <v-btn
             class="btn"

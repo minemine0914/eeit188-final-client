@@ -58,7 +58,7 @@
                 折抵 NT ${{ coupon.discount }} 元
             </div>
             <div v-else class="text-caption" :class="[isExpired ? 'opacity-30' : '']">
-                折抵
+                折抵後
                 {{
                     parseFloat(((100 - coupon.discountRate * 100) / 10).toFixed(1)) % 1 === 0
                         ? ((100 - coupon.discountRate * 100) / 10).toFixed(0)
