@@ -615,6 +615,9 @@ onMounted(async () => {
       houseDetailStore.getSelfHouseDiscuss(),
       houseDetailStore.recordHouseMongoClick(),
     ]);
+    if (route.query.review) {
+      onClickDiscuss();
+    }
     if (isErrorGetHouseInfo.value) {
       router.push("/");
     }

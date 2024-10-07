@@ -74,8 +74,7 @@
             id="me"
           >
             <div class="chat-content-1">
-              <v-card-text id="text" width="300">
-                {{ chat?.chat }}
+              <v-card-text id="text" width="300" v-html="chat?.chat">
               </v-card-text>
               <v-card-text width="300">
                 {{ formatDate(chat?.createdAt) }}

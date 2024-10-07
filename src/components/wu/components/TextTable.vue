@@ -11,47 +11,50 @@
 
             <v-icon icon="mdi-home" />
             房源名稱：{{ store.itemsSource[0]?.house.name }}
-            <v-icon icon="mdi-home" />
+            <v-icon icon="mdi-map-marker" />
             位置：[{{
                 `${store.itemsSource[0]?.house?.country}${store.itemsSource[0]?.house?.city}${store.itemsSource[0]?.house?.region}${store.itemsSource[0]?.house?.address}`
             }}]
         </v-card-title>
 
         <v-card-title>
-            <v-chip :color="store.itemsSource[0]?.house?.show ? 'green' : 'red'">
+            <v-chip :color="store.itemsSource[0]?.house?.show ? 'green' : 'red'" class="text-h6">
                 {{ store.itemsSource[0]?.house?.show ? '公開中' : '不公開' }}
             </v-chip>
             <v-chip :color="store.itemsSource[0]?.house?.review === false ? 'red' : store.itemsSource[0]?.house?.review ? 'green' :
-                'orange'">
+                'orange'" class="text-h6">
                 {{ store.itemsSource[0]?.house?.review === false ? '審核失敗' : store.itemsSource[0]?.house?.review ? '審核通過'
-                    :
-                    '待審核' }}
+                    : '待審核' }}
             </v-chip>
-            <v-chip v-if="store.itemsSource[0]?.house?.bedroom" variant="outlined" prepend-icon="mdi-bed-outline">
+            <v-chip v-if="store.itemsSource[0]?.house?.bedroom" variant="outlined" prepend-icon="mdi-bed-outline"
+                class="text-h6">
                 臥房：{{ store.itemsSource[0]?.house?.bedroom }} </v-chip>
-            <v-chip v-if="store.itemsSource[0]?.house?.restroom" variant="outlined" prepend-icon="mdi-toilet">
+            <v-chip v-if="store.itemsSource[0]?.house?.restroom" variant="outlined" prepend-icon="mdi-toilet"
+                class="text-h6">
                 洗手間：{{ store.itemsSource[0]?.house?.restroom }} </v-chip>
-            <v-chip v-if="store.itemsSource[0]?.house?.bathroom" variant="outlined" prepend-icon="mdi-shower-head">
+            <v-chip v-if="store.itemsSource[0]?.house?.bathroom" variant="outlined" prepend-icon="mdi-shower-head"
+                class="text-h6">
                 浴室：{{ store.itemsSource[0]?.house?.bathroom }} </v-chip>
             <v-chip variant="outlined" prepend-icon="mdi-balcony"
-                :color="store.itemsSource[0]?.house?.balcony ? 'green' : 'red'">
+                :color="store.itemsSource[0]?.house?.balcony ? 'green' : 'red'" class="text-h6">
                 {{ store.itemsSource[0]?.house?.balcony ? '附設陽台' : '無陽台' }}
             </v-chip>
             <v-chip variant="outlined" prepend-icon="mdi-gas-burner"
-                :color="store.itemsSource[0]?.house?.kitchen ? 'green' : 'red'">
+                :color="store.itemsSource[0]?.house?.kitchen ? 'green' : 'red'" class="text-h6">
                 {{ store.itemsSource[0]?.house?.kitchen ? '附設廚房' : '無廚房' }}
             </v-chip>
-            <v-chip v-if="store.itemsSource[0]?.house?.pet" variant="outlined" prepend-icon="mdi-paw" color="green">
+            <v-chip v-if="store.itemsSource[0]?.house?.pet" variant="outlined" prepend-icon="mdi-paw" color="green"
+                class="text-h6">
                 可攜帶寵物 </v-chip>
-            <v-chip v-else variant="outlined" prepend-icon="mdi-paw-off" color="red"> 禁止寵物 </v-chip>
+            <v-chip v-else variant="outlined" prepend-icon="mdi-paw-off" color="red" class="text-h6"> 禁止寵物 </v-chip>
             <v-chip v-if="store.itemsSource[0]?.house?.smoke" variant="outlined" prepend-icon="mdi-smoking"
-                color="green"> 可吸菸
+                color="green" class="text-h6"> 可吸菸
             </v-chip>
-            <v-chip v-else variant="outlined" prepend-icon="mdi-smoking-off" color="red"> 禁止吸菸 </v-chip>
+            <v-chip v-else variant="outlined" prepend-icon="mdi-smoking-off" color="red" class="text-h6"> 禁止吸菸 </v-chip>
         </v-card-title>
 
-        <v-card-subtitle>有{{ click }}人看過這間房源</v-card-subtitle>
-        <v-card-subtitle>此區間內訂房數：{{ store.itemsSource.length }}</v-card-subtitle>
+        <v-card-subtitle class="text-h6">有{{ click }}人看過這間房源</v-card-subtitle>
+        <v-card-subtitle class="text-h6">此區間內訂房數：{{ store.itemsSource.length }}</v-card-subtitle>
 
         <v-spacer />
 
@@ -60,10 +63,10 @@
                 variant="solo-filled" flat hide-details single-line />
         </v-card-title>
 
-        <v-card-subtitle class="d-flex align-center pe-2 ">
+        <v-card-subtitle class="d-flex align-center pe-2 text-h6">
             <!-- normal user(房東)顯示訂單紀錄提示文字 -->
             <template v-if="store.loginUser.role === 'normal'">
-                <v-icon icon="mdi-home" />
+                <v-icon icon="mdi-note-multiple-outline" />
                 &nbsp;近期訂單紀錄&nbsp;
             </template>
 
@@ -71,15 +74,24 @@
 
         <v-divider />
 
-        <v-data-table v-model:search="search" :items="items" :headers="headers" :items-per-page="itemsPerPage"
-            :items-per-page-options="itemsPerPageOptions">
+        <v-data-table class="text-h6" v-model:search="search" :items="items" :headers="headers"
+            :items-per-page="itemsPerPage" :items-per-page-options="itemsPerPageOptions">
             <template v-slot:item.createdAt="{ item }">
                 {{ item.formattedCreatedAt }} <!-- Display formatted date -->
+                <v-chip v-if="item.startedAt > new Date()" color="red" class="text-h6">
+                    未入住
+                </v-chip>
+                <v-chip v-else-if="item.endedAt < new Date()" color="orange" class="text-h6">
+                    已退房
+                </v-chip>
+                <v-chip v-else color="green" class="text-h6">
+                    入住中
+                </v-chip>
             </template>
 
             <template v-slot:item.startedAt="{ item }">
                 <template v-if="item.startedAt">
-                    {{ store.formatDate(item.startedAt) }}
+                    {{ store.formatDate(item.startedAt) }}+
                 </template>
                 <template v-else>--</template>
             </template>
@@ -93,7 +105,7 @@
 
             <template v-slot:item.score="{ item }">
                 <template v-if="item.score">
-                    <v-rating :model-value="item.score" color="orange-darken-2" density="compact" size="small"
+                    <v-rating :model-value="item.score" color="orange-darken-2" density="compact" size="medium"
                         readonly></v-rating>
                 </template>
                 <template v-else>
@@ -139,10 +151,10 @@ let headers = []
 if (store.loginUser.role === 'normal') {
     headers = [
         { title: '訂單成立時間', value: 'createdAt', sortable: true },
-        { title: '金額', value: 'cashFlow', sortable: true, align: "end", width: "100px" },
+        { title: '金額', value: 'cashFlow', sortable: true, align: "end", width: "150px" },
         { title: '預計入住時間', value: 'startedAt', sortable: true },
         { title: '預計退房時間', value: 'endedAt', sortable: true },
-        { title: '評分', value: 'score', sortable: true },
+        { title: '　評分', value: 'score', sortable: true, align: "center" },
         { title: '訂房者名稱', value: 'bookerName', sortable: true },
         { title: '性別', value: 'bookerGender', sortable: true },
         // { title: '', value: '', sortable: false, width: '100px' }, // 空白欄 調整排版用
@@ -150,11 +162,11 @@ if (store.loginUser.role === 'normal') {
 } else if (store.loginUser.role === 'admin') {
     headers = [
         { title: '訂單成立時間', value: 'createdAt', sortable: true, width: '150px' },
-        { title: '平台收入', value: 'platformIncome', sortable: true, width: '50px', align: "end" },
-        { title: '交易金額', value: 'cashFlow', sortable: true, width: '100px', align: "end" },
+        { title: '平台收入', value: 'platformIncome', sortable: true, width: '120px', align: "end" },
+        { title: '交易金額', value: 'cashFlow', sortable: true, width: '120px', align: "end" },
         { title: '預計入住時間', value: 'startedAt', sortable: true, width: '150px' },
         { title: '預計退房時間', value: 'endedAt', sortable: true, width: '150px' },
-        { title: '評分', value: 'score', sortable: true, width: '200px', align: "center" },
+        { title: '　評分', value: 'score', sortable: true, width: '100px', align: "center" },
         { title: '訂房者ID', value: 'bookerId', sortable: true, width: '80px' },
         { title: '訂房者名稱', value: 'bookerName', sortable: true, width: '150px' },
         { title: '性別', value: 'bookerGender', sortable: true, width: '100px' },
