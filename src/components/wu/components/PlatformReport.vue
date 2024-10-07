@@ -4,7 +4,7 @@
         :scrim="false">
         <v-progress-circular color="brown" size="100" width="12" indeterminate></v-progress-circular>
     </v-overlay>
-    <v-container class="mainBox">
+    <v-container class="mainBox" fluid>
         <h1>歷史紀錄查詢與統計</h1>
         <v-spacer></v-spacer>
         <v-card class="subBox">
