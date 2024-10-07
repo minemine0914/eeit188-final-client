@@ -307,7 +307,7 @@ async function usedTicket() {
     await addChatRecord({
       chat: `感謝您的入住，幫我評價一下吧！<br><a href="/house/${ticket.house.id}?review=true" target="_blank">點擊這裡評價</a>`,
       senderId: ticket.house.userId,
-      receiverId: user.id,
+      receiverId: ticket.user.id,
     });
   } catch (error) {
     console.log(error);
