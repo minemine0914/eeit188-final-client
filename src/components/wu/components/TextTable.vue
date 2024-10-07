@@ -2,22 +2,25 @@
 <template>
 
     <v-card flat>
-        <v-card-title class="d-flex align-center pe-2">
+        <v-card-title class="d-flex align-center pe-2 flex-wrap">
             <!-- *******************admin額外顯示查看的user(房東)資訊********************* -->
             <template v-if="store.loginUser.role === 'admin'">
                 <v-icon icon="mdi-account" />
                 &nbsp;房東名稱：{{ currentUser?.name }}&nbsp;
             </template>
-
-            <v-icon icon="mdi-home" />
-            房源名稱：{{ store.itemsSource[0]?.house.name }}
-            <v-icon icon="mdi-map-marker" />
-            位置：[{{
-                `${store.itemsSource[0]?.house?.country}${store.itemsSource[0]?.house?.city}${store.itemsSource[0]?.house?.region}${store.itemsSource[0]?.house?.address}`
-            }}]
+            <span>
+                <v-icon icon="mdi-home" />
+                房源名稱：{{ store.itemsSource[0]?.house.name }}
+            </span>
+            <span>
+                <v-icon icon="mdi-map-marker" />
+                位置：[{{
+                    `${store.itemsSource[0]?.house?.country}${store.itemsSource[0]?.house?.city}${store.itemsSource[0]?.house?.region}${store.itemsSource[0]?.house?.address}`
+                }}]
+            </span>
         </v-card-title>
 
-        <v-card-title>
+        <v-card-title class="d-flex flex-row flex-shrink-0 flex-wrap">
             <v-chip :color="store.itemsSource[0]?.house?.show ? 'green' : 'red'" class="text-h6">
                 {{ store.itemsSource[0]?.house?.show ? '公開中' : '不公開' }}
             </v-chip>
@@ -91,7 +94,7 @@
 
             <template v-slot:item.startedAt="{ item }">
                 <template v-if="item.startedAt">
-                    {{ store.formatDate(item.startedAt) }}+
+                    {{ store.formatDate(item.startedAt) }}
                 </template>
                 <template v-else>--</template>
             </template>
