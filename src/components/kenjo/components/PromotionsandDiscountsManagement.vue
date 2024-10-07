@@ -463,7 +463,7 @@ const deleteDiscountRate = async (promotion) => {
 
 const deleteDiscount = async (discountCode) => {
     try {
-        await axios.delete(`/coupon/code/${discountCode.id}`);
+        await axios.delete(`/coupon/${discountCode.id}`);
         reloadDiscuss();
         // fetchDiscount();
     } catch (error) {
