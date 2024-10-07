@@ -132,7 +132,7 @@
             <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn color="blue-darken-1" variant="text" @click="close"> 取消 </v-btn>
-                <v-btn color="blue-darken-1" variant="text" @click="save"> 儲存 </v-btn>
+                <!-- <v-btn color="blue-darken-1" variant="text" @click="save"> 儲存 </v-btn> -->
             </v-card-actions>
         </v-card>
     </v-dialog>
