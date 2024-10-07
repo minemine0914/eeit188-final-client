@@ -206,10 +206,6 @@ export default {
                     return "grey"; // 未知狀態
             }
         },
-        resetDialog() {
-            this.selectedStatus = null; // 重設狀態
-            this.dialog = false; // 關閉對話框
-        },
         getStatusText(review) {
             switch (review) {
                 case null:
@@ -221,6 +217,10 @@ export default {
                 default:
                     return "確認中";
             }
+        },
+        resetDialog() {
+            this.selectedStatus = null; // 重設狀態
+            this.dialog = false; // 關閉對話框
         },
 
         async updateStatus() {

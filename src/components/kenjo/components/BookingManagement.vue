@@ -24,6 +24,12 @@
             show-current-page
             @update:options="fetchOrder"
         >
+            <template v-slot:item.deal="{ item }">
+                <!--狀態欄位-->
+                <v-chip :color="getStatusColor(item.deal)" size="small" class="text-uppercase">
+                    {{ getStatusText(item.deal) }}
+                </v-chip>
+            </template>
             <template v-slot:top>
                 <v-toolbar flat rounded="lg" color="brown-lighten-5">
                     <v-toolbar-title>訂單管理</v-toolbar-title>
@@ -358,7 +364,10 @@ export default {
                 const response = await axios.post("/transcation_record/search", requestData);
                 console.log("Fetch Order success: ", response.data);
                 this.totalItems = response.data.totalElements;
-                this.orders = response.data.content;
+                this.orders = response.data.content.map(order => ({
+                    ...order,
+                    createdAt: this.formatDate(order.createdAt)
+                }));
             } catch (error) {
                 console.error("Fetch Order error: Status code: ", error.response.status);
                 // Handle error (e.g., show error message to user)
@@ -384,8 +393,8 @@ export default {
         },
         formatDate(dateString) {
             if (!dateString) return "";
-            const match = dateString.match(/(\d{4}-\d{2}-\d{2})/);
-            return match ? match[0] : "";
+            const date = new Date(dateString);
+            return date.toISOString().split('T')[0]; // 取得 YYYY-MM-DD 部分
         },
 
         openOrder(item) {
@@ -467,6 +476,31 @@ export default {
             });
         },
 
+        getStatusColor(deal) {
+            switch (deal) {
+                case "確認付款中":
+                    return "orange"; // 待審核
+                case "付款成功":
+                    return "green"; // 審核通過
+                case "取消訂單":
+                    return "red"; // 審核失敗
+                default:
+                    return "grey"; // 未知狀態
+            }
+        },
+       
+        getStatusText(deal) {
+            switch (deal) {
+                case "取消訂單":
+                    return "取消訂單";
+                case "付款成功":
+                    return "付款成功";
+                case "確認付款中":
+                    return "確認付款中";
+                default:
+                    return "確認中";
+            }
+        },
         closeHostInfo() {
             this.dialogHostInfo = false;
         },
