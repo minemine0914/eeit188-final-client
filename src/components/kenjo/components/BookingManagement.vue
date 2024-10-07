@@ -171,7 +171,7 @@
                             <v-card-text>
                                 <p>姓名:{{ hostInfo.name }}</p>
                                 <!-- <p>聯絡方法:</p> -->
-                                <p>電話:{{ hostInfo.phone }}</p>
+                                <p>電話:{{ hostInfo.mobilePhone }}</p>
                                 <p>信箱:{{ hostInfo.email }}</p>
                             </v-card-text>
                             <v-card-actions>
@@ -191,7 +191,7 @@
                             <v-card-text>
                                 <p>姓名:{{ guestInfo.name }}</p>
                                 <!-- <p>聯絡方法:</p> -->
-                                <p>電話:{{ guestInfo.phone }}</p>
+                                <p>電話:{{ guestInfo.mobilePhone }}</p>
                                 <p>信箱:{{ guestInfo.email }}</p>
                             </v-card-text>
                             <v-card-actions>
@@ -297,12 +297,12 @@ export default {
             },
             hostInfo: {
                 name: "",
-                phone: "",
+                mobilePhone: "",
                 email: "",
             },
             guestInfo: {
                 name: "",
-                phone: "",
+                mobilePhone: "",
                 email: "",
             },
             propertyInfo: {
@@ -427,7 +427,7 @@ export default {
                 if (response.status === 200) {
                     this.hostInfo = {
                         name: response.data.name,
-                        phone: response.data.phone,
+                        mobilePhone: response.data.mobilePhone,
                         email: response.data.email,
                     };
                     this.dialogHostInfo = true;
@@ -444,7 +444,7 @@ export default {
         showGuestInfo() {
             this.guestInfo = {
                 name: this.editedOrder.user.name,
-                phone: this.editedOrder.user.phone,
+                mobilePhone: this.editedOrder.user.mobilePhone,
                 email: this.editedOrder.user.email,
             };
             this.dialogGuestInfo = true;
