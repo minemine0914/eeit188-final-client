@@ -7,6 +7,7 @@
       required
       @blur="v$.email.$touch"
       @input="v$.email.$touch"
+      @keydown.enter.prevent="submit"
     ></v-text-field>
 
     <v-text-field
@@ -17,6 +18,7 @@
       required
       @blur="v$.password.$touch"
       @input="v$.password.$touch"
+      @keydown.enter.prevent="submit"
     ></v-text-field>
     <v-btn class="me-4" @click="forgotPassword"> 忘記密碼 </v-btn>
     <v-btn class="me-4" @click="submit"> 登入 </v-btn>
