@@ -21,6 +21,7 @@ import Ticket from "@/components/user/Ticket.vue";
 .container {
   display: flex;
   justify-content: center;
+  flex-wrap: wrap;
   margin-top: 50px;
 }
 
