@@ -61,29 +61,48 @@
                 </v-chip>
             </template>
 
-            <!-- <template v-slot:item.category="{ category }">    類型欄位 -->
-            <!-- <v-chip 
-          :color="getCategoryColor(item.category)"
-          size="small"
-          class="text-uppercase">
-          {{ getCategoryText(item.category) }}
-        </v-chip>
-          </template> -->
+<!-- <template v-slot:item.category="{ category }">    類型欄位 -->
+<!-- <v-chip 
+:color="getCategoryColor(item.category)"
+size="small"
+class="text-uppercase">
+{{ getCategoryText(item.category) }}
+</v-chip>
+</template> -->
 
             <template v-slot:expanded-row="{ columns, item }">
                 <tr>
                     <td :colspan="columns.length">
-                        所在國家： {{ item.country }},<br />
-                        基本設施： 客廳: {{ item.livingDiningRoom }}間、 房間:
-                        {{ item.bedroom }}間、 衛生間: {{ item.restroom }}間、 淋浴間:
-                        {{ item.bathroom }}間、 {{ getkitchenText(item.kitchen) }}、
-                        {{ getbalconyText(item.balcony) }}<br />
-                        公共設施：
-                        <div v-for="postulate in item.postulates" :key="postulate.id">
-                            {{ postulate.name }}
-                        </div>
+                        <v-sheet class="pt-3 pb-1">
+                            <div>
+                                所在國家：
+                                {{ item.country }}
+                            </div>
+                            <div>
+                                基本設施： 客廳: {{ item.livingDiningRoom }}間、 房間: {{ item.bedroom }}間、 衛生間:
+                                {{ item.restroom }}間、 淋浴間: {{ item.bathroom }}間、
+                                {{ getkitchenText(item.kitchen) }}、 {{ getbalconyText(item.balcony) }}
+                            </div>
+                            <div class="d-flex flex-row align-cneter justify-start w-100">
+                                <v-sheet class="d-flex align-center">
+                                    <span>公共設施：</span>
+                                </v-sheet>
+                                <v-sheet class="d-flex flex-row ga-2">
+                                    <v-chip
+                                        v-for="postulate in item.postulates"
+                                        :key="postulate.id"
+                                        density="compact"
+                                        color="brown-darken-2"
+                                        >{{ postulate.name }}</v-chip
+                                    >
+                                </v-sheet>
+                            </div>
+                        </v-sheet>
                     </td>
                 </tr>
+            </template>
+            <template v-slot:item.createdAt="{ item }">
+                {{ new Date(item.createdAt).toLocaleString() }}
             </template>
             <template v-slot:item.actions="{ item }">
                 <v-icon @click="openDialog(item)" class="me-2" small> mdi-pencil </v-icon>
@@ -132,9 +151,10 @@ export default {
                     key: "name",
                 },
                 { title: "房東", key: "userName" },
-                { title: "地址 ", key: "address" },
-                { title: "房屋類型 ", key: "category" },
-                { title: "狀態 ", key: "show" },
+                { title: "地址", key: "address" },
+                { title: "房屋類型", key: "category" },
+                { title: "建立時間", key: "createdAt" },
+                { title: "狀態", key: "show" },
                 { title: "編輯", value: "actions", sortable: false },
             ],
             itemsPerPage: 10,

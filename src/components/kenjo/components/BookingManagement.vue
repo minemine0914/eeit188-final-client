@@ -368,10 +368,11 @@ export default {
                 const response = await axios.post("/transcation_record/search", requestData);
                 console.log("Fetch Order success: ", response.data);
                 this.totalItems = response.data.totalElements;
-                this.orders = response.data.content.map(order => ({
-                    ...order,
-                    createdAt: this.formatDate(order.createdAt)
-                }));
+                // this.orders = response.data.content.map(order => ({
+                //     ...order,
+                //     createdAt: this.formatDate(order.createdAt)
+                // }));
+                this.orders = response.data.content;
             } catch (error) {
                 console.error("Fetch Order error: Status code: ", error.response.status);
                 // Handle error (e.g., show error message to user)

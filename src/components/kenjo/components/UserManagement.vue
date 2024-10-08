@@ -77,7 +77,7 @@
                                         </v-col>
                                         <v-col cols="12" md="4" sm="6">
                                             <v-text-field
-                                                v-model="editedUser.birthday"
+                                                :model-value="new Date(editedUser.birthday).toLocaleDateString()"
                                                 label="生日"
                                                 readonly
                                             ></v-text-field>
