@@ -60,6 +60,8 @@ export const useHouseSearchStore = defineStore("HouseSearch", () => {
     const newHouseList = reactive([]);
     const hotHouseList = reactive([]);
 
+    const isLoadingFilterHouse = ref(false);
+
     const isSearchParamsEqual = computed(() => {
         return (
             isEqual(searchParams, initialSearchParams) && isEqual(inputValues, initialInputValues)
@@ -124,6 +126,7 @@ export const useHouseSearchStore = defineStore("HouseSearch", () => {
     }
 
     async function getFilterHouse() {
+        isLoadingFilterHouse.value = true;
         let resData = null;
         await api
             .post("/house/search", {
@@ -139,6 +142,9 @@ export const useHouseSearchStore = defineStore("HouseSearch", () => {
             })
             .catch((err) => {
                 console.log("取得FilterHouse失敗");
+            })
+            .finally(() => {
+                isLoadingFilterHouse.value = false;
             });
         return resData;
     }
@@ -198,7 +204,10 @@ export const useHouseSearchStore = defineStore("HouseSearch", () => {
                 hotHouseList.splice(0, hotHouseList.length);
                 // 排除未上架與未審核
                 res.data.content.forEach((houseWithScore) => {
-                    if (houseWithScore.houseDetails.show === true && houseWithScore.houseDetails.review === true) {
+                    if (
+                        houseWithScore.houseDetails.show === true &&
+                        houseWithScore.houseDetails.review === true
+                    ) {
                         hotHouseList.push(houseWithScore);
                     }
                 });
@@ -223,6 +232,7 @@ export const useHouseSearchStore = defineStore("HouseSearch", () => {
         newHouseList,
         hotHouseList,
         isSearchParamsEqual,
+        isLoadingFilterHouse,
         resetSearchParams,
         getHouseImageUrlList,
         resetSearchResult,

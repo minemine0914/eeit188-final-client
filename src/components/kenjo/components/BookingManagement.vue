@@ -44,8 +44,9 @@
                         hide-details
                         single-line
                         :style="{ width: '200px' }"
+                        class="mr-3"
                     ></v-text-field>
-    
+
                     <!-- 編輯訂單對話框 -->
                     <v-dialog v-model="dialog" max-width="500px">
                         <v-card>
@@ -114,13 +115,13 @@
                             <v-card-actions>
                                 <v-spacer></v-spacer>
                                 <v-btn color="blue-darken-1" variant="text" @click="close">
-                                    取消
+                                    關閉
                                 </v-btn>
-                                <v-btn color="blue-darken-1" variant="text" @click="save"> 儲存 </v-btn>
+                                <!-- <v-btn color="blue-darken-1" variant="text" @click="save"> 儲存 </v-btn> -->
                             </v-card-actions>
                         </v-card>
                     </v-dialog>
-    
+
                     <!-- 刪除確認對話框 -->
                     <v-dialog v-model="dialogDelete" max-width="500px">
                         <v-card>
@@ -130,14 +131,17 @@
                                 <v-btn color="blue-darken-1" variant="text" @click="closeDelete"
                                     >取消</v-btn
                                 >
-                                <v-btn color="blue-darken-1" variant="text" @click="deleteOrderConfirm"
+                                <v-btn
+                                    color="blue-darken-1"
+                                    variant="text"
+                                    @click="deleteOrderConfirm"
                                     >刪除</v-btn
                                 >
                                 <v-spacer></v-spacer>
                             </v-card-actions>
                         </v-card>
                     </v-dialog>
-    
+
                     <v-dialog v-model="DDeal" max-width="290">
                         <v-card>
                             <v-card-title class="headline">選擇狀態</v-card-title>
@@ -183,7 +187,7 @@
                             </v-card-actions>
                         </v-card>
                     </v-dialog>
-    
+
                     <!-- 房客資訊對話框 -->
                     <v-dialog v-model="dialogGuestInfo" max-width="500px">
                         <v-card>
@@ -203,7 +207,7 @@
                             </v-card-actions>
                         </v-card>
                     </v-dialog>
-    
+
                     <!-- 房屋資訊對話框 -->
                     <v-dialog v-model="dialogPropertyId" max-width="500px">
                         <v-card>
@@ -235,7 +239,6 @@
                 <!-- <v-icon size="small" @click="deleteOrder(item)"> mdi-delete </v-icon> -->
             </template>
         </v-data-table-server>
-
     </v-container>
 </template>
 

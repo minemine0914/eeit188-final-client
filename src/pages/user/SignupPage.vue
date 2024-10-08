@@ -1,23 +1,17 @@
 <template>
-  <div class="container">
-    <div class="signup-container">
-      <Signup />
-    </div>
-  </div>
+    <v-container fluid class="fill-height bg-brown-lighten-5">
+        <v-row class="d-flex flex-column justify-center align-center h-100 no-gutters">
+            <v-col cols="12" md="10" lg="8" xl="7" class="flex-grow-0">
+                <v-sheet :rounded="true" class="overflow-hidden">
+                    <Signup />
+                </v-sheet>
+            </v-col>
+        </v-row>
+    </v-container>
 </template>
 
 <script setup>
 import Signup from "@/components/user/Signup.vue";
 </script>
 
-<style scoped>
-.container {
-  display: flex;
-  justify-content: center;
-  margin: 50px;
-}
-
-.signup-container {
-  width: 30%;
-}
-</style>
+<style scoped></style>

@@ -89,6 +89,7 @@
                                     variant="flat"
                                     :color="$route.path === '/search' ? 'brown' : 'brown-lighten-2'"
                                     @click.stop="onClickSearchBtn('list')"
+                                    :loading="isLoadingFilterHouse"
                                 />
                                 <v-btn
                                     v-tooltip:bottom="'地圖搜尋'"
@@ -98,6 +99,7 @@
                                         $route.path === '/search-map' ? 'brown' : 'brown-lighten-2'
                                     "
                                     @click.stop="onClickSearchBtn('map')"
+                                    :loading="isLoadingFilterHouse"
                                 />
                             </v-sheet>
                         </v-toolbar>
@@ -512,7 +514,7 @@ import { useRoute, useRouter } from "vue-router";
 const route = useRoute();
 const router = useRouter();
 const houseSearchStore = useHouseSearchStore();
-const { inputValues, searchParams, postulateList } = storeToRefs(houseSearchStore);
+const { inputValues, searchParams, postulateList, isLoadingFilterHouse } = storeToRefs(houseSearchStore);
 // State
 const searchBarInfoRef = ref(null);
 const searchBarTab = ref("city");

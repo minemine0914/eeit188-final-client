@@ -1,17 +1,54 @@
 <template>
-  <form>
-    <v-text-field
-      v-model="state.email"
-      :error-messages="v$.email.$errors.map((e) => e.$message)"
-      label="E-mail"
-      required
-      @blur="v$.email.$touch"
-      @input="v$.email.$touch"
-    ></v-text-field>
-    <v-btn class="me-4" @click="submit"> 發送重設密碼連結到您的email </v-btn>
-  </form>
+<v-card class="w-100">
+        <v-card-item class="pb-0">
+            <v-sheet
+                color="transparent"
+                class="d-flex flex-column justify-center align-center w-100 pt-5"
+            >
+                <v-sheet color="white" rounded="circle" elevation="0" width="100px" height="100px">
+                    <NomadSvg class="text-brown-darken-1" />
+                </v-sheet>
+                <v-sheet
+                    class="font-weight-black text-brown-darken-1 text-h4"
+                    style="font-family: 'Tenor Sans'"
+                    >NOMAD</v-sheet
+                >
+                <v-sheet
+                    class="font-weight-black text-brown-darken-1 text-caption"
+                    style="font-family: 'Tenor Sans'"
+                    >FORGOT PASSWORD</v-sheet
+                >
+            </v-sheet>
+            <v-btn
+                class="ml-0 mt-2 position-absolute top-0 left-0"
+                flat
+                rounded="pill"
+                prepend-icon="mdi-chevron-left"
+                variant="plain"
+                size="small"
+                @click="$router.push('/system/login')"
+            >返回登入</v-btn>
+        </v-card-item>
+        <v-card-item class="px-7 pb-7 pt-4">
+            <v-sheet class="d-flex flex-column ga-3 pt-3">
+                <v-text-field
+                    v-model="state.email"
+                    :error-messages="v$.email.$errors.map((e) => e.$message)"
+                    label="E-mail"
+                    variant="outlined"
+                    required
+                    @blur="v$.email.$touch"
+                    @input="v$.email.$touch"
+                    @keydown.enter.prevent="submit"
+                ></v-text-field>
+                <v-btn @click="submit" size="large" color="brown-lighten-1" flat> 重設密碼</v-btn>
+                <div class="text-center mt-2">將發送連結至您註冊的信箱</div>
+            </v-sheet>
+        </v-card-item>
+    </v-card>
 </template>
 <script setup>
+import NomadSvg from "@/assets/nomad.svg?component";
 import { reactive } from "vue";
 import { useVuelidate } from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
