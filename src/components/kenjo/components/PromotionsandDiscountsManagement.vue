@@ -67,6 +67,7 @@
                 {{ item.discountRate.toFixed(2) * 100 }} %
             </template>
             <template v-slot:item.expire="{ item }"> {{ item.expire }} 天 </template>
+            <template v-slot:item.createdAt="{ item }"> {{ new Date(item.createdAt).toLocaleString().split(' ')[0] }}  </template>
             <template v-slot:item.actions="{ item }">
                 <v-btn
                     prepend-icon="mdi-delete"
@@ -94,6 +95,7 @@
             @update:options="fetchDiscount"
         >
             <template v-slot:item.expire="{ item }"> {{ item.expire }} 天 </template>
+            <template v-slot:item.createdAt="{ item }"> {{ new Date(item.createdAt).toLocaleString().split(' ')[0] }}  </template>
             <template v-slot:item.actions="{ item }">
                 <v-btn
                     prepend-icon="mdi-delete"
